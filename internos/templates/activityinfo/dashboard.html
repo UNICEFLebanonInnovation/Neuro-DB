@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load staticfiles i18n %}
+
+{% block ai_databases %}
+  {% for db in databases %}
+    <li><a href="/?ai_id={{ db.ai_id }}">{{ db.name }}</a></li>
+  {% endfor %}
+{% endblock %}
+
+{% block content %}
+<!-- top tiles -->
+<div class="row tile_count">
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-user"></i> Total Partners</span>
+    <div class="count green">{{ partners }}</div>
+    <!--<span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-clock-o"></i> Activity Categories</span>
+    <div class="count">{{ activity_categories }}</div>
+    <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>3% </i> From last Week</span>-->
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-clock-o"></i> Activities</span>
+    <div class="count">{{ activities }}</div>
+    <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>-->
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="glyphicon glyphicon-warning-sign"></i> Not reported</span>
+    <div class="count red">{{ not_reported }}</div>
+    <!--<span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> From last Week</span>-->
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Total Indicators</span>
+    <div class="count">{{ indicators }}</div>
+    <!--<span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> From last Week</span>-->
+  </div>
+  <!--<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">-->
+    <!--<span class="count_top"><i class="fa fa-user"></i> Funded by UNICEF</span>-->
+    <!--<div class="count">{{ unicef_funds }}</div>-->
+    <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>-->
+  <!--</div>-->
+
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="overflow: unset !important;">
+    <span class="count_top"><i class="glyphicon glyphicon-export"></i> {{ months_nbr }} month(s)</span>
+    <div class="count">
+
+      <ul class="nav nav-pills" role="tablist">
+        <li role="presentation" class="dropdown">
+          <a id="drop6" href="#" style="font-size: 20px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                      Export
+            <span class="caret"></span>
+          </a>
+          <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
+            {% for month in months %}
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month.month_name }}">{{ month.month_name }}</a></li>
+            {% endfor %}
+            <li role="presentation" class="divider"></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}">All Months</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+<!-- /top tiles -->
+
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="">
+      <!--<img style="width: 100%; height: 800px;" src="{% static 'images/sample_bi.png' %}" />-->
+      <iframe style="width: 100%; height: 800px;" src="https://app.powerbi.com/view?r=eyJrIjoiMzRlMTNmODItZTRhMC00ZGMwLTkwNzQtMzBlY2NhZmE3NTU4IiwidCI6IjliYjIxYWU4LWM0ZTctNDlhMS1hYmM5LTE5YTE1NTM2YTQ2OSIsImMiOjl9"
+              frameborder="0" allowfullscreen="true"></iframe>
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+</div>
+<br />
+{% endblock content %}
