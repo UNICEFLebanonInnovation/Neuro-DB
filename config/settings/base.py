@@ -123,9 +123,9 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'internos',
+        'NAME': 'neurodb',
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': 'ILOVEunicef^990',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
