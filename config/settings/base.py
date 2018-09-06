@@ -116,24 +116,24 @@ MANAGERS = ADMINS
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-# DATABASES = {
-#     'default': env.db('DATABASE_URL', default='postgres:///internos'),
-# }
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'neurodb',
-        'USER': 'root',
-        'PASSWORD': 'ILOVEunicef^990',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            # 'read_default_file': 'my.cnf',
-            'init_command': 'SET default_storage_engine=INNODB',
-        },
-    }
+    'default': env.db('postgis://postgres:ILOVEunicef990@localhost:5432/prod_25042018 ', default='postgres:///neurodb'),
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'neurodb',
+#         'USER': 'root',
+#         'PASSWORD': 'ILOVEunicef^990',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'read_default_file': 'my.cnf',
+#             'init_command': 'SET default_storage_engine=INNODB',
+#         },
+#     }
+# }
 
 # DATABASES['default']['ATOMIC_REQUESTS'] = True
 
