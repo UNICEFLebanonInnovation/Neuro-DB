@@ -39,23 +39,23 @@ def read_data_from_file(ai_id):
                 database_id=row['database.id'],
                 partner_id=row['partner.id'],
                 indicator_id=row['indicator.id'],
-                indicator_name=row['indicator.name'],
+                indicator_name=unicode(row['indicator.name'], errors='replace'),
             )
             if instance:
                 instance.month_name = month_name
                 instance.partner_label = row['partner.label']
                 instance.location_adminlevel_caza_code = row['location.adminlevel.caza.code']
-                instance.location_adminlevel_caza = row['location.adminlevel.caza']
-                instance.partner_description = row['partner.description']
+                instance.location_adminlevel_caza = unicode(row['location.adminlevel.caza'], errors='replace'),
+                instance.partner_description = unicode(row['partner.description'], errors='replace'),
                 instance.form = row['form']
                 instance.governorate = row['Governorate'] if 'Governorate' in row else ''
                 instance.location_longitude = row['location.longitude']
                 instance.form_category = row['form.category']
                 instance.indicator_units = row['indicator.units']
-                instance.project_description = row['project.description']
+                instance.project_description = unicode(row['project.description'], errors='replace'),
                 instance.location_adminlevel_cadastral_area_code = row['location.adminlevel.cadastral_area.code']
-                instance.location_name = row['location.name']
-                instance.project_label = row['project.label']
+                instance.location_name = unicode(row['location.name'], errors='replace'),
+                instance.project_label = unicode(row['project.label'], errors='replace'),
                 instance.location_adminlevel_governorate_code = row['location.adminlevel.governorate.code']
                 instance.end_date = row['end_date']
                 instance.lcrp_appeal = row['LCRP Appeal'] if 'LCRP Appeal' in row else ''
@@ -65,7 +65,7 @@ def read_data_from_file(ai_id):
                 instance.indicator_category = row['indicator.category']
                 instance.location_alternate_name = row['location.alternate_name']
                 instance.start_date = row['start_date']
-                instance.location_adminlevel_cadastral_area = row['location.adminlevel.cadastral_area']
+                instance.location_adminlevel_cadastral_area = unicode(row['location.adminlevel.cadastral_area'], errors='replace'),
                 instance.location_adminlevel_governorate = row['location.adminlevel.governorate']
                 # instance.row_data = row
                 instance.save()
