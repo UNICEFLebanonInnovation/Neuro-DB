@@ -5,8 +5,8 @@ import json
 from datetime import datetime
 from django.db import models
 from model_utils.models import TimeStampedModel
-# from django.contrib.postgres.fields import ArrayField, JSONField
-from django_mysql.models import JSONField
+from django.contrib.postgres.fields import ArrayField, JSONField
+# from django_mysql.models import JSONField
 
 from internos.users.models import Section
 from .client import ActivityInfoClient
