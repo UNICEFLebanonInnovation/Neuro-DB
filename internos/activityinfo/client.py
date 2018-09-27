@@ -30,8 +30,8 @@ class ActivityInfoClient(object):
     """
 
     def __init__(self,
-                 username='mkarnib@unicef.org',
-                 password='ILOVEmadrid@2018',
+                 username='',
+                 password='',
                  base_url='https://www.activityinfo.org/'):
         self.base_url = base_url
         if username and password:
