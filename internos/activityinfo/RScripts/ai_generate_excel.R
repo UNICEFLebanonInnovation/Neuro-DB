@@ -5,7 +5,7 @@ rm(list = ls())
 
 library("jsonlite")
 library("activityinfo")
-activityInfoLogin('mkarnib@unicef.org', 'ILOVEmadrid@2018')
+activityInfoLogin('mkarnib@unicef.org', '')
 
 myArgs <- commandArgs(trailingOnly = TRUE)
 
