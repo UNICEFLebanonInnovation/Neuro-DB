@@ -320,3 +320,6 @@ ADMIN_URL = r'^admin/'
 
 # Your common stuff: Below this line define 3rd party library settings
 # ------------------------------------------------------------------------------
+
+
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['example.com', 'lebaaodb.unicef.org', '127.0.0.1', '158.113.238.10'])
