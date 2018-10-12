@@ -43,30 +43,30 @@ def read_data_from_file(ai_id):
             )
             if instance:
                 instance.month_name = month_name
-                instance.partner_label = row['partner.label']
-                instance.location_adminlevel_caza_code = row['location.adminlevel.caza.code']
-                instance.location_adminlevel_caza = unicode(row['location.adminlevel.caza'], errors='replace'),
-                instance.partner_description = unicode(row['partner.description'], errors='replace'),
-                instance.form = row['form']
+                instance.partner_label = row['partner.label'] if 'partner.label' in row['partner.label'] else ''
+                instance.location_adminlevel_caza_code = row['location.adminlevel.caza.code'] if 'location.adminlevel.caza.code' in row else ''
+                instance.location_adminlevel_caza = unicode(row['location.adminlevel.caza'], errors='replace') if 'location.adminlevel.caza' in row else ''
+                instance.partner_description = unicode(row['partner.description'], errors='replace') if 'partner.description' in row else ''
+                instance.form = row['form'] if 'form' in row else ''
                 instance.governorate = row['Governorate'] if 'Governorate' in row else ''
-                instance.location_longitude = row['location.longitude']
-                instance.form_category = row['form.category']
-                instance.indicator_units = row['indicator.units']
-                instance.project_description = unicode(row['project.description'], errors='replace'),
-                instance.location_adminlevel_cadastral_area_code = row['location.adminlevel.cadastral_area.code']
-                instance.location_name = unicode(row['location.name'], errors='replace'),
-                instance.project_label = unicode(row['project.label'], errors='replace'),
-                instance.location_adminlevel_governorate_code = row['location.adminlevel.governorate.code']
-                instance.end_date = row['end_date']
+                instance.location_longitude = row['location.longitude'] if 'location.longitude' in row else ''
+                instance.form_category = row['form.category'] if 'form.category' in row else ''
+                instance.indicator_units = row['indicator.units'] if 'indicator.units' in row else ''
+                instance.project_description = unicode(row['project.description'], errors='replace') if 'project.description' in row else ''
+                instance.location_adminlevel_cadastral_area_code = row['location.adminlevel.cadastral_area.code'] if 'location.adminlevel.cadastral_area.code' in row else ''
+                instance.location_name = unicode(row['location.name'], errors='replace') if 'location.name' in row else ''
+                instance.project_label = unicode(row['project.label'], errors='replace') if 'project.label' in row else ''
+                instance.location_adminlevel_governorate_code = row['location.adminlevel.governorate.code'] if 'location.adminlevel.governorate.code' in row else ''
+                instance.end_date = row['end_date'] if 'end_date' in row else ''
                 instance.lcrp_appeal = row['LCRP Appeal'] if 'LCRP Appeal' in row else ''
-                instance.indicator_value = row['indicator.value']
-                instance.funded_by = row['Funded_by']
-                instance.location_latitude = row['location.latitude']
-                instance.indicator_category = row['indicator.category']
-                instance.location_alternate_name = row['location.alternate_name']
-                instance.start_date = row['start_date']
-                instance.location_adminlevel_cadastral_area = unicode(row['location.adminlevel.cadastral_area'], errors='replace'),
-                instance.location_adminlevel_governorate = row['location.adminlevel.governorate']
+                instance.indicator_value = row['indicator.value'] if 'indicator.value' in row else ''
+                instance.funded_by = row['Funded_by'] if 'Funded_by' in row else ''
+                instance.location_latitude = row['location.latitude'] if 'location.latitude' in row else ''
+                instance.indicator_category = row['indicator.category'] if 'indicator.category' in row else ''
+                instance.location_alternate_name = row['location.alternate_name'] if 'location.alternate_name' in row else ''
+                instance.start_date = row['start_date'] if 'start_date' in row else ''
+                instance.location_adminlevel_cadastral_area = unicode(row['location.adminlevel.cadastral_area'], errors='replace') if 'location.adminlevel.cadastral_area' in row else ''
+                instance.location_adminlevel_governorate = row['location.adminlevel.governorate'] if 'location.adminlevel.governorate' in row else ''
                 # instance.row_data = row
                 instance.save()
             data.append(row)

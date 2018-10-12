@@ -16,7 +16,7 @@ class IndexView(LoginRequiredMixin,
     template_name = 'activityinfo/dashboard.html'
 
     def get_context_data(self, **kwargs):
-        month_name = datetime.datetime.now().strftime("%B")
+        month_name = self.request.GET.get('month', datetime.datetime.now().strftime("%B"))
         ai_id = int(self.request.GET.get('ai_id', 0))
         databases = Database.objects.all()
 
