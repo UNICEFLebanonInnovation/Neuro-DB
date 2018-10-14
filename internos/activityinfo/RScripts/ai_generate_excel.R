@@ -17,5 +17,6 @@ if (is.na(database.id)) {
 }
 #values <- getDatabaseValueTable(database.id)
 values <- getDatabaseValueTable(database.id, col.names = c("Funded by" = "Funded_by"))
+values <- values[values$Funded_by=="UNICEF",]
 outfilname<- paste('internos/activityinfo/AIReports/', myArgs, "_ai_data.csv", sep="")
 write.csv(values, outfilname, row.names=FALSE)
