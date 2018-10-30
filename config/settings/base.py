@@ -116,31 +116,28 @@ MANAGERS = ADMINS
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-# DATABASES = {
-#     'default': env.db('DATABASE_URL', default='postgis://postgres:ILOVEunicef990@localhost:5432/prod_25042018'),
-# }
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'neurodb',
-        'USER': 'postgres',
-        'PASSWORD': 'ILOVEunicef990',
-        'HOST': 'localhost',
-        'PORT': '5432',
-        # 'OPTIONS': {
-        #     'read_default_file': 'my.cnf',
-        #     'init_command': 'SET default_storage_engine=INNODB',
-        # },
-    }
+    # 'default': env.db('DATABASE_URL', default='postgis://postgres:ILOVEunicef990@localhost:5432/prod_25042018'),
+    'default': env.db('DATABASE_URL', default='postgis://postgres:password1@localhost:5432/internos'),
 }
 
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
+#         'ENGINE': 'django.db.backends.postgresql',
 #         'NAME': 'neurodb',
+#         'USER': 'postgres',
+#         'PASSWORD': 'ILOVEunicef990',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'internos',
 #         'USER': 'root',
-#         'PASSWORD': 'ILOVEunicef^990',
+#         'PASSWORD': 'root',
 #         'HOST': 'localhost',
 #         'PORT': '3306',
 #         'OPTIONS': {

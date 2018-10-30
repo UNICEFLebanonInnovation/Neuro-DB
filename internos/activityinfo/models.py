@@ -6,7 +6,7 @@ from datetime import datetime
 from django.db import models
 from model_utils.models import TimeStampedModel
 from django.contrib.postgres.fields import ArrayField, JSONField
-# from django_mysql.models import JSONField
+# from django_mysql import models as mysql_model
 
 from internos.users.models import Section
 from .client import ActivityInfoClient
@@ -25,11 +25,16 @@ class Database(models.Model):
     # read only fields
     description = models.CharField(max_length=254, null=True)
     country_name = models.CharField(max_length=254, null=True)
+    dashboard_link = models.URLField(max_length=1500, null=True)
     ai_country_id = models.PositiveIntegerField(null=True)
     section = models.ForeignKey(
         Section,
         null=True, blank=True
     )
+
+    mapping_extraction1 = JSONField(blank=True, null=True)
+    mapping_extraction2 = JSONField(blank=True, null=True)
+    mapping_extraction3 = JSONField(blank=True, null=True)
 
     def __unicode__(self):
         return self.name
@@ -86,7 +91,9 @@ class Database(models.Model):
                     except Indicator.DoesNotExist:
                         ai_indicator = Indicator(ai_id=indicator['id'])
                         objects += 1
-                    ai_indicator.name = indicator['name']
+                    name = indicator['name']
+                    ai_indicator.name = name
+                    ai_indicator.awp_code = name[:name.find(':')]
                     ai_indicator.units = indicator['units'] if indicator['units'] else '---'
                     ai_indicator.category = indicator['category']
                     ai_indicator.activity = ai_activity
@@ -193,8 +200,13 @@ class Indicator(models.Model):
     ai_id = models.PositiveIntegerField(unique=True)
     activity = models.ForeignKey(Activity)
     name = models.CharField(max_length=254)
+    reporting_level = models.CharField(max_length=254, blank=True, null=True)
+    awp_code = models.CharField(max_length=254, blank=True, null=True)
+    target = models.PositiveIntegerField(default=0)
+    cumulative_results = models.PositiveIntegerField(default=0)
     units = models.CharField(max_length=254, blank=True, null=True)
     category = models.CharField(max_length=254, null=True)
+    status = models.CharField(max_length=254, blank=True, null=True)
 
     def __unicode__(self):
         return self.name

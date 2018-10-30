@@ -11,6 +11,11 @@ class SuitConfig(DjangoSuitConfig):
         ParentItem('Dashboard', url='/', icon='fa fa-list'),
         ParentItem('Activity Info', children=[
             ChildItem(model='activityinfo.database'),
+            ChildItem(model='activityinfo.activity'),
+            ChildItem(model='activityinfo.indicator'),
+            ChildItem(model='activityinfo.partner'),
+            ChildItem(model='activityinfo.attributegroup'),
+            ChildItem(model='activityinfo.attribute'),
             ChildItem(model='activityinfo.activityreport'),
         ], icon='fa fa-list'),
         ParentItem('Users', children=[

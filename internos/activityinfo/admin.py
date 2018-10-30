@@ -21,14 +21,24 @@ class DatabaseAdmin(admin.ModelAdmin):
         'ai_country_id'
     )
     actions = [
+        'import_basic_data',
         'import_data',
         'import_reports'
     ]
 
+    def import_basic_data(self, request, queryset):
+        objects = 0
+        for db in queryset:
+            objects += db.import_data()
+        self.message_user(
+            request,
+            "{} objects created.".format(objects)
+        )
+
     def import_data(self, request, queryset):
         objects = 0
         for db in queryset:
-            r_script_command_line('ai_generate_excel.R', db.ai_id)
+            r_script_command_line('ai_generate_excel.R', db)
             # objects += db.import_data()
         # self.message_user(
         #     request,
@@ -143,6 +153,7 @@ class IndicatorAdmin(admin.ModelAdmin):
     list_display = (
         'ai_id',
         'activity',
+        'awp_code',
         'name',
         'units',
         'category',
