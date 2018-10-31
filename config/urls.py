@@ -18,6 +18,7 @@ urlpatterns = [
 
     # User management
     url(r'^users/', include('internos.users.urls', namespace='users')),
+    url(r'^nested_admin/', include('nested_admin.urls')),
     url(r'^accounts/', include('allauth.urls')),
 
     # Your stuff: custom urls includes go here

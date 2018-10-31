@@ -54,6 +54,9 @@ THIRD_PARTY_APPS = [
     'allauth',  # registration
     'allauth.account',  # registration
     'allauth.socialaccount',  # registration
+
+    'nested_admin',
+    'smart_selects',
 ]
 
 # Apps specific for this project go here.

@@ -2,58 +2,12 @@ __author__ = 'achamseddine'
 
 from django.contrib import admin
 from suit.admin import RelatedFieldAdmin, get_related_field
-
+import nested_admin
 from . import models
 from .utils import r_script_command_line, read_data_from_file
 
 
 admin.site.site_header = 'Neuro-DB'
-
-
-class DatabaseAdmin(admin.ModelAdmin):
-    list_display = (
-        'ai_id',
-        'name',
-    )
-    readonly_fields = (
-        'description',
-        'country_name',
-        'ai_country_id'
-    )
-    actions = [
-        'import_basic_data',
-        'import_data',
-        'import_reports'
-    ]
-
-    def import_basic_data(self, request, queryset):
-        objects = 0
-        for db in queryset:
-            objects += db.import_data()
-        self.message_user(
-            request,
-            "{} objects created.".format(objects)
-        )
-
-    def import_data(self, request, queryset):
-        objects = 0
-        for db in queryset:
-            r_script_command_line('ai_generate_excel.R', db)
-            # objects += db.import_data()
-        # self.message_user(
-        #     request,
-        #     "{} objects created.".format(objects)
-        # )
-
-    def import_reports(self, request, queryset):
-        reports = 0
-        for db in queryset:
-            read_data_from_file(db.ai_id)
-            # reports += db.import_reports()
-        # self.message_user(
-        #     request,
-        #     "{} reports created.".format(reports)
-        # )
 
 
 class PartnerAdmin(admin.ModelAdmin):
@@ -71,10 +25,13 @@ class PartnerAdmin(admin.ModelAdmin):
     )
 
 
-class AttributeGroupInlineAdmin(admin.TabularInline):
+class AttributeGroupInlineAdmin(nested_admin.NestedStackedInline):
     can_delete = False
     model = models.AttributeGroup
+    min_num = 0
+    max_num = 0
     extra = 0
+    fk_name = 'activity'
     fields = (
         'ai_id',
         'name',
@@ -106,13 +63,19 @@ class AttributeGroupInlineAdmin(admin.TabularInline):
         return False
 
 
-class IndicatorInlineAdmin(admin.TabularInline):
+class IndicatorInlineAdmin(nested_admin.NestedTabularInline):
     can_delete = False
     model = models.Indicator
+    verbose_name = 'Indicator'
+    verbose_name_plural = 'Indicator'
+    min_num = 0
+    max_num = 0
     extra = 0
+    fk_name = 'activity'
     fields = (
         'ai_id',
         'name',
+        'awp_code',
         'units',
     )
     readonly_fields = (
@@ -125,11 +88,44 @@ class IndicatorInlineAdmin(admin.TabularInline):
         return False
 
 
-class ActivityAdmin(admin.ModelAdmin):
+class ActivityInlineAdmin(nested_admin.NestedStackedInline):
+    can_delete = False
+    model = models.Activity
+    verbose_name = 'Activity'
+    verbose_name_plural = 'Activities'
+    min_num = 0
+    max_num = 0
+    extra = 0
+    fk_name = 'database'
+    suit_classes = u'suit-tab suit-tab-activities'
+    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
     inlines = [
         AttributeGroupInlineAdmin,
         IndicatorInlineAdmin,
     ]
+    fields = (
+        'ai_id',
+        'name',
+        'location_type',
+    )
+    readonly_fields = (
+        'ai_id',
+        'name',
+        'location_type',
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+class ActivityAdmin(admin.ModelAdmin):
+    # inlines = [
+    #     AttributeGroupInlineAdmin,
+    #     IndicatorInlineAdmin,
+    # ]
     list_display = (
         'name',
         'location_type',
@@ -250,6 +246,93 @@ class ActivityReportAdmin(RelatedFieldAdmin):
         'indicator_value',
         'funded_by',
     )
+
+
+class DatabaseAdmin(nested_admin.NestedModelAdmin):
+    model = models.Database
+    inlines = [
+        ActivityInlineAdmin,
+    ]
+    list_display = (
+        'ai_id',
+        'name',
+    )
+    readonly_fields = (
+        'description',
+        'country_name',
+        'ai_country_id'
+    )
+    actions = [
+        'import_basic_data',
+        'import_data',
+        'import_reports'
+    ]
+
+    fieldsets = [
+        (None, {
+            'classes': ('suit-tab', 'suit-tab-general',),
+            'fields': [
+                'ai_id',
+                'name',
+                'username',
+                'password',
+                'section',
+                'description',
+                'country_name',
+                'ai_country_id'
+            ]
+        }),
+        ('Extraction mapping', {
+            'classes': ('suit-tab', 'suit-tab-general',),
+            'fields': [
+                'mapping_extraction1',
+                'mapping_extraction2',
+                'mapping_extraction3',
+            ]
+        }),
+        ('Activities', {
+            'classes': ('suit-tab', 'suit-tab-activities',),
+            'fields': [
+                # 'ai_id',
+                # 'name',
+                # 'location_type',
+            ]
+        }),
+    ]
+
+    suit_form_tabs = (
+                      ('general', 'Database'),
+                      ('activities', 'Activities'),
+                    )
+
+    def import_basic_data(self, request, queryset):
+        objects = 0
+        for db in queryset:
+            objects += db.import_data()
+        self.message_user(
+            request,
+            "{} objects created.".format(objects)
+        )
+
+    def import_data(self, request, queryset):
+        objects = 0
+        for db in queryset:
+            r_script_command_line('ai_generate_excel.R', db)
+            # objects += db.import_data()
+        # self.message_user(
+        #     request,
+        #     "{} objects created.".format(objects)
+        # )
+
+    def import_reports(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            read_data_from_file(db.ai_id)
+            # reports += db.import_reports()
+        # self.message_user(
+        #     request,
+        #     "{} reports created.".format(reports)
+        # )
 
 
 admin.site.register(models.Database, DatabaseAdmin)

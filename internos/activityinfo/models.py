@@ -1,7 +1,7 @@
 __author__ = 'achamseddine'
 
 import json
-
+import re
 from datetime import datetime
 from django.db import models
 from model_utils.models import TimeStampedModel
@@ -93,7 +93,17 @@ class Database(models.Model):
                         objects += 1
                     name = indicator['name']
                     ai_indicator.name = name
-                    ai_indicator.awp_code = name[:name.find(':')]
+                    try:
+                        if ' - ' in name:
+                            ai_indicator.awp_code = name[:name.find(' - ')]
+                            # ai_indicator.awp_code = name[re.search('\d', name).start():name.find(':')]
+                        elif ': ' in name:
+                            ai_indicator.awp_code = name[:name.find(': ')]
+                        else:
+                            ai_indicator.awp_code = name[:name.find('#')]
+                    except TypeError as ex:
+                        ai_indicator.awp_code = 'None'
+
                     ai_indicator.units = indicator['units'] if indicator['units'] else '---'
                     ai_indicator.category = indicator['category']
                     ai_indicator.activity = ai_activity
@@ -193,6 +203,20 @@ class Activity(models.Model):
 
     class Meta:
         verbose_name_plural = 'activities'
+
+
+class IndicatorCategory(models.Model):
+
+    name = models.CharField(max_length=254)
+    reporting_level = models.CharField(max_length=254, blank=True, null=True)
+    awp_code = models.CharField(max_length=254, blank=True, null=True)
+    target = models.PositiveIntegerField(default=0)
+    cumulative_results = models.PositiveIntegerField(default=0)
+    units = models.CharField(max_length=254, blank=True, null=True)
+    status = models.CharField(max_length=254, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Indicator(models.Model):
