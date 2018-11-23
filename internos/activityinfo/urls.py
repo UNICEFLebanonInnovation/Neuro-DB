@@ -16,4 +16,9 @@ urlpatterns = [
         view=views.ExportViewSet.as_view(),
         name='export'
     ),
+    url(
+        regex=r'^activityinfo/report/$',
+        view=views.ReportView.as_view(),
+        name='report'
+    ),
 ]

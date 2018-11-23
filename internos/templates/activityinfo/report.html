@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load staticfiles i18n %}
+
+{% block ai_databases %}
+  {% for db in databases %}
+    <li><a href="/?ai_id={{ db.ai_id }}">{{ db.name }}</a></li>
+  {% endfor %}
+{% endblock %}
+
+{% block ai_reports %}
+  {% for db in databases %}
+    <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.name }}</a></li>
+  {% endfor %}
+{% endblock %}
+
+
+{% block content %}
+<!-- top tiles -->
+<div class="row tile_count">
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="overflow: unset !important;">
+    <span class="count_top"><i class="glyphicon glyphicon-export"></i> {{ partners|length }} Partners</span>
+    <div class="count">
+
+      <ul class="nav nav-pills" role="tablist">
+        <li role="presentation" class="dropdown">
+          <a id="drop6" href="#" style="font-size: 20px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                      Partner
+            <span class="caret"></span>
+          </a>
+          <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
+            {% for partner in partners %}
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ partner.partner_id }}">{{ partner.partner_label }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="overflow: unset !important;">
+    <span class="count_top"><i class="glyphicon glyphicon-export"></i> {{ governorates|length }} Governorates</span>
+    <div class="count">
+
+      <ul class="nav nav-pills" role="tablist">
+        <li role="presentation" class="dropdown">
+          <a id="drop7" href="#" style="font-size: 20px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                      Governorate
+            <span class="caret"></span>
+          </a>
+          <ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
+            {% for gov in governorates %}
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&gov={{ gov }}">{{ gov.location_adminlevel_governorate }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<!-- /top tiles -->
+
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="">
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+</div>
+<br />
+{% endblock content %}

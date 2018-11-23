@@ -54,7 +54,7 @@ THIRD_PARTY_APPS = [
     'allauth',  # registration
     'allauth.account',  # registration
     'allauth.socialaccount',  # registration
-
+    'import_export',
     'nested_admin',
     'smart_selects',
 ]
@@ -64,6 +64,7 @@ LOCAL_APPS = [
     # custom users app
     'internos.users.apps.UsersConfig',
     'internos.activityinfo',
+    'internos.winterization',  # custom winterization app
     'internos.backends',
     'internos.etools',
     # Your stuff: custom apps go here

@@ -256,6 +256,7 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
     list_display = (
         'ai_id',
         'name',
+        'section',
     )
     readonly_fields = (
         'description',

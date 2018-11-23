@@ -9,6 +9,10 @@ class SuitConfig(DjangoSuitConfig):
     # form_inlines_hide_original = True
     menu = (
         ParentItem('Dashboard', url='/', icon='fa fa-list'),
+        ParentItem('Winterization', children=[
+            ChildItem('Programme', model='winterization.programme'),
+            ChildItem('Assessment', model='winterization.assessment'),
+        ], icon='fa fa-users'),
         ParentItem('Activity Info', children=[
             ChildItem(model='activityinfo.database'),
             ChildItem(model='activityinfo.activity'),

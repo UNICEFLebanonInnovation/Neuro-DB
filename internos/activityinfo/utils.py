@@ -43,6 +43,20 @@ def read_data_from_file(ai_id):
         add_rows(ai_id)
 
 
+def get_awp_code(name):
+    try:
+        if ' - ' in name:
+            awp_code = name[:name.find(' - ')]
+            # ai_indicator.awp_code = name[re.search('\d', name).start():name.find(':')]
+        elif ': ' in name:
+            awp_code = name[:name.find(': ')]
+        else:
+            awp_code = name[:name.find('#')]
+    except TypeError as ex:
+        awp_code = 'None'
+    return awp_code
+
+
 def add_rows(ai_id):
     from internos.activityinfo.models import ActivityReport
 
@@ -64,6 +78,7 @@ def add_rows(ai_id):
                 partner_id=row['partner.id'],
                 indicator_id=row['indicator.id'],
                 indicator_name=unicode(row['indicator.name'], errors='replace'),
+                indicator_awp_code=get_awp_code(unicode(row['indicator.name'], errors='replace')),
                 month_name=month_name,
                 partner_label=row['partner.label'] if 'partner.label' in row else '',
                 location_adminlevel_caza_code=row[
