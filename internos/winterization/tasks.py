@@ -12,11 +12,13 @@ from internos.taskapp.celery import app
 
 
 @app.task
-def cleanup_old_data(programme):
+def cleanup_old_data(programme=None):
     from .models import Assessment
 
-    registrations = Assessment.objects.filter(programme=programme)
-    # registrations = Assessment.objects.filter()
+    registrations = Assessment.objects.all()
+    if programme:
+        registrations = registrations.filter(programme=programme)
+
     objects = registrations.count()
     registrations.delete()
     return objects
@@ -59,7 +61,7 @@ def set_app_user(username, password):
 
 
 @app.task
-def import_docs(programme, **kwargs):
+def import_docs(programme=None, **kwargs):
     """
     Imports docs from couch base
     """
@@ -77,25 +79,33 @@ def import_docs(programme, **kwargs):
             doc = row['doc']
             doc['site_type'] = doc['site-type'] if 'site-type' in doc else ''
             # todo assistance_type fix the return type
-            doc['programme'] = programme.id
-            serializer = AssessmentSerializer(data=doc)
-            if serializer.is_valid():
-                ctr += 1
-                instance = serializer.create(validated_data=serializer.validated_data)
-                instance.save()
-            else:
-                print(serializer.errors)
-                # print(json.dumps(doc))
+            if programme:
+                doc['programme'] = programme
+            ctr += 1
+            instance = Assessment.objects.create(_id=doc['_id'])
+            for key in doc:
+                if hasattr(instance, key):
+                    setattr(instance, key, doc[key])
+            instance.save()
+            # serializer = AssessmentSerializer(data=doc)
+            # if serializer.is_valid():
+            #     ctr += 1
+            #     instance = serializer.create(validated_data=serializer.validated_data)
+            #     instance.save()
+            # else:
+            #     print(serializer.errors)
 
     return ctr
 
 
 @app.task
-def calculate_disaggregation(programme):
+def calculate_disaggregation(programme=None):
     from .models import Assessment
 
-    queryset = Assessment.objects.filter(programme=programme, child_list__isnull=False)
-    # queryset = Assessment.objects.filter(child_list__isnull=False)
+    queryset = Assessment.objects.filter(child_list__isnull=False)
+    if programme:
+        queryset = queryset.filter(programme=programme)
+
     objects = queryset.count()
 
     for line in queryset:
