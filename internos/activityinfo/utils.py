@@ -1,7 +1,9 @@
 import os
 import csv
+import json
 import datetime
 import subprocess
+from django.db.models import Sum
 from django.conf import settings
 
 
@@ -32,7 +34,7 @@ def read_data_from_file(ai_id):
             object_type='AI',
             month=month_name,
             status=True)
-        update_rows(ai_id)
+        return update_rows(ai_id)
     except ImportLog.DoesNotExist:
         ImportLog.objects.create(
             object_id=ai_id,
@@ -40,7 +42,7 @@ def read_data_from_file(ai_id):
             object_type='AI',
             month=month_name,
             status=True)
-        add_rows(ai_id)
+        return add_rows(ai_id)
 
 
 def get_awp_code(name):
@@ -48,13 +50,21 @@ def get_awp_code(name):
         if ' - ' in name:
             awp_code = name[:name.find(' - ')]
             # ai_indicator.awp_code = name[re.search('\d', name).start():name.find(':')]
+            if ': ' in awp_code:
+                awp_code = awp_code[:awp_code.find(': ')]
         elif ': ' in name:
             awp_code = name[:name.find(': ')]
         else:
             awp_code = name[:name.find('#')]
+            if ': ' in awp_code:
+                awp_code = awp_code[:awp_code.find(': ')]
     except TypeError as ex:
         awp_code = 'None'
     return awp_code
+
+
+def clean_string(value, string):
+    return value.replace(string, '')
 
 
 def add_rows(ai_id):
@@ -64,11 +74,12 @@ def add_rows(ai_id):
     month_name = datetime.datetime.now().strftime("%B")
     path = os.path.dirname(os.path.abspath(__file__))
     path2file = path+'/AIReports/'+str(ai_id)+'_ai_data.csv'
+    ctr = 0
 
     with open(path2file) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-
+            ctr += 1
             ActivityReport.objects.create(
                 month=month,
                 database=row['database'],
@@ -76,7 +87,7 @@ def add_rows(ai_id):
                 report_id=row['report.id'],
                 database_id=row['database.id'],
                 partner_id=row['partner.id'],
-                indicator_id=row['indicator.id'],
+                indicator_id=clean_string(row['indicator.id'], 'i'),
                 indicator_name=unicode(row['indicator.name'], errors='replace'),
                 indicator_awp_code=get_awp_code(unicode(row['indicator.name'], errors='replace')),
                 month_name=month_name,
@@ -108,12 +119,13 @@ def add_rows(ai_id):
                 indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
                 location_alternate_name=row[
                     'location.alternate_name'] if 'location.alternate_name' in row else '',
-                start_date=row['start_date'] if 'start_date' in row else '',
+                start_date=row['start_date'] if 'start_date' in row and not row['start_date'] == 'NA' else None,
                 location_adminlevel_cadastral_area=unicode(row['location.adminlevel.cadastral_area'],
                                                               errors='replace') if 'location.adminlevel.cadastral_area' in row else '',
                 location_adminlevel_governorate=row[
                     'location.adminlevel.governorate'] if 'location.adminlevel.governorate' in row else '',
             )
+    return ctr
 
 
 def update_rows(ai_id):
@@ -123,9 +135,194 @@ def update_rows(ai_id):
 
     with open(path2file) as csvfile:
         reader = csv.DictReader(csvfile)
+        ctr = 0
         for row in reader:
+            ctr += 1
             ActivityReport.objects.update(
                 database_id=ai_id,
+                indicator_id=clean_string(row['indicator.id'], 'i'),
                 indicator_units=row['indicator.units'] if 'indicator.units' in row else '',
                 indicator_value=row['indicator.value'] if 'indicator.value' in row else '',
             )
+        return ctr
+
+
+def generate_indicator_awp_code(ai_id):
+    from internos.activityinfo.models import ActivityReport
+
+    data = ActivityReport.objects.filter(database_id=ai_id)
+    ctr = data.count()
+    for item in data:
+        item.indicator_awp_code = get_awp_code(item.indicator_name)
+        item.save()
+
+    return ctr
+
+
+def calculate_sum_target(ai_id):
+    from internos.activityinfo.models import Indicator
+
+    # activity__database_id = ai_id
+    top_indicators = Indicator.objects.filter(master_indicator=True)
+    sub_indicators = Indicator.objects.filter(master_indicator_sub=True)
+
+    for item in sub_indicators:
+        if not item.summation_sub_indicators.count():
+            continue
+        target_sum = item.summation_sub_indicators.exclude(master_indicator=True).aggregate(Sum('target'))
+        item.target = target_sum['target__sum'] if target_sum['target__sum'] else 0
+        item.save()
+
+    for item in top_indicators:
+        target_sum = item.summation_sub_indicators.exclude(master_indicator_sub=False, master_indicator=False).aggregate(Sum('target'))
+        item.target = target_sum['target__sum'] if target_sum['target__sum'] else 0
+        item.save()
+
+    return top_indicators.count() + sub_indicators.count()
+
+
+def link_indicators_data(ai_id):
+    from internos.activityinfo.models import Indicator, ActivityReport
+
+    ctr = 0
+    reports = ActivityReport.objects.filter(database_id=ai_id)
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_id)
+
+    for item in indicators:
+        ai_values = reports.filter(indicator_id=item.ai_indicator)
+        if not ai_values.count():
+            continue
+        ctr += 1
+        ai_values.update(ai_indicator=item)
+
+    return ctr
+
+
+def calculate_indicators_values(ai_id):
+    from internos.activityinfo.models import Indicator, ActivityReport
+
+    report = ActivityReport.objects.filter(database_id=ai_id)
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_id)
+    partners = report.values('partner_id').distinct()
+    governorates = report.values('location_adminlevel_governorate_code').distinct()
+
+    for indicator in indicators:
+        months = {}
+        values_partners = {}
+        values_gov = {}
+        cumulative_results = 0
+        level = 1 if indicator.master_indicator_sub else 0
+        level = 2 if indicator.master_indicator else level
+
+        for month in range(0, 13):
+            result = get_indicator_value(indicator, level, month)
+            cumulative_results += result
+            months[str(month)] = result
+
+            for partner in partners:
+                key = "{}-{}".format(month, partner['partner_id'])
+                result = get_indicator_value(indicator, level, month, partner['partner_id'])
+                values_partners[str(key)] = result
+
+            for gov in governorates:
+                key = "{}-{}".format(month, gov['location_adminlevel_governorate_code'])
+                result = get_indicator_value(indicator, level, month, gov['location_adminlevel_governorate_code'])
+                values_gov[str(key)] = result
+
+        indicator.values = months
+        indicator.values_partners = values_partners
+        indicators.values_gov = values_gov
+
+        indicator.cumulative_results = cumulative_results
+        indicator.save()
+
+    return indicators.count()
+
+
+def get_indicator_value(indicator_id, level=0, month=None, partner=None, gov=None):
+    from internos.activityinfo.models import ActivityReport
+
+    reports = ActivityReport.objects.all()
+
+    if level == 0:
+        reports = reports.filter(ai_indicator=indicator_id)
+    if level == 1:
+        indicators = indicator_id.sub_indicators.values_list('id', flat=True).distinct()
+        reports = reports.filter(ai_indicator_id__in=indicators)
+    if level == 2:
+        return 0
+    #     reports = reports.sub_indicators.exclude(master_indicator_sub=False, master_indicator=False)
+    if month:
+        reports = reports.filter(start_date__month=month)
+    if partner:
+        reports = reports.filter(partner_id=partner)
+    if gov:
+        reports = reports.filter(location_adminlevel_governorate_code=gov)
+
+    total = reports.aggregate(Sum('indicator_value'))
+    return total['indicator_value__sum'] if total['indicator_value__sum'] else 0
+
+
+def copy_disaggregated_data(ai_id):
+    from internos.activityinfo.models import Indicator, ActivityReport
+
+    order = 0
+    month = int(datetime.datetime.now().strftime("%m")) - 1
+    report = ActivityReport.objects.filter(
+        database_id=ai_id,
+        start_date__month=month,
+        funded_by__contains='UNICEF')
+
+    top_indicators = Indicator.objects.filter(activity__database__ai_id=ai_id, master_indicator=True)
+    for item in top_indicators:
+        order += 1
+        try:
+            if item.ai_id:
+                instance = report.get(indicator_id=item.ai_id)
+            else:
+                instance = report.get(indicator_name=item.name)
+        except ActivityReport.DoesNotExist:
+            instance = ActivityReport.objects.create(
+                indicator_id=item.ai_id,
+                indicator_name=item.name,
+                database_id=ai_id,
+                funded_by='UNICEF',
+                start_date='2018-11-01'
+            )
+        instance.target = item.target
+        instance.master_indicator = True
+        instance.order = order
+        instance.save()
+
+        for item1 in item.sub_indicators.all():
+            order += 1
+            try:
+                if item1.ai_id:
+                    instance1 = report.get(indicator_id=item1.ai_id)
+                else:
+                    instance1 = report.get(indicator_name=item1.name)
+            except ActivityReport.DoesNotExist:
+                instance1 = ActivityReport.objects.create(
+                    indicator_id=item1.ai_id,
+                    indicator_name=item1.name,
+                    indicator_awp_code=item1.awp_code,
+                    database_id=instance.database_id,
+                    funded_by=instance.funded_by,
+                    start_date=instance.start_date,
+                )
+            instance1.master_indicator_sub = True
+            instance1.target = item1.target
+            instance1.order = order
+            instance1.save()
+
+            for item2 in item1.sub_indicators.exclude(master_indicator=True):
+                order += 1
+                if item2.ai_id:
+                    instance2 = report.get(indicator_id=item2.ai_id)
+                else:
+                    instance2 = report.get(indicator_name=item2.name)
+                instance2.target = item2.target
+                instance2.order = order
+                instance2.save()
+
+    return report.count()

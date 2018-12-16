@@ -67,6 +67,7 @@ LOCAL_APPS = [
     'internos.winterization',  # custom winterization app
     'internos.backends',
     'internos.etools',
+    'internos.locations',
     # Your stuff: custom apps go here
 ]
 

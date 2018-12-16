@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles i18n %}
+{% load util_tags %}
 
 {% block ai_databases %}
   {% for db in databases %}
@@ -16,7 +17,7 @@
 
 {% block content %}
 <!-- top tiles -->
-<div class="row tile_count">
+<div class="row tile_count" style="clear: both;">
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="overflow: unset !important;">
     <span class="count_top"><i class="glyphicon glyphicon-export"></i> {{ partners|length }} Partners</span>
     <div class="count">
@@ -49,7 +50,27 @@
           </a>
           <ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
             {% for gov in governorates %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&gov={{ gov }}">{{ gov.location_adminlevel_governorate }}</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&governorate={{ gov.location_adminlevel_governorate_code }}">{{ gov.location_adminlevel_governorate }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="overflow: unset !important;">
+    <span class="count_top"><i class="glyphicon glyphicon-export"></i> {{ months|length }} Months</span>
+    <div class="count">
+
+      <ul class="nav nav-pills" role="tablist">
+        <li role="presentation" class="dropdown">
+          <a id="drop8" href="#" style="font-size: 20px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                      Month
+            <span class="caret"></span>
+          </a>
+          <ul id="menu5" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
+            {% for month, month_name in months %}
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&month={{ month }}">{{ month_name }}</a></li>
             {% endfor %}
           </ul>
         </li>
@@ -60,15 +81,153 @@
 </div>
 
 <!-- /top tiles -->
-
-<div class="row">
+<div class="row" style="min-width: 2000px;">
   <div class="col-md-12 col-sm-12 col-xs-12">
-    <div class="">
-
-      <div class="clearfix"></div>
-    </div>
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>UNICEF LCO DASHBOARD - {{ database.name }} - {{ month_name }} 2019
+                      <!--<small>Users</small>-->
+                    </h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <table id="" class="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Activity Info Indicator ID</th>
+                          <th>Filters Activity Info and Non Activity Info Indicators</th>
+                          <th>Level of reporting</th>
+                          <th>AWP Code</th>
+                          <th>Target</th>
+                          <th>Cumulative Results of All Months</th>
+                          <th>Total Percentage achieved of all months</th>
+                          <th>Status</th>
+                          {% for month, month_name in months %}
+                            <th>{{ month_name }}</th>
+                          {% endfor %}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for item in master_indicators %}
+                          <tr {% if item.master_indicator %}style="background-color:#8FCAE7;"{% endif %}>
+                              <td>{{ item.id }}</td>
+                              <td>{{ item.ai_id }}</td>
+                              <td>{{ item.name }}</td>
+                              <td>Site</td>
+                              <td>{{ item.awp_code }}</td>
+                              <td>{{ item.target }}</td>
+                              <td> {{ item.cumulative_results }}</td>
+                              <td></td>
+                              <td></td>
+                              {% for month, month_name in months %}
+                                <td>
+                                  {% get_indicator_value item month as value %}
+                                  {{ value }}
+                                </td>
+                              {% endfor %}
+                          </tr>
+                          {% for item1 in item.sub_indicators.all %}
+                            <tr {% if item1.master_indicator_sub %}style="background-color: #8FCA17;"{% endif %}>
+                                <td>{{ item1.id }}</td>
+                                <td>{{ item1.ai_id }}</td>
+                                <td>{{ item1.name }}</td>
+                                <td>Site</td>
+                                <td>{{ item1.awp_code }}</td>
+                                <td>{{ item1.target }}</td>
+                                <td> {{ item1.cumulative_results }}</td>
+                                <td>{{ item1.cumulative_results|percentage:item1.target }}%</td>
+                                <td></td>
+                                {% for month, month_name in months %}
+                                  <td>
+                                      {% get_indicator_value item1 month partner as value %}
+                                      {{ value }}
+                                  </td>
+                                {% endfor %}
+                            </tr>
+                            {% for item2 in item1.sub_indicators.all %}
+                              {% if item2.master_indicator == 0 %}
+                              <tr>
+                                  <td>{{ item2.id }}</td>
+                                  <td>{{ item2.ai_id }}</td>
+                                  <td>{{ item2.name }}</td>
+                                  <td>Site</td>
+                                  <td>{{ item2.awp_code }}</td>
+                                  <td>{{ item2.target }}</td>
+                                  <td> {{ item2.cumulative_results }}</td>
+                                  <td>{{ item2.cumulative_results|percentage:item2.target }}%</td>
+                                  <td></td>
+                                  {% for month, month_name in months %}
+                                    <td>
+                                      {% get_indicator_value item2 month partner as value %}
+                                      {{ value }}
+                                    </td>
+                                  {% endfor %}
+                              </tr>
+                              {% endif %}
+                            {% endfor %}
+                          {% endfor %}
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+        </div>
   </div>
 
 </div>
+<br />
+
+<!--<div class="row">-->
+  <!--<div class="col-md-12 col-sm-12 col-xs-12">-->
+                <!--<div class="x_panel">-->
+                  <!--<div class="x_title">-->
+                    <!--<h2>UNICEF LCO DASHBOARD - {{ database.name }} - {{ month_name }} 2019-->
+                    <!--</h2>-->
+                    <!--<ul class="nav navbar-right panel_toolbox">-->
+                      <!--<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>-->
+                    <!--</ul>-->
+                    <!--<div class="clearfix"></div>-->
+                  <!--</div>-->
+                  <!--<div class="x_content">-->
+                    <!--<table id="datatable1" class="table table-striped table-bordered">-->
+                      <!--<thead>-->
+                        <!--<tr>-->
+                          <!--<th>#</th>-->
+                          <!--<th>Activity Info Indicator ID</th>-->
+                          <!--<th>Filters Activity Info and Non Activity Info Indicators</th>-->
+                          <!--<th>Level of reporting</th>-->
+                          <!--<th>AWP Code</th>-->
+                          <!--<th>Target</th>-->
+                          <!--<th>Cumulative Results of All Months</th>-->
+                          <!--<th>Total Percentage achieved of all months</th>-->
+                          <!--<th>Status</th>-->
+                        <!--</tr>-->
+                      <!--</thead>-->
+
+
+                      <!--<tbody>-->
+                        <!--{% for item in reports %}-->
+                          <!--<tr {% if item.master_indicator %}style="background-color: #8FCAE7;"{% endif %}>-->
+                              <!--<td>{{ item.id }}</td>-->
+                              <!--<td>{{ item.indicator_id }}</td>-->
+                              <!--<td>{{ item.indicator_name }}</td>-->
+                              <!--<td>Site</td>-->
+                              <!--<td>{{ item.indicator_awp_code }}</td>-->
+                              <!--<td></td>-->
+                              <!--<td></td>-->
+                              <!--<td></td>-->
+                              <!--<td></td>-->
+                          <!--</tr>-->
+                        <!--{% endfor %}-->
+                      <!--</tbody>-->
+                    <!--</table>-->
+                  <!--</div>-->
+        <!--</div>-->
+  <!--</div>-->
+
+<!--</div>-->
 <br />
 {% endblock content %}

@@ -1,9 +1,15 @@
 from __future__ import unicode_literals
 
-from django.db import models
+import logging
 
 from model_utils.choices import Choices
 from django.conf import settings
+from django.contrib.postgres.fields.array import ArrayField
+from django.db import connection, models
+from django.utils.translation import ugettext, ugettext_lazy as _
+from django_fsm import FSMField, transition
+
+log = logging.getLogger(__name__)
 
 
 class PartnerOrganization(models.Model):
@@ -350,3 +356,233 @@ class PCA(models.Model):
                  self.budget_log.values('created', 'year', 'unicef_cash', 'in_kind_amount', 'partner_contribution').
                  order_by('year','-created').distinct('year').all()])
         return 0
+
+
+class TravelType(object):
+    PROGRAMME_MONITORING = 'Programmatic Visit'
+    SPOT_CHECK = 'Spot Check'
+    ADVOCACY = 'Advocacy'
+    TECHNICAL_SUPPORT = 'Technical Support'
+    MEETING = 'Meeting'
+    STAFF_DEVELOPMENT = 'Staff Development'
+    STAFF_ENTITLEMENT = 'Staff Entitlement'
+    CHOICES = (
+        (PROGRAMME_MONITORING, 'Programmatic Visit'),
+        (SPOT_CHECK, 'Spot Check'),
+        (ADVOCACY, 'Advocacy'),
+        (TECHNICAL_SUPPORT, 'Technical Support'),
+        (MEETING, 'Meeting'),
+        (STAFF_DEVELOPMENT, 'Staff Development'),
+        (STAFF_ENTITLEMENT, 'Staff Entitlement'),
+    )
+
+
+# TODO: all of these models that only have 1 field should be a choice field on the models that are using it
+# for many-to-many array fields are recommended
+class ModeOfTravel(object):
+    PLANE = 'Plane'
+    BUS = 'Bus'
+    CAR = 'Car'
+    BOAT = 'Boat'
+    RAIL = 'Rail'
+    CHOICES = (
+        (PLANE, 'Plane'),
+        (BUS, 'Bus'),
+        (CAR, 'Car'),
+        (BOAT, 'Boat'),
+        (RAIL, 'Rail')
+    )
+
+
+class Travel(models.Model):
+    PLANNED = 'planned'
+    SUBMITTED = 'submitted'
+    REJECTED = 'rejected'
+    APPROVED = 'approved'
+    CANCELLED = 'cancelled'
+    SENT_FOR_PAYMENT = 'sent_for_payment'
+    CERTIFICATION_SUBMITTED = 'certification_submitted'
+    CERTIFICATION_APPROVED = 'certification_approved'
+    CERTIFICATION_REJECTED = 'certification_rejected'
+    CERTIFIED = 'certified'
+    COMPLETED = 'completed'
+
+    CHOICES = (
+        (PLANNED, _('Planned')),
+        (SUBMITTED, _('Submitted')),
+        (REJECTED, _('Rejected')),
+        (APPROVED, _('Approved')),
+        (COMPLETED, _('Completed')),
+        (CANCELLED, _('Cancelled')),
+        (SENT_FOR_PAYMENT, _('Sent for payment')),
+        (CERTIFICATION_SUBMITTED, _('Certification submitted')),
+        (CERTIFICATION_APPROVED, _('Certification approved')),
+        (CERTIFICATION_REJECTED, _('Certification rejected')),
+        (CERTIFIED, _('Certified')),
+        (COMPLETED, _('Completed')),
+    )
+
+    created = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=_('Created'))
+    completed_at = models.DateTimeField(null=True, blank=True, verbose_name=_('Completed At'))
+    canceled_at = models.DateTimeField(null=True, blank=True, verbose_name=_('Canceled At'))
+    submitted_at = models.DateTimeField(null=True, blank=True, verbose_name=_('Submitted At'))
+    # Required to calculate with proper dsa values
+    first_submission_date = models.DateTimeField(null=True, blank=True, verbose_name=_('First Submission Date'))
+    rejected_at = models.DateTimeField(null=True, blank=True, verbose_name=_('Rejected At'))
+    approved_at = models.DateTimeField(null=True, blank=True, verbose_name=_('Approved At'))
+
+    rejection_note = models.TextField(default='', blank=True, verbose_name=_('Rejection Note'))
+    cancellation_note = models.TextField(default='', blank=True, verbose_name=_('Cancellation Note'))
+    certification_note = models.TextField(default='', blank=True, verbose_name=_('Certification Note'))
+    report_note = models.TextField(default='', blank=True, verbose_name=_('Report Note'))
+    misc_expenses = models.TextField(default='', blank=True, verbose_name=_('Misc Expenses'))
+
+    status = FSMField(default=PLANNED, choices=CHOICES, protected=True, verbose_name=_('Status'))
+    traveler = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, related_name='travels',
+        verbose_name=_('Travellert'),
+        on_delete=models.CASCADE,
+    )
+    supervisor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, related_name='+',
+        verbose_name=_('Supervisor'),
+        on_delete=models.CASCADE,
+    )
+    section = models.ForeignKey(
+        'users.Section', null=True, blank=True, related_name='+', verbose_name=_('Section'),
+        on_delete=models.CASCADE,
+    )
+    start_date = models.DateTimeField(null=True, blank=True, verbose_name=_('Start Date'))
+    end_date = models.DateTimeField(null=True, blank=True, verbose_name=_('End Date'))
+    purpose = models.CharField(max_length=500, default='', blank=True, verbose_name=_('Purpose'))
+    additional_note = models.TextField(default='', blank=True, verbose_name=_('Additional Note'))
+    international_travel = models.NullBooleanField(default=False, null=True, blank=True,
+                                                   verbose_name=_('International Travel'))
+    ta_required = models.NullBooleanField(default=True, null=True, blank=True, verbose_name=_('TA Required'))
+    reference_number = models.CharField(max_length=12, unique=True,
+                                        verbose_name=_('Reference Number'))
+    hidden = models.BooleanField(default=False, verbose_name=_('Hidden'))
+    mode_of_travel = ArrayField(models.CharField(max_length=5, choices=ModeOfTravel.CHOICES), null=True, blank=True,
+                                verbose_name=_('Mode of Travel'))
+    estimated_travel_cost = models.DecimalField(max_digits=20, decimal_places=4, default=0,
+                                                verbose_name=_('Estimated Travel Cost'))
+
+    is_driver = models.BooleanField(default=False, verbose_name=_('Is Driver'))
+
+    # When the travel is sent for payment, the expenses should be saved for later use
+    preserved_expenses_local = models.DecimalField(max_digits=20, decimal_places=4, null=True, blank=True, default=None,
+                                                   verbose_name=_('Preserved Expenses (Local)'))
+    preserved_expenses_usd = models.DecimalField(max_digits=20, decimal_places=4, null=True, blank=True, default=None,
+                                                 verbose_name=_('Preserved Expenses (USD)'))
+    approved_cost_traveler = models.DecimalField(max_digits=20, decimal_places=4, null=True, blank=True, default=None,
+                                                 verbose_name=_('Approved Cost Traveler'))
+    approved_cost_travel_agencies = models.DecimalField(max_digits=20, decimal_places=4, null=True, blank=True,
+                                                        default=None, verbose_name=_('Approved Cost Travel Agencies'))
+
+    def __str__(self):
+        return self.reference_number
+
+
+class TravelActivity(models.Model):
+    travels = models.ManyToManyField('Travel', related_name='activities', verbose_name=_('Travels'))
+    travel_type = models.CharField(max_length=64, choices=TravelType.CHOICES, blank=True,
+                                   default=TravelType.PROGRAMME_MONITORING,
+                                   verbose_name=_('Travel Type'))
+    partner = models.ForeignKey(
+        PartnerOrganization, null=True, blank=True, related_name='+',
+        verbose_name=_('Partner'),
+        on_delete=models.CASCADE,
+    )
+    # Partnership has to be filtered based on partner
+    # TODO: assert self.partnership.agreement.partner == self.partner
+    partnership = models.ForeignKey(
+        PCA, null=True, blank=True, related_name='travel_activities',
+        verbose_name=_('Partnership'),
+        on_delete=models.CASCADE,
+    )
+    locations = models.ManyToManyField('locations.Location', related_name='+', verbose_name=_('Locations'))
+    primary_traveler = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name=_('Primary Traveler'), on_delete=models.CASCADE)
+    date = models.DateTimeField(null=True, blank=True, verbose_name=_('Date'))
+
+    class Meta:
+        verbose_name_plural = _("Travel Activities")
+
+    @property
+    def travel(self):
+        return self.travels.filter(traveler=self.primary_traveler).first()
+
+    @property
+    def task_number(self):
+        return list(self.travel.activities.values_list('id', flat=True)).index(self.id) + 1
+
+    @property
+    def travel_status(self):
+        return self.travel.status
+
+    _reference_number = None
+
+    def get_reference_number(self):
+        if self._reference_number:
+            return self._reference_number
+
+        travel = self.travels.filter(traveler=self.primary_traveler).first()
+        if not travel:
+            return
+
+        return travel.reference_number
+
+    def set_reference_number(self, value):
+        self._reference_number = value
+
+    reference_number = property(get_reference_number, set_reference_number)
+
+    def get_object_url(self):
+        travel = self.travels.filter(traveler=self.primary_traveler).first()
+        if not travel:
+            return
+
+        return travel.get_object_url()
+
+    def __str__(self):
+        return '{} - {}'.format(self.travel_type, self.date)
+
+
+class ItineraryItem(models.Model):
+    travel = models.ForeignKey(
+        'Travel', related_name='itinerary', verbose_name=_('Travel'),
+        on_delete=models.CASCADE,
+    )
+    origin = models.CharField(max_length=255, verbose_name=_('Origin'))
+    destination = models.CharField(max_length=255, verbose_name=_('Destination'))
+    departure_date = models.DateTimeField(verbose_name=_('Departure Date'))
+    arrival_date = models.DateTimeField(verbose_name=_('Arrival Date'))
+    overnight_travel = models.BooleanField(default=False, verbose_name=_('Overnight Travel'))
+    mode_of_travel = models.CharField(max_length=5, choices=ModeOfTravel.CHOICES, default='', blank=True,
+                                      verbose_name=_('Mode of Travel'))
+
+    class Meta:
+        # https://docs.djangoproject.com/en/1.9/ref/models/options/#order-with-respect-to
+        # see also
+        # https://groups.google.com/d/msg/django-users/NQO8OjCHhnA/r9qKklm5y0EJ
+        order_with_respect_to = 'travel'
+
+    def __str__(self):
+        return '{} {} - {}'.format(self.travel.reference_number, self.origin, self.destination)
+
+
+def determine_file_upload_path(instance, filename):
+    # TODO: add business area in there
+    country_name = connection.schema_name or 'Uncategorized'
+    return 'travels/{}/{}/{}'.format(country_name, instance.travel.id, filename)
+
+
+class TravelAttachment(models.Model):
+    travel = models.ForeignKey(
+        'Travel', related_name='attachments', verbose_name=_('Travel'),
+        on_delete=models.CASCADE,
+    )
+    type = models.CharField(max_length=64, verbose_name=_('Type'))
+
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    file = models.FileField(upload_to=determine_file_upload_path, max_length=255, verbose_name=_('File'))

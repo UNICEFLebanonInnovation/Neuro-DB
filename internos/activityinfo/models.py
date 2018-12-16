@@ -4,6 +4,7 @@ import json
 import re
 from datetime import datetime
 from django.db import models
+from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from django.contrib.postgres.fields import ArrayField, JSONField
 # from django_mysql import models as mysql_model
@@ -35,11 +36,33 @@ class Database(models.Model):
     mapping_extraction1 = JSONField(blank=True, null=True)
     mapping_extraction2 = JSONField(blank=True, null=True)
     mapping_extraction3 = JSONField(blank=True, null=True)
+    year = models.CharField(
+        max_length=250,
+        blank=True,
+        null=True,
+        choices=Choices(
+            ('2017', '2017'),
+            ('2018', '2018'),
+            ('2019', '2019'),
+            ('2020', '2020'),
+            ('2021', '2021'),
+            ('2022', '2022'),
+            ('2023', '2023'),
+            ('2024', '2024'),
+            ('2025', '2025'),
+            ('2026', '2026'),
+            ('2027', '2027'),
+            ('2028', '2028'),
+            ('2029', '2029'),
+            ('2030', '2030'),
+        )
+    )
 
     def __unicode__(self):
         return self.name
 
     def import_data(self):
+        from .utils import generate_indicator_awp_code
         """
         Import all activities, indicators and partners from
         a ActivityInfo database specified by the AI ID
@@ -91,18 +114,8 @@ class Database(models.Model):
                     except Indicator.DoesNotExist:
                         ai_indicator = Indicator(ai_id=indicator['id'])
                         objects += 1
-                    name = indicator['name']
-                    ai_indicator.name = name
-                    try:
-                        if ' - ' in name:
-                            ai_indicator.awp_code = name[:name.find(' - ')]
-                            # ai_indicator.awp_code = name[re.search('\d', name).start():name.find(':')]
-                        elif ': ' in name:
-                            ai_indicator.awp_code = name[:name.find(': ')]
-                        else:
-                            ai_indicator.awp_code = name[:name.find('#')]
-                    except TypeError as ex:
-                        ai_indicator.awp_code = 'None'
+                    ai_indicator.name = indicator['name']
+                    ai_indicator.awp_code = generate_indicator_awp_code(indicator['name'])
 
                     ai_indicator.units = indicator['units'] if indicator['units'] else '---'
                     ai_indicator.category = indicator['category']
@@ -221,19 +234,37 @@ class IndicatorCategory(models.Model):
 
 class Indicator(models.Model):
 
-    ai_id = models.PositiveIntegerField(unique=True)
+    ai_id = models.PositiveIntegerField(blank=True, null=True)
     activity = models.ForeignKey(Activity)
     name = models.CharField(max_length=254)
+    indicator_details = models.CharField(max_length=250, blank=True, null=True)
+    indicator_master = models.CharField(max_length=250, blank=True, null=True)
+    indicator_info = models.CharField(max_length=250, blank=True, null=True)
     reporting_level = models.CharField(max_length=254, blank=True, null=True)
     awp_code = models.CharField(max_length=254, blank=True, null=True)
     target = models.PositiveIntegerField(default=0)
+    target_sub_total = models.PositiveIntegerField(default=0)
     cumulative_results = models.PositiveIntegerField(default=0)
     units = models.CharField(max_length=254, blank=True, null=True)
-    category = models.CharField(max_length=254, null=True)
+    category = models.CharField(max_length=254, blank=True, null=True)
     status = models.CharField(max_length=254, blank=True, null=True)
+    master_indicator = models.BooleanField(default=False)
+    master_indicator_sub = models.BooleanField(default=False)
+    sub_indicators = models.ManyToManyField('self', blank=True, related_name='sub_indicators')
+    summation_sub_indicators = models.ManyToManyField('self', blank=True, related_name='summation_sub_indicators')
+    values = JSONField(blank=True, null=True)
+    values_gov = JSONField(blank=True, null=True)
+    values_partners = JSONField(blank=True, null=True)
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def ai_indicator(self):
+        return '{0:0>10}'.format(self.ai_id)
+
+    class Meta:
+        ordering = ['id']
 
 
 class AttributeGroup(models.Model):
@@ -259,11 +290,16 @@ class ActivityReport(TimeStampedModel):
     end_date = models.CharField(max_length=250, blank=True, null=True)
     form = models.CharField(max_length=250, blank=True, null=True)
     form_category = models.CharField(max_length=250, blank=True, null=True)
+    ai_indicator = models.ForeignKey(Indicator, blank=True, null=True)
     indicator_category = models.CharField(max_length=250, blank=True, null=True)
     indicator_id = models.CharField(max_length=250, blank=True, null=True)
     indicator_name = models.CharField(max_length=250, blank=True, null=True)
+    indicator_details = models.CharField(max_length=250, blank=True, null=True)
+    indicator_master = models.CharField(max_length=250, blank=True, null=True)
+    indicator_info = models.CharField(max_length=250, blank=True, null=True)
     indicator_units = models.CharField(max_length=250, blank=True, null=True)
-    indicator_value = models.CharField(max_length=250, blank=True, null=True)
+    indicator_value = models.PositiveIntegerField(blank=True, null=True)
+    indicator_sub_value = models.CharField(max_length=250, blank=True, null=True)
     indicator_awp_code = models.CharField(max_length=254, blank=True, null=True)
     location_adminlevel_cadastral_area = models.CharField(max_length=250, blank=True, null=True)
     location_adminlevel_cadastral_area_code = models.CharField(max_length=250, blank=True, null=True)
@@ -285,7 +321,7 @@ class ActivityReport(TimeStampedModel):
     funded_by = models.CharField(max_length=250, blank=True, null=True)
     report_id = models.CharField(max_length=250, blank=True, null=True)
     site_id = models.CharField(max_length=250, blank=True, null=True)
-    start_date = models.CharField(max_length=250, blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
     outreach_platform = models.CharField(max_length=250, blank=True, null=True)
     database_id = models.CharField(max_length=250, blank=True, null=True)
     database = models.CharField(max_length=250, blank=True, null=True)
@@ -293,4 +329,6 @@ class ActivityReport(TimeStampedModel):
     day = models.CharField(max_length=250, blank=True, null=True)
     month_name = models.CharField(max_length=250, blank=True, null=True)
     year = models.CharField(max_length=250, blank=True, null=True)
-    # row_data = JSONField(default=dict)
+    master_indicator = models.BooleanField(default=False)
+    master_indicator_sub = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)

@@ -4,6 +4,7 @@ from django.http import HttpResponse
 
 # also include UnicodeWriter from the Python docs http://docs.python.org/library/csv.html
 
+
 class UTF8Recoder:
     """
     Iterator that reads an encoded stream and reencodes the input to UTF-8
@@ -53,7 +54,7 @@ class ExportModel(object):
     @staticmethod
     def as_csv(meta):
 
-        with open(meta['file'], 'w+') as f:
+        with open(meta['file'], 'wb') as f:
             writer = UnicodeWriter(f, encoding='utf-8')
             writer.writerow(meta['header'])
             for obj in meta['queryset']:
@@ -63,11 +64,12 @@ class ExportModel(object):
         return path
 
 
-def get_model_as_csv_file_response(meta, content_type):
+def get_model_as_csv_file_response(meta, content_type, filename):
     """
     Call this function from your model admin
     """
     with open(ExportModel.as_csv(meta), 'r') as f:
         response = HttpResponse(f.read(), content_type=content_type)
-        response['Content-Disposition'] = 'attachment; filename=%s' % f.name.split('/')[-1:][0]
+        # response['Content-Disposition'] = 'attachment; filename=Extraction.csv;'
+        response['Content-Disposition'] = 'attachment; filename=%s;' % filename
     return response

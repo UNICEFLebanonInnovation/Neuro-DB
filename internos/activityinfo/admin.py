@@ -3,8 +3,12 @@ __author__ = 'achamseddine'
 from django.contrib import admin
 from suit.admin import RelatedFieldAdmin, get_related_field
 import nested_admin
+from import_export import resources, fields
+from import_export import fields
+from import_export.admin import ImportExportModelAdmin
+from import_export.widgets import *
 from . import models
-from .utils import r_script_command_line, read_data_from_file
+from .utils import *
 
 
 admin.site.site_header = 'Neuro-DB'
@@ -138,15 +142,34 @@ class ActivityAdmin(admin.ModelAdmin):
     )
 
 
-class IndicatorAdmin(admin.ModelAdmin):
+class IndicatorResource(resources.ModelResource):
+
+    class Meta:
+        model = models.Indicator
+        fields = (
+            'id',
+            'name',
+            'indicator_details',
+            'indicator_master',
+            'indicator_info',
+            'awp_code',
+            'target'
+        )
+
+
+class IndicatorAdmin(ImportExportModelAdmin):
     # form = AutoSizeTextForm
+    resource_class = IndicatorResource
     search_fields = (
         'ai_id',
+        'name',
     )
     list_filter = (
-        'category',
+        'master_indicator',
+        'master_indicator_sub',
     )
     list_display = (
+        'id',
         'ai_id',
         'activity',
         'awp_code',
@@ -154,6 +177,7 @@ class IndicatorAdmin(admin.ModelAdmin):
         'units',
         'category',
     )
+    filter_horizontal = ('sub_indicators', 'summation_sub_indicators')
 
 
 class AttributeGroupAdmin(admin.ModelAdmin):
@@ -214,38 +238,69 @@ class PartnerReportAdmin(admin.ModelAdmin):
     )
 
 
+class ActivityReportResource(resources.ModelResource):
+
+    class Meta:
+        model = models.ActivityReport
+        fields = (
+
+        )
+        export_order = (
+            'id',
+            'name',
+            'indicator_details',
+            'indicator_master',
+            'indicator_info',
+            'awp_code',
+            'target'
+        )
+
+
 class ActivityReportAdmin(RelatedFieldAdmin):
+    resources = ActivityReportResource
     list_filter = (
+        'start_date',
         'database',
         'partner_label',
         'governorate',
         'form',
         'form_category',
-        # 'indicator_name',
+        'funded_by',
+        'year',
+        'month_name',
+        'master_indicator'
+    )
+    suit_list_filter_horizontal = (
+        'start_date',
+        'database',
+        'partner_label',
+        'governorate',
+        'form',
+        'form_category',
         'funded_by',
         'year',
         'month_name',
     )
-    # suit_list_filter_horizontal = (
-    #     'database',
-    #     'partner_label',
-    #     'governorate',
-    #     'form',
-    #     'form_category',
-    #     'indicator_name',
-    #     'funded_by',
-    # )
     list_select_related = True
     list_display = (
+        'id',
         'database',
         'partner_label',
         'governorate',
         'form',
         'form_category',
+        'indicator_id',
         'indicator_name',
         'indicator_value',
+        'indicator_awp_code',
         'funded_by',
     )
+    search_fields = (
+        'indicator_id',
+        'indicator_name',
+        'indicator_awp_code',
+    )
+    date_hierarchy = 'start_date'
 
 
 class DatabaseAdmin(nested_admin.NestedModelAdmin):
@@ -266,7 +321,12 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
     actions = [
         'import_basic_data',
         'import_data',
-        'import_reports'
+        'import_reports',
+        'generate_awp_code',
+        'calculate_sum_target',
+        'link_indicators_data',
+        'calculate_indicators_values',
+        'copy_disaggregated_data'
     ]
 
     fieldsets = [
@@ -278,9 +338,11 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
                 'username',
                 'password',
                 'section',
+                'year',
                 'description',
                 'country_name',
-                'ai_country_id'
+                'ai_country_id',
+                'dashboard_link',
             ]
         }),
         ('Extraction mapping', {
@@ -320,20 +382,65 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
         for db in queryset:
             r_script_command_line('ai_generate_excel.R', db)
             # objects += db.import_data()
-        # self.message_user(
-        #     request,
-        #     "{} objects created.".format(objects)
-        # )
+        self.message_user(
+            request,
+            "{} objects created.".format(objects)
+        )
 
     def import_reports(self, request, queryset):
         reports = 0
         for db in queryset:
-            read_data_from_file(db.ai_id)
+            reports = read_data_from_file(db.ai_id)
             # reports += db.import_reports()
-        # self.message_user(
-        #     request,
-        #     "{} reports created.".format(reports)
-        # )
+        self.message_user(
+            request,
+            "{} reports created.".format(reports)
+        )
+
+    def generate_awp_code(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = generate_indicator_awp_code(db.ai_id)
+        self.message_user(
+            request,
+            "{} reports updated.".format(reports)
+        )
+
+    def calculate_sum_target(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = calculate_sum_target(db.ai_id)
+        self.message_user(
+            request,
+            "{} indicators updated.".format(reports)
+        )
+
+    def copy_disaggregated_data(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = copy_disaggregated_data(db.ai_id)
+        self.message_user(
+            request,
+            "{} indicators updated.".format(reports)
+        )
+
+    def link_indicators_data(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = link_indicators_data(db.ai_id)
+        self.message_user(
+            request,
+            "{} indicators linked.".format(reports)
+        )
+
+    def calculate_indicators_values(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = calculate_indicators_values(db.ai_id)
+        self.message_user(
+            request,
+            "{} indicators values calculated.".format(reports)
+        )
 
 
 admin.site.register(models.Database, DatabaseAdmin)

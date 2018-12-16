@@ -22,6 +22,12 @@ class SuitConfig(DjangoSuitConfig):
             ChildItem(model='activityinfo.attribute'),
             ChildItem(model='activityinfo.activityreport'),
         ], icon='fa fa-list'),
+        ParentItem('eTools', children=[
+            ChildItem(model='etools.partnerorganization'),
+            ChildItem(model='etools.agreement'),
+            ChildItem(model='etools.pca'),
+            ChildItem(model='etools.travel'),
+        ], icon='fa fa-list'),
         ParentItem('Users', children=[
             ChildItem('Users', model='users.user'),
             ChildItem('Sections', model='users.section'),
