@@ -12,7 +12,7 @@ from prettyjson import PrettyJSONWidget
 from import_export.widgets import *
 from . import models
 from .utils import *
-from .forms import DatabaseForm
+from .forms import DatabaseForm, IndicatorForm
 
 
 admin.site.site_header = 'Neuro-DB'
@@ -165,7 +165,7 @@ class IndicatorResource(resources.ModelResource):
 
 
 class IndicatorAdmin(ImportExportModelAdmin):
-    # form = AutoSizeTextForm
+    form = IndicatorForm
     resource_class = IndicatorResource
     search_fields = (
         'ai_id',
@@ -337,6 +337,7 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
     )
     actions = [
         'import_basic_data',
+        'generate_indicator_tags',
         'import_data',
         'import_reports',
         'generate_awp_code',
@@ -344,7 +345,7 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
         'link_indicators_data',
         'calculate_indicators_values',
         'calculate_indicators_status',
-        'copy_disaggregated_data'
+        'copy_disaggregated_data',
     ]
 
     fieldsets = [
@@ -393,6 +394,15 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
         self.message_user(
             request,
             "{} objects created.".format(objects)
+        )
+
+    def generate_indicator_tags(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = generate_indicator_tag(db.ai_id)
+        self.message_user(
+            request,
+            "{} objects updated.".format(reports)
         )
 
     def import_data(self, request, queryset):
@@ -474,7 +484,23 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
     }
 
 
-admin.site.register(models.ReportingYear)
+class ReportingYearAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'current',
+    )
+
+
+class IndicatorTagAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'type',
+        'tag_field'
+    )
+
+
+admin.site.register(models.IndicatorTag, IndicatorTagAdmin)
+admin.site.register(models.ReportingYear, ReportingYearAdmin)
 admin.site.register(models.Database, DatabaseAdmin)
 admin.site.register(models.Partner, PartnerAdmin)
 admin.site.register(models.Activity, ActivityAdmin)

@@ -238,6 +238,7 @@ class IndicatorTag(models.Model):
 
     name = models.CharField(max_length=254)
     type = models.CharField(max_length=254, blank=True, null=True)
+    tag_field = models.CharField(max_length=254, blank=True, null=True)
 
     def __unicode__(self):
         return self.name
@@ -285,10 +286,11 @@ class Indicator(models.Model):
     values_gov = JSONField(blank=True, null=True)
     values_partners = JSONField(blank=True, null=True)
     values_partners_gov = JSONField(blank=True, null=True)
-    tag_age = models.CharField(max_length=254, blank=True, null=True)
-    tag_gender = models.CharField(max_length=254, blank=True, null=True)
-    tag_nationality = models.CharField(max_length=254, blank=True, null=True)
-    tag_disability = models.CharField(max_length=254, blank=True, null=True)
+    tag_age = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
+    tag_gender = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
+    tag_nationality = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
+    tag_disability = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
+
 
     def __unicode__(self):
         return self.name

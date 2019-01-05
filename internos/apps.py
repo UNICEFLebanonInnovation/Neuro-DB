@@ -15,7 +15,8 @@ class SuitConfig(DjangoSuitConfig):
         ], icon='fa fa-users'),
         ParentItem('Activity Info', children=[
             ChildItem(model='activityinfo.reportingyear', label='Reporting Years'),
-            ChildItem(model='activityinfo.database'),
+            ChildItem(model='activityinfo.indicatortag', label='Indicator Tags'),
+            ChildItem(model='activityinfo.database', label='Databases'),
             ChildItem(model='activityinfo.activity'),
             ChildItem(model='activityinfo.indicator'),
             ChildItem(model='activityinfo.partner'),

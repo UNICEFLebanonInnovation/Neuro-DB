@@ -47,7 +47,9 @@ def read_data_from_file(ai_id):
 
 def get_awp_code(name):
     try:
-        if ' - ' in name:
+        if '_' in name:
+            awp_code = name[:name.find('_')]
+        elif ' - ' in name:
             awp_code = name[:name.find(' - ')]
             # ai_indicator.awp_code = name[re.search('\d', name).start():name.find(':')]
             if ': ' in awp_code:
@@ -61,6 +63,13 @@ def get_awp_code(name):
     except TypeError as ex:
         awp_code = 'None'
     return awp_code
+
+
+def set_tags(indicator, tags):
+    for tag in tags:
+        if tag.name in indicator.name:
+            setattr(indicator, tag.tag_field, tag)
+    indicator.save()
 
 
 def clean_string(value, string):
@@ -148,6 +157,31 @@ def update_rows(ai_id):
 
 
 def generate_indicator_awp_code(ai_id):
+    from internos.activityinfo.models import Indicator
+
+    data = Indicator.objects.filter(activity__database__ai_id=ai_id)
+    ctr = data.count()
+    for item in data:
+        item.awp_code = get_awp_code(item.name)
+        item.save()
+
+    return ctr
+
+
+def generate_indicator_tag(ai_id):
+    from internos.activityinfo.models import Indicator, IndicatorTag
+
+    data = Indicator.objects.filter(activity__database__ai_id=ai_id)
+    tags = IndicatorTag.objects.all()
+
+    ctr = data.count()
+    for item in data:
+        set_tags(item, tags)
+
+    return ctr
+
+
+def generate_indicator_awp_code2(ai_id):
     from internos.activityinfo.models import ActivityReport
 
     data = ActivityReport.objects.filter(database_id=ai_id)
@@ -208,6 +242,9 @@ def calculate_indicators_values(ai_id):
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
 
+    partners_list = {}
+    governorates_list = {}
+
     for indicator in indicators:
         months = {}
         values_gov = {}
@@ -224,9 +261,11 @@ def calculate_indicators_values(ai_id):
 
             for gov1 in governorates1:
                 key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
-                values_gov[str(key)] = get_indicator_value(indicator_id=indicator,
+                value = get_indicator_value(indicator_id=indicator,
                                                            level=level, month=month,
                                                            gov=gov1['location_adminlevel_governorate_code'])
+                values_gov[str(key)] = value
+                governorates_list[gov1['location_adminlevel_governorate_code']] = value
 
             for partner in partners:
                 key = "{}-{}".format(month, partner['partner_id'])
@@ -234,6 +273,9 @@ def calculate_indicators_values(ai_id):
                                                                 level=level, month=month,
                                                                 partner=partner['partner_id'])
 
+                # for gov_code, gov_value in governorates_list:
+                #     key = "{}-{}-{}".format(month, partner['partner_id'], gov_code)
+                    
                 for gov in governorates:
                     key = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
                     values_partners_gov[str(key)] = get_indicator_value(indicator_id=indicator, level=level,
