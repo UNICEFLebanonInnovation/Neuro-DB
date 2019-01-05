@@ -6,9 +6,13 @@ import nested_admin
 from import_export import resources, fields
 from import_export import fields
 from import_export.admin import ImportExportModelAdmin
+from django.contrib.postgres.fields import JSONField
+from django_json_widget.widgets import JSONEditorWidget
+from prettyjson import PrettyJSONWidget
 from import_export.widgets import *
 from . import models
 from .utils import *
+from .forms import DatabaseForm
 
 
 admin.site.site_header = 'Neuro-DB'
@@ -130,6 +134,9 @@ class ActivityAdmin(admin.ModelAdmin):
     #     AttributeGroupInlineAdmin,
     #     IndicatorInlineAdmin,
     # ]
+    list_filter = (
+        'database',
+    )
     list_display = (
         'name',
         'location_type',
@@ -165,6 +172,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'name',
     )
     list_filter = (
+        'activity__database',
         'master_indicator',
         'master_indicator_sub',
     )
@@ -178,6 +186,10 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'category',
     )
     filter_horizontal = ('sub_indicators', 'summation_sub_indicators')
+
+    formfield_overrides = {
+        JSONField: {'widget': JSONEditorWidget(attrs={'initial': 'parsed'})},
+    }
 
 
 class AttributeGroupAdmin(admin.ModelAdmin):
@@ -305,9 +317,14 @@ class ActivityReportAdmin(RelatedFieldAdmin):
 
 class DatabaseAdmin(nested_admin.NestedModelAdmin):
     model = models.Database
+    form = DatabaseForm
     inlines = [
         ActivityInlineAdmin,
     ]
+    list_filter = (
+        'section',
+        'reporting_year',
+    )
     list_display = (
         'ai_id',
         'name',
@@ -326,6 +343,7 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
         'calculate_sum_target',
         'link_indicators_data',
         'calculate_indicators_values',
+        'calculate_indicators_status',
         'copy_disaggregated_data'
     ]
 
@@ -338,7 +356,7 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
                 'username',
                 'password',
                 'section',
-                'year',
+                'reporting_year',
                 'description',
                 'country_name',
                 'ai_country_id',
@@ -442,7 +460,21 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
             "{} indicators values calculated.".format(reports)
         )
 
+    def calculate_indicators_status(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = calculate_indicators_status(db)
+        self.message_user(
+            request,
+            "{} indicators status calculated.".format(reports)
+        )
 
+    formfield_overrides = {
+        JSONField: {'widget': JSONEditorWidget(attrs={'initial': 'parsed'})},
+    }
+
+
+admin.site.register(models.ReportingYear)
 admin.site.register(models.Database, DatabaseAdmin)
 admin.site.register(models.Partner, PartnerAdmin)
 admin.site.register(models.Activity, ActivityAdmin)

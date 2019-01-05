@@ -203,13 +203,16 @@ def calculate_indicators_values(ai_id):
 
     report = ActivityReport.objects.filter(database_id=ai_id)
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_id)
+    # indicators = Indicator.objects.filter(activity__database__ai_id=ai_id, master_indicator=True)
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
+    governorates1 = report.values('location_adminlevel_governorate_code').distinct()
 
     for indicator in indicators:
         months = {}
-        values_partners = {}
         values_gov = {}
+        values_partners = {}
+        values_partners_gov = {}
         cumulative_results = 0
         level = 1 if indicator.master_indicator_sub else 0
         level = 2 if indicator.master_indicator else level
@@ -219,28 +222,66 @@ def calculate_indicators_values(ai_id):
             cumulative_results += result
             months[str(month)] = result
 
+            for gov1 in governorates1:
+                key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
+                values_gov[str(key)] = get_indicator_value(indicator_id=indicator,
+                                                           level=level, month=month,
+                                                           gov=gov1['location_adminlevel_governorate_code'])
+
             for partner in partners:
                 key = "{}-{}".format(month, partner['partner_id'])
-                result = get_indicator_value(indicator, level, month, partner['partner_id'])
-                values_partners[str(key)] = result
+                values_partners[str(key)] = get_indicator_value(indicator_id=indicator,
+                                                                level=level, month=month,
+                                                                partner=partner['partner_id'])
 
-            for gov in governorates:
-                key = "{}-{}".format(month, gov['location_adminlevel_governorate_code'])
-                result = get_indicator_value(indicator, level, month, gov['location_adminlevel_governorate_code'])
-                values_gov[str(key)] = result
+                for gov in governorates:
+                    key = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+                    values_partners_gov[str(key)] = get_indicator_value(indicator_id=indicator, level=level,
+                                                                        month=month, partner=partner['partner_id'],
+                                                                        gov=gov['location_adminlevel_governorate_code'])
 
         indicator.values = months
+        indicator.values_gov = values_gov
         indicator.values_partners = values_partners
-        indicators.values_gov = values_gov
-
+        indicator.values_partners_gov = values_partners_gov
         indicator.cumulative_results = cumulative_results
         indicator.save()
 
     return indicators.count()
 
 
+def calculate_indicators_status(database):
+    from internos.activityinfo.models import Indicator
+
+    year_days = 365
+    today = datetime.datetime.now()
+    beginning_year = datetime.datetime(int(database.year if database.year else 2018), 01, 01)
+    delta = today - beginning_year
+    total_days = delta.days + 1
+    days_passed_per = (total_days * 100) / year_days
+
+    indicators = Indicator.objects.filter(activity__database__ai_id=database.ai_id)
+    for indicator in indicators:
+        cumulative_per = indicator.cumulative_per
+        off_track = days_passed_per - 10
+        over_target = days_passed_per + 10
+        if cumulative_per < off_track:
+            indicator.status = 'Off Track'
+            indicator.status_color = '#FF0000'
+        elif cumulative_per > over_target:
+            indicator.status = 'Over Target'
+            indicator.status_color = '#FFA500'
+        else:
+            indicator.status = 'On Track'
+            indicator.status_color = '#008000'
+
+        indicator.save()
+
+    return indicators.count()
+
+
 def get_indicator_value(indicator_id, level=0, month=None, partner=None, gov=None):
-    from internos.activityinfo.models import ActivityReport
+    from internos.activityinfo.models import ActivityReport, Indicator
 
     reports = ActivityReport.objects.all()
 
@@ -250,8 +291,11 @@ def get_indicator_value(indicator_id, level=0, month=None, partner=None, gov=Non
         indicators = indicator_id.sub_indicators.values_list('id', flat=True).distinct()
         reports = reports.filter(ai_indicator_id__in=indicators)
     if level == 2:
-        return 0
-    #     reports = reports.sub_indicators.exclude(master_indicator_sub=False, master_indicator=False)
+        indicators = indicator_id.sub_indicators.values_list('id', flat=True).distinct()
+        indicators2 = Indicator.objects.filter(
+            sub_indicators__id__in=indicators
+        ).exclude(master_indicator=True).values_list('id', flat=True).distinct()
+        reports = reports.filter(ai_indicator_id__in=indicators2)
     if month:
         reports = reports.filter(start_date__month=month)
     if partner:

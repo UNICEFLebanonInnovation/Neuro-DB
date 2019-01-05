@@ -73,21 +73,29 @@ def percentage_int(number, total):
     return 0
 
 
+@register.filter(name='array_value')
+def array_value(data, key):
+    if key in data:
+        return data[key]
+    return ''
+
+
 @register.assignment_tag
 def get_indicator_value(indicator, month=None, partner=None, gov=None):
-    # if not month:
-    #     return indicator.cumulative_results
     try:
-        if partner:
+        if partner and gov and not partner == '0' and not gov == '0':
+            key = "{}-{}-{}".format(month, partner, gov)
+            return indicator.values_partners_gov[key]
+        if partner and not partner == '0':
             key = "{}-{}".format(month, partner)
             return indicator.values_partners[key]
-        if gov:
+        if gov and not gov == '0':
             key = "{}-{}".format(month, gov)
             return indicator.values_gov[key]
 
         return indicator.values.get(str(month))
     except Exception as ex:
-        print(ex)
+        # print(ex)
         return 0
 
 

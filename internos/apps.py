@@ -14,6 +14,7 @@ class SuitConfig(DjangoSuitConfig):
             ChildItem('Assessment', model='winterization.assessment'),
         ], icon='fa fa-users'),
         ParentItem('Activity Info', children=[
+            ChildItem(model='activityinfo.reportingyear', label='Reporting Years'),
             ChildItem(model='activityinfo.database'),
             ChildItem(model='activityinfo.activity'),
             ChildItem(model='activityinfo.indicator'),

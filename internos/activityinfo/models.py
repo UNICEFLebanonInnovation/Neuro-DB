@@ -13,6 +13,14 @@ from internos.users.models import Section
 from .client import ActivityInfoClient
 
 
+class ReportingYear(models.Model):
+    name = models.CharField(max_length=254)
+    current = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Database(models.Model):
 
     ai_id = models.PositiveIntegerField(
@@ -24,7 +32,7 @@ class Database(models.Model):
     password = models.CharField(max_length=254)
 
     # read only fields
-    description = models.CharField(max_length=254, null=True)
+    description = models.CharField(max_length=1500, null=True)
     country_name = models.CharField(max_length=254, null=True)
     dashboard_link = models.URLField(max_length=1500, null=True)
     ai_country_id = models.PositiveIntegerField(null=True)
@@ -36,6 +44,11 @@ class Database(models.Model):
     mapping_extraction1 = JSONField(blank=True, null=True)
     mapping_extraction2 = JSONField(blank=True, null=True)
     mapping_extraction3 = JSONField(blank=True, null=True)
+    reporting_year = models.ForeignKey(
+        ReportingYear,
+        blank=True,
+        null=True
+    )
     year = models.CharField(
         max_length=250,
         blank=True,
@@ -62,7 +75,7 @@ class Database(models.Model):
         return self.name
 
     def import_data(self):
-        from .utils import generate_indicator_awp_code
+        from .utils import get_awp_code
         """
         Import all activities, indicators and partners from
         a ActivityInfo database specified by the AI ID
@@ -115,7 +128,10 @@ class Database(models.Model):
                         ai_indicator = Indicator(ai_id=indicator['id'])
                         objects += 1
                     ai_indicator.name = indicator['name']
-                    ai_indicator.awp_code = generate_indicator_awp_code(indicator['name'])
+                    ai_indicator.awp_code = get_awp_code(indicator['name'])
+                    ai_indicator.description = indicator['description'] if 'description' in indicator else ''
+                    ai_indicator.list_header = indicator['listHeader'] if 'listHeader' in indicator else ''
+                    ai_indicator.type = indicator['type'] if 'type' in indicator else ''
 
                     ai_indicator.units = indicator['units'] if indicator['units'] else '---'
                     ai_indicator.category = indicator['category']
@@ -218,6 +234,15 @@ class Activity(models.Model):
         verbose_name_plural = 'activities'
 
 
+class IndicatorTag(models.Model):
+
+    name = models.CharField(max_length=254)
+    type = models.CharField(max_length=254, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name
+
+
 class IndicatorCategory(models.Model):
 
     name = models.CharField(max_length=254)
@@ -236,18 +261,22 @@ class Indicator(models.Model):
 
     ai_id = models.PositiveIntegerField(blank=True, null=True)
     activity = models.ForeignKey(Activity)
-    name = models.CharField(max_length=254)
+    name = models.CharField(max_length=1500)
+    description = models.CharField(max_length=1500, blank=True, null=True)
+    list_header = models.CharField(max_length=250, blank=True, null=True)
+    type = models.CharField(max_length=250, blank=True, null=True)
     indicator_details = models.CharField(max_length=250, blank=True, null=True)
     indicator_master = models.CharField(max_length=250, blank=True, null=True)
     indicator_info = models.CharField(max_length=250, blank=True, null=True)
     reporting_level = models.CharField(max_length=254, blank=True, null=True)
-    awp_code = models.CharField(max_length=254, blank=True, null=True)
+    awp_code = models.CharField(max_length=1500, blank=True, null=True)
     target = models.PositiveIntegerField(default=0)
     target_sub_total = models.PositiveIntegerField(default=0)
     cumulative_results = models.PositiveIntegerField(default=0)
     units = models.CharField(max_length=254, blank=True, null=True)
     category = models.CharField(max_length=254, blank=True, null=True)
     status = models.CharField(max_length=254, blank=True, null=True)
+    status_color = models.CharField(max_length=254, blank=True, null=True)
     master_indicator = models.BooleanField(default=False)
     master_indicator_sub = models.BooleanField(default=False)
     sub_indicators = models.ManyToManyField('self', blank=True, related_name='sub_indicators')
@@ -255,6 +284,11 @@ class Indicator(models.Model):
     values = JSONField(blank=True, null=True)
     values_gov = JSONField(blank=True, null=True)
     values_partners = JSONField(blank=True, null=True)
+    values_partners_gov = JSONField(blank=True, null=True)
+    tag_age = models.CharField(max_length=254, blank=True, null=True)
+    tag_gender = models.CharField(max_length=254, blank=True, null=True)
+    tag_nationality = models.CharField(max_length=254, blank=True, null=True)
+    tag_disability = models.CharField(max_length=254, blank=True, null=True)
 
     def __unicode__(self):
         return self.name
@@ -262,6 +296,12 @@ class Indicator(models.Model):
     @property
     def ai_indicator(self):
         return '{0:0>10}'.format(self.ai_id)
+
+    @property
+    def cumulative_per(self):
+        if self.cumulative_results and self.target:
+            return round((self.cumulative_results * 100.0) / self.target, 2)
+        return 0
 
     class Meta:
         ordering = ['id']
@@ -332,3 +372,4 @@ class ActivityReport(TimeStampedModel):
     master_indicator = models.BooleanField(default=False)
     master_indicator_sub = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
+    pending = models.BooleanField(default=False)

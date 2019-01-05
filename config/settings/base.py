@@ -47,6 +47,8 @@ DJANGO_APPS = [
     # Admin
     'internos.apps.SuitConfig',
     'django.contrib.admin',
+    'django_json_widget',
+    'prettyjson',
 ]
 THIRD_PARTY_APPS = [
     # 'django_mysql',
