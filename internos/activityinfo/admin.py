@@ -19,6 +19,10 @@ admin.site.site_header = 'Neuro-DB'
 
 
 class PartnerAdmin(admin.ModelAdmin):
+    list_filter = (
+        'database__reporting_year',
+        'database',
+    )
     readonly_fields = (
         'ai_id',
         'name',
@@ -130,15 +134,13 @@ class ActivityInlineAdmin(nested_admin.NestedStackedInline):
 
 
 class ActivityAdmin(admin.ModelAdmin):
-    # inlines = [
-    #     AttributeGroupInlineAdmin,
-    #     IndicatorInlineAdmin,
-    # ]
     list_filter = (
+        'database__reporting_year',
         'database',
     )
     list_display = (
         'name',
+        'database',
         'location_type',
     )
     readonly_fields = (
@@ -154,13 +156,29 @@ class IndicatorResource(resources.ModelResource):
     class Meta:
         model = models.Indicator
         fields = (
-            'id',
-            'name',
-            'indicator_details',
-            'indicator_master',
-            'indicator_info',
+            'ai_id',
             'awp_code',
-            'target'
+            'name',
+            'description',
+            'activity__name',
+            'activity__database__ai_id',
+            'activity__database__name',
+            'list_header',
+            'type',
+            'reporting_level',
+            'target',
+            'target_sub_total',
+            'cumulative_results',
+            'units',
+            'category',
+            'status',
+            'status_color',
+            'tag_age__name',
+            'tag_gender__name',
+            'tag_nationality__name',
+            'tag_disability__name',
+            'master_indicator',
+            'master_indicator_sub',
         )
 
 
@@ -172,6 +190,13 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'name',
     )
     list_filter = (
+        'activity__database__reporting_year',
+        'activity__database',
+        'master_indicator',
+        'master_indicator_sub',
+    )
+    suit_list_filter_horizontal = (
+        'activity__database__reporting_year',
         'activity__database',
         'master_indicator',
         'master_indicator_sub',
@@ -182,6 +207,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'activity',
         'awp_code',
         'name',
+        'target',
         'units',
         'category',
     )
@@ -191,6 +217,59 @@ class IndicatorAdmin(ImportExportModelAdmin):
         JSONField: {'widget': JSONEditorWidget(attrs={'initial': 'parsed'})},
     }
 
+    fieldsets = [
+        ('Basic infos', {
+            'classes': ('suit-tab', 'suit-tab-general',),
+            'fields': [
+                'ai_id',
+                'awp_code',
+                'name',
+                'description',
+                'activity',
+                'list_header',
+                'type',
+                'reporting_level',
+                'target',
+                'target_sub_total',
+                'cumulative_results',
+                'units',
+                'category',
+                'status',
+                'status_color',
+                # 'indicator_details',
+                # 'indicator_master',
+                # 'indicator_info',
+            ]
+        }),
+        ('Tags', {
+            'classes': ('suit-tab', 'suit-tab-general',),
+            'fields': [
+                'tag_age',
+                'tag_gender',
+                'tag_nationality',
+                'tag_disability',
+            ]
+        }),
+        ('Sub indicators', {
+            'classes': ('suit-tab', 'suit-tab-general',),
+            'fields': [
+                'master_indicator',
+                'master_indicator_sub',
+                'sub_indicators',
+                'summation_sub_indicators',
+            ]
+        }),
+        ('Calculated Values', {
+            'classes': ('suit-tab', 'suit-tab-general',),
+            'fields': [
+                'values',
+                'values_gov',
+                'values_partners',
+                'values_partners_gov',
+            ]
+        }),
+    ]
+
 
 class AttributeGroupAdmin(admin.ModelAdmin):
     search_fields = (
@@ -198,7 +277,9 @@ class AttributeGroupAdmin(admin.ModelAdmin):
         'name',
     )
     list_filter = (
-        'name',
+        'activity__database__reporting_year',
+        'activity__database',
+        'activity',
     )
     list_display = (
         'ai_id',
@@ -207,17 +288,19 @@ class AttributeGroupAdmin(admin.ModelAdmin):
 
 
 class AttributeAdmin(admin.ModelAdmin):
-    # form = AutoSizeTextForm
     search_fields = (
         'ai_id',
         'name',
     )
     list_filter = (
-        'name',
+        'attribute_group__activity__database__reporting_year',
+        'attribute_group__activity__database',
+        'attribute_group__activity',
     )
     list_display = (
         'ai_id',
         'name',
+        'attribute_group',
     )
 
 

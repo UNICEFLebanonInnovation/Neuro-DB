@@ -79,7 +79,7 @@
                     <table id="" class="table table-striped table-bordered">
                       <thead>
                         <tr>
-                          <th>#</th>
+                          <!--<th>#</th>-->
                           <th>Activity Info Indicator ID</th>
                           <th>Filters Activity Info and Non Activity Info Indicators</th>
                           <th>Level of reporting</th>
@@ -96,7 +96,7 @@
                       <tbody>
                         {% for item in master_indicators %}
                           <tr {% if item.master_indicator %}style="background-color:#8FCAE7;"{% endif %}>
-                              <td>{{ item.id }}</td>
+                              <!--<td>{{ item.id }}</td>-->
                               <td>{{ item.ai_id }}</td>
                               <td>{{ item.name }}</td>
                               <td>Site</td>
@@ -114,7 +114,7 @@
                           </tr>
                           {% for item1 in item.sub_indicators.all %}
                             <tr {% if item1.master_indicator_sub %}style="background-color: #8FCA17;"{% endif %}>
-                                <td>{{ item1.id }}</td>
+                                <!--<td>{{ item1.id }}</td>-->
                                 <td>{{ item1.ai_id }}</td>
                                 <td>{{ item1.name }}</td>
                                 <td>Site</td>
@@ -133,7 +133,7 @@
                             {% for item2 in item1.sub_indicators.all %}
                               {% if item2.master_indicator == 0 %}
                               <tr>
-                                  <td>{{ item2.id }}</td>
+                                  <!--<td>{{ item2.id }}</td>-->
                                   <td>{{ item2.ai_id }}</td>
                                   <td>{{ item2.name }}</td>
                                   <td>Site</td>

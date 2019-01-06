@@ -69,6 +69,8 @@ def set_tags(indicator, tags):
     for tag in tags:
         if tag.name in indicator.name:
             setattr(indicator, tag.tag_field, tag)
+        # else:
+        #     setattr(indicator, tag.tag_field, None)
     indicator.save()
 
 
@@ -275,7 +277,7 @@ def calculate_indicators_values(ai_id):
 
                 # for gov_code, gov_value in governorates_list:
                 #     key = "{}-{}-{}".format(month, partner['partner_id'], gov_code)
-                    
+
                 for gov in governorates:
                     key = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
                     values_partners_gov[str(key)] = get_indicator_value(indicator_id=indicator, level=level,

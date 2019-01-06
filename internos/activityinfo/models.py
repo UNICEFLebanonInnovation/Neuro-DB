@@ -34,7 +34,7 @@ class Database(models.Model):
     # read only fields
     description = models.CharField(max_length=1500, null=True)
     country_name = models.CharField(max_length=254, null=True)
-    dashboard_link = models.URLField(max_length=1500, null=True)
+    dashboard_link = models.URLField(max_length=1500, null=True, blank=True)
     ai_country_id = models.PositiveIntegerField(null=True)
     section = models.ForeignKey(
         Section,

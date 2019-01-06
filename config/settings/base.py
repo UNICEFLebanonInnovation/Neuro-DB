@@ -70,6 +70,7 @@ LOCAL_APPS = [
     'internos.backends',
     'internos.etools',
     'internos.locations',
+    'internos.databook',
     # Your stuff: custom apps go here
 ]
 
