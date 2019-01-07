@@ -51,9 +51,10 @@ class ActivityInfoClient(object):
         """
         if path is None:
             return self.base_url
-        return urljoin(
-            self.base_url, os.path.normpath(path),
-        )
+        return "{}{}".format(self.base_url, path)
+        # return urljoin(
+        #     self.base_url, os.path.normpath(path),
+        # )
 
     def make_request(self, path, **params):
         print(self.build_path(path))
