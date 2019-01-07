@@ -56,7 +56,7 @@ class ActivityInfoClient(object):
         )
 
     def make_request(self, path, **params):
-
+        print(self.build_path(path))
         response = requests.get(
             self.build_path(path),
             params=params,
@@ -84,9 +84,7 @@ class ActivityInfoClient(object):
         return response
 
     def get_databases(self):
-        result = self.make_request('resources/databases').json()
-        print(result)
-        return result
+        return self.make_request('resources/databases').json()
 
     def get_database(self, db_id):
         return self.make_request('resources/database/{}/schema'.format(db_id)).json()
