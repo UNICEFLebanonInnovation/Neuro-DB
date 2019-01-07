@@ -84,7 +84,9 @@ class ActivityInfoClient(object):
         return response
 
     def get_databases(self):
-        return self.make_request('resources/databases').json()
+        result = self.make_request('resources/databases').json()
+        print(result)
+        return result
 
     def get_database(self, db_id):
         return self.make_request('resources/database/{}/schema'.format(db_id)).json()
