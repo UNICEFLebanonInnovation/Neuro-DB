@@ -222,7 +222,8 @@ class ExportViewSet(LoginRequiredMixin, ListView):
         filename = "extraction.csv"
 
         meta = {
-            'file': '/{}/{}'.format('tmp', filename),
+            'file': filename,
+            # 'file': '/{}/{}'.format('tmp', filename),
             'queryset': qs,
             'fields': report_mapping.keys(),
             'header': report_mapping.values()
