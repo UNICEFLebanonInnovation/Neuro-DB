@@ -54,7 +54,7 @@ class ExportModel(object):
     @staticmethod
     def as_csv(meta):
 
-        with open(meta['file'], 'wb') as f:
+        with open(meta['file'], 'w+') as f:
             writer = UnicodeWriter(f, encoding='utf-8')
             writer.writerow(meta['header'])
             for obj in meta['queryset']:
