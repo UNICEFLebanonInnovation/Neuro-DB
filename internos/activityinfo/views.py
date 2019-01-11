@@ -116,6 +116,67 @@ class ReportView(LoginRequiredMixin,
         }
 
 
+class LiveReportView(LoginRequiredMixin,
+                     TemplateView):
+
+    template_name = 'activityinfo/live.html'
+
+    def get_context_data(self, **kwargs):
+        selected_partner = self.request.GET.get('partner', 0)
+        selected_partner_name = self.request.GET.get('partner_name', 0)
+        selected_governorate = self.request.GET.get('governorate', 0)
+        selected_governorate_name = self.request.GET.get('governorate_name', 0)
+        month = int(self.request.GET.get('month', int(datetime.datetime.now().strftime("%m")) - 1))
+        month_name = self.request.GET.get('month_name', datetime.datetime.now().strftime("%B"))
+        ai_id = int(self.request.GET.get('ai_id', 0))
+        databases = Database.objects.filter(reporting_year__current=True)
+
+        if ai_id:
+            database = Database.objects.get(ai_id=ai_id)
+        else:
+            section = self.request.user.section
+            database = Database.objects.get(section=section, reporting_year__current=True)
+
+        report = ActivityReport.objects.filter(
+            database=database,
+            start_date__month=month,
+            funded_by__contains='UNICEF')
+
+        partners = report.values('partner_label', 'partner_id').distinct()
+        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+        activity_categories = report.values('form_category').distinct().count()
+        activities = report.values('form').distinct().count()
+        indicators = report.values('indicator_name').distinct().count()
+        unicef_funds = report.count()
+        not_reported = report.filter(Q(indicator_value__isnull=True) | Q(indicator_value=0)).count()
+        master_indicators = Indicator.objects.filter(master_indicator=True, activity__database=database).order_by('id')
+
+        months = []
+        for i in range(1, 13):
+            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
+        return {
+            'selected_partner': selected_partner,
+            'selected_partner_name': selected_partner_name,
+            'selected_governorate': selected_governorate,
+            'selected_governorate_name': selected_governorate_name,
+            'reports': report.order_by('id'),
+            'month_name': month_name,
+            'months': months,
+            # 'months_nbr': months.count(),
+            'database': database,
+            'databases': databases,
+            'partners': partners,
+            'governorates': governorates,
+            'activity_categories': activity_categories,
+            'activities': activities,
+            'not_reported': not_reported,
+            'indicators': indicators,
+            'master_indicators': master_indicators,
+            'unicef_funds': unicef_funds
+        }
+
+
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]
@@ -161,7 +222,7 @@ class ExportViewSet(LoginRequiredMixin, ListView):
         filename = "extraction.csv"
 
         meta = {
-            'file': '/{}/{}'.format('tmp', filename),
+            'file': '\{}\{}'.format('tmp', filename),
             'queryset': qs,
             'fields': report_mapping.keys(),
             'header': report_mapping.values()

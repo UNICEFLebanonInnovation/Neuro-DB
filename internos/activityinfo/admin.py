@@ -236,6 +236,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'category',
                 'status',
                 'status_color',
+                'none_ai_indicator',
                 # 'indicator_details',
                 # 'indicator_master',
                 # 'indicator_info',
@@ -255,6 +256,9 @@ class IndicatorAdmin(ImportExportModelAdmin):
             'fields': [
                 'master_indicator',
                 'master_indicator_sub',
+                'measurement_type',
+                'denominator_indicator',
+                'numerator_indicator',
                 'sub_indicators',
                 'summation_sub_indicators',
             ]

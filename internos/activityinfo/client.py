@@ -57,7 +57,7 @@ class ActivityInfoClient(object):
         # )
 
     def make_request(self, path, **params):
-        print(self.build_path(path))
+
         response = requests.get(
             self.build_path(path),
             params=params,

@@ -1,10 +1,9 @@
-from supplies_platform.taskapp.celery import app
+from internos.taskapp.celery import app
 
 import json
 import httplib
 import datetime
 from time import mktime
-from django.core.serializers.json import DjangoJSONEncoder
 
 
 def sync_partner_data():
@@ -39,7 +38,7 @@ def get_data(url, apifunc, token, protocol='HTTPS'):
 
 
 def link_partner_to_partnership():
-    from supplies_platform.partners.models import PartnerOrganization, PCA
+    from internos.etools.models import PartnerOrganization, PCA
 
     partnerships = PCA.objects.all()
 

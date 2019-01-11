@@ -282,6 +282,8 @@ class Indicator(models.Model):
     master_indicator_sub = models.BooleanField(default=False)
     sub_indicators = models.ManyToManyField('self', blank=True, related_name='sub_indicators')
     summation_sub_indicators = models.ManyToManyField('self', blank=True, related_name='summation_sub_indicators')
+    denominator_indicator = models.ForeignKey('self', blank=True, null=True, related_name='+')
+    numerator_indicator = models.ForeignKey('self', blank=True, null=True, related_name='+')
     values = JSONField(blank=True, null=True)
     values_gov = JSONField(blank=True, null=True)
     values_partners = JSONField(blank=True, null=True)
@@ -290,7 +292,17 @@ class Indicator(models.Model):
     tag_gender = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_nationality = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_disability = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
-
+    none_ai_indicator = models.BooleanField(default=False)
+    measurement_type = models.CharField(
+        max_length=250,
+        blank=True,
+        null=True,
+        choices=Choices(
+            ('numeric', 'Numeric'),
+            ('percentage', 'Percentage'),
+            ('weighting', 'Weighting'),
+        )
+    )
 
     def __unicode__(self):
         return self.name
