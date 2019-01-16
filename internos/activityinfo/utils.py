@@ -65,6 +65,15 @@ def get_awp_code(name):
     return awp_code
 
 
+def get_label(data):
+    try:
+        if '------' in data['name']:
+            return data['description']
+    except TypeError as ex:
+        pass
+    return data['name']
+
+
 def set_tags(indicator, tags):
     for tag in tags:
         if tag.name in indicator.name:

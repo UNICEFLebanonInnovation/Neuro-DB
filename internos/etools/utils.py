@@ -7,14 +7,19 @@ from time import mktime
 
 
 def sync_partner_data():
-    partners = get_data('etools.unicef.org', '/api/v2/partners/', 'Token: 36f06547a4b930c6608e503db49f1e45305351c2')
-    print(partners)
+    partners = get_data('etools.unicef.org', '/api/v2/partners/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
 
 
 def get_data(url, apifunc, token, protocol='HTTPS'):
 
     # headers = {"Content-type": "application/json", "Authorization": token}
-    headers = {"Content-type": "application/json", "X-CSRFToken": 'oeN06eH7uRQp7z9D2m67l0wGcUdC0yub'}
+    headers = {"Content-type": "application/json",
+               "Authorization": token,
+               "HTTP_REFERER": "etools.unicef.org",
+               # "Cookie": "tfUDK97TJSCkB4Nlm2wuMx67XNOYWpKT18BeV3RNoeq6nO7FXemAZypct369yF9I",
+               # "X-CSRFToken": 'tfUDK97TJSCkB4Nlm2wuMx67XNOYWpKT18BeV3RNoeq6nO7FXemAZypct369yF9I',
+               # "username": "achamseddine@unicef.org", "password": "Alouche21!"
+               }
 
     if protocol == 'HTTPS':
         conn = httplib.HTTPSConnection(url)
@@ -23,8 +28,6 @@ def get_data(url, apifunc, token, protocol='HTTPS'):
     conn.request('GET', apifunc, "", headers)
     response = conn.getresponse()
     result = response.read()
-    print(response)
-    print(result)
 
     if not response.status == 200:
         if response.status == 400 or response.status == 403:

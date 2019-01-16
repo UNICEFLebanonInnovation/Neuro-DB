@@ -74,8 +74,21 @@ class Database(models.Model):
     def __unicode__(self):
         return self.name
 
+    def create_master_indicator(self, indicator, ai_indicator):
+        if not 'description' in indicator or not indicator['description'] or '------' in indicator['name']:
+            return False
+
+        try:
+            master_indicator = Indicator.objects.get(name=indicator['description'], master_indicator=True)
+        except Indicator.DoesNotExist:
+            master_indicator = Indicator(name=indicator['description'], master_indicator=True)
+
+        master_indicator.activity = ai_indicator.activity
+        master_indicator.save()
+        master_indicator.sub_indicators.add(ai_indicator)
+
     def import_data(self):
-        from .utils import get_awp_code
+        from .utils import get_awp_code, get_label
         """
         Import all activities, indicators and partners from
         a ActivityInfo database specified by the AI ID
@@ -128,6 +141,7 @@ class Database(models.Model):
                         ai_indicator = Indicator(ai_id=indicator['id'])
                         objects += 1
                     ai_indicator.name = indicator['name']
+                    ai_indicator.label = get_label(indicator)
                     ai_indicator.awp_code = get_awp_code(indicator['name'])
                     ai_indicator.description = indicator['description'] if 'description' in indicator else ''
                     ai_indicator.list_header = indicator['listHeader'] if 'listHeader' in indicator else ''
@@ -137,6 +151,7 @@ class Database(models.Model):
                     ai_indicator.category = indicator['category']
                     ai_indicator.activity = ai_activity
                     ai_indicator.save()
+                    self.create_master_indicator(indicator, ai_indicator)
 
                 for attribute_group in activity['attributeGroups']:
                     try:
@@ -263,6 +278,7 @@ class Indicator(models.Model):
     ai_id = models.PositiveIntegerField(blank=True, null=True)
     activity = models.ForeignKey(Activity)
     name = models.CharField(max_length=1500)
+    label = models.CharField(max_length=1500, blank=True, null=True)
     description = models.CharField(max_length=1500, blank=True, null=True)
     list_header = models.CharField(max_length=250, blank=True, null=True)
     type = models.CharField(max_length=250, blank=True, null=True)
@@ -280,8 +296,8 @@ class Indicator(models.Model):
     status_color = models.CharField(max_length=254, blank=True, null=True)
     master_indicator = models.BooleanField(default=False)
     master_indicator_sub = models.BooleanField(default=False)
-    sub_indicators = models.ManyToManyField('self', blank=True, related_name='sub_indicators')
-    summation_sub_indicators = models.ManyToManyField('self', blank=True, related_name='summation_sub_indicators')
+    sub_indicators = models.ManyToManyField('self', blank=True, related_name='top_indicator')
+    summation_sub_indicators = models.ManyToManyField('self', blank=True, related_name='summation_top_indicator')
     denominator_indicator = models.ForeignKey('self', blank=True, null=True, related_name='+')
     numerator_indicator = models.ForeignKey('self', blank=True, null=True, related_name='+')
     values = JSONField(blank=True, null=True)
