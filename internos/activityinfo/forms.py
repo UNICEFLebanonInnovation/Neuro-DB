@@ -1,5 +1,6 @@
 from django import forms
 from django.forms.models import BaseInlineFormSet
+from django.contrib.admin.widgets import FilteredSelectMultiple, RelatedFieldWidgetWrapper
 from .models import Database, Indicator, IndicatorTag
 
 
@@ -35,14 +36,34 @@ class IndicatorForm(forms.ModelForm):
         required=False,
         queryset=IndicatorTag.objects.filter(type='disability')
     )
-    denominator_indicator = forms.ModelChoiceField(
-        required=False,
-        queryset=Indicator.objects.all()
-    )
-    numerator_indicator = forms.ModelChoiceField(
-        required=False,
-        queryset=Indicator.objects.all()
-    )
+    # denominator_indicator = forms.ModelChoiceField(
+    #     required=False,
+    #     queryset=Indicator.objects.all()
+    # )
+    # numerator_indicator = forms.ModelChoiceField(
+    #     required=False,
+    #     queryset=Indicator.objects.all()
+    # )
+    # sub_indicators = forms.ModelMultipleChoiceField(
+    #     required=False,
+    #     queryset=Indicator.objects.all(),
+    #     widget=FilteredSelectMultiple('indicator', is_stacked=False)
+    # )
+    # summation_sub_indicators = forms.ModelMultipleChoiceField(
+    #     required=False,
+    #     queryset=Indicator.objects.all(),
+    #     widget=FilteredSelectMultiple('indicator', is_stacked=False)
+    # )
+    # denominator_summation = forms.ModelMultipleChoiceField(
+    #     required=False,
+    #     queryset=Indicator.objects.all(),
+    #     widget=FilteredSelectMultiple('indicator', is_stacked=False)
+    # )
+    # numerator_summation = forms.ModelMultipleChoiceField(
+    #     required=False,
+    #     queryset=Indicator.objects.all(),
+    #     widget=FilteredSelectMultiple('indicator', is_stacked=False)
+    # )
 
     class Meta:
         model = Indicator
@@ -58,8 +79,12 @@ class IndicatorForm(forms.ModelForm):
         super(IndicatorForm, self).__init__(*args, **kwargs)
 
         if self.instance and self.instance.activity:
-            self.fields['denominator_indicator'].queryset = Indicator.objects.filter(
+            queryset = Indicator.objects.filter(
                 activity__database_id=self.instance.activity.database_id)
-            self.fields['numerator_indicator'].queryset = Indicator.objects.filter(
-                activity__database_id=self.instance.activity.database_id)
+            # self.fields['denominator_indicator'].queryset = queryset
+            # self.fields['numerator_indicator'].queryset = queryset
+            # self.fields['sub_indicators'].queryset = queryset
+            # self.fields['summation_sub_indicators'].queryset = queryset
+            # self.fields['denominator_summation'].queryset = queryset
+            # self.fields['numerator_summation'].queryset = queryset
 

@@ -5,12 +5,14 @@ from suit.admin import RelatedFieldAdmin, get_related_field
 import nested_admin
 from import_export import resources, fields
 from import_export import fields
+from django.db import models
 from import_export.admin import ImportExportModelAdmin
 from django.contrib.postgres.fields import JSONField
 from django_json_widget.widgets import JSONEditorWidget
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from prettyjson import PrettyJSONWidget
 from import_export.widgets import *
-from . import models
+from .models import *
 from .utils import *
 from .forms import DatabaseForm, IndicatorForm, IndicatorFormSet
 
@@ -39,7 +41,7 @@ class PartnerAdmin(admin.ModelAdmin):
 
 class AttributeGroupInlineAdmin(nested_admin.NestedStackedInline):
     can_delete = False
-    model = models.AttributeGroup
+    model = AttributeGroup
     min_num = 0
     max_num = 0
     extra = 0
@@ -77,7 +79,7 @@ class AttributeGroupInlineAdmin(nested_admin.NestedStackedInline):
 
 class IndicatorInlineAdmin(nested_admin.NestedTabularInline):
     can_delete = False
-    model = models.Indicator
+    model = Indicator
     verbose_name = 'Indicator'
     verbose_name_plural = 'Indicator'
     min_num = 0
@@ -102,7 +104,7 @@ class IndicatorInlineAdmin(nested_admin.NestedTabularInline):
 
 class ActivityInlineAdmin(nested_admin.NestedStackedInline):
     can_delete = False
-    model = models.Activity
+    model = Activity
     verbose_name = 'Activity'
     verbose_name_plural = 'Activities'
     min_num = 0
@@ -154,7 +156,7 @@ class ActivityAdmin(admin.ModelAdmin):
 class IndicatorResource(resources.ModelResource):
 
     class Meta:
-        model = models.Indicator
+        model = Indicator
         fields = (
             'id',
             'ai_id',
@@ -232,10 +234,16 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'activity',
         'category',
     )
-    filter_horizontal = ('sub_indicators', 'summation_sub_indicators')
+    filter_horizontal = (
+        'sub_indicators',
+        'summation_sub_indicators',
+        'denominator_summation',
+        'numerator_summation',
+    )
 
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget(attrs={'initial': 'parsed'})},
+        # models.ManyToManyField: {'widget': FilteredSelectMultiple('indicator', is_stacked=False)}
     }
 
     fieldsets = [
@@ -259,9 +267,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'status',
                 'status_color',
                 'none_ai_indicator',
-                # 'indicator_details',
-                # 'indicator_master',
-                # 'indicator_info',
+                'funded_by',
             ]
         }),
         ('Tags', {
@@ -279,10 +285,12 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'master_indicator',
                 'master_indicator_sub',
                 'measurement_type',
-                'denominator_indicator',
-                'numerator_indicator',
+                # 'denominator_indicator',
+                # 'numerator_indicator',
                 'sub_indicators',
                 'summation_sub_indicators',
+                'denominator_summation',
+                'numerator_summation',
             ]
         }),
         ('Calculated Values', {
@@ -362,7 +370,7 @@ class PartnerReportAdmin(admin.ModelAdmin):
 class ActivityReportResource(resources.ModelResource):
 
     class Meta:
-        model = models.ActivityReport
+        model = ActivityReport
         fields = (
 
         )
@@ -425,7 +433,7 @@ class ActivityReportAdmin(RelatedFieldAdmin):
 
 
 class DatabaseAdmin(nested_admin.NestedModelAdmin):
-    model = models.Database
+    model = Database
     form = DatabaseForm
     inlines = [
         ActivityInlineAdmin,
@@ -546,7 +554,7 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
     def calculate_sum_target(self, request, queryset):
         reports = 0
         for db in queryset:
-            reports = calculate_sum_target(db.ai_id)
+            reports = calculate_sum_target(db.id)
         self.message_user(
             request,
             "{} indicators updated.".format(reports)
@@ -608,13 +616,13 @@ class IndicatorTagAdmin(admin.ModelAdmin):
     )
 
 
-admin.site.register(models.IndicatorTag, IndicatorTagAdmin)
-admin.site.register(models.ReportingYear, ReportingYearAdmin)
-admin.site.register(models.Database, DatabaseAdmin)
-admin.site.register(models.Partner, PartnerAdmin)
-admin.site.register(models.Activity, ActivityAdmin)
-admin.site.register(models.Indicator, IndicatorAdmin)
-admin.site.register(models.AttributeGroup, AttributeGroupAdmin)
-admin.site.register(models.Attribute, AttributeAdmin)
-admin.site.register(models.ActivityReport, ActivityReportAdmin)
+admin.site.register(IndicatorTag, IndicatorTagAdmin)
+admin.site.register(ReportingYear, ReportingYearAdmin)
+admin.site.register(Database, DatabaseAdmin)
+admin.site.register(Partner, PartnerAdmin)
+admin.site.register(Activity, ActivityAdmin)
+admin.site.register(Indicator, IndicatorAdmin)
+admin.site.register(AttributeGroup, AttributeGroupAdmin)
+admin.site.register(Attribute, AttributeAdmin)
+admin.site.register(ActivityReport, ActivityReportAdmin)
 

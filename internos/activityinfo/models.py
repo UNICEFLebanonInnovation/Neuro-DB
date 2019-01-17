@@ -135,14 +135,17 @@ class Database(models.Model):
                 ai_activity.save()
 
                 for indicator in activity['indicators']:
+                    new_instance = False
                     try:
                         ai_indicator = Indicator.objects.get(ai_id=indicator['id'])
                     except Indicator.DoesNotExist:
                         ai_indicator = Indicator(ai_id=indicator['id'])
+                        new_instance = True
                         objects += 1
                     ai_indicator.name = indicator['name']
                     ai_indicator.label = get_label(indicator)
-                    ai_indicator.awp_code = get_awp_code(indicator['name'])
+                    if new_instance:
+                        ai_indicator.awp_code = get_awp_code(indicator['name'])
                     ai_indicator.description = indicator['description'] if 'description' in indicator else ''
                     ai_indicator.list_header = indicator['listHeader'] if 'listHeader' in indicator else ''
                     ai_indicator.type = indicator['type'] if 'type' in indicator else ''
@@ -151,7 +154,9 @@ class Database(models.Model):
                     ai_indicator.category = indicator['category']
                     ai_indicator.activity = ai_activity
                     ai_indicator.save()
-                    self.create_master_indicator(indicator, ai_indicator)
+
+                    if new_instance:
+                        self.create_master_indicator(indicator, ai_indicator)
 
                 for attribute_group in activity['attributeGroups']:
                     try:
@@ -300,6 +305,8 @@ class Indicator(models.Model):
     summation_sub_indicators = models.ManyToManyField('self', blank=True, related_name='summation_top_indicator')
     denominator_indicator = models.ForeignKey('self', blank=True, null=True, related_name='+')
     numerator_indicator = models.ForeignKey('self', blank=True, null=True, related_name='+')
+    denominator_summation = models.ManyToManyField('self', blank=True, related_name='+')
+    numerator_summation = models.ManyToManyField('self', blank=True, related_name='+')
     values = JSONField(blank=True, null=True)
     values_gov = JSONField(blank=True, null=True)
     values_partners = JSONField(blank=True, null=True)
@@ -309,6 +316,7 @@ class Indicator(models.Model):
     tag_nationality = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_disability = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     none_ai_indicator = models.BooleanField(default=False)
+    funded_by = models.CharField(max_length=254, blank=True, null=True)
     measurement_type = models.CharField(
         max_length=250,
         blank=True,

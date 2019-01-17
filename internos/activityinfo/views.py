@@ -177,24 +177,24 @@ class LiveReportView(LoginRequiredMixin,
         }
 
 
-def dictfetchall(cursor):
-    "Return all rows from a cursor as a dict"
-    columns = [col[0] for col in cursor.description]
-    print(columns)
-    print(cursor.fetchall())
-    print([
-        dict(zip(columns, row))
-        for row in cursor.fetchall()
-    ])
-
-
-class _Echo(object):
-    """An object that implements just the write method of the file-like
-    interface.
-    """
-    def write(self, value):
-        """Write the value by returning it, instead of storing in a buffer."""
-        return value
+# def dictfetchall(cursor):
+#     "Return all rows from a cursor as a dict"
+#     columns = [col[0] for col in cursor.description]
+#     print(columns)
+#     print(cursor.fetchall())
+#     print([
+#         dict(zip(columns, row))
+#         for row in cursor.fetchall()
+#     ])
+#
+#
+# class _Echo(object):
+#     """An object that implements just the write method of the file-like
+#     interface.
+#     """
+#     def write(self, value):
+#         """Write the value by returning it, instead of storing in a buffer."""
+#         return value
 
 
 class ExportViewSet(LoginRequiredMixin, ListView):

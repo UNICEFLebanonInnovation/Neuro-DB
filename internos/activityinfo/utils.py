@@ -207,9 +207,8 @@ def generate_indicator_awp_code2(ai_id):
 def calculate_sum_target(ai_id):
     from internos.activityinfo.models import Indicator
 
-    # activity__database_id = ai_id
-    top_indicators = Indicator.objects.filter(master_indicator=True)
-    sub_indicators = Indicator.objects.filter(master_indicator_sub=True)
+    top_indicators = Indicator.objects.filter(master_indicator=True, activity__database_id=ai_id)
+    sub_indicators = Indicator.objects.filter(master_indicator_sub=True, activity__database_id=ai_id)
 
     for item in sub_indicators:
         if not item.summation_sub_indicators.count():
@@ -219,8 +218,16 @@ def calculate_sum_target(ai_id):
         item.save()
 
     for item in top_indicators:
-        target_sum = item.summation_sub_indicators.exclude(master_indicator_sub=False, master_indicator=False).aggregate(Sum('target'))
+        # if top_indicators.measurement_type == 'percentage':
+        #     try:
+        #         item.target = item.denominator_indicator.target / item.numerator_indicator.target
+        #     except Exception:
+        #         item.target = 0
+        # else:
+        target_sum = item.summation_sub_indicators.exclude(master_indicator_sub=False,
+                                                           master_indicator=False).aggregate(Sum('target'))
         item.target = target_sum['target__sum'] if target_sum['target__sum'] else 0
+
         item.save()
 
     return top_indicators.count() + sub_indicators.count()
@@ -230,7 +237,7 @@ def link_indicators_data(ai_id):
     from internos.activityinfo.models import Indicator, ActivityReport
 
     ctr = 0
-    reports = ActivityReport.objects.filter(database_id=ai_id)
+    reports = ActivityReport.objects.filter(database_id=ai_id, funded_by='UNICEF')
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_id)
 
     for item in indicators:
@@ -238,6 +245,7 @@ def link_indicators_data(ai_id):
         if not ai_values.count():
             continue
         ctr += 1
+        item.update(funded_by='UNICEF')
         ai_values.update(ai_indicator=item)
 
     return ctr
@@ -273,8 +281,9 @@ def calculate_indicators_values(ai_id):
             for gov1 in governorates1:
                 key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
                 value = get_indicator_value(indicator_id=indicator,
-                                                           level=level, month=month,
-                                                           gov=gov1['location_adminlevel_governorate_code'])
+                                            level=level, month=month,
+                                            gov=gov1['location_adminlevel_governorate_code'])
+
                 values_gov[str(key)] = value
                 governorates_list[gov1['location_adminlevel_governorate_code']] = value
 
@@ -283,9 +292,6 @@ def calculate_indicators_values(ai_id):
                 values_partners[str(key)] = get_indicator_value(indicator_id=indicator,
                                                                 level=level, month=month,
                                                                 partner=partner['partner_id'])
-
-                # for gov_code, gov_value in governorates_list:
-                #     key = "{}-{}-{}".format(month, partner['partner_id'], gov_code)
 
                 for gov in governorates:
                     key = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
@@ -313,7 +319,7 @@ def calculate_indicators_status(database):
     total_days = delta.days + 1
     days_passed_per = (total_days * 100) / year_days
 
-    indicators = Indicator.objects.filter(activity__database__ai_id=database.ai_id)
+    indicators = Indicator.objects.filter(activity__database__ai_id=database.ai_id, funded_by='UNICEF')
     for indicator in indicators:
         cumulative_per = indicator.cumulative_per
         off_track = days_passed_per - 10
@@ -336,7 +342,10 @@ def calculate_indicators_status(database):
 def get_indicator_value(indicator_id, level=0, month=None, partner=None, gov=None):
     from internos.activityinfo.models import ActivityReport, Indicator
 
-    reports = ActivityReport.objects.all()
+    if indicator_id.measurement_type == 'percentage':
+        return get_indicator_value_percentage(indicator_id, month, partner, gov)
+
+    reports = ActivityReport.objects.filter(funded_by='UNICEF')
 
     if level == 0:
         reports = reports.filter(ai_indicator=indicator_id)
@@ -358,6 +367,44 @@ def get_indicator_value(indicator_id, level=0, month=None, partner=None, gov=Non
 
     total = reports.aggregate(Sum('indicator_value'))
     return total['indicator_value__sum'] if total['indicator_value__sum'] else 0
+
+
+def get_indicator_value_percentage(indicator_id, month=None, partner=None, gov=None):
+    from internos.activityinfo.models import ActivityReport, Indicator
+
+    reports = ActivityReport.objects.filter(funded_by='UNICEF')
+    reports1 = ActivityReport.objects.filter(funded_by='UNICEF')
+
+    denominator_summation = indicator_id.denominator_summation.values_list('id', flat=True).distinct()
+    denominator_indicators = Indicator.objects.filter(
+        denominator_summation__id__in=denominator_summation
+    ).exclude(master_indicator=True).values_list('id', flat=True).distinct()
+    reports = reports.filter(ai_indicator_id__in=denominator_indicators)
+
+    numerator_summation = indicator_id.numerator_summation.values_list('id', flat=True).distinct()
+    numerator_indicators = Indicator.objects.filter(
+        numerator_summation__id__in=numerator_summation
+    ).exclude(master_indicator=True).values_list('id', flat=True).distinct()
+    reports1 = reports1.filter(ai_indicator_id__in=numerator_indicators)
+
+    if month:
+        reports = reports.filter(start_date__month=month)
+        reports1 = reports1.filter(start_date__month=month)
+    if partner:
+        reports = reports.filter(partner_id=partner)
+        reports1 = reports1.filter(partner_id=partner)
+    if gov:
+        reports = reports.filter(location_adminlevel_governorate_code=gov)
+        reports1 = reports1.filter(location_adminlevel_governorate_code=gov)
+
+    total = reports.aggregate(Sum('indicator_value'))
+    total1 = reports1.aggregate(Sum('indicator_value'))
+    denominator = total['indicator_value__sum'] if total['indicator_value__sum'] else 0
+    numerator = total1['indicator_value__sum'] if total1['indicator_value__sum'] else 0
+    try:
+        return denominator / numerator
+    except Exception:
+        return 0
 
 
 def copy_disaggregated_data(ai_id):
