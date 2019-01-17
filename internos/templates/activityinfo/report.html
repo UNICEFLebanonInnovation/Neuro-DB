@@ -69,6 +69,9 @@
                   <div class="x_title">
                     <h2>UNICEF LCO DASHBOARD - {{ database.name }} - {{ month_name }} 2019
                       <!--<small>Users</small>-->
+                        <button class="btn btn-info" id="export1">
+                              Export
+                        </button>
                     </h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
@@ -76,7 +79,9 @@
                     <div class="clearfix"></div>
                   </div>
                   <div class="x_content">
-                    <table id="" class="table table-striped table-bordered">
+                    <table id="exporttable1"
+                           data-tableName="UNICEF LCO DASHBOARD - {{ database.name }} - {{ month_name }} 2019"
+                           class="table table-striped table-bordered">
                       <thead>
                         <tr>
                           <!--<th>#</th>-->
@@ -213,3 +218,74 @@
 <!--</div>-->
 <br />
 {% endblock content %}
+
+{% block extra_js %}
+    <!--<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>-->
+    <script>
+
+    <!--$(document).ready(function(){-->
+        <!--$('#export1').click(function(){-->
+            <!--$("#exporttable1").table2excel({-->
+                <!--exclude: ".noExl",-->
+                <!--name: "Excel Document Name",-->
+                <!--filename: $("#exporttable1").attr('data-tableName')+'.xls',-->
+                <!--fileext: ".xlsx",-->
+                <!--exclude_img: true,-->
+                <!--exclude_links: true,-->
+                <!--exclude_inputs: true-->
+            <!--});-->
+        <!--});-->
+    <!--});-->
+
+function download_csv(csv, filename) {
+    var csvFile;
+    var downloadLink;
+
+    // CSV FILE
+    csvFile = new Blob([csv], {type: "text/csv"});
+
+    // Download link
+    downloadLink = document.createElement("a");
+
+    // File name
+    downloadLink.download = filename;
+
+    // We have to create a link to the file
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+
+    // Make sure that the link is not displayed
+    downloadLink.style.display = "none";
+
+    // Add the link to your DOM
+    document.body.appendChild(downloadLink);
+
+    // Lanzamos
+    downloadLink.click();
+}
+
+function export_table_to_csv(html, filename) {
+	var csv = [];
+	var rows = document.querySelectorAll("table tr");
+
+    for (var i = 0; i < rows.length; i++) {
+		var row = [], cols = rows[i].querySelectorAll("td, th");
+
+        for (var j = 0; j < cols.length; j++)
+            row.push(cols[j].innerText);
+
+		csv.push(row.join(","));
+	}
+
+    // Download CSV
+    download_csv(csv.join("\n"), filename);
+}
+
+document.querySelector("button").addEventListener("click", function () {
+    var html = document.querySelector("table").outerHTML;
+	  export_table_to_csv(html, "table.csv");
+});
+
+
+    </script>
+
+{% endblock %}

@@ -277,8 +277,8 @@ class Indicator(models.Model):
 
     ai_id = models.PositiveIntegerField(blank=True, null=True)
     activity = models.ForeignKey(Activity)
-    name = models.CharField(max_length=1500)
-    label = models.CharField(max_length=1500, blank=True, null=True)
+    name = models.CharField(max_length=5000)
+    label = models.CharField(max_length=5000, blank=True, null=True)
     description = models.CharField(max_length=1500, blank=True, null=True)
     list_header = models.CharField(max_length=250, blank=True, null=True)
     type = models.CharField(max_length=250, blank=True, null=True)

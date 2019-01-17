@@ -12,7 +12,7 @@ from prettyjson import PrettyJSONWidget
 from import_export.widgets import *
 from . import models
 from .utils import *
-from .forms import DatabaseForm, IndicatorForm
+from .forms import DatabaseForm, IndicatorForm, IndicatorFormSet
 
 
 admin.site.site_header = 'Neuro-DB'
@@ -204,6 +204,7 @@ class IndicatorResource(resources.ModelResource):
 
 class IndicatorAdmin(ImportExportModelAdmin):
     form = IndicatorForm
+    formset = IndicatorFormSet
     resource_class = IndicatorResource
     search_fields = (
         'ai_id',
@@ -224,11 +225,11 @@ class IndicatorAdmin(ImportExportModelAdmin):
     list_display = (
         'id',
         'ai_id',
-        'activity',
         'awp_code',
         'name',
         'target',
         'units',
+        'activity',
         'category',
     )
     filter_horizontal = ('sub_indicators', 'summation_sub_indicators')
@@ -257,7 +258,6 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'category',
                 'status',
                 'status_color',
-                'measurement_type',
                 'none_ai_indicator',
                 # 'indicator_details',
                 # 'indicator_master',
