@@ -285,8 +285,8 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'master_indicator',
                 'master_indicator_sub',
                 'measurement_type',
-                # 'denominator_indicator',
-                # 'numerator_indicator',
+                'denominator_indicator',
+                'numerator_indicator',
                 'sub_indicators',
                 'summation_sub_indicators',
                 'denominator_summation',
@@ -432,11 +432,36 @@ class ActivityReportAdmin(RelatedFieldAdmin):
     date_hierarchy = 'start_date'
 
 
-class DatabaseAdmin(nested_admin.NestedModelAdmin):
-    model = Database
+class DatabaseResource(resources.ModelResource):
+
+    class Meta:
+        model = Database
+        fields = (
+            'ai_id',
+            'name',
+            'label',
+            'username',
+            'password',
+            'section',
+            'reporting_year',
+            'focal_point',
+            'mapped_db',
+            'description',
+            'country_name',
+            'ai_country_id',
+            'dashboard_link',
+            'mapping_extraction1',
+            'mapping_extraction2',
+            'mapping_extraction3',
+        )
+        export_order = fields
+
+
+class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     form = DatabaseForm
+    resources = DatabaseResource
     inlines = [
-        ActivityInlineAdmin,
+        # ActivityInlineAdmin,
     ]
     list_filter = (
         'section',
@@ -445,7 +470,10 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
     list_display = (
         'ai_id',
         'name',
-        'section',
+        'label',
+        'reporting_year',
+        'focal_point',
+        'mapped_db'
     )
     readonly_fields = (
         'description',
@@ -471,10 +499,13 @@ class DatabaseAdmin(nested_admin.NestedModelAdmin):
             'fields': [
                 'ai_id',
                 'name',
+                'label',
                 'username',
                 'password',
                 'section',
                 'reporting_year',
+                'focal_point',
+                'mapped_db',
                 'description',
                 'country_name',
                 'ai_country_id',

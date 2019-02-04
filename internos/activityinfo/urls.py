@@ -10,7 +10,6 @@ urlpatterns = [
         view=views.IndexView.as_view(),
         name='home'
     ),
-
     url(
         regex=r'^activityinfo-export/$',
         view=views.ExportViewSet.as_view(),
@@ -20,5 +19,10 @@ urlpatterns = [
         regex=r'^activityinfo/report/$',
         view=views.ReportView.as_view(),
         name='report'
+    ),
+    url(
+        regex=r'^activityinfo/live-report/$',
+        view=views.LiveReportView.as_view(),
+        name='live_report'
     ),
 ]

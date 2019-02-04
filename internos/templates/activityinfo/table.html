@@ -4,26 +4,22 @@
 
 {% block ai_databases %}
   {% for db in databases %}
-    <li><a href="/?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+    <li><a href="/?ai_id={{ db.ai_id }}">{{ db.name }}</a></li>
   {% endfor %}
 {% endblock %}
 
 {% block ai_reports %}
   {% for db in databases %}
-    <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+    <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.name }}</a></li>
   {% endfor %}
 {% endblock %}
 
 
 {% block content %}
 <!-- top tiles -->
-<div class="row" style="clear: both;">
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
-    <h3 style="margin-top: 0px;">Filter by:</h3>
-  </div>
-
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
-    <span class="count_top"><i class="fa fa-filter"></i> {{ partners|length }} Partners</span>
+<div class="row tile_count" style="clear: both;">
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="overflow: unset !important;">
+    <span class="count_top"><i class="glyphicon glyphicon-export"></i> {{ partners|length }} Partners</span>
     <div class="count">
 
       <ul class="nav nav-pills" role="tablist">
@@ -43,9 +39,8 @@
 
     </div>
   </div>
-
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
-    <span class="count_top"><i class="fa fa-filter"></i> {{ governorates|length }} Governorates</span>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="overflow: unset !important;">
+    <span class="count_top"><i class="glyphicon glyphicon-export"></i> {{ governorates|length }} Governorates</span>
     <div class="count">
 
       <ul class="nav nav-pills" role="tablist">
@@ -65,32 +60,18 @@
 
     </div>
   </div>
-
-  <i class="fa fa-user" data-toggle="tooltip" data-placement="bottom" data-html="true"
-     title="Database focal point: {{ database.focal_point }} <br/>
-            email: {{ database.focal_point.email }} <br/>
-            skype: {{ database.focal_point.skype_account }}" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
-  <a href="skype:{{ database.focal_point.skype_account }}?chat" data-toggle="tooltip" data-placement="bottom"
-     title="Chat with the database focal point via skype" style="padding-left: 20px;">
-    <i class="fa fa-skype faa-pulse animated-hover" style="font-size: 25px; color: #2dc6ff;"></i>
-  </a>
-  <a href="mailto:{{ database.focal_point.email }}" data-toggle="tooltip" data-placement="bottom"
-     title="Send email to the database focal point" style="padding-left: 20px;">
-    <i class="fa fa-envelope-o faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
-  </a>
 </div>
 
 <!-- /top tiles -->
 <div class="row" style="min-width: 2000px;">
-<a href="#" style="color: #d23900; font-size: 24px;">
-  <i class="fa fa-warning faa-flash animated"></i>
-  These numbers are only for monitoring purposes, don't use it in any official report.
-</a>
   <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
                     <h2>UNICEF LCO DASHBOARD - {{ database.name }} - {{ month_name }} 2019
-                      <a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>
+                      <!--<small>Users</small>-->
+                        <button class="btn btn-info" id="export1">
+                              Export
+                        </button>
                     </h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
@@ -102,72 +83,76 @@
                            data-tableName="UNICEF LCO DASHBOARD - {{ database.name }} - {{ month_name }} 2019"
                            class="table table-striped table-bordered">
                       <thead>
-                        <tr class="align-middle">
-                          <th>Indicator ID</th>
-                          <th>ActivityInfo Indicators</th>
-                          <th style="width: 130px;">Level of reporting</th>
+                        <tr>
+                          <!--<th>#</th>-->
+                          <th>Activity Info Indicator ID</th>
+                          <th>Filters Activity Info and Non Activity Info Indicators</th>
+                          <th>Level of reporting</th>
                           <th>AWP Code</th>
                           <th>Target</th>
-                          <th style="width: 160px;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
-                            Cumulative Results <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
-                          <th style="width: 120px;" data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">
-                            % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
+                          <th>Cumulative Results of All Months</th>
+                          <th>Total Percentage achieved of all months</th>
                           <th>Status</th>
-                          <th>{{ month_name }}</th>
+                          {% for month, month_name in months %}
+                            <th>{{ month_name }}</th>
+                          {% endfor %}
                         </tr>
                       </thead>
                       <tbody>
                         {% for item in master_indicators %}
-                          <tr {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold;"{% endif %}>
-                              {% if item.master_indicator %}
-                                <td colspan="2">{{ item.name }}</td>
-                              {% else %}
-                                <td>{{ item.ai_id }}</td>
-                                <td>{{ item.name }}</td>
-                              {% endif %}
+                          <tr {% if item.master_indicator %}style="background-color:#8FCAE7;"{% endif %}>
+                              <!--<td>{{ item.id }}</td>-->
+                              <td>{{ item.ai_id }}</td>
+                              <td>{{ item.label }}</td>
                               <td>Site</td>
                               <td>{{ item.awp_code }}</td>
                               <td>{{ item.target }}</td>
                               <td> {{ item.cumulative_results }}{% if item.measurement_type == 'percentage' %}%{% endif %}</td>
                               <td>{{ item.cumulative_results|percentage:item.target }}%</td>
                               <td style="background-color:{{ item.status_color }}; color: #FFF;">{{ item.status }}</td>
-                              <td>
-                                {% get_indicator_value item month selected_partner selected_governorate as value %}
-                                {{ value }} {% if item.measurement_type == 'percentage' %}%{% endif %}
-                              </td>
+                              {% for month, month_name in months %}
+                                <td>
+                                  {% get_indicator_value item month selected_partner selected_governorate as value %}
+                                  {{ value }} {% if item.measurement_type == 'percentage' %}%{% endif %}
+                                </td>
+                              {% endfor %}
                           </tr>
                           {% for item1 in item.sub_indicators.all %}
                             <tr {% if item1.master_indicator_sub %}style="background-color: #8FCA17;"{% endif %}>
+                                <!--<td>{{ item1.id }}</td>-->
                                 <td>{{ item1.ai_id }}</td>
-                                <td>{{ item1.name }}</td>
+                                <td>{{ item1.label }}</td>
                                 <td>Site</td>
                                 <td>{{ item1.awp_code }}</td>
                                 <td>{{ item1.target }}</td>
                                 <td> {{ item1.cumulative_results }}</td>
                                 <td>{{ item1.cumulative_results|percentage:item1.target }}%</td>
                                 <td style="background-color:{{ item1.status_color }}; color: #FFF;">{{ item1.status }}</td>
-                                <td>
-                                    {% get_indicator_value item1 month selected_partner selected_governorate as value %}
-                                    {{ value }} {% if item.measurement_type == 'percentage' %}%{% endif %}
-                                </td>
+                                {% for month, month_name in months %}
+                                  <td>
+                                      {% get_indicator_value item1 month selected_partner selected_governorate as value %}
+                                      {{ value }} {% if item.measurement_type == 'percentage' %}%{% endif %}
+                                  </td>
+                                {% endfor %}
                             </tr>
                             {% for item2 in item1.sub_indicators.all %}
                               {% if item2.master_indicator == 0 %}
                               <tr>
+                                  <!--<td>{{ item2.id }}</td>-->
                                   <td>{{ item2.ai_id }}</td>
-                                  <td>{{ item2.name }}</td>
+                                  <td>{{ item2.label }}</td>
                                   <td>Site</td>
                                   <td>{{ item2.awp_code }}</td>
                                   <td>{{ item2.target }}</td>
                                   <td> {{ item2.cumulative_results }}</td>
                                   <td>{{ item2.cumulative_results|percentage:item2.target }}%</td>
                                   <td style="background-color:{{ item2.status_color }}; color: #FFF;">{{ item2.status }}</td>
-                                  <td>
-                                    {% get_indicator_value item2 month selected_partner selected_governorate as value %}
-                                    {{ value }}
-                                  </td>
+                                  {% for month, month_name in months %}
+                                    <td>
+                                      {% get_indicator_value item2 month selected_partner selected_governorate as value %}
+                                      {{ value }}
+                                    </td>
+                                  {% endfor %}
                               </tr>
                               {% endif %}
                             {% endfor %}
@@ -186,7 +171,22 @@
 {% endblock content %}
 
 {% block extra_js %}
+    <!--<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>-->
     <script>
+
+    <!--$(document).ready(function(){-->
+        <!--$('#export1').click(function(){-->
+            <!--$("#exporttable1").table2excel({-->
+                <!--exclude: ".noExl",-->
+                <!--name: "Excel Document Name",-->
+                <!--filename: $("#exporttable1").attr('data-tableName')+'.xls',-->
+                <!--fileext: ".xlsx",-->
+                <!--exclude_img: true,-->
+                <!--exclude_links: true,-->
+                <!--exclude_inputs: true-->
+            <!--});-->
+        <!--});-->
+    <!--});-->
 
 function download_csv(csv, filename) {
     var csvFile;
@@ -231,7 +231,7 @@ function export_table_to_csv(html, filename) {
     download_csv(csv.join("\n"), filename);
 }
 
-document.querySelector("#export1").addEventListener("click", function () {
+document.querySelector("button").addEventListener("click", function () {
     var html = document.querySelector("table").outerHTML;
 	  export_table_to_csv(html, "table.csv");
 });

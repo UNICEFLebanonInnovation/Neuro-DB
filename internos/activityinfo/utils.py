@@ -342,7 +342,7 @@ def calculate_indicators_status(database):
 def get_indicator_value(indicator_id, level=0, month=None, partner=None, gov=None):
     from internos.activityinfo.models import ActivityReport, Indicator
 
-    if indicator_id.measurement_type == 'percentage':
+    if indicator_id.measurement_type == 'percentage' and (level == 1 or level == 2):
         return get_indicator_value_percentage(indicator_id, month, partner, gov)
 
     reports = ActivityReport.objects.filter(funded_by='UNICEF')
@@ -369,23 +369,26 @@ def get_indicator_value(indicator_id, level=0, month=None, partner=None, gov=Non
     return total['indicator_value__sum'] if total['indicator_value__sum'] else 0
 
 
-def get_indicator_value_percentage(indicator_id, month=None, partner=None, gov=None):
+def get_indicator_value_percentage(indicator, month=None, partner=None, gov=None):
     from internos.activityinfo.models import ActivityReport, Indicator
 
     reports = ActivityReport.objects.filter(funded_by='UNICEF')
     reports1 = ActivityReport.objects.filter(funded_by='UNICEF')
 
-    denominator_summation = indicator_id.denominator_summation.values_list('id', flat=True).distinct()
-    denominator_indicators = Indicator.objects.filter(
-        denominator_summation__id__in=denominator_summation
-    ).exclude(master_indicator=True).values_list('id', flat=True).distinct()
-    reports = reports.filter(ai_indicator_id__in=denominator_indicators)
+    reports = reports.filter(ai_indicator_id=indicator.denominator_indicator__id)
+    reports1 = reports1.filter(ai_indicator_id__in=indicator.numerator_indicator__id)
 
-    numerator_summation = indicator_id.numerator_summation.values_list('id', flat=True).distinct()
-    numerator_indicators = Indicator.objects.filter(
-        numerator_summation__id__in=numerator_summation
-    ).exclude(master_indicator=True).values_list('id', flat=True).distinct()
-    reports1 = reports1.filter(ai_indicator_id__in=numerator_indicators)
+    # denominator_summation = indicator.denominator_summation.values_list('id', flat=True).distinct()
+    # denominator_indicators = Indicator.objects.filter(
+    #     denominator_summation__id__in=denominator_summation
+    # ).exclude(master_indicator=True).values_list('id', flat=True).distinct()
+    # reports = reports.filter(ai_indicator_id__in=denominator_indicators)
+    #
+    # numerator_summation = indicator.numerator_summation.values_list('id', flat=True).distinct()
+    # numerator_indicators = Indicator.objects.filter(
+    #     numerator_summation__id__in=numerator_summation
+    # ).exclude(master_indicator=True).values_list('id', flat=True).distinct()
+    # reports1 = reports1.filter(ai_indicator_id__in=numerator_indicators)
 
     if month:
         reports = reports.filter(start_date__month=month)
@@ -402,7 +405,7 @@ def get_indicator_value_percentage(indicator_id, month=None, partner=None, gov=N
     denominator = total['indicator_value__sum'] if total['indicator_value__sum'] else 0
     numerator = total1['indicator_value__sum'] if total1['indicator_value__sum'] else 0
     try:
-        return denominator / numerator
+        return numerator / denominator
     except Exception:
         return 0
 

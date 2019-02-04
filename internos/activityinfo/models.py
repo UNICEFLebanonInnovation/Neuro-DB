@@ -4,6 +4,7 @@ import json
 import re
 from datetime import datetime
 from django.db import models
+from django.conf import settings
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from django.contrib.postgres.fields import ArrayField, JSONField
@@ -28,8 +29,14 @@ class Database(models.Model):
         verbose_name='ActivityInfo ID'
     )
     name = models.CharField(max_length=254)
+    label = models.CharField(max_length=254, null=True, blank=True)
     username = models.CharField(max_length=254)
     password = models.CharField(max_length=254)
+    focal_point = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True, null=True,
+        related_name='+',
+    )
 
     # read only fields
     description = models.CharField(max_length=1500, null=True)
@@ -40,7 +47,7 @@ class Database(models.Model):
         Section,
         null=True, blank=True
     )
-
+    mapped_db = models.BooleanField(default=True)
     mapping_extraction1 = JSONField(blank=True, null=True)
     mapping_extraction2 = JSONField(blank=True, null=True)
     mapping_extraction3 = JSONField(blank=True, null=True)
@@ -155,7 +162,7 @@ class Database(models.Model):
                     ai_indicator.activity = ai_activity
                     ai_indicator.save()
 
-                    if new_instance:
+                    if new_instance and self.mapped_db:
                         self.create_master_indicator(indicator, ai_indicator)
 
                 for attribute_group in activity['attributeGroups']:
@@ -244,7 +251,7 @@ class Activity(models.Model):
 
     ai_id = models.PositiveIntegerField(unique=True)
     database = models.ForeignKey(Database)
-    name = models.CharField(max_length=254)
+    name = models.CharField(max_length=1500)
     location_type = models.CharField(max_length=254)
 
     def __unicode__(self):
@@ -266,7 +273,7 @@ class IndicatorTag(models.Model):
 
 class IndicatorCategory(models.Model):
 
-    name = models.CharField(max_length=254)
+    name = models.CharField(max_length=1500)
     reporting_level = models.CharField(max_length=254, blank=True, null=True)
     awp_code = models.CharField(max_length=254, blank=True, null=True)
     target = models.PositiveIntegerField(default=0)
