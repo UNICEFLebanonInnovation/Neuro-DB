@@ -38,11 +38,13 @@ class IndicatorForm(forms.ModelForm):
     )
     denominator_indicator = forms.ModelChoiceField(
          required=False,
-         queryset=Indicator.objects.filter(master_indicator_sub=True)
+         queryset=Indicator.objects.filter()
+         # queryset=Indicator.objects.filter(master_indicator_sub=True)
     )
     numerator_indicator = forms.ModelChoiceField(
          required=False,
-         queryset=Indicator.objects.filter(master_indicator_sub=True)
+         queryset=Indicator.objects.filter()
+         # queryset=Indicator.objects.filter(master_indicator_sub=True)
     )
     # sub_indicators = forms.ModelMultipleChoiceField(
     #     required=False,
@@ -78,13 +80,13 @@ class IndicatorForm(forms.ModelForm):
 
         super(IndicatorForm, self).__init__(*args, **kwargs)
 
-     #   if self.instance and self.instance.activity:
-      #      queryset = Indicator.objects.filter(
-       #         activity__database_id=self.instance.activity.database_id)
-            # self.fields['denominator_indicator'].queryset = queryset
-            # self.fields['numerator_indicator'].queryset = queryset
-            # self.fields['sub_indicators'].queryset = queryset
-            # self.fields['summation_sub_indicators'].queryset = queryset
+        if self.instance and hasattr(self.instance, 'activity') and self.instance.activity:
+            queryset = Indicator.objects.filter(
+               activity__database_id=self.instance.activity.database_id)
+            self.fields['denominator_indicator'].queryset = queryset
+            self.fields['numerator_indicator'].queryset = queryset
+            self.fields['sub_indicators'].queryset = queryset
+            self.fields['summation_sub_indicators'].queryset = queryset
             # self.fields['denominator_summation'].queryset = queryset
             # self.fields['numerator_summation'].queryset = queryset
 

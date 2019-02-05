@@ -16,6 +16,25 @@
 
 
 {% block content %}
+<style>
+.table-fixed {
+  box-shadow: 7px 6px 7px;
+  position: absolute;
+}
+.table thead {
+  background-color: #6ad0f9;
+  color: white;
+}
+.w-70 { min-width:70px; width: 70px; max-width: 70px;}
+.w-100 { min-width:100px; width: 100px; max-width: 100px;}
+.w-120 { min-width:120px; width: 120px; max-width: 120px;}
+.w-130 { min-width:130px; width: 130px; max-width: 130px;}
+.w-140 { min-width:140px; width: 140px; max-width: 140px;}
+.w-150 { min-width:150px; width: 150px; max-width: 150px;}
+.w-400 { min-width:400px; width: 400px; max-width: 400px;}
+
+</style>
+
 <!-- top tiles -->
 <div class="row" style="clear: both;">
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
@@ -81,8 +100,8 @@
 </div>
 
 <!-- /top tiles -->
-<div class="row" style="min-width: 2000px;">
-  <div class="col-md-12 col-sm-12 col-xs-12">
+<div class="row" style="min-width: 2100px;">
+  <div class="w-1002 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
                     <h2>UNICEF LCO DASHBOARD - {{ database.label }} - {{ month_name }} 2019
@@ -101,32 +120,56 @@
                     <div class="clearfix"></div>
                   </div>
                   <div class="x_content">
+
+                    <table class="table table-striped table-bordered table-fixed" style="display: none;">
+                      <thead>
+                        <tr>
+                          <!--<th>#</th>-->
+                          <th class="w-100" style="vertical-align: middle;">Indicator ID</th>
+                          <th class="w-400" style="vertical-align: middle;">ActivityInfo Indicators</th>
+                          <th class="w-120" style="vertical-align: middle;">Level of reporting</th>
+                          <th class="w-100" style="vertical-align: middle;">AWP Code</th>
+                          <th class="w-100" style="vertical-align: middle;">Target</th>
+                          <th class="w-130" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
+                            Cumulative Results <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
+                          </th>
+                          <th class="w-130" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">
+                            % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
+                          </th>
+                          <th class="w-70" style="vertical-align: middle;">Status</th>
+                          {% for month, month_name in months %}
+                            <th class="w-70" style="vertical-align: middle;">{{ month_name }}</th>
+                          {% endfor %}
+                        </tr>
+                      </thead>
+                    </table>
+
                     <table id="exporttable1"
                            data-tableName="UNICEF LCO DASHBOARD - {{ database.name }} - {{ month_name }} 2019"
                            class="table table-striped table-bordered">
                       <thead>
-                        <tr class="align-middle">
+                        <tr>
                           <!--<th>#</th>-->
-                          <th>Indicator ID</th>
-                          <th>ActivityInfo Indicators</th>
-                          <th>Level of reporting</th>
-                          <th>AWP Code</th>
-                          <th>Target</th>
-                          <th data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
+                          <th class="w-100" style="vertical-align: middle;">Indicator ID</th>
+                          <th class="w-400" style="vertical-align: middle;">ActivityInfo Indicators</th>
+                          <th class="w-120" style="vertical-align: middle;">Level of reporting</th>
+                          <th class="w-100" style="vertical-align: middle;">AWP Code</th>
+                          <th class="w-100" style="vertical-align: middle;">Target</th>
+                          <th class="w-130" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
                             Cumulative Results <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
                           </th>
-                          <th data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">
+                          <th class="w-130" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">
                             % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
                           </th>
-                          <th>Status</th>
+                          <th class="w-70" style="vertical-align: middle;">Status</th>
                           {% for month, month_name in months %}
-                            <th>{{ month_name }}</th>
+                            <th class="w-70" style="vertical-align: middle;">{{ month_name }}</th>
                           {% endfor %}
                         </tr>
                       </thead>
                       <tbody>
                         {% for item in master_indicators %}
-                          <tr {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold;"{% endif %}>
+                          <tr {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;"{% elif item.individual_indicator %}style="background-color:#dadada;"{% endif %}>
                               <!--<td>{{ item.id }}</td>-->
                               {% if item.master_indicator %}
                                 <td colspan="2">{{ item.name }}</td>
@@ -148,10 +191,14 @@
                               {% endfor %}
                           </tr>
                           {% for item1 in item.sub_indicators.all %}
-                            <tr {% if item1.master_indicator_sub %}style="background-color: #8FCA17;"{% endif %}>
+                            <tr {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
                                 <!--<td>{{ item1.id }}</td>-->
-                                <td>{{ item1.ai_id }}</td>
-                                <td>{{ item1.name }}</td>
+                                {% if item1.master_indicator_sub %}
+                                  <td colspan="2">{{ item1.name }}</td>
+                                {% else %}
+                                  <td>{{ item1.ai_id }}</td>
+                                  <td>{{ item1.name }}</td>
+                                {% endif %}
                                 <td>Site</td>
                                 <td>{{ item1.awp_code }}</td>
                                 <td>{{ item1.target }}</td>
@@ -217,6 +264,19 @@
             <!--});-->
         <!--});-->
     <!--});-->
+
+$(window).on("scroll", function() {
+	var scrollHeight = $(document).height();
+	var scrollPosition = $(window).height() + $(window).scrollTop();
+	console.log(scrollHeight);
+	console.log(scrollPosition);
+	if (scrollPosition > 850) {
+	    $('.table-fixed').show();
+	    $('.table-fixed').offset({ top: scrollPosition - 600 });
+	}else{
+	  $('.table-fixed').hide();
+	}
+});
 
 function download_csv(csv, filename) {
     var csvFile;

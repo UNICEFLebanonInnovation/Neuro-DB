@@ -93,9 +93,9 @@ class ReportView(TemplateView):
         unicef_funds = report.count()
         not_reported = report.filter(Q(indicator_value__isnull=True) | Q(indicator_value=0)).count()
 
-        master_indicators = Indicator.objects.filter(activity__database=database).order_by('id')
+        master_indicators = Indicator.objects.filter(activity__database=database).order_by('sequence')
         if database.mapped_db:
-            master_indicators = master_indicators.filter(master_indicator=True)
+            master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
         months = []
         for i in range(1, 13):

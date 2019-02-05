@@ -201,6 +201,8 @@ class IndicatorResource(resources.ModelResource):
             'tag_gender__name',
             'tag_nationality__name',
             'tag_disability__name',
+            'sequence',
+            'individual_indicator',
         )
 
 
@@ -217,6 +219,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'activity__database',
         'master_indicator',
         'master_indicator_sub',
+        'individual_indicator',
     )
     suit_list_filter_horizontal = (
         'activity__database__reporting_year',
@@ -233,12 +236,17 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'units',
         'activity',
         'category',
+        'sequence',
     )
     filter_horizontal = (
         'sub_indicators',
         'summation_sub_indicators',
         'denominator_summation',
         'numerator_summation',
+    )
+    list_editable = (
+        'awp_code',
+        'sequence',
     )
 
     formfield_overrides = {
@@ -268,6 +276,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'status_color',
                 'none_ai_indicator',
                 'funded_by',
+                'sequence',
             ]
         }),
         ('Tags', {
@@ -284,6 +293,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
             'fields': [
                 'master_indicator',
                 'master_indicator_sub',
+                'individual_indicator',
                 'measurement_type',
                 'denominator_indicator',
                 'numerator_indicator',

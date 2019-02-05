@@ -308,6 +308,7 @@ class Indicator(models.Model):
     status_color = models.CharField(max_length=254, blank=True, null=True)
     master_indicator = models.BooleanField(default=False)
     master_indicator_sub = models.BooleanField(default=False)
+    individual_indicator = models.BooleanField(default=False)
     sub_indicators = models.ManyToManyField('self', blank=True, related_name='top_indicator')
     summation_sub_indicators = models.ManyToManyField('self', blank=True, related_name='summation_top_indicator')
     denominator_indicator = models.ForeignKey('self', blank=True, null=True, related_name='+')
@@ -323,6 +324,7 @@ class Indicator(models.Model):
     tag_nationality = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_disability = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     none_ai_indicator = models.BooleanField(default=False)
+    sequence = models.IntegerField(blank=True, null=True)
     funded_by = models.CharField(max_length=254, blank=True, null=True)
     measurement_type = models.CharField(
         max_length=250,
