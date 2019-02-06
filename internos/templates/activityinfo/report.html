@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load staticfiles i18n %}
 {% load util_tags %}
-
+{% load static %}
 {% block ai_databases %}
   {% for db in databases %}
     <li><a href="/?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
@@ -18,8 +18,9 @@
 {% block content %}
 <style>
 .table-fixed {
-  box-shadow: 7px 6px 7px;
+  box-shadow: -5px 7px 8px;
   position: absolute;
+  margin-top: 12px;
 }
 .table thead {
   background-color: #6ad0f9;
@@ -105,6 +106,10 @@
                 <div class="x_panel">
                   <div class="x_title">
                     <h2>UNICEF LCO DASHBOARD - {{ database.label }} - {{ month_name }} 2019
+                      <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
+                             autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
+                             aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
+                             style="position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;">
                       <!--<small>Users</small>-->
                       <a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>
                       <!--<a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;">
@@ -172,10 +177,20 @@
                           <tr {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;"{% elif item.individual_indicator %}style="background-color:#dadada;"{% endif %}>
                               <!--<td>{{ item.id }}</td>-->
                               {% if item.master_indicator %}
-                                <td colspan="2">{{ item.name }}</td>
+                                <th colspan="2">
+                                  {{ item.name }}
+                                  {% if item.explication %}
+                                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item.explication }}"></i>
+                                  {% endif %}
+                                </th>
                               {% else %}
                                 <td>{{ item.ai_id }}</td>
-                                <td>{{ item.name }}</td>
+                                <th>
+                                  {{ item.name }}
+                                  {% if item.explication %}
+                                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item.explication }}"></i>
+                                  {% endif %}
+                                </th>
                               {% endif %}
                               <td>Site</td>
                               <td>{{ item.awp_code }}</td>
@@ -194,10 +209,20 @@
                             <tr {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
                                 <!--<td>{{ item1.id }}</td>-->
                                 {% if item1.master_indicator_sub %}
-                                  <td colspan="2">{{ item1.name }}</td>
+                                  <th colspan="2">
+                                    {{ item1.name }}
+                                    {% if item1.explication %}
+                                    <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item1.explication }}"></i>
+                                    {% endif %}
+                                  </th>
                                 {% else %}
                                   <td>{{ item1.ai_id }}</td>
-                                  <td>{{ item1.name }}</td>
+                                  <th>
+                                    {{ item1.name }}
+                                    {% if item1.explication %}
+                                    <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item1.explication }}"></i>
+                                    {% endif %}
+                                  </th>
                                 {% endif %}
                                 <td>Site</td>
                                 <td>{{ item1.awp_code }}</td>
@@ -217,7 +242,12 @@
                               <tr>
                                   <!--<td>{{ item2.id }}</td>-->
                                   <td>{{ item2.ai_id }}</td>
-                                  <td>{{ item2.name }}</td>
+                                  <th>
+                                    {{ item2.name }}
+                                    {% if item2.explication %}
+                                    <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
+                                    {% endif %}
+                                  </th>
                                   <td>Site</td>
                                   <td>{{ item2.awp_code }}</td>
                                   <td>{{ item2.target }}</td>
@@ -248,28 +278,13 @@
 {% endblock content %}
 
 {% block extra_js %}
+  <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
     <!--<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>-->
-    <script>
-
-    <!--$(document).ready(function(){-->
-        <!--$('#export1').click(function(){-->
-            <!--$("#exporttable1").table2excel({-->
-                <!--exclude: ".noExl",-->
-                <!--name: "Excel Document Name",-->
-                <!--filename: $("#exporttable1").attr('data-tableName')+'.xls',-->
-                <!--fileext: ".xlsx",-->
-                <!--exclude_img: true,-->
-                <!--exclude_links: true,-->
-                <!--exclude_inputs: true-->
-            <!--});-->
-        <!--});-->
-    <!--});-->
+  <script>
 
 $(window).on("scroll", function() {
 	var scrollHeight = $(document).height();
 	var scrollPosition = $(window).height() + $(window).scrollTop();
-	console.log(scrollHeight);
-	console.log(scrollPosition);
 	if (scrollPosition > 850) {
 	    $('.table-fixed').show();
 	    $('.table-fixed').offset({ top: scrollPosition - 600 });
@@ -326,6 +341,57 @@ document.querySelector("#export1").addEventListener("click", function () {
 	  export_table_to_csv(html, "table.csv");
 });
 
+$('input#search-input').quicksearch('table#exporttable1 tbody tr', {
+	'delay': 300,
+	'selector': 'th',
+	'stripeRows': ['odd', 'even'],
+	'loader': 'span.loading',
+	'bind': 'keyup click input',
+	<!--'show': function () {-->
+		<!--this.style.color = '';-->
+	<!--},-->
+	<!--'hide': function () {-->
+		<!--this.style.color = '#ccc';-->
+	<!--},-->
+	'prepareQuery': function (val) {
+		return new RegExp(val, "i");
+	},
+	'testQuery': function (query, txt, _row) {
+		return query.test(txt);
+	}
+});
+
+<!--$('input#search1').quicksearch('table tbody tr td', {-->
+	<!--'delay': 100,-->
+	<!--'selector': 'td',-->
+	<!--'stripeRows': ['odd', 'even'],-->
+	<!--'loader': 'span.loading',-->
+	<!--'noResults': 'tr#noresults',-->
+	<!--'bind': 'keyup keydown',-->
+	<!--'minValLength': 2,-->
+	<!--'removeDiacritics': true,-->
+	<!--'onBefore': function () {-->
+		<!--console.log('on before');-->
+	<!--},-->
+	<!--'onAfter': function () {-->
+		<!--console.log('on after');-->
+	<!--},-->
+	<!--'onValTooSmall': function (val) {-->
+		<!--console.log('value ' + val + ' is too small');-->
+	<!--},-->
+	<!--'show': function () {-->
+		<!--$(this).addClass('show');-->
+	<!--},-->
+	<!--'hide': function () {-->
+		<!--$(this).removeClass('show');-->
+	<!--},-->
+	<!--'prepareQuery': function (val) {-->
+		<!--return new RegExp(val, "i");-->
+	<!--},-->
+	<!--'testQuery': function (query, txt, _row) {-->
+		<!--return query.test(txt);-->
+	<!--}-->
+<!--});-->
 
     </script>
 

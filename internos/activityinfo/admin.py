@@ -203,6 +203,7 @@ class IndicatorResource(resources.ModelResource):
             'tag_disability__name',
             'sequence',
             'individual_indicator',
+            'explication',
         )
 
 
@@ -263,6 +264,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'name',
                 'label',
                 'description',
+                'explication',
                 'activity',
                 'list_header',
                 'type',
