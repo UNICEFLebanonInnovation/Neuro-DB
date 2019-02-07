@@ -48,7 +48,7 @@
 
       <ul class="nav nav-pills" role="tablist">
         <li role="presentation" class="dropdown">
-          <a id="drop6" href="#" style="font-size: 20px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+          <a id="drop6" href="#" style="font-size: 15px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
             {% if selected_partner == '0' %} All Partners{% else %} {{ selected_partner_name }} {% endif %}
             <span class="caret"></span>
           </a>
@@ -70,7 +70,7 @@
 
       <ul class="nav nav-pills" role="tablist">
         <li role="presentation" class="dropdown">
-          <a id="drop7" href="#" style="font-size: 20px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+          <a id="drop7" href="#" style="font-size: 15px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
             {% if selected_governorate == '0' %}All Governorates {% else %} {{ selected_governorate_name }} {% endif %}
             <span class="caret"></span>
           </a>
@@ -201,7 +201,7 @@
                               {% for month, month_name in months %}
                                 <td>
                                   {% get_indicator_value item month selected_partner selected_governorate as value %}
-                                  {{ value }} {% if item.measurement_type == 'percentage' %}%{% endif %}
+                                  {{ value }}
                                 </td>
                               {% endfor %}
                           </tr>
@@ -233,7 +233,7 @@
                                 {% for month, month_name in months %}
                                   <td>
                                       {% get_indicator_value item1 month selected_partner selected_governorate as value %}
-                                      {{ value }} {% if item.measurement_type == 'percentage' %}%{% endif %}
+                                      {{ value }}
                                   </td>
                                 {% endfor %}
                             </tr>
@@ -279,7 +279,7 @@
 
 {% block extra_js %}
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
-    <!--<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>-->
+  <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
   <script>
 
 $(window).on("scroll", function() {
@@ -360,38 +360,6 @@ $('input#search-input').quicksearch('table#exporttable1 tbody tr', {
 		return query.test(txt);
 	}
 });
-
-<!--$('input#search1').quicksearch('table tbody tr td', {-->
-	<!--'delay': 100,-->
-	<!--'selector': 'td',-->
-	<!--'stripeRows': ['odd', 'even'],-->
-	<!--'loader': 'span.loading',-->
-	<!--'noResults': 'tr#noresults',-->
-	<!--'bind': 'keyup keydown',-->
-	<!--'minValLength': 2,-->
-	<!--'removeDiacritics': true,-->
-	<!--'onBefore': function () {-->
-		<!--console.log('on before');-->
-	<!--},-->
-	<!--'onAfter': function () {-->
-		<!--console.log('on after');-->
-	<!--},-->
-	<!--'onValTooSmall': function (val) {-->
-		<!--console.log('value ' + val + ' is too small');-->
-	<!--},-->
-	<!--'show': function () {-->
-		<!--$(this).addClass('show');-->
-	<!--},-->
-	<!--'hide': function () {-->
-		<!--$(this).removeClass('show');-->
-	<!--},-->
-	<!--'prepareQuery': function (val) {-->
-		<!--return new RegExp(val, "i");-->
-	<!--},-->
-	<!--'testQuery': function (query, txt, _row) {-->
-		<!--return query.test(txt);-->
-	<!--}-->
-<!--});-->
 
     </script>
 

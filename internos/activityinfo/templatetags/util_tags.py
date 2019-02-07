@@ -80,23 +80,36 @@ def array_value(data, key):
     return ''
 
 
+def get_indicator_unit(indicator, value):
+
+    if not value:
+        return 0
+
+    if indicator.measurement_type == 'percentage':
+        value = '{} {}'.format(value, '%')
+
+    if indicator.units:
+        return '{} {}'.format(value, indicator.units)
+    return value
+
+
 @register.assignment_tag
 def get_indicator_value(indicator, month=None, partner=None, gov=None):
     try:
         if partner and gov and not partner == '0' and not gov == '0':
             key = "{}-{}-{}".format(month, partner, gov)
-            return indicator.values_partners_gov[key]
+            return get_indicator_unit(indicator, indicator.values_partners_gov[key])
         if partner and not partner == '0':
             key = "{}-{}".format(month, partner)
-            return indicator.values_partners[key]
+            return get_indicator_unit(indicator, indicator.values_partners[key])
         if gov and not gov == '0':
             key = "{}-{}".format(month, gov)
-            return indicator.values_gov[key]
+            return get_indicator_unit(indicator, indicator.values_gov[key])
 
-        return indicator.values.get(str(month))
+        return get_indicator_unit(indicator,indicator.values.get(str(month)))
     except Exception as ex:
         # print(ex)
-        return 0
+        return get_indicator_unit(indicator, 0)
 
 
 # @register.assignment_tag

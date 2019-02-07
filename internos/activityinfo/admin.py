@@ -20,7 +20,22 @@ from .forms import DatabaseForm, IndicatorForm, IndicatorFormSet
 admin.site.site_header = 'Neuro-DB'
 
 
-class PartnerAdmin(admin.ModelAdmin):
+class PartnerResource(resources.ModelResource):
+
+    class Meta:
+        model = Partner
+        fields = (
+            'id',
+            'ai_id',
+            'name',
+            'full_name',
+            'database'
+        )
+        export_order = fields
+
+
+class PartnerAdmin(ImportExportModelAdmin):
+    resource_class = PartnerResource
     list_filter = (
         'database__reporting_year',
         'database',
@@ -135,7 +150,22 @@ class ActivityInlineAdmin(nested_admin.NestedStackedInline):
         return False
 
 
-class ActivityAdmin(admin.ModelAdmin):
+class ActivityResource(resources.ModelResource):
+
+    class Meta:
+        model = Activity
+        fields = (
+            'id',
+            'ai_id',
+            'name',
+            'database',
+            'location_type',
+        )
+        export_order = fields
+
+
+class ActivityAdmin(ImportExportModelAdmin):
+    resource_class = ActivityResource
     list_filter = (
         'database__reporting_year',
         'database',
@@ -247,6 +277,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
     )
     list_editable = (
         'awp_code',
+        'target',
         'sequence',
     )
 
@@ -317,7 +348,23 @@ class IndicatorAdmin(ImportExportModelAdmin):
     ]
 
 
-class AttributeGroupAdmin(admin.ModelAdmin):
+class AttributeGroupResource(resources.ModelResource):
+
+    class Meta:
+        model = AttributeGroup
+        fields = (
+            'id',
+            'ai_id',
+            'name',
+            'activity',
+            'multiple_allowed',
+            'mandatory',
+        )
+        export_order = fields
+
+
+class AttributeGroupAdmin(ImportExportModelAdmin):
+    resource_class = AttributeGroupResource
     search_fields = (
         'ai_id',
         'name',
@@ -330,10 +377,26 @@ class AttributeGroupAdmin(admin.ModelAdmin):
     list_display = (
         'ai_id',
         'name',
+        'activity',
+        'multiple_allowed',
+        'mandatory',
     )
 
 
-class AttributeAdmin(admin.ModelAdmin):
+class AttributeResource(resources.ModelResource):
+    class Meta:
+        model = Attribute
+        fields = (
+            'id',
+            'ai_id',
+            'name',
+            'attribute_group',
+        )
+        export_order = fields
+
+
+class AttributeAdmin(ImportExportModelAdmin):
+    resource_class = AttributeResource
     search_fields = (
         'ai_id',
         'name',
@@ -449,6 +512,7 @@ class DatabaseResource(resources.ModelResource):
     class Meta:
         model = Database
         fields = (
+            'id',
             'ai_id',
             'name',
             'label',
@@ -494,12 +558,15 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     )
     actions = [
         'import_basic_data',
+        'update_basic_data',
         'generate_indicator_tags',
         'import_data',
         'import_reports',
+        'import_reports_forced',
         'generate_awp_code',
         'calculate_sum_target',
         'link_indicators_data',
+        'reset_indicators_values',
         'calculate_indicators_values',
         'calculate_indicators_status',
         'copy_disaggregated_data',
@@ -556,6 +623,15 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             "{} objects created.".format(objects)
         )
 
+    def update_basic_data(self, request, queryset):
+        objects = 0
+        for db in queryset:
+            objects += db.import_data(import_new=False)
+        self.message_user(
+            request,
+            "{} objects created.".format(objects)
+        )
+
     def generate_indicator_tags(self, request, queryset):
         reports = 0
         for db in queryset:
@@ -580,6 +656,15 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         for db in queryset:
             reports = read_data_from_file(db.ai_id)
             # reports += db.import_reports()
+        self.message_user(
+            request,
+            "{} reports created.".format(reports)
+        )
+
+    def import_reports_forced(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = read_data_from_file(db.ai_id, True)
         self.message_user(
             request,
             "{} reports created.".format(reports)
@@ -619,6 +704,15 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         self.message_user(
             request,
             "{} indicators linked.".format(reports)
+        )
+
+    def reset_indicators_values(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = reset_indicators_values(db.ai_id)
+        self.message_user(
+            request,
+            "{} indicators values removed.".format(reports)
         )
 
     def calculate_indicators_values(self, request, queryset):
