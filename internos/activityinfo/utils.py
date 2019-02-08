@@ -129,7 +129,7 @@ def add_rows(ai_id, selected_month=None):
                 indicator_name=unicode(row['indicator.name'], errors='replace'),
                 indicator_awp_code=get_awp_code(unicode(row['indicator.name'], errors='replace')),
                 month_name=month_name,
-                partner_label=row['partner.label'] if 'partner.label' in row else '',
+                partner_label=unicode(row['partner.label']) if 'partner.label' in row else '',
                 location_adminlevel_caza_code=row[
                     'location.adminlevel.caza.code'] if 'location.adminlevel.caza.code' in row else '',
                 location_adminlevel_caza=unicode(row['location.adminlevel.caza'],
