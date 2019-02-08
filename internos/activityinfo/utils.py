@@ -9,7 +9,8 @@ from django.conf import settings
 
 def r_script_command_line(script_name, ai_db):
     command = 'Rscript'
-    path = os.path.dirname(os.path.abspath(__file__))
+    # path = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.dirname(__file__)
     path2script = os.path.join(path, 'RScripts')
     path2script = os.path.join(path2script, script_name)
     print(path2script)
