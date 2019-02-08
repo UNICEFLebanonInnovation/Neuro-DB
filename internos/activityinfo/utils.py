@@ -303,7 +303,8 @@ def calculate_master_indicators_values(ai_id, sub_indicators=False):
         indicators = Indicator.objects.filter(activity__database__ai_id=ai_id, master_indicator_sub=True)
     else:
         indicators = Indicator.objects.filter(activity__database__ai_id=ai_id,
-                                              master_indicator=True).exclude(measurement_type='percentage')
+                                              master_indicator=True)
+            # .exclude(measurement_type='percentage')
 
     report = ActivityReport.objects.filter(database_id=ai_id)
     partners = report.values('partner_id').distinct()
