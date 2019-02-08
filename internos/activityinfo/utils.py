@@ -10,7 +10,9 @@ from django.conf import settings
 def r_script_command_line(script_name, ai_db):
     command = 'Rscript'
     path = os.path.dirname(os.path.abspath(__file__))
-    path2script = path+'\\RScripts\\'+script_name
+    path2script = os.path.join(path, 'RScripts')
+    path2script = os.path.join(path2script, script_name)
+    print(path2script)
 
     cmd = [command, path2script, ai_db.username, ai_db.password, str(ai_db.ai_id)]
 
