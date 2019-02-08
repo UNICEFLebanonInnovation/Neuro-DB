@@ -160,8 +160,8 @@ def add_rows(ai_id, selected_month=None):
                 start_date=row['start_date'] if 'start_date' in row and not row['start_date'] == 'NA' else None,
                 location_adminlevel_cadastral_area=unicode(row['location.adminlevel.cadastral_area'],
                                                               errors='replace') if 'location.adminlevel.cadastral_area' in row else '',
-                location_adminlevel_governorate=row[
-                    'location.adminlevel.governorate'] if 'location.adminlevel.governorate' in row else '',
+                location_adminlevel_governorate=unicode(row[
+                    'location.adminlevel.governorate']) if 'location.adminlevel.governorate' in row else '',
             )
     return ctr
 
