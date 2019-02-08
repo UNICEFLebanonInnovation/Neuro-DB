@@ -239,20 +239,22 @@ def calculate_sum_target(ai_id):
     return top_indicators.count() + sub_indicators.count()
 
 
-def link_indicators_data(ai_id):
+def link_indicators_data(ai_db):
     from internos.activityinfo.models import Indicator, ActivityReport
 
     ctr = 0
-    reports = ActivityReport.objects.filter(database_id=ai_id)
-    # reports = ActivityReport.objects.filter(database_id=ai_id, funded_by='UNICEF')
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_id)
+    reports = ActivityReport.objects.filter(database_id=ai_db.ai_id)
+    if ai_db.is_funded_by_unicef:
+        reports = reports.filter(funded_by='UNICEF')
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
 
     for item in indicators:
         ai_values = reports.filter(indicator_id=item.ai_indicator)
         if not ai_values.count():
             continue
         ctr += 1
-        # item.update(funded_by='UNICEF')
+        if ai_db.is_funded_by_unicef:
+            item.update(funded_by='UNICEF')
         ai_values.update(ai_indicator=item)
 
     return ctr
@@ -272,20 +274,20 @@ def reset_indicators_values(ai_id):
     return indicators.count()
 
 
-def calculate_indicators_values(ai_id):
-    calculate_individual_indicators_values(ai_id)
-    calculate_master_indicators_values(ai_id, True)
-    calculate_master_indicators_values(ai_id)
-    calculated_master_indicators_values_percentage(ai_id)
-    calculate_indicators_cumulative_results(ai_id)
+def calculate_indicators_values(ai_db):
+    calculate_individual_indicators_values(ai_db)
+    calculate_master_indicators_values(ai_db, True)
+    calculate_master_indicators_values(ai_db)
+    calculated_master_indicators_values_percentage(ai_db)
+    calculate_indicators_cumulative_results(ai_db)
 
     return 0
 
 
-def calculate_indicators_cumulative_results(ai_id):
+def calculate_indicators_cumulative_results(ai_db):
     from internos.activityinfo.models import Indicator
 
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_id)
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
 
     for indicator in indicators:
         value = 0
@@ -296,17 +298,20 @@ def calculate_indicators_cumulative_results(ai_id):
         indicator.save()
 
 
-def calculate_master_indicators_values(ai_id, sub_indicators=False):
+def calculate_master_indicators_values(ai_db, sub_indicators=False):
     from internos.activityinfo.models import Indicator, ActivityReport
 
     if sub_indicators:
-        indicators = Indicator.objects.filter(activity__database__ai_id=ai_id, master_indicator_sub=True)
+        indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id, master_indicator_sub=True)
     else:
-        indicators = Indicator.objects.filter(activity__database__ai_id=ai_id,
+        indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
                                               master_indicator=True)
-            # .exclude(measurement_type='percentage')
 
-    report = ActivityReport.objects.filter(database_id=ai_id)
+    report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
+
+    if ai_db.is_funded_by_unicef:
+        report = report.filter(funded_by='UNICEF')
+
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
@@ -343,13 +348,17 @@ def calculate_master_indicators_values(ai_id, sub_indicators=False):
         indicator.save()
 
 
-def calculated_master_indicators_values_percentage(ai_id):
+def calculated_master_indicators_values_percentage(ai_db):
     from internos.activityinfo.models import Indicator, ActivityReport
 
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_id,
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
                                           master_indicator=True,
                                           measurement_type='percentage')
-    report = ActivityReport.objects.filter(database_id=ai_id)
+
+    report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
+    if ai_db.is_funded_by_unicef:
+        report = report.filter(funded_by='UNICEF')
+
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
@@ -405,37 +414,40 @@ def calculated_master_indicators_values_percentage(ai_id):
         indicator.save()
 
 
-def calculate_individual_indicators_values(ai_id):
+def calculate_individual_indicators_values(ai_db):
     from internos.activityinfo.models import Indicator, ActivityReport
 
-    report = ActivityReport.objects.filter(database_id=ai_id)
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_id)
+    report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
+    if ai_db.is_funded_by_unicef:
+        report = report.filter(funded_by='UNICEF')
+
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
     month = int(datetime.datetime.now().strftime("%m")) - 1
 
     for indicator in indicators:
-        result = get_individual_indicator_value(indicator, month)
+        result = get_individual_indicator_value(ai_db, indicator, month)
         indicator.values[str(month)] = result
 
         for gov1 in governorates1:
             key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
-            value = get_individual_indicator_value(indicator_id=indicator, month=month,
+            value = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
                                                    gov=gov1['location_adminlevel_governorate_code'])
 
             indicator.values_gov[str(key)] = value
 
         for partner in partners:
             key1 = "{}-{}".format(month, partner['partner_id'])
-            value1 = get_individual_indicator_value(indicator_id=indicator, month=month,
+            value1 = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
                                                     partner=partner['partner_id'])
 
             indicator.values_partners[str(key1)] = value1
 
             for gov in governorates:
                 key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
-                value2 = get_individual_indicator_value(indicator_id=indicator, month=month,
+                value2 = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
                                                         partner=partner['partner_id'],
                                                         gov=gov['location_adminlevel_governorate_code'])
 
@@ -476,10 +488,12 @@ def calculate_indicators_status(database):
     return indicators.count()
 
 
-def get_individual_indicator_value(indicator_id, month=None, partner=None, gov=None):
+def get_individual_indicator_value(ai_db, indicator_id, month=None, partner=None, gov=None):
     from internos.activityinfo.models import ActivityReport, Indicator
 
     reports = ActivityReport.objects.filter(ai_indicator=indicator_id)
+    if ai_db.is_funded_by_unicef:
+        reports = reports.filter(funded_by='UNICEF')
 
     if month:
         reports = reports.filter(start_date__month=month)
@@ -493,6 +507,7 @@ def get_individual_indicator_value(indicator_id, month=None, partner=None, gov=N
     return total['indicator_value__sum'] if total['indicator_value__sum'] else 0
 
 
+#  not used for now
 def copy_disaggregated_data(ai_id):
     from internos.activityinfo.models import Indicator, ActivityReport
 

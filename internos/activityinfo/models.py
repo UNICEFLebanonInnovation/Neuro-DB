@@ -51,6 +51,7 @@ class Database(models.Model):
     mapping_extraction1 = JSONField(blank=True, null=True)
     mapping_extraction2 = JSONField(blank=True, null=True)
     mapping_extraction3 = JSONField(blank=True, null=True)
+    is_funded_by_unicef = models.BooleanField(default=False)
     reporting_year = models.ForeignKey(
         ReportingYear,
         blank=True,

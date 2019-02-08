@@ -522,6 +522,7 @@ class DatabaseResource(resources.ModelResource):
             'reporting_year',
             'focal_point',
             'mapped_db',
+            'is_funded_by_unicef',
             'description',
             'country_name',
             'ai_country_id',
@@ -542,6 +543,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     list_filter = (
         'section',
         'reporting_year',
+        'is_funded_by_unicef',
     )
     list_display = (
         'ai_id',
@@ -549,7 +551,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'label',
         'reporting_year',
         'focal_point',
-        'mapped_db'
+        'mapped_db',
+        'is_funded_by_unicef',
     )
     readonly_fields = (
         'description',
@@ -585,6 +588,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'reporting_year',
                 'focal_point',
                 'mapped_db',
+                'is_funded_by_unicef',
                 'description',
                 'country_name',
                 'ai_country_id',
@@ -700,7 +704,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     def link_indicators_data(self, request, queryset):
         reports = 0
         for db in queryset:
-            reports = link_indicators_data(db.ai_id)
+            reports = link_indicators_data(db)
         self.message_user(
             request,
             "{} indicators linked.".format(reports)
@@ -718,7 +722,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     def calculate_indicators_values(self, request, queryset):
         reports = 0
         for db in queryset:
-            reports = calculate_indicators_values(db.ai_id)
+            reports = calculate_indicators_values(db)
         self.message_user(
             request,
             "{} indicators values calculated.".format(reports)
