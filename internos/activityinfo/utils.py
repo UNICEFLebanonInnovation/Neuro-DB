@@ -106,6 +106,15 @@ def add_rows(ai_id, selected_month=None):
         for row in reader:
             ctr += 1
             # if selected_month and
+            indicator_value = 0
+            if 'indicator.value' in row:
+                indicator_value = row['indicator.value']
+
+            try:
+                indicator_value = float(indicator_value)
+            except Exception:
+                indicator_value = 0
+
             ActivityReport.objects.create(
                 month=month,
                 database=row['database'],
@@ -139,7 +148,7 @@ def add_rows(ai_id, selected_month=None):
                     'location.adminlevel.governorate.code'] if 'location.adminlevel.governorate.code' in row else '',
                 end_date=row['end_date'] if 'end_date' in row else '',
                 lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
-                indicator_value=row['indicator.value'] if 'indicator.value' in row else '',
+                indicator_value=indicator_value,
                 funded_by=row['Funded_by'] if 'Funded_by' in row else '',
                 location_latitude=row['location.latitude'] if 'location.latitude' in row else '',
                 indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
@@ -246,15 +255,15 @@ def link_indicators_data(ai_db):
     reports = ActivityReport.objects.filter(database_id=ai_db.ai_id)
     if ai_db.is_funded_by_unicef:
         reports = reports.filter(funded_by='UNICEF')
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(master_indicator=True).exclude(master_indicator_sub=True)
 
     for item in indicators:
         ai_values = reports.filter(indicator_id=item.ai_indicator)
         if not ai_values.count():
             continue
-        ctr += 1
-        if ai_db.is_funded_by_unicef:
-            item.update(funded_by='UNICEF')
+        ctr += ai_values.count()
+        # if ai_db.is_funded_by_unicef:
+        #     item.update(funded_by='UNICEF')
         ai_values.update(ai_indicator=item)
 
     return ctr

@@ -346,6 +346,8 @@ class Indicator(models.Model):
 
     @property
     def ai_indicator(self):
+        if len(str(self.ai_id)) == 10:
+            return self.ai_id
         return '{0:0>10}'.format(self.ai_id)
 
     @property
@@ -389,7 +391,7 @@ class ActivityReport(TimeStampedModel):
     indicator_master = models.CharField(max_length=250, blank=True, null=True)
     indicator_info = models.CharField(max_length=250, blank=True, null=True)
     indicator_units = models.CharField(max_length=250, blank=True, null=True)
-    indicator_value = models.PositiveIntegerField(blank=True, null=True)
+    indicator_value = models.FloatField(blank=True, null=True)
     indicator_sub_value = models.CharField(max_length=250, blank=True, null=True)
     indicator_awp_code = models.CharField(max_length=254, blank=True, null=True)
     location_adminlevel_cadastral_area = models.CharField(max_length=250, blank=True, null=True)

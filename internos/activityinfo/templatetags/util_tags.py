@@ -86,7 +86,7 @@ def get_indicator_unit(indicator, value):
         return 0
 
     if indicator.measurement_type == 'percentage':
-        value = '{} {}'.format(value, '%')
+        value = '{} {}'.format(round(value * 100, 1), '%')
 
     # if indicator.units:
     #     return '{} {}'.format(value, indicator.units)
