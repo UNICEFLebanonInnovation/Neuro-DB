@@ -86,11 +86,13 @@ def get_indicator_unit(indicator, value):
         return 0
 
     if indicator.measurement_type == 'percentage':
-        value = '{} {}'.format(round(value * 100, 1), '%')
+        return '{} {}'.format(round(value * 100, 1), '%')
 
+    if not indicator.units == 'm3':
+        return int(value)
     # if indicator.units:
     #     return '{} {}'.format(value, indicator.units)
-    return value
+    return round(value, 1)
 
 
 @register.assignment_tag

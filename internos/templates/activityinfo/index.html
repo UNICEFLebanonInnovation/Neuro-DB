@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load staticfiles i18n %}
+
+{% block ai_databases %}
+  {% for db in databases %}
+    <li><a href="{% url 'activityinfo:dashboard' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+  {% endfor %}
+{% endblock %}
+
+{% block ai_reports %}
+  {% for db in databases %}
+    <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+  {% endfor %}
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Modal -->
+<div class="modal fade in" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="display: block;">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalCenterTitle">Select the ActivityInfo database section</h3>
+      </div>
+      <div class="modal-body">
+        {% for db in databases %}
+        <a type="button" href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="btn btn-primary">{{ db.label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop fade in"></div>
+{% endblock content %}

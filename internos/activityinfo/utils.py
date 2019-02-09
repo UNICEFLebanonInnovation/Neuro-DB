@@ -305,7 +305,7 @@ def calculate_indicators_cumulative_results(ai_db):
         value = 0
         values = indicator.values
         for month in values:
-            value += int(values[month])
+            value += float(values[month])
         indicator.cumulative_results = value
         indicator.save()
 
@@ -336,21 +336,21 @@ def calculate_master_indicators_values(ai_db, sub_indicators=False):
         values_partners_gov = {}
         sub_indicators = indicator.summation_sub_indicators.all()
         for sub_ind in sub_indicators:
-            values_month += int(sub_ind.values[month]) if month in sub_ind.values else 0
+            values_month += float(sub_ind.values[month]) if month in sub_ind.values else 0
 
             for gov1 in governorates1:
                 key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
-                value = int(sub_ind.values_gov[key]) if key in sub_ind.values_gov else 0
+                value = float(sub_ind.values_gov[key]) if key in sub_ind.values_gov else 0
                 values_gov[key] = values_gov[key] + value if key in values_gov else value
 
             for partner in partners:
                 key1 = "{}-{}".format(month, partner['partner_id'])
-                value = int(sub_ind.values_partners[key1]) if key1 in sub_ind.values_partners else 0
+                value = float(sub_ind.values_partners[key1]) if key1 in sub_ind.values_partners else 0
                 values_partners[key1] = values_partners[key1] + value if key1 in values_partners else value
 
                 for gov in governorates:
                     key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
-                    value = int(sub_ind.values_partners_gov[key2]) if key2 in sub_ind.values_partners_gov else 0
+                    value = float(sub_ind.values_partners_gov[key2]) if key2 in sub_ind.values_partners_gov else 0
                     values_partners_gov[key2] = values_partners_gov[key2] + value if key2 in values_partners_gov else value
 
         indicator.values[month] = values_month

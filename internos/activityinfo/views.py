@@ -12,6 +12,18 @@ from .models import ActivityReport, Database, Indicator
 
 class IndexView(TemplateView):
 
+    template_name = 'activityinfo/index.html'
+
+    def get_context_data(self, **kwargs):
+        databases = Database.objects.filter(reporting_year__current=True)
+
+        return {
+            'databases': databases,
+        }
+
+
+class DashboardView(TemplateView):
+
     template_name = 'activityinfo/dashboard.html'
 
     def get_context_data(self, **kwargs):
