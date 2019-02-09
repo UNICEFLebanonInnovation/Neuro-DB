@@ -287,11 +287,12 @@ def reset_indicators_values(ai_id):
 
 
 def calculate_indicators_values(ai_db):
-    calculate_individual_indicators_values(ai_db)
-    calculate_master_indicators_values(ai_db, True)
-    calculate_master_indicators_values(ai_db)
-    calculated_master_indicators_values_percentage(ai_db)
-    calculate_indicators_cumulative_results(ai_db)
+    # calculate_individual_indicators_values(ai_db)
+    # calculate_master_indicators_values(ai_db, True)
+    # calculate_master_indicators_values(ai_db)
+    # calculate_master_indicators_values_percentage(ai_db)
+    # calculate_indicators_cumulative_results(ai_db)
+    calculate_indicators_values_percentage(ai_db)
 
     return 0
 
@@ -360,7 +361,81 @@ def calculate_master_indicators_values(ai_db, sub_indicators=False):
         indicator.save()
 
 
-def calculated_master_indicators_values_percentage(ai_db):
+def calculate_indicators_values_percentage(ai_db):
+    from internos.activityinfo.models import Indicator, ActivityReport
+
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
+                                          calculated_indicator=True)
+
+    report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
+    if ai_db.is_funded_by_unicef:
+        report = report.filter(funded_by='UNICEF')
+
+    partners = report.values('partner_id').distinct()
+    governorates = report.values('location_adminlevel_governorate_code').distinct()
+    governorates1 = report.values('location_adminlevel_governorate_code').distinct()
+    month = str(int(datetime.datetime.now().strftime("%m")) - 1)
+
+    for indicator in indicators:
+        values_month = 0
+        values_gov = {}
+        values_partners = {}
+        values_partners_gov = {}
+        top_indicator = indicator.sub_indicators.all().first()
+        reporting_level = top_indicator.activity.name
+        percentage = indicator.calculated_percentage
+
+        try:
+            denominator = top_indicator.values[month] if month in top_indicator.values else 0
+            if reporting_level == 'Municipality level':
+                values_month = denominator * percentage / 100
+            elif reporting_level == 'Site level':
+                values_month = denominator * percentage / 100
+        except Exception:
+            values_month = 0
+
+        for gov1 in governorates1:
+            key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
+            try:
+                denominator = top_indicator.values_gov[key] if key in top_indicator.values_gov else 0
+                if reporting_level == 'Municipality level':
+                    values_gov[key] = denominator * percentage / 100
+                elif reporting_level == 'Site level':
+                    values_gov[key] = denominator * percentage / 100
+            except Exception:
+                values_gov[key] = 0
+
+        for partner in partners:
+            key1 = "{}-{}".format(month, partner['partner_id'])
+
+            try:
+                denominator = top_indicator.values_partners[key1] if key1 in top_indicator.values_partners else 0
+                if reporting_level == 'Municipality level':
+                    values_partners[key1] = denominator * percentage / 100
+                elif reporting_level == 'Site level':
+                    values_partners[key1] = denominator * percentage / 100
+            except Exception:
+                values_partners[key1] = 0
+
+            for gov in governorates:
+                key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+                try:
+                    denominator = top_indicator.values_partners_gov[key2] if key2 in top_indicator.values_partners_gov else 0
+                    if reporting_level == 'Municipality level':
+                        values_partners_gov[key2] = denominator * percentage / 100
+                    elif reporting_level == 'Site level':
+                        values_partners_gov[key2] = denominator * percentage / 100
+                except Exception:
+                    values_partners_gov[key2] = 0
+
+        indicator.values[month] = values_month
+        indicator.values_gov.update(values_gov)
+        indicator.values_partners.update(values_partners)
+        indicator.values_partners_gov.update(values_partners_gov)
+        indicator.save()
+
+
+def calculate_master_indicators_values_percentage(ai_db):
     from internos.activityinfo.models import Indicator, ActivityReport
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,

@@ -313,6 +313,8 @@ class Indicator(models.Model):
     master_indicator = models.BooleanField(default=False)
     master_indicator_sub = models.BooleanField(default=False)
     individual_indicator = models.BooleanField(default=False)
+    calculated_indicator = models.BooleanField(default=False)
+    calculated_percentage = models.PositiveIntegerField(default=0)
     sub_indicators = models.ManyToManyField('self', blank=True, related_name='top_indicator')
     summation_sub_indicators = models.ManyToManyField('self', blank=True, related_name='summation_top_indicator')
     denominator_indicator = models.ForeignKey('self', blank=True, null=True, related_name='+')

@@ -234,6 +234,8 @@ class IndicatorResource(resources.ModelResource):
             'sequence',
             'individual_indicator',
             'explication',
+            'calculated_indicator',
+            'calculated_percentage',
         )
 
 
@@ -327,6 +329,8 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'master_indicator',
                 'master_indicator_sub',
                 'individual_indicator',
+                'calculated_indicator',
+                'calculated_percentage',
                 'measurement_type',
                 'denominator_indicator',
                 'numerator_indicator',
