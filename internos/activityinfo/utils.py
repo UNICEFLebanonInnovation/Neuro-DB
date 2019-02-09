@@ -129,20 +129,20 @@ def add_rows(ai_id, selected_month=None):
                 indicator_name=unicode(row['indicator.name'], errors='replace'),
                 indicator_awp_code=get_awp_code(unicode(row['indicator.name'], errors='replace')),
                 month_name=month_name,
-                partner_label=unicode(row['partner.label']) if 'partner.label' in row else '',
+                partner_label=unicode(row['partner.label'], errors='replace') if 'partner.label' in row else '',
                 location_adminlevel_caza_code=row[
                     'location.adminlevel.caza.code'] if 'location.adminlevel.caza.code' in row else '',
                 location_adminlevel_caza=unicode(row['location.adminlevel.caza'],
-                                                  errors='replace') if 'location.adminlevel.caza' in row else '',
+                                                 errors='replace') if 'location.adminlevel.caza' in row else '',
                 partner_description=unicode(row['partner.description'],
-                                               errors='replace') if 'partner.description' in row else '',
+                                            errors='replace') if 'partner.description' in row else '',
                 form=row['form'] if 'form' in row else '',
                 governorate=row['Governorate'] if 'Governorate' in row else '',
                 location_longitude=row['location.longitude'] if 'location.longitude' in row else '',
                 form_category=row['form.category'] if 'form.category' in row else '',
                 indicator_units=row['indicator.units'] if 'indicator.units' in row else '',
                 project_description=unicode(row['project.description'],
-                                               errors='replace') if 'project.description' in row else '',
+                                            errors='replace') if 'project.description' in row else '',
                 location_adminlevel_cadastral_area_code=row[
                     'location.adminlevel.cadastral_area.code'] if 'location.adminlevel.cadastral_area.code' in row else '',
                 location_name=unicode(row['location.name'], errors='replace') if 'location.name' in row else '',
@@ -159,9 +159,9 @@ def add_rows(ai_id, selected_month=None):
                     'location.alternate_name'] if 'location.alternate_name' in row else '',
                 start_date=row['start_date'] if 'start_date' in row and not row['start_date'] == 'NA' else None,
                 location_adminlevel_cadastral_area=unicode(row['location.adminlevel.cadastral_area'],
-                                                              errors='replace') if 'location.adminlevel.cadastral_area' in row else '',
+                                                           errors='replace') if 'location.adminlevel.cadastral_area' in row else '',
                 location_adminlevel_governorate=unicode(row[
-                    'location.adminlevel.governorate']) if 'location.adminlevel.governorate' in row else '',
+                    'location.adminlevel.governorate'], errors='replace') if 'location.adminlevel.governorate' in row else '',
             )
     return ctr
 
@@ -287,11 +287,11 @@ def reset_indicators_values(ai_id):
 
 
 def calculate_indicators_values(ai_db):
-    # calculate_individual_indicators_values(ai_db)
-    # calculate_master_indicators_values(ai_db, True)
-    # calculate_master_indicators_values(ai_db)
-    # calculate_master_indicators_values_percentage(ai_db)
-    # calculate_indicators_cumulative_results(ai_db)
+    calculate_individual_indicators_values(ai_db)
+    calculate_master_indicators_values(ai_db, True)
+    calculate_master_indicators_values(ai_db)
+    calculate_master_indicators_values_percentage(ai_db)
+    calculate_indicators_cumulative_results(ai_db)
     calculate_indicators_values_percentage(ai_db)
 
     return 0

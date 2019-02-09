@@ -88,8 +88,12 @@ def get_indicator_unit(indicator, value):
     if indicator.measurement_type == 'percentage':
         return '{} {}'.format(round(value * 100, 1), '%')
 
+    # if indicator.calculated_indicator:
+    #      return round(value, 1)
+
     if not indicator.units == 'm3':
         return int(value)
+
     # if indicator.units:
     #     return '{} {}'.format(value, indicator.units)
     return round(value, 1)

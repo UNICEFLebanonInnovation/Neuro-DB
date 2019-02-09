@@ -15,7 +15,7 @@ class IndexView(TemplateView):
     template_name = 'activityinfo/index.html'
 
     def get_context_data(self, **kwargs):
-        databases = Database.objects.filter(reporting_year__current=True)
+        databases = Database.objects.filter(reporting_year__current=True).order_by('label')
 
         return {
             'databases': databases,
@@ -81,7 +81,7 @@ class ReportView(TemplateView):
         month = int(self.request.GET.get('month', int(datetime.datetime.now().strftime("%m")) - 1))
         month_name = self.request.GET.get('month_name', datetime.datetime.now().strftime("%B"))
         ai_id = int(self.request.GET.get('ai_id', 0))
-        databases = Database.objects.filter(reporting_year__current=True)
+        databases = Database.objects.filter(reporting_year__current=True).order_by('label')
 
         if ai_id:
             database = Database.objects.get(ai_id=ai_id)
@@ -147,7 +147,7 @@ class LiveReportView(TemplateView):
         month = int(self.request.GET.get('month', int(datetime.datetime.now().strftime("%m")) - 1))
         month_name = self.request.GET.get('month_name', datetime.datetime.now().strftime("%B"))
         ai_id = int(self.request.GET.get('ai_id', 0))
-        databases = Database.objects.filter(reporting_year__current=True)
+        databases = Database.objects.filter(reporting_year__current=True).order_by('label')
 
         database = Database.objects.get(id=ai_id)
         report = ActivityReport.objects.filter(
