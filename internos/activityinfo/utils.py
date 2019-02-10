@@ -136,7 +136,7 @@ def add_rows(ai_id, selected_month=None):
                                                  errors='replace') if 'location.adminlevel.caza' in row else '',
                 partner_description=unicode(row['partner.description'],
                                             errors='replace') if 'partner.description' in row else '',
-                form=row['form'] if 'form' in row else '',
+                form=unicode(row['form'], errors='replace') if 'form' in row else '',
                 governorate=row['Governorate'] if 'Governorate' in row else '',
                 location_longitude=row['location.longitude'] if 'location.longitude' in row else '',
                 form_category=row['form.category'] if 'form.category' in row else '',
