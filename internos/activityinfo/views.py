@@ -95,7 +95,7 @@ class ReportView(TemplateView):
         report = ActivityReport.objects.filter(
             database=database,
             start_date__month=month)
-        if False:
+        if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
         partners = report.values('partner_label', 'partner_id').distinct()

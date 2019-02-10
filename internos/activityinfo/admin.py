@@ -254,12 +254,15 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'master_indicator',
         'master_indicator_sub',
         'individual_indicator',
+        'calculated_indicator',
     )
     suit_list_filter_horizontal = (
         'activity__database__reporting_year',
         'activity__database',
         'master_indicator',
         'master_indicator_sub',
+        'individual_indicator',
+        'calculated_indicator',
     )
     list_display = (
         'id',
