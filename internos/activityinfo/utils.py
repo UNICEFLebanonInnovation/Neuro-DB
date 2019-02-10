@@ -281,6 +281,7 @@ def reset_indicators_values(ai_id):
         indicator.values_gov = {}
         indicator.values_partners = {}
         indicator.values_partners_gov = {}
+        indicator.cumulative_values = {}
         indicator.save()
 
     return indicators.count()
@@ -291,7 +292,7 @@ def calculate_indicators_values(ai_db):
     calculate_master_indicators_values(ai_db, True)
     calculate_master_indicators_values(ai_db)
     calculate_master_indicators_values_percentage(ai_db)
-    calculate_indicators_cumulative_results(ai_db)
+    # calculate_indicators_cumulative_results(ai_db)
     calculate_indicators_values_percentage(ai_db)
 
     return 0
@@ -304,10 +305,20 @@ def calculate_indicators_cumulative_results(ai_db):
 
     for indicator in indicators:
         value = 0
+        value_partner = {}
+        value_gov = {}
+        value_partner_gov = {}
+
         values = indicator.values
         for month in values:
             value += float(values[month])
-        indicator.cumulative_results = value
+
+        indicator.cumulative_values = {
+            'total': value,
+            'partner': value_partner,
+            'gov': '',
+            'partner-gov': ''
+        }
         indicator.save()
 
 
@@ -355,6 +366,7 @@ def calculate_master_indicators_values(ai_db, sub_indicators=False):
                     values_partners_gov[key2] = values_partners_gov[key2] + value if key2 in values_partners_gov else value
 
         indicator.values[month] = values_month
+        # indicator.cumulative_values[month] = values_month
         indicator.values_gov.update(values_gov)
         indicator.values_partners.update(values_partners)
         indicator.values_partners_gov.update(values_partners_gov)
@@ -429,6 +441,7 @@ def calculate_indicators_values_percentage(ai_db):
                     values_partners_gov[key2] = 0
 
         indicator.values[month] = values_month
+        # indicator.cumulative_values[month] = values_month
         indicator.values_gov.update(values_gov)
         indicator.values_partners.update(values_partners)
         indicator.values_partners_gov.update(values_partners_gov)
@@ -495,6 +508,7 @@ def calculate_master_indicators_values_percentage(ai_db):
                     values_partners_gov[key2] = 0
 
         indicator.values[month] = values_month
+        # indicator.cumulative_values[month] = values_month
         indicator.values_gov.update(values_gov)
         indicator.values_partners.update(values_partners)
         indicator.values_partners_gov.update(values_partners_gov)
@@ -517,6 +531,7 @@ def calculate_individual_indicators_values(ai_db):
     for indicator in indicators:
         result = get_individual_indicator_value(ai_db, indicator, month)
         indicator.values[str(month)] = result
+        # indicator.cumulative_values[str(month)] = result
 
         for gov1 in governorates1:
             key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])

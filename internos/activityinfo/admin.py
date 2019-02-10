@@ -236,6 +236,7 @@ class IndicatorResource(resources.ModelResource):
             'explication',
             'calculated_indicator',
             'calculated_percentage',
+            'cumulative_values',
         )
 
 
@@ -336,8 +337,9 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'numerator_indicator',
                 'sub_indicators',
                 'summation_sub_indicators',
-                'denominator_summation',
-                'numerator_summation',
+                # 'denominator_summation',
+                # 'numerator_summation',
+                'cumulative_values',
             ]
         }),
         ('Calculated Values', {
