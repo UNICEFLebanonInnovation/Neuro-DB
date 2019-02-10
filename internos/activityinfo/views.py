@@ -190,9 +190,6 @@ class ExportViewSet(ListView):
     model = ActivityReport
     queryset = ActivityReport.objects.all()
 
-    def get_queryset(self):
-        return self.queryset.filter(funded_by='UNICEF')
-
     def get(self, request, *args, **kwargs):
 
         ai_id = self.request.GET.get('ai_id', 0)
@@ -204,17 +201,23 @@ class ExportViewSet(ListView):
 
         qs = ActivityReport.objects.filter(
             database_id=ai_id,
-            start_date__month=month,
-            funded_by__contains='UNICEF')
+            start_date__month=month)
+        if instance.is_funded_by_unicef:
+            qs = qs.filter(funded_by__contains='UNICEF')
 
         filename = "extraction.csv"
+
+        fields = report_mapping.keys()
+        header = report_mapping.values()
+        if report_format == 'mapping_extraction3':
+            header = fields
 
         meta = {
             'file': filename,
             # 'file': '/{}/{}'.format('tmp', filename),
             'queryset': qs,
-            'fields': report_mapping.keys(),
-            'header': report_mapping.values()
+            'fields': fields,
+            'header': header
         }
         from internos.backends.gistfile import get_model_as_csv_file_response
         return get_model_as_csv_file_response(meta, content_type='text/csv', filename=filename)
