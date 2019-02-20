@@ -33,7 +33,8 @@ def read_data_from_file(ai_id, forced=False):
     month = int(datetime.datetime.now().strftime("%m")) - 1
 
     if forced:
-        ActivityReport.objects.filter(start_date__month=month).delete()
+        # ActivityReport.objects.filter(start_date__month=month).delete()
+        ActivityReport.objects.filter(database_id=ai_id).delete()
         return add_rows(ai_id, month)
 
     try:
