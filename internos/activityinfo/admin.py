@@ -546,6 +546,53 @@ class ActivityReportAdmin(RelatedFieldAdmin):
     date_hierarchy = 'start_date'
 
 
+class ActivityReportLiveAdmin(RelatedFieldAdmin):
+    # resources = ActivityReportResource
+    list_filter = (
+        'start_date',
+        'database',
+        'partner_label',
+        'governorate',
+        'form',
+        'form_category',
+        'funded_by',
+        'year',
+        'month_name',
+        'master_indicator'
+    )
+    suit_list_filter_horizontal = (
+        'start_date',
+        'database',
+        'partner_label',
+        'governorate',
+        'form',
+        'form_category',
+        'funded_by',
+        'year',
+        'month_name',
+    )
+    list_select_related = True
+    list_display = (
+        'id',
+        'database',
+        'partner_label',
+        'governorate',
+        'form',
+        'form_category',
+        'indicator_id',
+        'indicator_name',
+        'indicator_value',
+        'indicator_awp_code',
+        'funded_by',
+    )
+    search_fields = (
+        'indicator_id',
+        'indicator_name',
+        'indicator_awp_code',
+    )
+    date_hierarchy = 'start_date'
+
+
 class DatabaseResource(resources.ModelResource):
 
     class Meta:
@@ -805,4 +852,5 @@ admin.site.register(Indicator, IndicatorAdmin)
 admin.site.register(AttributeGroup, AttributeGroupAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(ActivityReport, ActivityReportAdmin)
+admin.site.register(ActivityReportLive, ActivityReportLiveAdmin)
 

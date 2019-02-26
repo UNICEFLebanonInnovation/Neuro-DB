@@ -41,7 +41,7 @@ def sync_live_data(db):
         object_type='AI_LIVE',
         month=month_name,
         status=True)
-    return add_rows(ai_id=db.ai_id, model=model, selected_month=month)
+    return add_rows(ai_id=db.ai_id, model=model, selected_month=month, report_type='live')
 
 
 def read_data_from_file(ai_id, forced=False):
@@ -115,7 +115,7 @@ def clean_string(value, string):
     return value.replace(string, '')
 
 
-def add_rows(ai_id=None, model=None, selected_month=None):
+def add_rows(ai_id=None, model=None, selected_month=None, report_type=None):
 
     month = int(datetime.datetime.now().strftime("%m"))
     month_name = datetime.datetime.now().strftime("%B")
@@ -137,7 +137,7 @@ def add_rows(ai_id=None, model=None, selected_month=None):
             except Exception:
                 indicator_value = 0
 
-            model.objects.create(
+            model.create(
                 month=month,
                 database=row['database'],
                 site_id=row['site.id'],
