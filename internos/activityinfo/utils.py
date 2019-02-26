@@ -356,7 +356,8 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
     from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
 
     if sub_indicators:
-        indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id, master_indicator_sub=True)
+        indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
+                                              master_indicator_sub=True)
     else:
         indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
                                               master_indicator=True)
@@ -381,21 +382,33 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
         values_partners_gov = {}
         sub_indicators = indicator.summation_sub_indicators.all()
         for sub_ind in sub_indicators:
-            values_month += float(sub_ind.values[month]) if month in sub_ind.values else 0
+            if report_type == 'live':
+                values_month += float(sub_ind.values_live[month]) if month in sub_ind.values_live else 0
+            else:
+                values_month += float(sub_ind.values[month]) if month in sub_ind.values else 0
 
             for gov1 in governorates1:
                 key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
-                value = float(sub_ind.values_gov[key]) if key in sub_ind.values_gov else 0
+                if report_type == 'live':
+                    value = float(sub_ind.values_gov_live[key]) if key in sub_ind.values_gov_live else 0
+                else:
+                    value = float(sub_ind.values_gov[key]) if key in sub_ind.values_gov else 0
                 values_gov[key] = values_gov[key] + value if key in values_gov else value
 
             for partner in partners:
                 key1 = "{}-{}".format(month, partner['partner_id'])
-                value = float(sub_ind.values_partners[key1]) if key1 in sub_ind.values_partners else 0
+                if report_type == 'live':
+                    value = float(sub_ind.values_partners_live[key1]) if key1 in sub_ind.values_partners_live else 0
+                else:
+                    value = float(sub_ind.values_partners[key1]) if key1 in sub_ind.values_partners else 0
                 values_partners[key1] = values_partners[key1] + value if key1 in values_partners else value
 
                 for gov in governorates:
                     key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
-                    value = float(sub_ind.values_partners_gov[key2]) if key2 in sub_ind.values_partners_gov else 0
+                    if report_type == 'live':
+                        value = float(sub_ind.values_partners_gov_live[key2]) if key2 in sub_ind.values_partners_gov_live else 0
+                    else:
+                        value = float(sub_ind.values_partners_gov[key2]) if key2 in sub_ind.values_partners_gov else 0
                     values_partners_gov[key2] = values_partners_gov[key2] + value if key2 in values_partners_gov else value
 
         if report_type == 'live':
@@ -623,7 +636,7 @@ def calculate_individual_indicators_values(ai_db, report_type=None):
     month = int(datetime.datetime.now().strftime("%m")) - 1
 
     for indicator in indicators:
-        result = get_individual_indicator_value(ai_db, indicator, month)
+        result = get_individual_indicator_value(ai_db, indicator, month, report_type=report_type)
         if report_type == 'live':
             indicator.values_live[str(month)] = result
         else:
@@ -633,7 +646,8 @@ def calculate_individual_indicators_values(ai_db, report_type=None):
         for gov1 in governorates1:
             key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
             value = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
-                                                   gov=gov1['location_adminlevel_governorate_code'])
+                                                   gov=gov1['location_adminlevel_governorate_code'],
+                                                   report_type=report_type)
 
             if report_type == 'live':
                 indicator.values_gov_live[str(key)] = value
@@ -643,7 +657,7 @@ def calculate_individual_indicators_values(ai_db, report_type=None):
         for partner in partners:
             key1 = "{}-{}".format(month, partner['partner_id'])
             value1 = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
-                                                    partner=partner['partner_id'])
+                                                    partner=partner['partner_id'], report_type=report_type)
 
             if report_type == 'live':
                 indicator.values_partners_live[str(key1)] = value1
@@ -653,7 +667,7 @@ def calculate_individual_indicators_values(ai_db, report_type=None):
             for gov in governorates:
                 key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
                 value2 = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
-                                                        partner=partner['partner_id'],
+                                                        partner=partner['partner_id'], report_type=report_type,
                                                         gov=gov['location_adminlevel_governorate_code'])
 
                 if report_type == 'live':
@@ -696,10 +710,13 @@ def calculate_indicators_status(database):
     return indicators.count()
 
 
-def get_individual_indicator_value(ai_db, indicator_id, month=None, partner=None, gov=None):
-    from internos.activityinfo.models import ActivityReport, Indicator
+def get_individual_indicator_value(ai_db, indicator_id, month=None, partner=None, gov=None, report_type=None):
+    from internos.activityinfo.models import ActivityReport, ActivityReportLive
 
-    reports = ActivityReport.objects.filter(ai_indicator=indicator_id)
+    if report_type == 'live':
+        reports = ActivityReportLive.objects.filter(ai_indicator=indicator_id)
+    else:
+        reports = ActivityReport.objects.filter(ai_indicator=indicator_id)
     if ai_db.is_funded_by_unicef:
         reports = reports.filter(funded_by='UNICEF')
 
