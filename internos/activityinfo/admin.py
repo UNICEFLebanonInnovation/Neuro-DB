@@ -237,6 +237,13 @@ class IndicatorResource(resources.ModelResource):
             'calculated_indicator',
             'calculated_percentage',
             'cumulative_values',
+            'hpm_indicator',
+            'separator_indicator',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
         )
 
 
@@ -255,6 +262,8 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'master_indicator_sub',
         'individual_indicator',
         'calculated_indicator',
+        'hpm_indicator',
+        'separator_indicator',
     )
     suit_list_filter_horizontal = (
         'activity__database__reporting_year',
@@ -263,6 +272,8 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'master_indicator_sub',
         'individual_indicator',
         'calculated_indicator',
+        'hpm_indicator',
+        'separator_indicator',
     )
     list_display = (
         'id',
@@ -325,6 +336,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'tag_gender',
                 'tag_nationality',
                 'tag_disability',
+                'hpm_indicator',
             ]
         }),
         ('Sub indicators', {
@@ -333,6 +345,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'master_indicator',
                 'master_indicator_sub',
                 'individual_indicator',
+                'separator_indicator',
                 'calculated_indicator',
                 'calculated_percentage',
                 'measurement_type',
@@ -342,19 +355,36 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'summation_sub_indicators',
                 # 'denominator_summation',
                 # 'numerator_summation',
-                'cumulative_values',
+                # 'cumulative_values',
             ]
         }),
         ('Calculated Values', {
-            'classes': ('suit-tab', 'suit-tab-general',),
+            'classes': ('suit-tab', 'suit-tab-report-values',),
             'fields': [
                 'values',
                 'values_gov',
                 'values_partners',
                 'values_partners_gov',
+                'cumulative_values',
+            ]
+        }),
+        ('Calculated Values live', {
+            'classes': ('suit-tab', 'suit-tab-live-values',),
+            'fields': [
+                'values_live',
+                'values_gov_live',
+                'values_partners_live',
+                'values_partners_gov_live',
+                'cumulative_values_live',
             ]
         }),
     ]
+
+    suit_form_tabs = (
+                      ('general', 'Indicator'),
+                      ('report-values', 'Report values'),
+                      ('live-values', 'Live values'),
+                    )
 
 
 class AttributeGroupResource(resources.ModelResource):

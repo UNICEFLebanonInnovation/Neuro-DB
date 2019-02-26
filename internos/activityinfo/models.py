@@ -330,6 +330,8 @@ class Indicator(models.Model):
     tag_gender = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_nationality = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_disability = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
+    hpm_indicator = models.BooleanField(default=False)
+    separator_indicator = models.BooleanField(default=False)
     none_ai_indicator = models.BooleanField(default=False)
     sequence = models.IntegerField(blank=True, null=True)
     funded_by = models.CharField(max_length=254, blank=True, null=True)
@@ -343,6 +345,13 @@ class Indicator(models.Model):
             ('weighting', 'Weighting'),
         )
     )
+
+    values_live = JSONField(blank=True, null=True, default={})
+    values_gov_live = JSONField(blank=True, null=True, default={})
+    values_partners_live = JSONField(blank=True, null=True, default={})
+    values_partners_gov_live = JSONField(blank=True, null=True, default={})
+    cumulative_values_live = JSONField(blank=True, null=True, default={})
+
 
     def __unicode__(self):
         return self.name
@@ -429,3 +438,9 @@ class ActivityReport(TimeStampedModel):
     master_indicator_sub = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
     pending = models.BooleanField(default=False)
+
+
+class ActivityReportLive(ActivityReport):
+
+    class Meta:
+        ordering = ['id']

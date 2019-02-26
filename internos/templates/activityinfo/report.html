@@ -90,12 +90,11 @@
 
   <i class="fa fa-user" data-toggle="tooltip" data-placement="bottom" data-html="true"
      title="Database focal point: {{ database.focal_point }} <br/>
-            email: {{ database.focal_point.email }} <br/>
-            skype: {{ database.focal_point.skype_account }}" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
-  <a href="skype:{{ database.focal_point.skype_account }}?chat" data-toggle="tooltip" data-placement="bottom"
-     title="Chat with the database focal point via skype" style="padding-left: 20px;">
-    <i class="fa fa-skype faa-pulse animated-hover" style="font-size: 25px; color: #2dc6ff;"></i>
-  </a>
+            email: {{ database.focal_point.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
+  <!--<a href="skype:{{ database.focal_point.skype_account }}?chat" data-toggle="tooltip" data-placement="bottom"-->
+     <!--title="Chat with the database focal point via skype" style="padding-left: 20px;">-->
+    <!--<i class="fa fa-skype faa-pulse animated-hover" style="font-size: 25px; color: #2dc6ff;"></i>-->
+  <!--</a>-->
   <a href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database" data-toggle="tooltip" data-placement="bottom"
      title="Send email to the database focal point" style="padding-left: 20px;">
     <i class="fa fa-envelope-o faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
@@ -107,7 +106,7 @@
   <div class="w-1002 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Dashboard - {{ database.label }} - 2019
+                    <h2><strong>Dashboard - {{ database.label }} - 2019</strong>
                       <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
                              aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
@@ -252,7 +251,7 @@
                               <tr>
                                   <!--<td>{{ item2.id }}</td>-->
                                   <td>{{ item2.ai_id }}</td>
-                                  <th>
+                                  <th {% if item2.separator_indocator %}style="background-color: #ca292940;"{% endif %}>
                                     {{ item2.name }}
                                     {% if item2.explication %}
                                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
@@ -302,9 +301,9 @@ $(window).on("scroll", function() {
 	if (scrollPosition > 850) {
 	    $('.table-fixed').show();
 	    <!--$('.table-fixed').offset({ top: scrollPosition - 600 });-->
-	    $('.table-fixed').offset({ top: 0 });
+	    <!--$('.table-fixed').offset({ top: 0 });-->
 	}else{
-	  $('.table-fixed').hide();
+	  <!--$('.table-fixed').hide();-->
 	}
 });
 

@@ -26,3 +26,17 @@ def read_imported_data():
     for db in databases:
         pass
         # r_script_command_line('ai_generate_excel.R', db.ai_id)
+
+
+@app.task
+def calculate_live_values():
+    from internos.activityinfo.utils import sync_live_data, link_indicators_data, reset_indicators_values, calculate_indicators_values
+    from internos.activityinfo.models import Database
+
+    databases = Database.objects.filter(reporting_year__current=True)
+    for db in databases:
+        r_script_command_line('ai_generate_excel.R', db)
+        sync_live_data(db)
+        link_indicators_data(db, report_type='live')
+        reset_indicators_values(db.ai_id, report_type='live')
+        calculate_indicators_values(db, report_type='live')
