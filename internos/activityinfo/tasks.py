@@ -34,7 +34,7 @@ def import_live_data():
 
     databases = Database.objects.filter(reporting_year__current=True)
     for db in databases:
-        print('1. Import report')
+        print('1. Import report: '+db.name)
         r_script_command_line('ai_generate_excel.R', db)
 
 
@@ -45,11 +45,14 @@ def calculate_live_values():
 
     databases = Database.objects.filter(reporting_year__current=True)
     for db in databases:
+        print('-----------------------------------------')
+        print(db.name)
         print('1. Import data forced')
         sync_live_data(db)
         print('2. Link indicators')
         link_indicators_data(db, report_type='live')
         print('3. Reset values')
         reset_indicators_values(db.ai_id, report_type='live')
-        # print('4. Calculate indicator values')
-        # calculate_indicators_values(db, report_type='live')
+        print('4. Calculate indicator values')
+        calculate_indicators_values(db, report_type='live')
+        print('-----------------------------------------')

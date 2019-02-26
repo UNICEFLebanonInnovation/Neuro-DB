@@ -111,15 +111,33 @@
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
                              aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
                              style="position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;">
-                      <!--<small>Users</small>-->
-                      <a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>
+                      <!--<a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>-->
                       <!--<a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;">
                         <i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>
                       </a>-->
-                      <a href="#" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;">
+                      <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;">
                         <i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>
                       </a>
                     </h2>
+                    <ul class="nav navbar-left" style="margin-top: -7px;">
+                      <li class="dropdown">
+                        <a id="drop6" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
+                           data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                    <i class="fa fa-download faa-bounce animated-hover" style="font-size: 25px;"></i>
+                          <span class="caret"></span>
+                        </a>
+                        <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
+                          <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Monthly report</a>
+                          <li role="presentation" class="divider"></li>
+                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction1">UNICEF</a>
+                          <li role="presentation" class="divider"></li>
+                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction2">PowerBI</a>
+                          <li role="presentation" class="divider"></li>
+                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full</a>
+                          <li role="presentation" class=""></li>
+                        </ul>
+                      </li>
+                    </ul>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                     </ul>
@@ -127,30 +145,30 @@
                   </div>
                   <div class="x_content">
 
-                    <table class="table table-striped table-bordered table-fixed" style="display: none;">
-                      <thead>
-                        <tr>
-                          <!--<th>#</th>-->
-                          <th class="w-100" style="vertical-align: middle;">Indicator ID</th>
-                          <th class="w-400" style="vertical-align: middle;">ActivityInfo Indicators</th>
-                          <th class="w-120" style="vertical-align: middle;">Level of reporting</th>
-                          <th class="w-100" style="vertical-align: middle;">AWP Code</th>
-                          <th class="w-100" style="vertical-align: middle;">Target</th>
-                          <th class="w-130" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
-                            Cumulative Results <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
-                          <th class="w-130" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">
-                            % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
-                          <th class="w-70" style="vertical-align: middle;">Status</th>
-                          {% for month, month_name in months %}
-                            <th class="w-70" style="vertical-align: middle;">{{ month_name }}</th>
-                          {% endfor %}
-                        </tr>
-                      </thead>
-                    </table>
+                    <!--<table class="table table-striped table-bordered table-fixed" style="display: none;">-->
+                      <!--<thead>-->
+                        <!--<tr>-->
+                          <!--&lt;!&ndash;<th>#</th>&ndash;&gt;-->
+                          <!--<th class="w-100" style="vertical-align: middle;">Indicator ID</th>-->
+                          <!--<th class="w-400" style="vertical-align: middle;">ActivityInfo Indicators</th>-->
+                          <!--<th class="w-120" style="vertical-align: middle;">Level of reporting</th>-->
+                          <!--<th class="w-100" style="vertical-align: middle;">AWP Code</th>-->
+                          <!--<th class="w-100" style="vertical-align: middle;">Target</th>-->
+                          <!--<th class="w-130" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">-->
+                            <!--Cumulative Results <i class="fa fa-question-circle-o" style="font-size:16px;"></i>-->
+                          <!--</th>-->
+                          <!--<th class="w-130" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">-->
+                            <!--% achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>-->
+                          <!--</th>-->
+                          <!--<th class="w-70" style="vertical-align: middle;">Status</th>-->
+                          <!--{% for month, month_name in months %}-->
+                            <!--<th class="w-70" style="vertical-align: middle;">{{ month_name }}</th>-->
+                          <!--{% endfor %}-->
+                        <!--</tr>-->
+                      <!--</thead>-->
+                    <!--</table>-->
 
-                    <table id="exporttable1"
+                    <table id="exporttable1" content="{{ month_name }}_{{ month_number }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard.csv"
                            data-tableName="Dashboard - {{ database.label }} - 2019"
                            class="table table-striped table-bordered">
                       <thead>
@@ -366,7 +384,8 @@ function export_table_to_csv(html, filename) {
 
 document.querySelector("#export1").addEventListener("click", function () {
     var html = document.querySelector("table").outerHTML;
-	  export_table_to_csv(html, "table.csv");
+    var file_name = $("#exporttable1").attr("content");
+	  export_table_to_csv(html, file_name);
 });
 
 $('input#search-input').quicksearch('table#exporttable1 tbody tr', {

@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
-from .models import ActivityReport, Database, Indicator
+from .models import ActivityReport, ActivityReportLive, Database, Indicator
 
 
 class IndexView(TemplateView):
@@ -78,8 +78,14 @@ class ReportView(TemplateView):
         selected_partner_name = self.request.GET.get('partner_name', 0)
         selected_governorate = self.request.GET.get('governorate', 0)
         selected_governorate_name = self.request.GET.get('governorate_name', 0)
-        month = int(self.request.GET.get('month', int(datetime.datetime.now().strftime("%m")) - 1))
-        month_name = self.request.GET.get('month_name', datetime.datetime.now().strftime("%B"))
+
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month_number = last_month.strftime("%m")
+        month = int(last_month.strftime("%m"))
+        month_name = last_month.strftime("%B")
+
         ai_id = int(self.request.GET.get('ai_id', 0))
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
 
@@ -120,7 +126,9 @@ class ReportView(TemplateView):
             'selected_governorate': selected_governorate,
             'selected_governorate_name': selected_governorate_name,
             'reports': report.order_by('id'),
+            'month': month,
             'month_name': month_name,
+            'month_number': month_number,
             'months': months,
             'database': database,
             'databases': databases,
@@ -144,16 +152,23 @@ class LiveReportView(TemplateView):
         selected_partner_name = self.request.GET.get('partner_name', 0)
         selected_governorate = self.request.GET.get('governorate', 0)
         selected_governorate_name = self.request.GET.get('governorate_name', 0)
-        month = int(self.request.GET.get('month', int(datetime.datetime.now().strftime("%m")) - 1))
-        month_name = self.request.GET.get('month_name', datetime.datetime.now().strftime("%B"))
+
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month_number = last_month.strftime("%m")
+        month = int(last_month.strftime("%m"))
+        month_name = last_month.strftime("%B")
+
         ai_id = int(self.request.GET.get('ai_id', 0))
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
 
         database = Database.objects.get(id=ai_id)
-        report = ActivityReport.objects.filter(
+        report = ActivityReportLive.objects.filter(
             database=database,
-            start_date__month=month,
-            funded_by__contains='UNICEF')
+            start_date__month=month)
+        if database.is_funded_by_unicef:
+            report = report.filter(funded_by__contains='UNICEF')
 
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
@@ -172,6 +187,7 @@ class LiveReportView(TemplateView):
             'reports': report.order_by('id'),
             'month': month,
             'month_name': month_name,
+            'month_number': month_number,
             'database': database,
             'databases': databases,
             'partners': partners,

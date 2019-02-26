@@ -114,6 +114,25 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
         return get_indicator_unit(indicator, 0)
 
 
+@register.assignment_tag
+def get_indicator_live_value(indicator, month=None, partner=None, gov=None):
+    try:
+        if partner and gov and not partner == '0' and not gov == '0':
+            key = "{}-{}-{}".format(month, partner, gov)
+            return get_indicator_unit(indicator, indicator.values_partners_gov[key])
+        if partner and not partner == '0':
+            key = "{}-{}".format(month, partner)
+            return get_indicator_unit(indicator, indicator.values_partners[key])
+        if gov and not gov == '0':
+            key = "{}-{}".format(month, gov)
+            return get_indicator_unit(indicator, indicator.values_gov[key])
+
+        return get_indicator_unit(indicator,indicator.values.get(str(month)))
+    except Exception as ex:
+        # print(ex)
+        return get_indicator_unit(indicator, 0)
+
+
 # @register.assignment_tag
 # def indicator_value(indicator_id, level=0, month=None, partner=None, gov=None):
 #     from internos.activityinfo.models import ActivityReport, Indicator

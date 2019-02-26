@@ -123,6 +123,9 @@ def add_rows(ai_id=None, model=None, selected_month=None, report_type=None):
     path2file = path+'/AIReports/'+str(ai_id)+'_ai_data.csv'
     ctr = 0
 
+    if not os.path.isfile(path2file):
+        return False
+
     with open(path2file) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
