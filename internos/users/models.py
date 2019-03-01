@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 class Section(models.Model):
     name = models.CharField(max_length=256)
+    logo = models.CharField(max_length=256, null=True, blank=True)
     code = models.CharField(max_length=10, null=True, blank=True)
     color = models.CharField(max_length=50, null=True, blank=True)
     powerbi_url = models.TextField(null=True, blank=True)

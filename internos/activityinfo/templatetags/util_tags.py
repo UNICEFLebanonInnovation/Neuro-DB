@@ -80,6 +80,11 @@ def array_value(data, key):
     return ''
 
 
+@register.filter(name='number_format')
+def number_format(value):
+    return "{:,}".format(value)
+
+
 def get_indicator_unit(indicator, value):
 
     if not value:

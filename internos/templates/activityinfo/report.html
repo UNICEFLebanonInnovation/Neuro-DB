@@ -213,7 +213,7 @@
                               {% endif %}
                               <td>Site</td>
                               <td>{{ item.awp_code }}</td>
-                              <td>{{ item.target }}</td>
+                              <td>{{ item.target|number_format }}</td>
                               <td>
                                 <!--{{ item.cumulative_results }}{% if item.measurement_type == 'percentage' %}%{% endif %}-->
                                   {% get_indicator_value item 1 selected_partner selected_governorate as value %}
@@ -249,7 +249,7 @@
                                 {% endif %}
                                 <td>Site</td>
                                 <td>{{ item1.awp_code }}</td>
-                                <td>{{ item1.target }}</td>
+                                <td>{{ item1.target|number_format }}</td>
                                 <td>
                                   <!--{{ item1.cumulative_results }}-->
                                   {% get_indicator_value item1 1 selected_partner selected_governorate as value %}
@@ -277,7 +277,7 @@
                                   </th>
                                   <td>Site</td>
                                   <td>{{ item2.awp_code }}</td>
-                                  <td>{{ item2.target }}</td>
+                                  <td>{{ item2.target|number_format }}</td>
                                   <td>
                                     <!--{{ item2.cumulative_results }}-->
                                     {% get_indicator_value item2 1 selected_partner selected_governorate as value %}
