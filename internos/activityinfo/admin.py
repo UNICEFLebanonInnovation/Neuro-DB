@@ -202,6 +202,7 @@ class IndicatorResource(resources.ModelResource):
             'reporting_level',
             'awp_code',
             'target',
+            'target_sector',
             'target_sub_total',
             'cumulative_results',
             'units',
@@ -281,6 +282,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'awp_code',
         'name',
         'target',
+        'target_sector',
         'units',
         'activity',
         'category',
@@ -295,6 +297,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
     list_editable = (
         'awp_code',
         'target',
+        'target_sector',
         'sequence',
     )
 
@@ -318,6 +321,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'type',
                 'reporting_level',
                 'target',
+                'target_sector',
                 'target_sub_total',
                 'cumulative_results',
                 'units',

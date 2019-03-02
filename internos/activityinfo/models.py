@@ -304,6 +304,7 @@ class Indicator(models.Model):
     reporting_level = models.CharField(max_length=254, blank=True, null=True)
     awp_code = models.CharField(max_length=1500, blank=True, null=True)
     target = models.PositiveIntegerField(default=0)
+    target_sector = models.PositiveIntegerField(default=0)
     target_sub_total = models.PositiveIntegerField(default=0)
     cumulative_results = models.PositiveIntegerField(default=0)
     units = models.CharField(max_length=254, blank=True, null=True)
@@ -352,7 +353,6 @@ class Indicator(models.Model):
     values_partners_gov_live = JSONField(blank=True, null=True, default={})
     cumulative_values_live = JSONField(blank=True, null=True, default={})
 
-
     def __unicode__(self):
         return self.name
 
@@ -367,6 +367,16 @@ class Indicator(models.Model):
         if self.cumulative_results and self.target:
             return round((self.cumulative_results * 100.0) / self.target, 2)
         return 0
+
+    @property
+    def section_id(self):
+        if self.activity and self.activity.database.section:
+            return self.activity.database.section_id
+
+    @property
+    def section(self):
+        if self.activity and self.activity.database.section:
+            return self.activity__database__section
 
     class Meta:
         ordering = ['id']

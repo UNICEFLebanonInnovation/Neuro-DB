@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
 from .models import ActivityReport, ActivityReportLive, Database, Indicator
+from internos.users.models import Section
 
 
 class IndexView(TemplateView):
@@ -75,9 +76,9 @@ class ReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
         selected_partner = self.request.GET.get('partner', 0)
-        selected_partner_name = self.request.GET.get('partner_name', 0)
+        selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorate = self.request.GET.get('governorate', 0)
-        selected_governorate_name = self.request.GET.get('governorate_name', 0)
+        selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
         today = datetime.date.today()
         first = today.replace(day=1)
@@ -149,9 +150,9 @@ class LiveReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
         selected_partner = self.request.GET.get('partner', 0)
-        selected_partner_name = self.request.GET.get('partner_name', 0)
+        selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorate = self.request.GET.get('governorate', 0)
-        selected_governorate_name = self.request.GET.get('governorate_name', 0)
+        selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
         today = datetime.date.today()
         first = today.replace(day=1)
@@ -198,6 +199,30 @@ class LiveReportView(TemplateView):
             'indicators': indicators,
             'master_indicators': master_indicators,
             'unicef_funds': unicef_funds
+        }
+
+
+class HPMView(TemplateView):
+
+    template_name = 'activityinfo/hpm.html'
+
+    def get_context_data(self, **kwargs):
+
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month_number = last_month.strftime("%m")
+        month = int(last_month.strftime("%m"))
+        month_name = last_month.strftime("%B")
+
+        indicators = Indicator.objects.filter(hpm_indicator=True)
+        sections = Section.objects.filter(have_hpm_indicator=True)
+
+        return {
+            'indicators': indicators,
+            'sections': sections,
+            'month_name': month_name,
+            'month': month
         }
 
 

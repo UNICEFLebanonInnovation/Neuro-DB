@@ -13,6 +13,7 @@ class Section(models.Model):
     logo = models.CharField(max_length=256, null=True, blank=True)
     code = models.CharField(max_length=10, null=True, blank=True)
     color = models.CharField(max_length=50, null=True, blank=True)
+    have_hpm_indicator = models.BooleanField(default=False)
     powerbi_url = models.TextField(null=True, blank=True)
 
     def __str__(self):

@@ -17,6 +17,11 @@ urlpatterns = [
         name='dashboard'
     ),
     url(
+        regex=r'^activityinfo/HPM/$',
+        view=views.HPMView.as_view(),
+        name='hpm'
+    ),
+    url(
         regex=r'^activityinfo-export/$',
         view=views.ExportViewSet.as_view(),
         name='export'

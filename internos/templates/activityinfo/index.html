@@ -33,7 +33,7 @@
             {% if db.section.logo %}
             <img alt="100%x200" src="{% static db.section.logo %}" data-holder-rendered="true" style="height: 120px; width: 120px; display: block;" />
             {% else %}
-            <img alt="100%x200" src="" data-holder-rendered="true" style="height: 120px; width: 120px; display: block;" />
+            <img alt="100%x200" src="{% static 'images/unicef-logo.png' %}" data-holder-rendered="true" style="height: 120px; width: 180px; display: block;" />
             {% endif %}
             <div class="caption" style="padding: 0px;">
               <h4><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></h4>

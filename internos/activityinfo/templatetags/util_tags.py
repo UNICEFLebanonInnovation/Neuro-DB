@@ -101,6 +101,25 @@ def get_indicator_unit(indicator, value):
 
 
 @register.assignment_tag
+def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
+    try:
+        if partner and gov and not partner == '0' and not gov == '0':
+            key = "{}-{}-{}".format(month, partner, gov)
+            return get_indicator_unit(indicator, indicator.values_partners_gov[key])
+        if partner and not partner == '0':
+            key = "{}-{}".format(month, partner)
+            return get_indicator_unit(indicator, indicator.values_partners[key])
+        if gov and not gov == '0':
+            key = "{}-{}".format(month, gov)
+            return get_indicator_unit(indicator, indicator.values_gov[key])
+
+        return get_indicator_unit(indicator, indicator.cumulative_values.get(str(month)))
+    except Exception as ex:
+        # print(ex)
+        return get_indicator_unit(indicator, 0)
+
+
+@register.assignment_tag
 def get_indicator_value(indicator, month=None, partner=None, gov=None):
     try:
         if partner and gov and not partner == '0' and not gov == '0':
@@ -113,7 +132,7 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
             key = "{}-{}".format(month, gov)
             return get_indicator_unit(indicator, indicator.values_gov[key])
 
-        return get_indicator_unit(indicator,indicator.values.get(str(month)))
+        return get_indicator_unit(indicator, indicator.values.get(str(month)))
     except Exception as ex:
         # print(ex)
         return get_indicator_unit(indicator, 0)

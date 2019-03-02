@@ -325,13 +325,13 @@ def calculate_indicators_values(ai_db, report_type=None):
     calculate_master_indicators_values(ai_db, report_type, True)
     calculate_master_indicators_values(ai_db, report_type)
     calculate_master_indicators_values_percentage(ai_db, report_type)
-    # calculate_indicators_cumulative_results(ai_db, report_type)
     calculate_indicators_values_percentage(ai_db, report_type)
+    calculate_indicators_cumulative_results(ai_db, report_type)
 
     return 0
 
 
-def calculate_indicators_cumulative_results(ai_db):
+def calculate_indicators_cumulative_results(ai_db, report_type=None):
     from internos.activityinfo.models import Indicator
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
@@ -342,16 +342,28 @@ def calculate_indicators_cumulative_results(ai_db):
         value_gov = {}
         value_partner_gov = {}
 
-        values = indicator.values
+        if report_type == 'live':
+            values = indicator.values_live
+        else:
+            values = indicator.values
         for month in values:
             value += float(values[month])
 
-        indicator.cumulative_values = {
-            'total': value,
-            'partner': value_partner,
-            'gov': '',
-            'partner-gov': ''
-        }
+        if report_type == 'live':
+            indicator.cumulative_values_live = {
+                'values': value,
+                'partner': value_partner,
+                'gov': value_gov,
+                'partner-gov': value_partner_gov
+            }
+
+        else:
+            indicator.cumulative_values = {
+                'values': value,
+                'partner': value_partner,
+                'gov': value_gov,
+                'partner-gov': value_partner_gov
+            }
         indicator.save()
 
 

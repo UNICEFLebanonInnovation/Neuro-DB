@@ -55,7 +55,7 @@
   </head>
 
   <body class="nav-sm">
-    <div class="container body">
+    <div class="container body container-narrow">
       <div class="main_container">
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
@@ -101,6 +101,8 @@
                       {% endblock%}
                     </ul>
                   </li>
+
+                  <li><a href="{% url 'activityinfo:hpm' %}"><i class="fa fa-bar-chart-o"></i> HPM <span class="fa fa-chevron-down"></span></a></li>
                 </ul>
 
                 <!--<i class="fa fa-phone"></i>-->
