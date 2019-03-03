@@ -14,6 +14,11 @@ log = logging.getLogger(__name__)
 
 class PartnerOrganization(models.Model):
 
+    etl_id = models.CharField(
+        unique=True,
+        max_length=50,
+        verbose_name='eTools ID'
+    )
     partner_type = models.CharField(
         max_length=50,
         choices=Choices(
@@ -131,7 +136,11 @@ class Agreement(models.Model):
         (IC, u'Institutional Contract'),
         (AWP, u"Work Plan"),
     )
-
+    etl_id = models.CharField(
+        unique=True,
+        max_length=50,
+        verbose_name='eTools ID'
+    )
     partner = models.ForeignKey(
         PartnerOrganization,
         blank=True,null=True
@@ -200,7 +209,11 @@ class PCA(models.Model):
         (SSFA, u'SSFA TOR'),
         (IC, u'IC TOR'),
     )
-
+    etl_id = models.CharField(
+        unique=True,
+        max_length=50,
+        verbose_name='eTools ID'
+    )
     partner = models.ForeignKey(
         PartnerOrganization,
         blank=True, null=True
@@ -309,9 +322,35 @@ class PCA(models.Model):
     planned_visits = models.IntegerField(default=0)
 
     sectors = models.CharField(max_length=255, null=True, blank=True)
+    offices_names = models.CharField(max_length=255, null=True, blank=True)
     current = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    total_budget = models.CharField(max_length=255, null=True, blank=True)
+    fr_currency = models.CharField(max_length=255, null=True, blank=True)
+    frs_total_intervention_amt = models.CharField(max_length=255, null=True, blank=True)
+    frs_latest_end_date = models.CharField(max_length=255, null=True, blank=True)
+    frs_total_frs_amt = models.CharField(max_length=255, null=True, blank=True)
+    fr_currencies_are_consistent = models.CharField(max_length=255, null=True, blank=True)
+    unicef_cash = models.CharField(max_length=255, null=True, blank=True)
+    multi_curr_flag = models.CharField(max_length=255, null=True, blank=True)
+    actual_amount = models.CharField(max_length=255, null=True, blank=True)
+    frs_total_outstanding_amt = models.CharField(max_length=255, null=True, blank=True)
+    budget_currency = models.CharField(max_length=255, null=True, blank=True)
+    frs_earliest_start_date = models.CharField(max_length=255, null=True, blank=True)
+    cso_contribution = models.CharField(max_length=255, null=True, blank=True)
+    all_currencies_are_consistent = models.CharField(max_length=255, null=True, blank=True)
+    total_unicef_budget = models.CharField(max_length=255, null=True, blank=True)
+    grants = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    unicef_focal_points = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    section_names = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    sections = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    donors = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    donor_codes = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    flagged_sections = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    location_p_codes = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    offices = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    cp_outputs = ArrayField(models.CharField(max_length=200), blank=True, null=True)
 
     class Meta:
         verbose_name = 'Intervention'
@@ -323,39 +362,6 @@ class PCA(models.Model):
             self.partner_name,
             self.number
         )
-
-    @property
-    def sector_id(self):
-        if self.sector_children:
-            return self.sector_children[0].id
-        return 0
-
-    @property
-    def sector_names(self):
-        return u', '.join(self.sector_children.values_list('name', flat=True))
-
-    @property
-    def amendment_num(self):
-        return self.amendments_log.all().count()
-
-    @property
-    def total_unicef_cash(self):
-
-        if self.budget_log.exists():
-            return sum([b['unicef_cash'] for b in
-                 self.budget_log.values('created', 'year', 'unicef_cash').
-                 order_by('year', '-created').distinct('year').all()
-                 ])
-        return 0
-
-    @property
-    def total_budget(self):
-
-        if self.budget_log.exists():
-            return sum([b['unicef_cash'] + b['in_kind_amount'] + b['partner_contribution'] for b in
-                 self.budget_log.values('created', 'year', 'unicef_cash', 'in_kind_amount', 'partner_contribution').
-                 order_by('year','-created').distinct('year').all()])
-        return 0
 
 
 class TravelType(object):

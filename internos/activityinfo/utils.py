@@ -3,7 +3,7 @@ import csv
 import json
 import datetime
 import subprocess
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.conf import settings
 
 
@@ -296,6 +296,48 @@ def link_indicators_data(ai_db, report_type=None):
         ai_values.update(ai_indicator=item)
 
     return ctr
+
+
+def link_ai_partners(report_type=None):
+    from internos.activityinfo.models import Partner, ActivityReport, ActivityReportLive
+
+    ctr = 0
+    if report_type == 'live':
+        reports = ActivityReportLive.objects.all()
+    else:
+        reports = ActivityReport.objects.all()
+
+    partners = Partner.objects.all()
+
+    for item in partners:
+        ai_values = reports.filter(partner_id=item.ai_number)
+        if not ai_values.count():
+            continue
+        ctr += ai_values.count()
+        ai_values.update(partner_ai=item)
+        item.number = item.ai_number
+        item.save()
+
+    return ctr
+
+
+def link_etools_partners():
+    from internos.activityinfo.models import Partner
+    from internos.etools.models import PartnerOrganization
+
+    partners = PartnerOrganization.objects.all()
+
+    for partner in partners:
+        ai_partners = Partner.objects.filter(Q(name=partner.short_name) |
+                                             Q(name=partner.name.upper()) |
+                                             Q(name=partner.short_name.upper()) |
+                                             Q(full_name=partner.short_name) |
+                                             Q(name=partner.name) |
+                                             Q(full_name=partner.name))
+        if not ai_partners.count():
+            continue
+
+        ai_partners.update(partner_etools=partner)
 
 
 def reset_indicators_values(ai_id, report_type=None):

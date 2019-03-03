@@ -48,38 +48,57 @@
   </div>
 
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="1" data-intro="Filter options by partner">
-    <span class="count_top"><i class="fa fa-filter"></i> {{ partners|length }} Partners</span>
-    <div class="count">
+    <!--<span class="count_top"><i class="fa fa-filter"></i> {{ partners|length }} Partners</span>-->
 
       <ul class="nav nav-pills" role="tablist">
         <li role="presentation" class="dropdown">
-          <a id="drop6" href="#" style="font-size: 15px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-            {{ selected_partner_name }}
+          <a id="drop6" href="#" style="font-size: 20px; padding-top: 0px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+            <i class="fa fa-filter"></i> {{ selected_partner_name }}
             <span class="caret"></span>
           </a>
           <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
             <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">All Partners</a></li>
             {% for partner in partners %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ partner.partner_id }}&partner_name={{ partner.partner_label }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">{{ partner.partner_label }}</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ partner.partner_id }}&partner_name={{ partner.partner_description }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">{{ partner.partner_description }}</a></li>
             {% endfor %}
           </ul>
         </li>
+        {% if partner_info %}
+          <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
+             data-toggle="modal" data-target="#partnerModal"></i>
+        {% endif %}
       </ul>
 
-    </div>
+    <!--<div class="count">-->
+
+      <!--<ul class="nav nav-pills" role="tablist">-->
+        <!--<li role="presentation" class="dropdown">-->
+          <!--<a id="drop6" href="#" style="font-size: 15px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">-->
+            <!--{{ selected_partner_name }}-->
+            <!--<span class="caret"></span>-->
+          <!--</a>-->
+          <!--<ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">-->
+            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">All Partners</a></li>-->
+            <!--{% for partner in partners %}-->
+            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ partner.partner_id }}&partner_name={{ partner.partner_label }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">{{ partner.partner_label }}</a></li>-->
+            <!--{% endfor %}-->
+          <!--</ul>-->
+        <!--</li>-->
+      <!--</ul>-->
+
+    <!--</div>-->
   </div>
 
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="2" data-intro="Filter options by governorate">
-    <span class="count_top"><i class="fa fa-filter"></i> {{ governorates|length }} Governorates</span>
-    <div class="count">
+    <!--<span class="count_top"><i class="fa fa-filter"></i> {{ governorates|length }} Governorates </span>-->
 
       <ul class="nav nav-pills" role="tablist">
         <li role="presentation" class="dropdown">
-          <a id="drop7" href="#" style="font-size: 15px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-            {{ selected_governorate_name }}
+          <a id="drop7" href="#" style="font-size: 20px; padding-top: 0px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+            <i class="fa fa-filter"></i> {{ selected_governorate_name }}
             <span class="caret"></span>
           </a>
-          <ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
+          <ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop7" style="z-index: 3000;">
             <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">All Governorates</a></li>
             {% for gov in governorates %}
             <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ gov.location_adminlevel_governorate_code }}&governorate_name={{ gov.location_adminlevel_governorate }}">{{ gov.location_adminlevel_governorate }}</a></li>
@@ -88,24 +107,46 @@
         </li>
       </ul>
 
-    </div>
+    <!--<div class="count">-->
+
+      <!--<ul class="nav nav-pills" role="tablist">-->
+        <!--<li role="presentation" class="dropdown">-->
+          <!--<a id="drop7" href="#" style="font-size: 15px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">-->
+            <!--{{ selected_governorate_name }}-->
+            <!--<span class="caret"></span>-->
+          <!--</a>-->
+          <!--<ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">-->
+            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">All Governorates</a></li>-->
+            <!--{% for gov in governorates %}-->
+            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ gov.location_adminlevel_governorate_code }}&governorate_name={{ gov.location_adminlevel_governorate }}">{{ gov.location_adminlevel_governorate }}</a></li>-->
+            <!--{% endfor %}-->
+          <!--</ul>-->
+        <!--</li>-->
+      <!--</ul>-->
+
+    <!--</div>-->
   </div>
 
-<span data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
-  <i class="fa fa-user" data-toggle="tooltip" data-placement="bottom" data-html="true"
-     title="Database focal point: {{ database.focal_point }} <br/>
-            email: {{ database.focal_point.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
-  <!--<a href="skype:{{ database.focal_point.skype_account }}?chat" data-toggle="tooltip" data-placement="bottom"-->
-     <!--title="Chat with the database focal point via skype" style="padding-left: 20px;">-->
-    <!--<i class="fa fa-skype faa-pulse animated-hover" style="font-size: 25px; color: #2dc6ff;"></i>-->
-  <!--</a>-->
-  <a href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database" data-toggle="tooltip" data-placement="bottom"
-     title="Send email to the database focal point" style="padding-left: 20px;">
-    <i class="fa fa-envelope-o faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
-  </a>
-</span>
+  <span data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+    <i class="fa fa-user faa-pulse animated-hover" data-toggle="tooltip" data-placement="bottom" data-html="true"
+       title="Database focal point: {{ database.focal_point }} <br/>
+              email: {{ database.focal_point.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
+    <!--<a href="skype:{{ database.focal_point.skype_account }}?chat" data-toggle="tooltip" data-placement="bottom"-->
+       <!--title="Chat with the database focal point via skype" style="padding-left: 20px;">-->
+      <!--<i class="fa fa-skype faa-pulse animated-hover" style="font-size: 25px; color: #2dc6ff;"></i>-->
+    <!--</a>-->
+    <a href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database" data-toggle="tooltip" data-placement="bottom"
+       title="Send email to the database focal point" style="padding-left: 20px;">
+      <i class="fa fa-envelope-o faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
+    </a>
 
-  <a class="btn btn-large btn-success" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();">Show me how</a>
+    <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
+       title="Show me some tips" style="padding-left: 20px;">
+      <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
+    </a>
+
+  </span>
+
 </div>
 
 <!-- /top tiles -->
@@ -129,19 +170,19 @@
                     </h2>
                     <ul class="nav navbar-left" style="margin-top: -7px;" data-step="6" data-intro="Download Dashboard report and raw data">
                       <li class="dropdown">
-                        <a id="drop6" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
+                        <a id="drop5" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
                            data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
                                     <i class="fa fa-download faa-bounce animated-hover" style="font-size: 25px;"></i>
                           <span class="caret"></span>
                         </a>
-                        <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
-                          <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Monthly report</a>
+                        <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
+                          <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Current dashboard</a>
                           <li role="presentation" class="divider"></li>
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction1">UNICEF</a>
+                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction1">UNICEF raw data</a>
                           <li role="presentation" class="divider"></li>
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction2">PowerBI</a>
-                          <li role="presentation" class="divider"></li>
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full</a>
+                          <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction2">PowerBI</a>-->
+                          <!--<li role="presentation" class="divider"></li>-->
+                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full raw data</a>
                           <li role="presentation" class=""></li>
                         </ul>
                       </li>
@@ -313,7 +354,42 @@
 </div>
 <br />
 
-<br />
+
+<!-- Partner Modal -->
+{% if partner_info %}
+<div id="partnerModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Partner Profile</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-3">Partner name:</div>
+          <div class="col-md-6">{{ partner_info.name }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">Partner type:</div>
+          <div class="col-md-6">{{ partner_info.type }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">Risk rating:</div>
+          <div class="col-md-6">{{ partner_info.rating }}</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endif %}
+
+
 {% endblock content %}
 
 {% block extra_js %}

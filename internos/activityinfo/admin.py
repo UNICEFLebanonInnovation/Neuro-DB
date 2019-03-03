@@ -50,7 +50,12 @@ class PartnerAdmin(ImportExportModelAdmin):
         'ai_id',
         'name',
         'full_name',
-        'database'
+        'database',
+        'partner_etools',
+    )
+    search_fields = (
+        'name',
+        'full_name',
     )
 
 
@@ -515,7 +520,8 @@ class ActivityReportAdmin(RelatedFieldAdmin):
         'funded_by',
         'year',
         'month_name',
-        'master_indicator'
+        'master_indicator',
+        'partner_ai',
     )
     suit_list_filter_horizontal = (
         'start_date',
@@ -527,6 +533,7 @@ class ActivityReportAdmin(RelatedFieldAdmin):
         'funded_by',
         'year',
         'month_name',
+        'partner_ai',
     )
     list_select_related = True
     list_display = (
@@ -650,19 +657,19 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'ai_country_id'
     )
     actions = [
-        'import_basic_data',
-        'update_basic_data',
+        # 'import_basic_data',
+        # 'update_basic_data',
         'generate_indicator_tags',
         'import_data',
         'import_reports',
         'import_reports_forced',
-        'generate_awp_code',
+        # 'generate_awp_code',
         'calculate_sum_target',
         'link_indicators_data',
         'reset_indicators_values',
         'calculate_indicators_values',
         'calculate_indicators_status',
-        'copy_disaggregated_data',
+        # 'copy_disaggregated_data',
     ]
 
     fieldsets = [

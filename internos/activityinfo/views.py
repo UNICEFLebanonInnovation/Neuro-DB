@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
-from .models import ActivityReport, ActivityReportLive, Database, Indicator
+from .models import ActivityReport, ActivityReportLive, Database, Indicator, Partner
 from internos.users.models import Section
 
 
@@ -80,11 +80,12 @@ class ReportView(TemplateView):
         selected_governorate = self.request.GET.get('governorate', 0)
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
+        partner_info = {}
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
         month_number = last_month.strftime("%m")
-        month = int(last_month.strftime("%m"))
+        month = int(last_month.strftime("%m")) - 1
         month_name = last_month.strftime("%B")
 
         ai_id = int(self.request.GET.get('ai_id', 0))
@@ -105,7 +106,19 @@ class ReportView(TemplateView):
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
-        partners = report.values('partner_label', 'partner_id').distinct()
+        if selected_partner:
+            try:
+                partner = Partner.objects.get(number=selected_partner)
+                if partner.partner_etools:
+                    partner_info = {
+                        'name': partner.partner_etools.name,
+                        'type': partner.partner_etools.partner_type,
+                        'rating': partner.partner_etools.rating,
+                    }
+            except Exception:
+                pass
+
+        partners = report.values('partner_description', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
         activity_categories = report.values('form_category').distinct().count()
         activities = report.values('form').distinct().count()
@@ -140,7 +153,8 @@ class ReportView(TemplateView):
             'not_reported': not_reported,
             'indicators': indicators,
             'master_indicators': master_indicators,
-            'unicef_funds': unicef_funds
+            'unicef_funds': unicef_funds,
+            'partner_info': partner_info
         }
 
 
@@ -215,6 +229,8 @@ class HPMView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
+        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
+
         indicators = Indicator.objects.filter(hpm_indicator=True)
         sections = Section.objects.filter(have_hpm_indicator=True)
 
@@ -222,7 +238,8 @@ class HPMView(TemplateView):
             'indicators': indicators,
             'sections': sections,
             'month_name': month_name,
-            'month': month
+            'month': month,
+            'databases': databases,
         }
 
 

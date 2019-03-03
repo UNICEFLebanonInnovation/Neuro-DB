@@ -1,11 +1,11 @@
 __author__ = 'achamseddine'
 
 from django.core.management.base import BaseCommand
-from internos.etools.utils import sync_partner_data
+from internos.activityinfo.tasks import link_partners
 
 
 class Command(BaseCommand):
-    help = 'sync_partner_data'
+    help = 'link_partners'
 
     def handle(self, *args, **options):
-        sync_partner_data()
+        link_partners()

@@ -27,6 +27,12 @@ def read_imported_data():
         pass
         # r_script_command_line('ai_generate_excel.R', db.ai_id)
 
+@app.task
+def link_partners(report_type=None):
+    from .utils import link_ai_partners, link_etools_partners
+    link_ai_partners(report_type=report_type)
+    link_etools_partners()
+
 
 @app.task
 def import_live_data():

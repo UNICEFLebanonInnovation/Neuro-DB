@@ -11,6 +11,7 @@ from django.contrib.postgres.fields import ArrayField, JSONField
 # from django_mysql import models as mysql_model
 
 from internos.users.models import Section
+from internos.etools.models import PartnerOrganization
 from .client import ActivityInfoClient
 
 
@@ -239,9 +240,17 @@ class Database(models.Model):
 class Partner(models.Model):
 
     ai_id = models.PositiveIntegerField(unique=True)
+    number = models.CharField(max_length=254, blank=True, null=True)
     database = models.ForeignKey(Database)
     name = models.CharField(max_length=254)
     full_name = models.CharField(max_length=254, null=True)
+    partner_etools = models.ForeignKey(PartnerOrganization, blank=True, null=True, related_name='+')
+
+    @property
+    def ai_number(self):
+        if len(str(self.ai_id)) == 10:
+            return self.ai_id
+        return 'p{0:0>10}'.format(str(self.ai_id))
 
     class Meta:
         ordering = ['name']
@@ -379,7 +388,7 @@ class Indicator(models.Model):
             return self.activity__database__section
 
     class Meta:
-        ordering = ['id']
+        ordering = ['name']
 
 
 class AttributeGroup(models.Model):
@@ -429,6 +438,7 @@ class ActivityReport(TimeStampedModel):
     location_name = models.CharField(max_length=250, blank=True, null=True)
     partner_description = models.CharField(max_length=250, blank=True, null=True)
     partner_id = models.CharField(max_length=250, blank=True, null=True)
+    partner_ai = models.ForeignKey(Partner, blank=True, null=True, related_name='+')
     partner_label = models.CharField(max_length=250, blank=True, null=True)
     project_description = models.CharField(max_length=250, blank=True, null=True)
     project_label = models.CharField(max_length=250, blank=True, null=True)
