@@ -359,6 +359,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'calculated_percentage',
                 'measurement_type',
                 'denominator_indicator',
+                'denominator_multiplication',
                 'numerator_indicator',
                 'sub_indicators',
                 'summation_sub_indicators',
@@ -669,7 +670,6 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'reset_indicators_values',
         'calculate_indicators_values',
         'calculate_indicators_status',
-        # 'copy_disaggregated_data',
     ]
 
     fieldsets = [
@@ -743,33 +743,30 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         )
 
     def import_data(self, request, queryset):
-        objects = 0
         for db in queryset:
             r_script_command_line('ai_generate_excel.R', db)
-            # objects += db.import_data()
-        self.message_user(
-            request,
-            "{} objects created.".format(objects)
-        )
+            self.message_user(
+                request,
+                "Script R executed for database {}".format(db.name)
+            )
 
     def import_reports(self, request, queryset):
         reports = 0
         for db in queryset:
             reports = read_data_from_file(db.ai_id)
-            # reports += db.import_reports()
-        self.message_user(
-            request,
-            "{} reports created.".format(reports)
-        )
+            self.message_user(
+                request,
+                "{} Data imported from the file for database {}".format(reports, db.name)
+            )
 
     def import_reports_forced(self, request, queryset):
         reports = 0
         for db in queryset:
             reports = read_data_from_file(db.ai_id, True)
-        self.message_user(
-            request,
-            "{} reports created.".format(reports)
-        )
+            self.message_user(
+                request,
+                "Old data deleted and {} Data imported from the file for database {}".format(reports, db.name)
+            )
 
     def generate_awp_code(self, request, queryset):
         reports = 0
@@ -789,50 +786,41 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             "{} indicators updated.".format(reports)
         )
 
-    def copy_disaggregated_data(self, request, queryset):
-        reports = 0
-        for db in queryset:
-            reports = copy_disaggregated_data(db.ai_id)
-        self.message_user(
-            request,
-            "{} indicators updated.".format(reports)
-        )
-
     def link_indicators_data(self, request, queryset):
         reports = 0
         for db in queryset:
             reports = link_indicators_data(db)
-        self.message_user(
-            request,
-            "{} indicators linked.".format(reports)
-        )
+            self.message_user(
+                request,
+                "{} indicators linked for database {}".format(reports, db.name)
+            )
 
     def reset_indicators_values(self, request, queryset):
         reports = 0
         for db in queryset:
             reports = reset_indicators_values(db.ai_id)
-        self.message_user(
-            request,
-            "{} indicators values removed.".format(reports)
-        )
+            self.message_user(
+                request,
+                "{} indicators re-calculated values removed and for database {} ".format(reports, db.name)
+            )
 
     def calculate_indicators_values(self, request, queryset):
         reports = 0
         for db in queryset:
             reports = calculate_indicators_values(db)
-        self.message_user(
-            request,
-            "{} indicators values calculated.".format(reports)
-        )
+            self.message_user(
+                request,
+                "{} indicators values calculated for database {}".format(reports, db.name)
+            )
 
     def calculate_indicators_status(self, request, queryset):
         reports = 0
         for db in queryset:
             reports = calculate_indicators_status(db)
-        self.message_user(
-            request,
-            "{} indicators status calculated.".format(reports)
-        )
+            self.message_user(
+                request,
+                "{} indicators status calculated for database {}".format(reports, db.name)
+            )
 
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget(attrs={'initial': 'parsed'})},

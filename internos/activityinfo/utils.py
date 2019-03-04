@@ -30,7 +30,6 @@ def sync_live_data(db):
     from internos.activityinfo.models import Database, ActivityReportLive
     from internos.backends.models import ImportLog
     month_name = datetime.datetime.now().strftime("%B")
-    month = int(datetime.datetime.now().strftime("%m")) - 1
     model = ActivityReportLive.objects.none()
 
     ActivityReportLive.objects.filter(database_id=db.ai_id).delete()
@@ -41,20 +40,18 @@ def sync_live_data(db):
         object_type='AI_LIVE',
         month=month_name,
         status=True)
-    return add_rows(ai_id=db.ai_id, model=model, selected_month=month, report_type='live')
+    return add_rows(ai_id=db.ai_id, model=model, report_type='live')
 
 
 def read_data_from_file(ai_id, forced=False):
     from internos.activityinfo.models import Database, ActivityReport
     from internos.backends.models import ImportLog
     month_name = datetime.datetime.now().strftime("%B")
-    month = int(datetime.datetime.now().strftime("%m")) - 1
     model = ActivityReport.objects.none()
 
     if forced:
-        # ActivityReport.objects.filter(start_date__month=month).delete()
         ActivityReport.objects.filter(database_id=ai_id).delete()
-        return add_rows(ai_id=ai_id, model=model, selected_month=month)
+        return add_rows(ai_id=ai_id, model=model)
 
     try:
         ImportLog.objects.get(
@@ -115,7 +112,7 @@ def clean_string(value, string):
     return value.replace(string, '')
 
 
-def add_rows(ai_id=None, model=None, selected_month=None, report_type=None):
+def add_rows(ai_id=None, model=None):
 
     month = int(datetime.datetime.now().strftime("%m"))
     month_name = datetime.datetime.now().strftime("%B")
@@ -130,7 +127,6 @@ def add_rows(ai_id=None, model=None, selected_month=None, report_type=None):
         reader = csv.DictReader(csvfile)
         for row in reader:
             ctr += 1
-            # if selected_month and
             indicator_value = 0
             if 'indicator.value' in row:
                 indicator_value = row['indicator.value']
@@ -367,6 +363,7 @@ def calculate_indicators_values(ai_db, report_type=None):
     calculate_master_indicators_values(ai_db, report_type, True)
     calculate_master_indicators_values(ai_db, report_type)
     calculate_master_indicators_values_percentage(ai_db, report_type)
+    calculate_master_indicators_values_denominator_multiplication(ai_db, report_type)
     calculate_indicators_values_percentage(ai_db, report_type)
     calculate_indicators_cumulative_results(ai_db, report_type)
 
@@ -430,56 +427,56 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    month = str(int(datetime.datetime.now().strftime("%m")) - 1)
+    last_month = int(datetime.datetime.now().strftime("%m"))
 
     for indicator in indicators:
-        values_month = 0
-        values_gov = {}
-        values_partners = {}
-        values_partners_gov = {}
-        sub_indicators = indicator.summation_sub_indicators.all()
-        for sub_ind in sub_indicators:
-            if report_type == 'live':
-                values_month += float(sub_ind.values_live[month]) if month in sub_ind.values_live else 0
-            else:
-                values_month += float(sub_ind.values[month]) if month in sub_ind.values else 0
-
-            for gov1 in governorates1:
-                key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
+        for month in range(1, last_month):
+            month = str(month)
+            values_month = 0
+            values_gov = {}
+            values_partners = {}
+            values_partners_gov = {}
+            sub_indicators = indicator.summation_sub_indicators.all()
+            for sub_ind in sub_indicators:
                 if report_type == 'live':
-                    value = float(sub_ind.values_gov_live[key]) if key in sub_ind.values_gov_live else 0
+                    values_month += float(sub_ind.values_live[month]) if month in sub_ind.values_live else 0
                 else:
-                    value = float(sub_ind.values_gov[key]) if key in sub_ind.values_gov else 0
-                values_gov[key] = values_gov[key] + value if key in values_gov else value
+                    values_month += float(sub_ind.values[month]) if month in sub_ind.values else 0
 
-            for partner in partners:
-                key1 = "{}-{}".format(month, partner['partner_id'])
-                if report_type == 'live':
-                    value = float(sub_ind.values_partners_live[key1]) if key1 in sub_ind.values_partners_live else 0
-                else:
-                    value = float(sub_ind.values_partners[key1]) if key1 in sub_ind.values_partners else 0
-                values_partners[key1] = values_partners[key1] + value if key1 in values_partners else value
-
-                for gov in governorates:
-                    key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+                for gov1 in governorates1:
+                    key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
                     if report_type == 'live':
-                        value = float(sub_ind.values_partners_gov_live[key2]) if key2 in sub_ind.values_partners_gov_live else 0
+                        value = float(sub_ind.values_gov_live[key]) if key in sub_ind.values_gov_live else 0
                     else:
-                        value = float(sub_ind.values_partners_gov[key2]) if key2 in sub_ind.values_partners_gov else 0
-                    values_partners_gov[key2] = values_partners_gov[key2] + value if key2 in values_partners_gov else value
+                        value = float(sub_ind.values_gov[key]) if key in sub_ind.values_gov else 0
+                    values_gov[key] = values_gov[key] + value if key in values_gov else value
 
-        if report_type == 'live':
-            indicator.values_live[month] = values_month
-            # indicator.cumulative_values_live[month] = values_month
-            indicator.values_gov_live.update(values_gov)
-            indicator.values_partners_live.update(values_partners)
-            indicator.values_partners_gov_live.update(values_partners_gov)
-        else:
-            indicator.values[month] = values_month
-            # indicator.cumulative_values[month] = values_month
-            indicator.values_gov.update(values_gov)
-            indicator.values_partners.update(values_partners)
-            indicator.values_partners_gov.update(values_partners_gov)
+                for partner in partners:
+                    key1 = "{}-{}".format(month, partner['partner_id'])
+                    if report_type == 'live':
+                        value = float(sub_ind.values_partners_live[key1]) if key1 in sub_ind.values_partners_live else 0
+                    else:
+                        value = float(sub_ind.values_partners[key1]) if key1 in sub_ind.values_partners else 0
+                    values_partners[key1] = values_partners[key1] + value if key1 in values_partners else value
+
+                    for gov in governorates:
+                        key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+                        if report_type == 'live':
+                            value = float(sub_ind.values_partners_gov_live[key2]) if key2 in sub_ind.values_partners_gov_live else 0
+                        else:
+                            value = float(sub_ind.values_partners_gov[key2]) if key2 in sub_ind.values_partners_gov else 0
+                        values_partners_gov[key2] = values_partners_gov[key2] + value if key2 in values_partners_gov else value
+
+            if report_type == 'live':
+                indicator.values_live[month] = values_month
+                indicator.values_gov_live.update(values_gov)
+                indicator.values_partners_live.update(values_partners)
+                indicator.values_partners_gov_live.update(values_partners_gov)
+            else:
+                indicator.values[month] = values_month
+                indicator.values_gov.update(values_gov)
+                indicator.values_partners.update(values_partners)
+                indicator.values_partners_gov.update(values_partners_gov)
 
         indicator.save()
 
@@ -500,84 +497,84 @@ def calculate_indicators_values_percentage(ai_db, report_type=None):
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    month = str(int(datetime.datetime.now().strftime("%m")) - 1)
+    last_month = int(datetime.datetime.now().strftime("%m"))
 
     for indicator in indicators:
-        values_month = 0
-        values_gov = {}
-        values_partners = {}
-        values_partners_gov = {}
-        top_indicator = indicator.sub_indicators.all().first()
-        reporting_level = top_indicator.activity.name
-        percentage = indicator.calculated_percentage
-
-        try:
-            if report_type == 'live':
-                denominator = top_indicator.values_live[month] if month in top_indicator.values_live else 0
-            else:
-                denominator = top_indicator.values[month] if month in top_indicator.values else 0
-            if reporting_level == 'Municipality level':
-                values_month = denominator * percentage / 100
-            elif reporting_level == 'Site level':
-                values_month = denominator * percentage / 100
-        except Exception:
+        for month in range(1, last_month):
+            month = str(month)
             values_month = 0
-
-        for gov1 in governorates1:
-            key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
-            try:
-                if report_type == 'live':
-                    denominator = top_indicator.values_gov_live[key] if key in top_indicator.values_gov_live else 0
-                else:
-                    denominator = top_indicator.values_gov[key] if key in top_indicator.values_gov else 0
-                if reporting_level == 'Municipality level':
-                    values_gov[key] = denominator * percentage / 100
-                elif reporting_level == 'Site level':
-                    values_gov[key] = denominator * percentage / 100
-            except Exception:
-                values_gov[key] = 0
-
-        for partner in partners:
-            key1 = "{}-{}".format(month, partner['partner_id'])
+            values_gov = {}
+            values_partners = {}
+            values_partners_gov = {}
+            top_indicator = indicator.sub_indicators.all().first()
+            reporting_level = top_indicator.activity.name
+            percentage = indicator.calculated_percentage
 
             try:
                 if report_type == 'live':
-                    denominator = top_indicator.values_partners_live[key1] if key1 in top_indicator.values_partners_live else 0
+                    denominator = top_indicator.values_live[month] if month in top_indicator.values_live else 0
                 else:
-                    denominator = top_indicator.values_partners[key1] if key1 in top_indicator.values_partners else 0
+                    denominator = top_indicator.values[month] if month in top_indicator.values else 0
                 if reporting_level == 'Municipality level':
-                    values_partners[key1] = denominator * percentage / 100
+                    values_month = denominator * percentage / 100
                 elif reporting_level == 'Site level':
-                    values_partners[key1] = denominator * percentage / 100
+                    values_month = denominator * percentage / 100
             except Exception:
-                values_partners[key1] = 0
+                values_month = 0
 
-            for gov in governorates:
-                key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+            for gov1 in governorates1:
+                key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
                 try:
                     if report_type == 'live':
-                        denominator = top_indicator.values_partners_gov_live[key2] if key2 in top_indicator.values_partners_gov_live else 0
+                        denominator = top_indicator.values_gov_live[key] if key in top_indicator.values_gov_live else 0
                     else:
-                        denominator = top_indicator.values_partners_gov[key2] if key2 in top_indicator.values_partners_gov else 0
+                        denominator = top_indicator.values_gov[key] if key in top_indicator.values_gov else 0
                     if reporting_level == 'Municipality level':
-                        values_partners_gov[key2] = denominator * percentage / 100
+                        values_gov[key] = denominator * percentage / 100
                     elif reporting_level == 'Site level':
-                        values_partners_gov[key2] = denominator * percentage / 100
+                        values_gov[key] = denominator * percentage / 100
                 except Exception:
-                    values_partners_gov[key2] = 0
+                    values_gov[key] = 0
 
-        if report_type == 'live':
-            indicator.values_live[month] = values_month
-            # indicator.cumulative_values_live[month] = values_month
-            indicator.values_gov_live.update(values_gov)
-            indicator.values_partners_live.update(values_partners)
-            indicator.values_partners_gov_live.update(values_partners_gov)
-        else:
-            indicator.values[month] = values_month
-            # indicator.cumulative_values[month] = values_month
-            indicator.values_gov.update(values_gov)
-            indicator.values_partners.update(values_partners)
-            indicator.values_partners_gov.update(values_partners_gov)
+            for partner in partners:
+                key1 = "{}-{}".format(month, partner['partner_id'])
+
+                try:
+                    if report_type == 'live':
+                        denominator = top_indicator.values_partners_live[key1] if key1 in top_indicator.values_partners_live else 0
+                    else:
+                        denominator = top_indicator.values_partners[key1] if key1 in top_indicator.values_partners else 0
+                    if reporting_level == 'Municipality level':
+                        values_partners[key1] = denominator * percentage / 100
+                    elif reporting_level == 'Site level':
+                        values_partners[key1] = denominator * percentage / 100
+                except Exception:
+                    values_partners[key1] = 0
+
+                for gov in governorates:
+                    key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+                    try:
+                        if report_type == 'live':
+                            denominator = top_indicator.values_partners_gov_live[key2] if key2 in top_indicator.values_partners_gov_live else 0
+                        else:
+                            denominator = top_indicator.values_partners_gov[key2] if key2 in top_indicator.values_partners_gov else 0
+                        if reporting_level == 'Municipality level':
+                            values_partners_gov[key2] = denominator * percentage / 100
+                        elif reporting_level == 'Site level':
+                            values_partners_gov[key2] = denominator * percentage / 100
+                    except Exception:
+                        values_partners_gov[key2] = 0
+
+            if report_type == 'live':
+                indicator.values_live[month] = values_month
+                indicator.values_gov_live.update(values_gov)
+                indicator.values_partners_live.update(values_partners)
+                indicator.values_partners_gov_live.update(values_partners_gov)
+            else:
+                indicator.values[month] = values_month
+                indicator.values_gov.update(values_gov)
+                indicator.values_partners.update(values_partners)
+                indicator.values_partners_gov.update(values_partners_gov)
 
         indicator.save()
 
@@ -599,79 +596,178 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    month = str(int(datetime.datetime.now().strftime("%m")) - 1)
+    last_month = int(datetime.datetime.now().strftime("%m"))
 
     for indicator in indicators:
-        values_gov = {}
-        values_partners = {}
-        values_partners_gov = {}
-        denominator_indicator = indicator.denominator_indicator
-        numerator_indicator = indicator.numerator_indicator
-        if not denominator_indicator or not numerator_indicator:
-            continue
-        try:
-            if report_type == 'live':
-                denominator = denominator_indicator.values_live[month] if month in denominator_indicator.values_live else 0
-                numerator = numerator_indicator.values_live[month] if month in numerator_indicator.values_live else 0
-            else:
-                denominator = denominator_indicator.values[month] if month in denominator_indicator.values else 0
-                numerator = numerator_indicator.values[month] if month in numerator_indicator.values else 0
-            values_month = numerator / denominator
-        except Exception:
-            values_month = 0
-
-        for gov1 in governorates1:
-            key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
+        for month in range(1, last_month):
+            month = str(month)
+            values_gov = {}
+            values_partners = {}
+            values_partners_gov = {}
+            denominator_indicator = indicator.denominator_indicator
+            numerator_indicator = indicator.numerator_indicator
+            if not denominator_indicator or not numerator_indicator:
+                continue
             try:
                 if report_type == 'live':
-                    denominator = denominator_indicator.values_gov_live[key] if key in denominator_indicator.values_gov_live else 0
-                    numerator = numerator_indicator.values_gov_live[key] if key in numerator_indicator.values_gov_live else 0
+                    denominator = denominator_indicator.values_live[month] if month in denominator_indicator.values_live else 0
+                    numerator = numerator_indicator.values_live[month] if month in numerator_indicator.values_live else 0
                 else:
-                    denominator = denominator_indicator.values_gov[key] if key in denominator_indicator.values_gov else 0
-                    numerator = numerator_indicator.values_gov[key] if key in numerator_indicator.values_gov else 0
-                values_gov[key] = numerator / denominator
+                    denominator = denominator_indicator.values[month] if month in denominator_indicator.values else 0
+                    numerator = numerator_indicator.values[month] if month in numerator_indicator.values else 0
+                values_month = numerator / denominator
             except Exception:
-                values_gov[key] = 0
+                values_month = 0
 
-        for partner in partners:
-            key1 = "{}-{}".format(month, partner['partner_id'])
-
-            try:
-                if report_type == 'live':
-                    denominator = denominator_indicator.values_partners_live[key1] if key1 in denominator_indicator.values_partners_live else 0
-                    numerator = numerator_indicator.values_partners_live[key1] if key1 in numerator_indicator.values_partners_live else 0
-                else:
-                    denominator = denominator_indicator.values_partners[key1] if key1 in denominator_indicator.values_partners else 0
-                    numerator = numerator_indicator.values_partners[key1] if key1 in numerator_indicator.values_partners else 0
-                values_partners[key1] = numerator / denominator
-            except Exception:
-                values_partners[key1] = 0
-
-            for gov in governorates:
-                key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+            for gov1 in governorates1:
+                key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
                 try:
                     if report_type == 'live':
-                        denominator = denominator_indicator.values_partners_gov_live[key2] if key2 in denominator_indicator.values_partners_gov_live else 0
-                        numerator = numerator_indicator.values_partners_gov_live[key2] if key2 in numerator_indicator.values_partners_gov_live else 0
+                        denominator = denominator_indicator.values_gov_live[key] if key in denominator_indicator.values_gov_live else 0
+                        numerator = numerator_indicator.values_gov_live[key] if key in numerator_indicator.values_gov_live else 0
                     else:
-                        denominator = denominator_indicator.values_partners_gov[key2] if key2 in denominator_indicator.values_partners_gov else 0
-                        numerator = numerator_indicator.values_partners_gov[key2] if key2 in numerator_indicator.values_partners_gov else 0
-                    values_partners_gov[key2] = numerator / denominator
+                        denominator = denominator_indicator.values_gov[key] if key in denominator_indicator.values_gov else 0
+                        numerator = numerator_indicator.values_gov[key] if key in numerator_indicator.values_gov else 0
+                    values_gov[key] = numerator / denominator
                 except Exception:
-                    values_partners_gov[key2] = 0
+                    values_gov[key] = 0
 
-        if report_type == 'live':
-            indicator.values_live[month] = values_month
-            # indicator.cumulative_values_live[month] = values_month
-            indicator.values_gov_live.update(values_gov)
-            indicator.values_partners_live.update(values_partners)
-            indicator.values_partners_gov_live.update(values_partners_gov)
-        else:
-            indicator.values[month] = values_month
-            # indicator.cumulative_values[month] = values_month
-            indicator.values_gov.update(values_gov)
-            indicator.values_partners.update(values_partners)
-            indicator.values_partners_gov.update(values_partners_gov)
+            for partner in partners:
+                key1 = "{}-{}".format(month, partner['partner_id'])
+
+                try:
+                    if report_type == 'live':
+                        denominator = denominator_indicator.values_partners_live[key1] if key1 in denominator_indicator.values_partners_live else 0
+                        numerator = numerator_indicator.values_partners_live[key1] if key1 in numerator_indicator.values_partners_live else 0
+                    else:
+                        denominator = denominator_indicator.values_partners[key1] if key1 in denominator_indicator.values_partners else 0
+                        numerator = numerator_indicator.values_partners[key1] if key1 in numerator_indicator.values_partners else 0
+                    values_partners[key1] = numerator / denominator
+                except Exception:
+                    values_partners[key1] = 0
+
+                for gov in governorates:
+                    key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+                    try:
+                        if report_type == 'live':
+                            denominator = denominator_indicator.values_partners_gov_live[key2] if key2 in denominator_indicator.values_partners_gov_live else 0
+                            numerator = numerator_indicator.values_partners_gov_live[key2] if key2 in numerator_indicator.values_partners_gov_live else 0
+                        else:
+                            denominator = denominator_indicator.values_partners_gov[key2] if key2 in denominator_indicator.values_partners_gov else 0
+                            numerator = numerator_indicator.values_partners_gov[key2] if key2 in numerator_indicator.values_partners_gov else 0
+                        values_partners_gov[key2] = numerator / denominator
+                    except Exception:
+                        values_partners_gov[key2] = 0
+
+            if report_type == 'live':
+                indicator.values_live[month] = values_month
+                indicator.values_gov_live.update(values_gov)
+                indicator.values_partners_live.update(values_partners)
+                indicator.values_partners_gov_live.update(values_partners_gov)
+            else:
+                indicator.values[month] = values_month
+                indicator.values_gov.update(values_gov)
+                indicator.values_partners.update(values_partners)
+                indicator.values_partners_gov.update(values_partners_gov)
+
+        indicator.save()
+
+
+def calculate_master_indicators_values_denominator_multiplication(ai_db, report_type=None):
+    from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
+
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
+                                          master_indicator=True,
+                                          measurement_type='percentage_x')
+
+    if report_type == 'live':
+        report = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
+    else:
+        report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
+    if ai_db.is_funded_by_unicef:
+        report = report.filter(funded_by='UNICEF')
+
+    partners = report.values('partner_id').distinct()
+    governorates = report.values('location_adminlevel_governorate_code').distinct()
+    governorates1 = report.values('location_adminlevel_governorate_code').distinct()
+    last_month = int(datetime.datetime.now().strftime("%m"))
+
+    for indicator in indicators:
+        for month in range(1, last_month):
+            month = str(month)
+            values_gov = {}
+            values_partners = {}
+            values_partners_gov = {}
+            denominator_indicator = indicator.denominator_indicator
+            numerator_indicator = indicator.numerator_indicator
+            denominator_multiplication = indicator.denominator_multiplication
+            if not denominator_indicator or not numerator_indicator:
+                continue
+            try:
+                if report_type == 'live':
+                    denominator = denominator_indicator.values_live[month] if month in denominator_indicator.values_live else 0
+                    numerator = numerator_indicator.values_live[month] if month in numerator_indicator.values_live else 0
+                else:
+                    denominator = denominator_indicator.values[month] if month in denominator_indicator.values else 0
+                    numerator = numerator_indicator.values[month] if month in numerator_indicator.values else 0
+                denominator = denominator * denominator_multiplication
+                values_month = numerator / denominator
+            except Exception as ex:
+                values_month = 0
+
+            for gov1 in governorates1:
+                key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
+                try:
+                    if report_type == 'live':
+                        denominator = denominator_indicator.values_gov_live[key] if key in denominator_indicator.values_gov_live else 0
+                        numerator = numerator_indicator.values_gov_live[key] if key in numerator_indicator.values_gov_live else 0
+                    else:
+                        denominator = denominator_indicator.values_gov[key] if key in denominator_indicator.values_gov else 0
+                        numerator = numerator_indicator.values_gov[key] if key in numerator_indicator.values_gov else 0
+                    denominator = denominator * denominator_multiplication
+                    values_gov[key] = numerator / denominator
+                except Exception:
+                    values_gov[key] = 0
+
+            for partner in partners:
+                key1 = "{}-{}".format(month, partner['partner_id'])
+
+                try:
+                    if report_type == 'live':
+                        denominator = denominator_indicator.values_partners_live[key1] if key1 in denominator_indicator.values_partners_live else 0
+                        numerator = numerator_indicator.values_partners_live[key1] if key1 in numerator_indicator.values_partners_live else 0
+                    else:
+                        denominator = denominator_indicator.values_partners[key1] if key1 in denominator_indicator.values_partners else 0
+                        numerator = numerator_indicator.values_partners[key1] if key1 in numerator_indicator.values_partners else 0
+                    denominator = denominator * denominator_multiplication
+                    values_partners[key1] = numerator / denominator
+                except Exception:
+                    values_partners[key1] = 0
+
+                for gov in governorates:
+                    key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+                    try:
+                        if report_type == 'live':
+                            denominator = denominator_indicator.values_partners_gov_live[key2] if key2 in denominator_indicator.values_partners_gov_live else 0
+                            numerator = numerator_indicator.values_partners_gov_live[key2] if key2 in numerator_indicator.values_partners_gov_live else 0
+                        else:
+                            denominator = denominator_indicator.values_partners_gov[key2] if key2 in denominator_indicator.values_partners_gov else 0
+                            numerator = numerator_indicator.values_partners_gov[key2] if key2 in numerator_indicator.values_partners_gov else 0
+                        denominator = denominator * denominator_multiplication
+                        values_partners_gov[key2] = numerator / denominator
+                    except Exception:
+                        values_partners_gov[key2] = 0
+
+            if report_type == 'live':
+                indicator.values_live[month] = values_month
+                indicator.values_gov_live.update(values_gov)
+                indicator.values_partners_live.update(values_partners)
+                indicator.values_partners_gov_live.update(values_partners_gov)
+            else:
+                indicator.values[month] = values_month
+                indicator.values_gov.update(values_gov)
+                indicator.values_partners.update(values_partners)
+                indicator.values_partners_gov.update(values_partners_gov)
 
         indicator.save()
 
@@ -690,49 +786,50 @@ def calculate_individual_indicators_values(ai_db, report_type=None):
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    month = int(datetime.datetime.now().strftime("%m")) - 1
+    last_month = int(datetime.datetime.now().strftime("%m"))
 
     for indicator in indicators:
-        result = get_individual_indicator_value(ai_db, indicator, month, report_type=report_type)
-        if report_type == 'live':
-            indicator.values_live[str(month)] = result
-        else:
-            indicator.values[str(month)] = result
-        # indicator.cumulative_values[str(month)] = result
-
-        for gov1 in governorates1:
-            key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
-            value = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
-                                                   gov=gov1['location_adminlevel_governorate_code'],
-                                                   report_type=report_type)
-
+        for month in range(1, last_month):
+            month = str(month)
+            result = get_individual_indicator_value(ai_db, indicator, month, report_type=report_type)
             if report_type == 'live':
-                indicator.values_gov_live[str(key)] = value
+                indicator.values_live[str(month)] = result
             else:
-                indicator.values_gov[str(key)] = value
+                indicator.values[str(month)] = result
 
-        for partner in partners:
-            key1 = "{}-{}".format(month, partner['partner_id'])
-            value1 = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
-                                                    partner=partner['partner_id'], report_type=report_type)
-
-            if report_type == 'live':
-                indicator.values_partners_live[str(key1)] = value1
-            else:
-                indicator.values_partners[str(key1)] = value1
-
-            for gov in governorates:
-                key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
-                value2 = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
-                                                        partner=partner['partner_id'], report_type=report_type,
-                                                        gov=gov['location_adminlevel_governorate_code'])
+            for gov1 in governorates1:
+                key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
+                value = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
+                                                       gov=gov1['location_adminlevel_governorate_code'],
+                                                       report_type=report_type)
 
                 if report_type == 'live':
-                    indicator.values_partners_gov_live[str(key2)] = value2
+                    indicator.values_gov_live[str(key)] = value
                 else:
-                    indicator.values_partners_gov[str(key2)] = value2
+                    indicator.values_gov[str(key)] = value
 
-        indicator.save()
+            for partner in partners:
+                key1 = "{}-{}".format(month, partner['partner_id'])
+                value1 = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
+                                                        partner=partner['partner_id'], report_type=report_type)
+
+                if report_type == 'live':
+                    indicator.values_partners_live[str(key1)] = value1
+                else:
+                    indicator.values_partners[str(key1)] = value1
+
+                for gov in governorates:
+                    key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+                    value2 = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
+                                                            partner=partner['partner_id'], report_type=report_type,
+                                                            gov=gov['location_adminlevel_governorate_code'])
+
+                    if report_type == 'live':
+                        indicator.values_partners_gov_live[str(key2)] = value2
+                    else:
+                        indicator.values_partners_gov[str(key2)] = value2
+
+            indicator.save()
 
     return indicators.count()
 
@@ -787,69 +884,3 @@ def get_individual_indicator_value(ai_db, indicator_id, month=None, partner=None
 
     total = reports.aggregate(Sum('indicator_value'))
     return total['indicator_value__sum'] if total['indicator_value__sum'] else 0
-
-
-#  not used for now
-def copy_disaggregated_data(ai_id):
-    from internos.activityinfo.models import Indicator, ActivityReport
-
-    order = 0
-    month = int(datetime.datetime.now().strftime("%m")) - 1
-    report = ActivityReport.objects.filter(
-        database_id=ai_id,
-        start_date__month=month,
-        funded_by__contains='UNICEF')
-
-    top_indicators = Indicator.objects.filter(activity__database__ai_id=ai_id, master_indicator=True)
-    for item in top_indicators:
-        order += 1
-        try:
-            if item.ai_id:
-                instance = report.get(indicator_id=item.ai_id)
-            else:
-                instance = report.get(indicator_name=item.name)
-        except ActivityReport.DoesNotExist:
-            instance = ActivityReport.objects.create(
-                indicator_id=item.ai_id,
-                indicator_name=item.name,
-                database_id=ai_id,
-                funded_by='UNICEF',
-                start_date='2018-11-01'
-            )
-        instance.target = item.target
-        instance.master_indicator = True
-        instance.order = order
-        instance.save()
-
-        for item1 in item.sub_indicators.all():
-            order += 1
-            try:
-                if item1.ai_id:
-                    instance1 = report.get(indicator_id=item1.ai_id)
-                else:
-                    instance1 = report.get(indicator_name=item1.name)
-            except ActivityReport.DoesNotExist:
-                instance1 = ActivityReport.objects.create(
-                    indicator_id=item1.ai_id,
-                    indicator_name=item1.name,
-                    indicator_awp_code=item1.awp_code,
-                    database_id=instance.database_id,
-                    funded_by=instance.funded_by,
-                    start_date=instance.start_date,
-                )
-            instance1.master_indicator_sub = True
-            instance1.target = item1.target
-            instance1.order = order
-            instance1.save()
-
-            for item2 in item1.sub_indicators.exclude(master_indicator=True):
-                order += 1
-                if item2.ai_id:
-                    instance2 = report.get(indicator_id=item2.ai_id)
-                else:
-                    instance2 = report.get(indicator_name=item2.name)
-                instance2.target = item2.target
-                instance2.order = order
-                instance2.save()
-
-    return report.count()

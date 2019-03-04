@@ -352,10 +352,11 @@ class Indicator(models.Model):
         choices=Choices(
             ('numeric', 'Numeric'),
             ('percentage', 'Percentage'),
+            ('percentage_x', 'Percentage multiple X'),
             ('weighting', 'Weighting'),
         )
     )
-
+    denominator_multiplication = models.IntegerField(blank=True, null=True, default=0)
     values_live = JSONField(blank=True, null=True, default={})
     values_gov_live = JSONField(blank=True, null=True, default={})
     values_partners_live = JSONField(blank=True, null=True, default={})
