@@ -351,6 +351,11 @@ class PCA(models.Model):
     location_p_codes = ArrayField(models.CharField(max_length=200), blank=True, null=True)
     offices = ArrayField(models.CharField(max_length=200), blank=True, null=True)
     cp_outputs = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    planned_budget = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    amendments = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    result_links = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    location_names = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    planned_visits_list = ArrayField(models.CharField(max_length=200), blank=True, null=True)
 
     class Meta:
         verbose_name = 'Intervention'

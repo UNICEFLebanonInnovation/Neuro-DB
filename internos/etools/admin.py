@@ -122,7 +122,7 @@ class PCAAdmin(ImportExportModelAdmin):
     list_display = (
         'number',
         'partner',
-        'partner_name',
+        'agreement',
         'document_type',
         'country_programme',
         'start',
