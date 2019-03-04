@@ -110,13 +110,12 @@ class ReportView(TemplateView):
             try:
                 partner = Partner.objects.get(number=selected_partner)
                 if partner.partner_etools:
-                    partner_info = {
-                        'name': partner.partner_etools.name,
-                        'type': partner.partner_etools.partner_type,
-                        'rating': partner.partner_etools.rating,
-                    }
-            except Exception:
+                    partner_info = partner.detailed_info
+            except Exception as ex:
+                print(ex)
                 pass
+
+        print(partner_info)
 
         partners = report.values('partner_description', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()

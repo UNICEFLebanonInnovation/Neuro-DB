@@ -95,6 +95,18 @@ class PartnerOrganization(models.Model):
         verbose_name=u'Risk Rating'
     )
 
+    @property
+    def interventions_details(self):
+        data = []
+        for item in self.interventions.all().order_by('start'):
+            data.append({
+                'number': item.number,
+                'start': item.start,
+                'end': item.end,
+                'document_type': item.document_type
+            })
+        return data
+
     class Meta:
         ordering = ['name']
         unique_together = ('name', 'vendor_number')
@@ -216,7 +228,8 @@ class PCA(models.Model):
     )
     partner = models.ForeignKey(
         PartnerOrganization,
-        blank=True, null=True
+        blank=True, null=True,
+        related_name='interventions'
     )
     partner_name = models.CharField(
         max_length=255,
@@ -266,7 +279,7 @@ class PCA(models.Model):
     )
 
     # dates
-    start= models.DateField(
+    start = models.DateField(
         null=True, blank=True,
         verbose_name='Partnership start date',
         help_text=u'The date the Intervention will start'

@@ -252,6 +252,16 @@ class Partner(models.Model):
             return self.ai_id
         return 'p{0:0>10}'.format(str(self.ai_id))
 
+    @property
+    def detailed_info(self):
+        partner_etools = self.partner_etools
+        return {
+            'name': partner_etools.name,
+            'type': partner_etools.partner_type,
+            'rating': partner_etools.rating,
+            'interventions': partner_etools.interventions_details,
+        }
+
     class Meta:
         ordering = ['name']
 
