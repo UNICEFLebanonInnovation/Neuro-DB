@@ -847,7 +847,7 @@ def calculate_indicators_status(database):
     total_days = delta.days + 1
     days_passed_per = (total_days * 100) / year_days
 
-    indicators = Indicator.objects.filter(activity__database__ai_id=database.ai_id, funded_by='UNICEF')
+    indicators = Indicator.objects.filter(activity__database__ai_id=database.ai_id)
     for indicator in indicators:
         cumulative_per = indicator.cumulative_per
         off_track = days_passed_per - 10
