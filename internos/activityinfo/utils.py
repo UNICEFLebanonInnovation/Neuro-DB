@@ -366,6 +366,7 @@ def calculate_indicators_values(ai_db, report_type=None):
     calculate_master_indicators_values_denominator_multiplication(ai_db, report_type)
     calculate_indicators_values_percentage(ai_db, report_type)
     calculate_indicators_cumulative_results(ai_db, report_type)
+    calculate_indicators_status(ai_db)
 
     return 0
 
