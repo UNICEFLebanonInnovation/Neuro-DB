@@ -40,7 +40,7 @@ def sync_live_data(db):
         object_type='AI_LIVE',
         month=month_name,
         status=True)
-    return add_rows(ai_id=db.ai_id, model=model, report_type='live')
+    return add_rows(ai_id=db.ai_id, model=model)
 
 
 def read_data_from_file(ai_id, forced=False):
@@ -403,6 +403,7 @@ def calculate_indicators_cumulative_results(ai_db, report_type=None):
                 'gov': value_gov,
                 'partner-gov': value_partner_gov
             }
+        indicators.cumulative_results = value
         indicator.save()
 
 

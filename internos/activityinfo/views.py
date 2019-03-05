@@ -100,9 +100,7 @@ class ReportView(TemplateView):
             except Exception:
                 database = Database.objects.filter(reporting_year__current=True).first()
 
-        report = ActivityReport.objects.filter(
-            database=database,
-            start_date__month=month)
+        report = ActivityReport.objects.filter(database=database)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
@@ -176,19 +174,12 @@ class LiveReportView(TemplateView):
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
 
         database = Database.objects.get(id=ai_id)
-        report = ActivityReportLive.objects.filter(
-            database=database,
-            start_date__month=month)
+        report = ActivityReportLive.objects.filter(database=database)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
         partners = report.values('partner_ai__name', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
-        activity_categories = report.values('form_category').distinct().count()
-        activities = report.values('form').distinct().count()
-        indicators = report.values('indicator_name').distinct().count()
-        unicef_funds = report.count()
-        not_reported = report.filter(Q(indicator_value__isnull=True) | Q(indicator_value=0)).count()
         master_indicators = Indicator.objects.filter(master_indicator=True, activity__database=database).order_by('id')
 
         return {
@@ -204,12 +195,7 @@ class LiveReportView(TemplateView):
             'databases': databases,
             'partners': partners,
             'governorates': governorates,
-            'activity_categories': activity_categories,
-            'activities': activities,
-            'not_reported': not_reported,
-            'indicators': indicators,
             'master_indicators': master_indicators,
-            'unicef_funds': unicef_funds
         }
 
 

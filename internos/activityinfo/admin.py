@@ -669,6 +669,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'link_indicators_data',
         'reset_indicators_values',
         'calculate_indicators_values',
+        'calculate_indicators_cumulative_results',
         'calculate_indicators_status',
     ]
 
@@ -811,6 +812,14 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             self.message_user(
                 request,
                 "{} indicators values calculated for database {}".format(reports, db.name)
+            )
+
+    def calculate_indicators_cumulative_results(self, request, queryset):
+        for db in queryset:
+            reports = calculate_indicators_cumulative_results(db)
+            self.message_user(
+                request,
+                "{} indicators values cumulative calculated for database {}".format(reports, db.name)
             )
 
     def calculate_indicators_status(self, request, queryset):
