@@ -8,5 +8,5 @@ class Command(BaseCommand):
     help = 'sync_intervention_data'
 
     def handle(self, *args, **options):
-        # sync_intervention_data()
+        sync_intervention_data()
         update_individual_intervention_data()
