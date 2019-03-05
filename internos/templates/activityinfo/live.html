@@ -45,38 +45,35 @@
   </div>
 
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
-    <span class="count_top"><i class="fa fa-filter"></i> {{ partners|length }} Partners</span>
-    <div class="count">
+    <!--<span class="count_top"><i class="fa fa-filter"></i> {{ partners|length }} Partners</span>-->
 
       <ul class="nav nav-pills" role="tablist">
         <li role="presentation" class="dropdown">
-          <a id="drop6" href="#" style="font-size: 15px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-            {{ selected_partner_name }}
+          <a id="drop6" href="#" style="font-size: 20px; padding-top: 0px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+            <i class="fa fa-filter"></i> {{ selected_partner_name }}
             <span class="caret"></span>
           </a>
           <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
             <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">All Partners</a></li>
             {% for partner in partners %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}&partner={{ partner.partner_id }}&partner_name={{ partner.partner_label }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">{{ partner.partner_label }}</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}&partner={{ partner.partner_id }}&partner_name={{ partner.partner_ai__name }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">{{ partner.partner_ai__name }}</a></li>
             {% endfor %}
           </ul>
         </li>
       </ul>
 
     </div>
-  </div>
 
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
-    <span class="count_top"><i class="fa fa-filter"></i> {{ governorates|length }} Governorates</span>
-    <div class="count">
+    <!--<span class="count_top"><i class="fa fa-filter"></i> {{ governorates|length }} Governorates </span>-->
 
       <ul class="nav nav-pills" role="tablist">
         <li role="presentation" class="dropdown">
-          <a id="drop7" href="#" style="font-size: 15px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-            {{ selected_governorate_name }}
+          <a id="drop7" href="#" style="font-size: 20px; padding-top: 0px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+            <i class="fa fa-filter"></i> {{ selected_governorate_name }}
             <span class="caret"></span>
           </a>
-          <ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
+          <ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop7" style="z-index: 3000;">
             <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">All Governorates</a></li>
             {% for gov in governorates %}
             <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ gov.location_adminlevel_governorate_code }}&governorate_name={{ gov.location_adminlevel_governorate }}">{{ gov.location_adminlevel_governorate }}</a></li>
@@ -86,7 +83,6 @@
       </ul>
 
     </div>
-  </div>
 
   <i class="fa fa-user" data-toggle="tooltip" data-placement="bottom" data-html="true"
      title="Database focal point: {{ database.focal_point }} <br/>

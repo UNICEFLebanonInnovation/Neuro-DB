@@ -115,9 +115,7 @@ class ReportView(TemplateView):
                 print(ex)
                 pass
 
-        print(partner_info)
-
-        partners = report.values('partner_description', 'partner_id').distinct()
+        partners = report.values('partner_ai__name', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
         activity_categories = report.values('form_category').distinct().count()
         activities = report.values('form').distinct().count()
@@ -184,7 +182,7 @@ class LiveReportView(TemplateView):
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
-        partners = report.values('partner_label', 'partner_id').distinct()
+        partners = report.values('partner_ai__name', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
         activity_categories = report.values('form_category').distinct().count()
         activities = report.values('form').distinct().count()
