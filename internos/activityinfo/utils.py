@@ -406,6 +406,8 @@ def calculate_indicators_cumulative_results(ai_db, report_type=None):
         indicators.cumulative_results = value
         indicator.save()
 
+    return indicators.count()
+
 
 def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=False):
     from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
