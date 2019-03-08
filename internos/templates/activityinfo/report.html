@@ -48,7 +48,6 @@
   </div>
 
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="1" data-intro="Filter options by partner">
-    <!--<span class="count_top"><i class="fa fa-filter"></i> {{ partners|length }} Partners</span>-->
 
       <ul class="nav nav-pills" role="tablist">
         <li role="presentation" class="dropdown">
@@ -69,28 +68,9 @@
         {% endif %}
       </ul>
 
-    <!--<div class="count">-->
-
-      <!--<ul class="nav nav-pills" role="tablist">-->
-        <!--<li role="presentation" class="dropdown">-->
-          <!--<a id="drop6" href="#" style="font-size: 15px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">-->
-            <!--{{ selected_partner_name }}-->
-            <!--<span class="caret"></span>-->
-          <!--</a>-->
-          <!--<ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">-->
-            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">All Partners</a></li>-->
-            <!--{% for partner in partners %}-->
-            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ partner.partner_id }}&partner_name={{ partner.partner_label }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">{{ partner.partner_label }}</a></li>-->
-            <!--{% endfor %}-->
-          <!--</ul>-->
-        <!--</li>-->
-      <!--</ul>-->
-
-    <!--</div>-->
   </div>
 
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="2" data-intro="Filter options by governorate">
-    <!--<span class="count_top"><i class="fa fa-filter"></i> {{ governorates|length }} Governorates </span>-->
 
       <ul class="nav nav-pills" role="tablist">
         <li role="presentation" class="dropdown">
@@ -107,27 +87,11 @@
         </li>
       </ul>
 
-    <!--<div class="count">-->
-
-      <!--<ul class="nav nav-pills" role="tablist">-->
-        <!--<li role="presentation" class="dropdown">-->
-          <!--<a id="drop7" href="#" style="font-size: 15px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">-->
-            <!--{{ selected_governorate_name }}-->
-            <!--<span class="caret"></span>-->
-          <!--</a>-->
-          <!--<ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">-->
-            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">All Governorates</a></li>-->
-            <!--{% for gov in governorates %}-->
-            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ gov.location_adminlevel_governorate_code }}&governorate_name={{ gov.location_adminlevel_governorate }}">{{ gov.location_adminlevel_governorate }}</a></li>-->
-            <!--{% endfor %}-->
-          <!--</ul>-->
-        <!--</li>-->
-      <!--</ul>-->
-
-    <!--</div>-->
   </div>
 
-  <span data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+
+  <!--<span data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">-->
     <i class="fa fa-user faa-pulse animated-hover" data-toggle="tooltip" data-placement="bottom" data-html="true"
        title="Database focal point: {{ database.focal_point }} <br/>
               email: {{ database.focal_point.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
@@ -145,7 +109,7 @@
       <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
     </a>
 
-  </span>
+  </div>
 
 </div>
 
@@ -158,7 +122,7 @@
                       <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
                              aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
-                             style="position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="4" data-intro="Search for a specific Indicator">
+                             style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="4" data-intro="Search for a specific Indicator">
                       <!--<a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>-->
                       <!--<a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;">
                         <i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>

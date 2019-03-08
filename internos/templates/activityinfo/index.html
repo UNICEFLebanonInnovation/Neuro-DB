@@ -20,7 +20,7 @@
 
 <!-- Modal -->
 <div class="modal fade in" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="display: block;">
-  <div class="modal-dialog modal-dialog-centered" role="document" style="width: 1040px;">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="width: 1100px;">
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="modal-title" id="exampleModalCenterTitle">Select the ActivityInfo database section</h3>
@@ -30,25 +30,22 @@
         {% for db in databases %}
         <div class="col-sm-6 col-md-4" style="width: 250px;">
           <div class="thumbnail" style="height: 160px;">
+            <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">
             {% if db.section.logo %}
             <img alt="100%x200" src="{% static db.section.logo %}" data-holder-rendered="true" style="height: 120px; width: 120px; display: block;" />
             {% else %}
             <img alt="100%x200" src="{% static 'images/unicef-logo.png' %}" data-holder-rendered="true" style="height: 120px; width: 180px; display: block;" />
             {% endif %}
+            </a>
             <div class="caption" style="padding: 0px;">
-              <h4><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></h4>
-              <!--<p>-->
-                <!--<a href="#" class="btn btn-primary" role="button">Button</a>-->
-                <!--<a href="#" class="btn btn-default" role="button">Button</a>-->
-              <!--</p>-->
+              <h4 style="color: #0089d2;">
+                <i class="fa fa-angle-right" style="padding-left: 10px; padding-right: 5px; font-size: 20px; font-weight: bold;"></i>
+                <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a>
+              </h4>
             </div>
           </div>
         </div>
         {% endfor %}
-
-        <!--{% for db in databases %}-->
-        <!--<a type="button" href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="btn btn-primary">{{ db.label }}</a>-->
-        <!--{% endfor %}-->
       </div>
     </div>
   </div>
