@@ -399,7 +399,7 @@ class Indicator(models.Model):
             return self.activity__database__section
 
     class Meta:
-        ordering = ['name']
+        ordering = ['id']
 
 
 class AttributeGroup(models.Model):
