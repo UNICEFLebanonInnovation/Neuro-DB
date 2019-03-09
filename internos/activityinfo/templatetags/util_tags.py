@@ -101,6 +101,30 @@ def get_indicator_unit(indicator, value):
 
 
 @register.assignment_tag
+def get_indicator_diff_results(indicator, month=None):
+    try:
+        cumulative_values = indicator.cumulative_values
+        previous_month = str(int(month) - 1)
+        current_month = str(month)
+        p_month_value = 0
+        c_month_value = 0
+
+        if 'months' in cumulative_values:
+            cumulative_values = cumulative_values.get('months')
+
+            if current_month in cumulative_values:
+                c_month_value = int(cumulative_values[current_month])
+
+            if previous_month in cumulative_values:
+                p_month_value = int(cumulative_values[previous_month])
+
+        return get_indicator_unit(indicator,  c_month_value - p_month_value)
+    except Exception as ex:
+        # print(ex)
+        return get_indicator_unit(indicator, 0)
+
+
+@register.assignment_tag
 def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
     try:
         cumulative_values = indicator.cumulative_values
@@ -143,8 +167,8 @@ def get_indicator_data(ai_id, month=None):
             'target_sector': indicator.target_sector,
             'target': indicator.target,
             'result': get_indicator_live_value(indicator, month),
-            'cumulative': indicator.cumulative_results,
-            'last_report_changes': get_indicator_cumulative(indicator, month)
+            'cumulative': get_indicator_cumulative(indicator, month),
+            'last_report_changes': get_indicator_diff_results(indicator, month)
         }
 
         return data
