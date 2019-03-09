@@ -365,46 +365,76 @@ def calculate_indicators_values(ai_db, report_type=None):
     calculate_master_indicators_values_percentage(ai_db, report_type)
     calculate_master_indicators_values_denominator_multiplication(ai_db, report_type)
     calculate_indicators_values_percentage(ai_db, report_type)
-    calculate_indicators_cumulative_results(ai_db, report_type)
-    calculate_indicators_status(ai_db)
+    # calculate_indicators_cumulative_results(ai_db, report_type)
+    # calculate_indicators_status(ai_db)
 
     return 0
 
 
 def calculate_indicators_cumulative_results(ai_db, report_type=None):
-    from internos.activityinfo.models import Indicator
+    from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
 
+    if report_type == 'live':
+        report = ActivityReportLive.objects.filter(database=ai_db)
+    else:
+        report = ActivityReport.objects.filter(database=ai_db)
+
+    if ai_db.is_funded_by_unicef:
+        report = report.filter(funded_by__contains='UNICEF')
+
+    partners = report.values('partner_id').distinct()
+    governorates = report.values('location_adminlevel_governorate_code').distinct()
+
     for indicator in indicators:
         value = 0
-        value_partner = {}
-        value_gov = {}
-        value_partner_gov = {}
+        cum_month = {}
+        cum_partner = {}
+        cum_gov = {}
+        cum_partner_gov = {}
 
         if report_type == 'live':
             values = indicator.values_live
+            values_partners = indicator.values_partners_live
+            values_govs = indicator.values_gov_live
+            values_partners_govs = indicator.values_partners_gov_live
         else:
             values = indicator.values
+            values_partners = indicator.values_partners
+            values_govs = indicator.values_gov
+            values_partners_govs = indicator.values_partners_gov
+
         for month in values:
-            value += float(values[month])
+            c_value = 0
+            for c_month in range(1, int(month) + 1):
+                c_value += float(values[str(c_month)])
+                cum_month[str(month)] = c_value
+
+            for partner in partners:
+                key = '{}-{}'.format(month, partner['partner_id'])
+                if key in values_partners:
+                    cum_partner[partner['partner_id']] = values_partners[key] + (cum_partner[partner['partner_id']] if partner['partner_id'] in cum_partner else 0)
+
+            for gov in governorates:
+                key = '{}-{}'.format(month, gov['location_adminlevel_governorate_code'])
+                if key in values_govs:
+                    cum_gov[gov['location_adminlevel_governorate_code']] = values_govs[key] + (cum_gov[gov['location_adminlevel_governorate_code']] if gov['location_adminlevel_governorate_code'] in cum_gov else 0)
 
         if report_type == 'live':
             indicator.cumulative_values_live = {
-                'values': value,
-                'partner': value_partner,
-                'gov': value_gov,
-                'partner-gov': value_partner_gov
+                'months': cum_month,
+                'partners': cum_partner,
+                'govs': cum_gov,
+                'partners_govs': cum_partner_gov
             }
-
         else:
             indicator.cumulative_values = {
-                'values': value,
-                'partner': value_partner,
-                'gov': value_gov,
-                'partner-gov': value_partner_gov
+                'months': cum_month,
+                'partners': cum_partner,
+                'govs': cum_gov,
+                'partners_govs': cum_partner_gov
             }
-        indicators.cumulative_results = value
         indicator.save()
 
     return indicators.count()

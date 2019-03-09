@@ -75,6 +75,7 @@ class ReportView(TemplateView):
     template_name = 'activityinfo/report.html'
 
     def get_context_data(self, **kwargs):
+        selected_filter = False
         selected_partner = self.request.GET.get('partner', 0)
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorate = self.request.GET.get('governorate', 0)
@@ -85,7 +86,7 @@ class ReportView(TemplateView):
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
         month_number = last_month.strftime("%m")
-        month = int(last_month.strftime("%m")) - 1
+        month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
         ai_id = int(self.request.GET.get('ai_id', 0))
@@ -113,13 +114,11 @@ class ReportView(TemplateView):
                 print(ex)
                 pass
 
+        if selected_partner or selected_governorate:
+            selected_filter = True
+
         partners = report.values('partner_ai__name', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
-        activity_categories = report.values('form_category').distinct().count()
-        activities = report.values('form').distinct().count()
-        indicators = report.values('indicator_name').distinct().count()
-        unicef_funds = report.count()
-        not_reported = report.filter(Q(indicator_value__isnull=True) | Q(indicator_value=0)).count()
 
         master_indicators = Indicator.objects.filter(activity__database=database).order_by('sequence')
         if database.mapped_db:
@@ -143,13 +142,9 @@ class ReportView(TemplateView):
             'databases': databases,
             'partners': partners,
             'governorates': governorates,
-            'activity_categories': activity_categories,
-            'activities': activities,
-            'not_reported': not_reported,
-            'indicators': indicators,
             'master_indicators': master_indicators,
-            'unicef_funds': unicef_funds,
-            'partner_info': partner_info
+            'partner_info': partner_info,
+            'selected_filter': selected_filter
         }
 
 

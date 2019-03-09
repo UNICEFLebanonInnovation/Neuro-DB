@@ -103,20 +103,54 @@ def get_indicator_unit(indicator, value):
 @register.assignment_tag
 def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
     try:
-        if partner and gov and not partner == '0' and not gov == '0':
-            key = "{}-{}-{}".format(month, partner, gov)
-            return get_indicator_unit(indicator, indicator.values_partners_gov[key])
-        if partner and not partner == '0':
-            key = "{}-{}".format(month, partner)
-            return get_indicator_unit(indicator, indicator.values_partners[key])
-        if gov and not gov == '0':
-            key = "{}-{}".format(month, gov)
-            return get_indicator_unit(indicator, indicator.values_gov[key])
+        cumulative_values = indicator.cumulative_values
 
-        return get_indicator_unit(indicator, indicator.cumulative_values.get(str(month)))
+        if partner and gov and not partner == '0' and not gov == '0':
+            return 0
+
+        if partner and not partner == '0' and 'partners' in cumulative_values:
+            cumulative_values = cumulative_values.get('partners')
+            print(cumulative_values)
+            if partner in cumulative_values:
+                return get_indicator_unit(indicator, cumulative_values[partner])
+
+        if gov and not gov == '0' and 'govs' in cumulative_values:
+            cumulative_values = cumulative_values.get('govs')
+            if gov in cumulative_values:
+                return get_indicator_unit(indicator, cumulative_values[gov])
+
+        if month and 'months' in cumulative_values:
+            month = str(month)
+            cumulative_values = cumulative_values.get('months')
+            if month in cumulative_values:
+                return get_indicator_unit(indicator, cumulative_values[month])
+
+        return get_indicator_unit(indicator, 0)
     except Exception as ex:
         # print(ex)
         return get_indicator_unit(indicator, 0)
+
+
+@register.assignment_tag
+def get_indicator_data(ai_id, month=None):
+    from internos.activityinfo.models import Indicator
+
+    data = {}
+    try:
+        indicator = Indicator.objects.get(id=ai_id)
+        data = {
+            'name': indicator.name,
+            'target_sector': indicator.target_sector,
+            'target': indicator.target,
+            'result': get_indicator_live_value(indicator, month),
+            'cumulative': indicator.cumulative_results,
+            'last_report_changes': get_indicator_cumulative(indicator, month)
+        }
+
+        return data
+    except Exception as ex:
+        # print(ex)
+        return data
 
 
 @register.assignment_tag
