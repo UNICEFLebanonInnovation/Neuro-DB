@@ -270,6 +270,14 @@ def calculate_sum_target(ai_id):
 
 
 def link_indicators_data(ai_db, report_type=None):
+    result = link_indicators_activity_report(ai_db, report_type)
+    link_ai_partners(report_type)
+    link_etools_partners()
+
+    return result
+
+
+def link_indicators_activity_report(ai_db, report_type=None):
     from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
 
     ctr = 0
@@ -287,8 +295,6 @@ def link_indicators_data(ai_db, report_type=None):
         if not ai_values.count():
             continue
         ctr += ai_values.count()
-        # if ai_db.is_funded_by_unicef:
-        #     item.update(funded_by='UNICEF')
         ai_values.update(ai_indicator=item)
 
     return ctr
@@ -365,8 +371,8 @@ def calculate_indicators_values(ai_db, report_type=None):
     calculate_master_indicators_values_percentage(ai_db, report_type)
     calculate_master_indicators_values_denominator_multiplication(ai_db, report_type)
     calculate_indicators_values_percentage(ai_db, report_type)
-    # calculate_indicators_cumulative_results(ai_db, report_type)
-    # calculate_indicators_status(ai_db)
+    calculate_indicators_cumulative_results(ai_db, report_type)
+    calculate_indicators_status(ai_db)
 
     return 0
 
@@ -420,6 +426,12 @@ def calculate_indicators_cumulative_results(ai_db, report_type=None):
                 key = '{}-{}'.format(month, gov['location_adminlevel_governorate_code'])
                 if key in values_govs:
                     cum_gov[gov['location_adminlevel_governorate_code']] = values_govs[key] + (cum_gov[gov['location_adminlevel_governorate_code']] if gov['location_adminlevel_governorate_code'] in cum_gov else 0)
+
+                for partner in partners:
+                    key = '{}-{}-{}'.format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+                    key_c = '{}-{}'.format(partner['partner_id'], gov['location_adminlevel_governorate_code'])
+                    if key in values_partners_govs:
+                        cum_partner_gov[key_c] = values_partners_govs[key] + (cum_partner_gov[key_c] if key_c in cum_partner_gov else 0)
 
         if report_type == 'live':
             indicator.cumulative_values_live = {
@@ -918,3 +930,40 @@ def get_individual_indicator_value(ai_db, indicator_id, month=None, partner=None
 
     total = reports.aggregate(Sum('indicator_value'))
     return total['indicator_value__sum'] if total['indicator_value__sum'] else 0
+
+
+def update_partner_data(ai_db):
+    from .client import ActivityInfoClient
+    from .models import Partner
+
+    client = ActivityInfoClient(ai_db.username, ai_db.password)
+
+    dbs = client.get_databases()
+    db_ids = [db['id'] for db in dbs]
+    if ai_db.ai_id not in db_ids:
+        raise Exception(
+            'DB with ID {} not found in ActivityInfo'.format(
+                ai_db.ai_id
+            ))
+
+    db_info = client.get_database(ai_db.ai_id)
+
+    objects = 0
+    try:
+        for partner in db_info['partners']:
+            try:
+                ai_partner = Partner.objects.get(ai_id=partner['id'])
+            except Partner.DoesNotExist:
+                ai_partner = Partner(ai_id=partner['id'])
+                objects += 1
+            ai_partner.name = partner['name']
+            ai_partner.full_name = partner['fullName']
+            ai_partner.database = ai_db
+            ai_partner.save()
+
+    except Exception as e:
+        raise e
+
+    return objects
+
+

@@ -130,11 +130,13 @@ def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
         cumulative_values = indicator.cumulative_values
 
         if partner and gov and not partner == '0' and not gov == '0':
-            return 0
+            cumulative_values = cumulative_values.get('partners_govs')
+            key = '{}-{}'.format(partner, gov)
+            if key in cumulative_values:
+                return get_indicator_unit(indicator, cumulative_values[key])
 
         if partner and not partner == '0' and 'partners' in cumulative_values:
             cumulative_values = cumulative_values.get('partners')
-            print(cumulative_values)
             if partner in cumulative_values:
                 return get_indicator_unit(indicator, cumulative_values[partner])
 

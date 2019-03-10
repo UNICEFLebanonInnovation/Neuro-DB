@@ -554,6 +554,7 @@ class ActivityReportAdmin(RelatedFieldAdmin):
         'indicator_id',
         'indicator_name',
         'indicator_awp_code',
+        'partner_id'
     )
     date_hierarchy = 'start_date'
 
@@ -660,6 +661,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     actions = [
         # 'import_basic_data',
         # 'update_basic_data',
+        'update_partner_data',
         'generate_indicator_tags',
         'import_data',
         'import_reports',
@@ -734,6 +736,14 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             "{} objects created.".format(objects)
         )
 
+    def update_partner_data(self, request, queryset):
+        for db in queryset:
+            objects = update_partner_data(db)
+            self.message_user(
+                request,
+                "{}-{} ActivityInfo's partners created for database: ".format(objects, db)
+            )
+
     def generate_indicator_tags(self, request, queryset):
         reports = 0
         for db in queryset:
@@ -802,7 +812,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             reports = reset_indicators_values(db.ai_id)
             self.message_user(
                 request,
-                "{} indicators re-calculated values removed and for database {} ".format(reports, db.name)
+                "{} indicators pre-calculated values removed and for database {} ".format(reports, db.name)
             )
 
     def calculate_indicators_values(self, request, queryset):
