@@ -159,6 +159,43 @@ def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
 
 
 @register.assignment_tag
+def get_indicator_achieved(indicator, month=None, partner=None, gov=None):
+    try:
+        cumulative_values = indicator.cumulative_values
+
+        if partner and gov and not partner == '0' and not gov == '0':
+            cumulative_values = cumulative_values.get('partners_govs')
+            key = '{}-{}'.format(partner, gov)
+            if key in cumulative_values:
+                return round((cumulative_values[key] * 100.0) / indicator.target, 2)
+                # return get_indicator_unit(indicator, cumulative_values[key])
+
+        if partner and not partner == '0' and 'partners' in cumulative_values:
+            cumulative_values = cumulative_values.get('partners')
+            if partner in cumulative_values:
+                return round((cumulative_values[partner] * 100.0) / indicator.target, 2)
+                # return get_indicator_unit(indicator, cumulative_values[partner])
+
+        if gov and not gov == '0' and 'govs' in cumulative_values:
+            cumulative_values = cumulative_values.get('govs')
+            if gov in cumulative_values:
+                return round((cumulative_values[gov] * 100.0) / indicator.target, 2)
+                # return get_indicator_unit(indicator, cumulative_values[gov])
+
+        if month and 'months' in cumulative_values:
+            month = str(month)
+            cumulative_values = cumulative_values.get('months')
+            if month in cumulative_values:
+                return round((cumulative_values[month] * 100.0) / indicator.target, 2)
+                # return get_indicator_unit(indicator, cumulative_values[month])
+
+        return 0
+    except Exception as ex:
+        # print(ex)
+        return 0
+
+
+@register.assignment_tag
 def get_indicator_data(ai_id, month=None):
     from internos.activityinfo.models import Indicator
 

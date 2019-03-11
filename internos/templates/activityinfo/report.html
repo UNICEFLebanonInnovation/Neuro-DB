@@ -236,7 +236,10 @@
                                 {% get_indicator_cumulative item month selected_partner selected_governorate as cumulative_value %}
                                 {{ cumulative_value }}
                               </td>
-                              <td>{{ cumulative_value|percentage:item.target }}%</td>
+                                <td>
+                                  {% get_indicator_achieved item month selected_partner selected_governorate as achieved %}
+                                  {{ achieved }}%
+                                </td>
                               <td style="background-color:{{ item.status_color }}; color: #FFF;">{{ item.status }}</td>
                               {% for month, month_name in months %}
                                 <td>
@@ -271,7 +274,10 @@
                                    {% get_indicator_cumulative item1 month selected_partner selected_governorate as cumulative_value %}
                                    {{ cumulative_value }}
                                 </td>
-                                <td>{{ cumulative_value|percentage:item1.target }}%</td>
+                                <td>
+                                  {% get_indicator_achieved item1 month selected_partner selected_governorate as achieved %}
+                                  {{ achieved }}%
+                                </td>
                                 <td style="background-color:{{ item1.status_color }}; color: #FFF;">{{ item1.status }}</td>
                                 {% for month, month_name in months %}
                                   <td>
@@ -298,7 +304,10 @@
                                      {% get_indicator_cumulative item2 month selected_partner selected_governorate as cumulative_value %}
                                      {{ cumulative_value }}
                                   </td>
-                                  <td>{{ cumulative_value|percentage:item2.target }}%</td>
+                                <td>
+                                  {% get_indicator_achieved item2 month selected_partner selected_governorate as achieved %}
+                                  {{ achieved }}%
+                                </td>
                                   <td style="background-color:{{ item2.status_color }}; color: #FFF;">{{ item2.status }}</td>
                                   {% for month, month_name in months %}
                                     <td>
