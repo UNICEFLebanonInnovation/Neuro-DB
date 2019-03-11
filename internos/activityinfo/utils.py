@@ -271,8 +271,8 @@ def calculate_sum_target(ai_id):
 
 def link_indicators_data(ai_db, report_type=None):
     result = link_indicators_activity_report(ai_db, report_type)
-    link_ai_partners(report_type)
-    link_etools_partners()
+    # link_ai_partners(report_type)
+    # link_etools_partners()
 
     return result
 
@@ -296,11 +296,13 @@ def link_indicators_activity_report(ai_db, report_type=None):
         master_indicator=True).exclude(master_indicator_sub=True)
 
     for item in indicators:
+        if not item.ai_indicator:
+            continue
         ai_values = reports.filter(indicator_id=item.ai_indicator)
         if not ai_values.count():
             continue
         ctr += ai_values.count()
-        ai_values.update(ai_indicator=item)
+        ai_values.update(ai_indicator_id=item.id)
 
     return ctr
 

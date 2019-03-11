@@ -118,7 +118,7 @@ class ReportView(TemplateView):
         if selected_partner or selected_governorate:
             selected_filter = True
 
-        partners = report.values('partner_ai__name', 'partner_id').distinct()
+        partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
 
         master_indicators = Indicator.objects.filter(activity__database=database).order_by('sequence')
