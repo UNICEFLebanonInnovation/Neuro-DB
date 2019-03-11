@@ -236,7 +236,7 @@
                                 {% get_indicator_cumulative item month selected_partner selected_governorate as cumulative_value %}
                                 {{ cumulative_value }}
                               </td>
-                              <td>{{ item.cumulative_results|percentage:item.target }}%</td>
+                              <td>{{ cumulative_value|percentage:item.target }}%</td>
                               <td style="background-color:{{ item.status_color }}; color: #FFF;">{{ item.status }}</td>
                               {% for month, month_name in months %}
                                 <td>
@@ -268,11 +268,10 @@
                                 <td>{{ item1.awp_code }}</td>
                                 <td>{{ item1.target|number_format }}</td>
                                 <td>
-                                  <!--{{ item1.cumulative_results }}-->
-                                  {% get_indicator_value item1 1 selected_partner selected_governorate as value %}
-                                  {{ value }}
+                                   {% get_indicator_cumulative item1 month selected_partner selected_governorate as cumulative_value %}
+                                   {{ cumulative_value }}
                                 </td>
-                                <td>{{ item1.cumulative_results|percentage:item1.target }}%</td>
+                                <td>{{ cumulative_value|percentage:item1.target }}%</td>
                                 <td style="background-color:{{ item1.status_color }}; color: #FFF;">{{ item1.status }}</td>
                                 {% for month, month_name in months %}
                                   <td>
@@ -296,11 +295,10 @@
                                   <td>{{ item2.awp_code }}</td>
                                   <td>{{ item2.target|number_format }}</td>
                                   <td>
-                                    <!--{{ item2.cumulative_results }}-->
-                                    {% get_indicator_value item2 1 selected_partner selected_governorate as value %}
-                                    {{ value }}
+                                     {% get_indicator_cumulative item2 month selected_partner selected_governorate as cumulative_value %}
+                                     {{ cumulative_value }}
                                   </td>
-                                  <td>{{ item2.cumulative_results|percentage:item2.target }}%</td>
+                                  <td>{{ cumulative_value|percentage:item2.target }}%</td>
                                   <td style="background-color:{{ item2.status_color }}; color: #FFF;">{{ item2.status }}</td>
                                   {% for month, month_name in months %}
                                     <td>
