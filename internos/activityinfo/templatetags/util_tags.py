@@ -85,10 +85,11 @@ def number_format(value):
     return "{:,}".format(value)
 
 
+@register.assignment_tag
 def get_indicator_unit(indicator, value):
 
     if not value:
-        return 0
+        return '0'
 
     if indicator.measurement_type == 'percentage' or indicator.measurement_type == 'percentage_x':
         value = "{:,}".format(round(value * 100, 1))

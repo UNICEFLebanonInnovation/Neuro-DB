@@ -227,7 +227,11 @@
                               {% endif %}
                               <td>Site</td>
                               <td>{{ item.awp_code }}</td>
-                              <td>{{ item.target|number_format }}</td>
+                              <td>
+                                <!--{{ item.target|number_format }}-->
+                                {% get_indicator_unit item item.target as value %}
+                                {{ value }}
+                              </td>
                               <td>
                                 {% get_indicator_cumulative item month selected_partner selected_governorate as cumulative_value %}
                                 {{ cumulative_value }}
