@@ -70,6 +70,12 @@ def read_data_from_file(ai_id, forced=False):
         return add_rows(ai_id=ai_id, model=model)
 
 
+def import_data_via_r_script(ai_db):
+    r_script_command_line('ai_generate_excel.R', ai_db)
+    total = read_data_from_file(ai_db.ai_id, True)
+    return total
+
+
 def get_awp_code(name):
     try:
         if '_' in name:
@@ -372,6 +378,7 @@ def reset_indicators_values(ai_id, report_type=None):
 
 
 def calculate_indicators_values(ai_db, report_type=None):
+    reset_indicators_values(ai_db.ai_id, report_type)
     calculate_individual_indicators_values(ai_db, report_type)
     calculate_master_indicators_values(ai_db, report_type, True)
     calculate_master_indicators_values(ai_db, report_type)

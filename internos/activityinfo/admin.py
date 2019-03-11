@@ -661,18 +661,17 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     actions = [
         'import_basic_data',
         # 'update_basic_data',
-        'update_partner_data',
-        'generate_indicator_tags',
-        'import_data',
-        'import_reports',
+        # 'import_data',
+        # 'import_reports',
         'import_reports_forced',
-        # 'generate_awp_code',
-        'calculate_sum_target',
         'link_indicators_data',
-        'reset_indicators_values',
         'calculate_indicators_values',
         'calculate_indicators_cumulative_results',
         'calculate_indicators_status',
+        'reset_indicators_values',
+        'update_partner_data',
+        'generate_indicator_tags',
+        'calculate_sum_target',
     ]
 
     fieldsets = [
@@ -727,6 +726,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             "{} objects created.".format(objects)
         )
 
+    import_basic_data.short_description = 'Step 0: Import Indicators basic structure (only once - ask Ali before!!!)'
+
     def update_basic_data(self, request, queryset):
         objects = 0
         for db in queryset:
@@ -762,7 +763,6 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             )
 
     def import_reports(self, request, queryset):
-        reports = 0
         for db in queryset:
             reports = read_data_from_file(db.ai_id)
             self.message_user(
@@ -771,13 +771,13 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             )
 
     def import_reports_forced(self, request, queryset):
-        reports = 0
         for db in queryset:
-            reports = read_data_from_file(db.ai_id, True)
+            reports = import_data_via_r_script(db)
             self.message_user(
                 request,
                 "Old data deleted and {} Data imported from the file for database {}".format(reports, db.name)
             )
+    import_reports_forced.short_description = 'Step 1: Import Indicator values via R script'
 
     def generate_awp_code(self, request, queryset):
         reports = 0
@@ -798,16 +798,15 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         )
 
     def link_indicators_data(self, request, queryset):
-        reports = 0
         for db in queryset:
             reports = link_indicators_data(db)
             self.message_user(
                 request,
                 "{} indicators linked for database {}".format(reports, db.name)
             )
+    link_indicators_data.short_description = 'Step 2: Link Indicators info to Indicator values'
 
     def reset_indicators_values(self, request, queryset):
-        reports = 0
         for db in queryset:
             reports = reset_indicators_values(db.ai_id)
             self.message_user(
@@ -816,13 +815,13 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             )
 
     def calculate_indicators_values(self, request, queryset):
-        reports = 0
         for db in queryset:
             reports = calculate_indicators_values(db)
             self.message_user(
                 request,
                 "{} indicators values calculated for database {}".format(reports, db.name)
             )
+    calculate_indicators_values.short_description = 'Step 3: Reset and calculate monthly report, cumulative and status'
 
     def calculate_indicators_cumulative_results(self, request, queryset):
         for db in queryset:

@@ -1,8 +1,11 @@
 
+import logging
+
 from internos.taskapp.celery import app
 from .client import ActivityInfoClient
 from .utils import r_script_command_line
 
+logger = logging.getLogger(__name__)
 
 def read_form_data(formid):
     client = ActivityInfoClient()
@@ -25,7 +28,7 @@ def read_imported_data():
     databases = Database.objects.all()
     for db in databases:
         pass
-        # r_script_command_line('ai_generate_excel.R', db.ai_id)
+
 
 @app.task
 def link_partners(report_type=None):
@@ -35,30 +38,44 @@ def link_partners(report_type=None):
 
 
 @app.task
+def import_data_and_generate_monthly_report():
+    from internos.activityinfo.models import Database
+    from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values
+
+    databases = Database.objects.filter(reporting_year__current=True)
+    for db in databases:
+        logger.info('1. Import report: '+db.name)
+        import_data_via_r_script(db)
+        logger.info('2. Link data: ' + db.name)
+        link_indicators_data(db)
+        logger.info('3. Calculate indicator values')
+        calculate_indicators_values(db)
+
+
+@app.task
 def import_live_data():
     from internos.activityinfo.models import Database
 
     databases = Database.objects.filter(reporting_year__current=True)
     for db in databases:
-        print('1. Import report: '+db.name)
+        logger.info('1. Import report: '+db.name)
         r_script_command_line('ai_generate_excel.R', db)
 
 
 @app.task
 def calculate_live_values():
-    from internos.activityinfo.utils import sync_live_data, link_indicators_data, reset_indicators_values, calculate_indicators_values
+    from internos.activityinfo.utils import sync_live_data, link_indicators_data, calculate_indicators_values
     from internos.activityinfo.models import Database
 
     databases = Database.objects.filter(reporting_year__current=True)
     for db in databases:
-        print('-----------------------------------------')
-        print(db.name)
-        print('1. Import data forced')
+        logger.info('-----------------------------------------')
+        logger.info(db.name)
+        logger.info('1. Import data forced')
         sync_live_data(db)
-        print('2. Link indicators')
+        logger.info('2. Link indicators')
         link_indicators_data(db, report_type='live')
-        print('3. Reset values')
-        reset_indicators_values(db.ai_id, report_type='live')
-        print('4. Calculate indicator values')
+        logger.info('3. Reset values')
+        logger.info('4. Calculate indicator values')
         calculate_indicators_values(db, report_type='live')
-        print('-----------------------------------------')
+        logger.info('-----------------------------------------')

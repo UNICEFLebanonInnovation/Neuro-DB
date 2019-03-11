@@ -433,13 +433,13 @@ class Attribute(models.Model):
 
 class ActivityReport(TimeStampedModel):
     end_date = models.CharField(max_length=250, blank=True, null=True)
-    form = models.CharField(max_length=250, blank=True, null=True)
-    form_category = models.CharField(max_length=250, blank=True, null=True)
+    form = models.CharField(max_length=1000, blank=True, null=True)
+    form_category = models.CharField(max_length=1000, blank=True, null=True)
     ai_indicator = models.ForeignKey(Indicator, blank=True, null=True)
-    indicator_category = models.CharField(max_length=250, blank=True, null=True)
+    indicator_category = models.CharField(max_length=1000, blank=True, null=True)
     indicator_id = models.CharField(max_length=250, blank=True, null=True)
-    indicator_name = models.CharField(max_length=250, blank=True, null=True)
-    indicator_details = models.CharField(max_length=250, blank=True, null=True)
+    indicator_name = models.CharField(max_length=1000, blank=True, null=True)
+    indicator_details = models.CharField(max_length=1000, blank=True, null=True)
     indicator_master = models.CharField(max_length=250, blank=True, null=True)
     indicator_info = models.CharField(max_length=250, blank=True, null=True)
     indicator_units = models.CharField(max_length=250, blank=True, null=True)
