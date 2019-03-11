@@ -1006,16 +1006,16 @@ def update_hpm_table_docx(indicators, month, filename):
                 #     print(p.text)
 
                 inline = p.runs
-                print(inline)
+                # print(inline)
                 # Loop added to work with runs (strings with same style)
                 for i in range(len(inline)):
                     # if diff_key == '1504':
-                    print(inline[i].text)
+                    # print(inline[i].text)
                     if diff_key in inline[i].text:
                         document.tables[0].rows[row].cells[7].paragraphs[0].runs[i].text = get_indicator_diff_results(indicator, month)
 
             except Exception as ex:
-                print(ex.message)
+                # print(ex.message)
                 continue
 
     path2file2 = '{}/{}/{}'.format(path, 'AIReports', filename)
