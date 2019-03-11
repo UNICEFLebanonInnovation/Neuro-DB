@@ -72,6 +72,6 @@ openpyxl==2.4.9
 django-mysql==2.3.1
 unicodecsv==0.14.1
 django-json-widget==0.1.1
-
+python-docx==0.8.10
 
 # git+https://github.com/UNICEFLebanonInnovation/ActvityInfoPython.git

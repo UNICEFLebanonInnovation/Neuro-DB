@@ -975,8 +975,8 @@ def update_hpm_table_docx(indicators, month):
     from internos.activityinfo.templatetags.util_tags import get_indicator_cumulative, get_indicator_diff_results
 
     path = os.path.dirname(os.path.abspath(__file__))
-    # path2file = path+'/AIReports/HPM Table template 2019.docx'
-    path2file = path+'/AIReports/test.docx'
+    path2file = path+'/AIReports/HPM Table template 2019.docx'
+    # path2file = path+'/AIReports/test.docx'
 
     document = Document(path2file)
 

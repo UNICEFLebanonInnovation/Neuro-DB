@@ -211,9 +211,9 @@ class HPMView(TemplateView):
 
         indicators = Indicator.objects.filter(hpm_indicator=True)
         sections = Section.objects.filter(have_hpm_indicator=True)
-
-        from .utils import update_hpm_table_docx
-        update_hpm_table_docx(indicators, month)
+        #
+        # from .utils import update_hpm_table_docx
+        # update_hpm_table_docx(indicators, month)
 
         return {
             'indicators': indicators,
