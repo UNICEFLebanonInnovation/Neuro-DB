@@ -140,6 +140,7 @@
                           <span class="caret"></span>
                         </a>
                         <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
+                          <li role="presentation" class="divider" style="margin-top: -1px;"></li>
                           <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Current dashboard</a>
                           <li role="presentation" class="divider"></li>
                           <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction1">UNICEF raw data</a>
@@ -147,7 +148,7 @@
                           <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction2">PowerBI</a>-->
                           <!--<li role="presentation" class="divider"></li>-->
                           <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full raw data</a>
-                          <li role="presentation" class=""></li>
+                          <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
                         </ul>
                       </li>
                     </ul>
