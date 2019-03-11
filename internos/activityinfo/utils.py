@@ -286,9 +286,14 @@ def link_indicators_activity_report(ai_db, report_type=None):
     else:
         reports = ActivityReport.objects.filter(database_id=ai_db.ai_id)
 
+    reports = reports.exclude(ai_indicator__isnull=False)
+
     if ai_db.is_funded_by_unicef:
         reports = reports.filter(funded_by='UNICEF')
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(master_indicator=True).exclude(master_indicator_sub=True)
+
+    indicators = Indicator.objects.filter(
+        activity__database__ai_id=ai_db.ai_id).exclude(
+        master_indicator=True).exclude(master_indicator_sub=True)
 
     for item in indicators:
         ai_values = reports.filter(indicator_id=item.ai_indicator)
