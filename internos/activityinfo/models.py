@@ -153,11 +153,16 @@ class Database(models.Model):
                         ai_indicator = Indicator(ai_id=indicator['id'])
                         new_instance = True
                         objects += 1
-                    ai_indicator.name = indicator['name']
-                    ai_indicator.label = get_label(indicator)
+
+                    # ai_indicator.name = indicator['name']
+                    # ai_indicator.label = get_label(indicator)
+
                     if new_instance:
                         ai_indicator.awp_code = get_awp_code(indicator['name'])
-                    ai_indicator.description = indicator['description'] if 'description' in indicator else ''
+                        ai_indicator.description = indicator['description'] if 'description' in indicator else ''
+                        ai_indicator.name = indicator['name']
+                        ai_indicator.label = get_label(indicator)
+
                     ai_indicator.list_header = indicator['listHeader'] if 'listHeader' in indicator else ''
                     ai_indicator.type = indicator['type'] if 'type' in indicator else ''
 

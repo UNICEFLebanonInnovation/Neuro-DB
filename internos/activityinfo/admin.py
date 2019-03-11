@@ -659,7 +659,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'ai_country_id'
     )
     actions = [
-        # 'import_basic_data',
+        'import_basic_data',
         # 'update_basic_data',
         'update_partner_data',
         'generate_indicator_tags',
