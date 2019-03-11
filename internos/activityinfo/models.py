@@ -121,7 +121,12 @@ class Database(models.Model):
 
         objects = 0
         try:
-            for partner in db_info['partners']:
+            partners = []
+            if 'databasePartners' in db_info:
+                partners = db_info['databasePartners']
+            else:
+                partners = db_info['partners']
+            for partner in partners:
                 try:
                     ai_partner = Partner.objects.get(ai_id=partner['id'])
                 except Partner.DoesNotExist:
