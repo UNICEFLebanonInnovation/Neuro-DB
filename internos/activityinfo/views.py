@@ -4,6 +4,7 @@ import datetime
 from django.db.models import Q
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse, JsonResponse
 
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
@@ -211,9 +212,6 @@ class HPMView(TemplateView):
 
         indicators = Indicator.objects.filter(hpm_indicator=True)
         sections = Section.objects.filter(have_hpm_indicator=True)
-        #
-        # from .utils import update_hpm_table_docx
-        # update_hpm_table_docx(indicators, month)
 
         return {
             'indicators': indicators,
@@ -222,6 +220,34 @@ class HPMView(TemplateView):
             'month': month,
             'databases': databases,
         }
+
+
+class HPMExportViewSet(ListView):
+
+    model = Indicator
+    queryset = Indicator.objects.filter(hpm_indicator=True)
+
+    def get(self, request, *args, **kwargs):
+        from .utils import update_hpm_table_docx
+
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month = int(last_month.strftime("%m"))
+        month_name = last_month.strftime("%B")
+        month = int(self.request.GET.get('month', month))
+
+        filename = "HPM Table {} 2019.docx".format(month_name)
+
+        new_file = update_hpm_table_docx(self.queryset, month, filename)
+
+        with open(new_file, 'rb') as fh:
+            response = HttpResponse(
+                fh.read(),
+                content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            )
+            response['Content-Disposition'] = 'attachment; filename=' + filename
+        return response
 
 
 class ExportViewSet(ListView):

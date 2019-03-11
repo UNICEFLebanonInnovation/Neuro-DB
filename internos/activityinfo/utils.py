@@ -967,7 +967,7 @@ def update_partner_data(ai_db):
     return objects
 
 
-def update_hpm_table_docx(indicators, month):
+def update_hpm_table_docx(indicators, month, filename):
 
     # import sys
     # import docx
@@ -1014,79 +1014,10 @@ def update_hpm_table_docx(indicators, month):
                     if diff_key in inline[i].text:
                         document.tables[0].rows[row].cells[7].paragraphs[0].runs[i].text = get_indicator_diff_results(indicator, month)
 
-                # if cum_key in cum_text:
-                #     cum_new_text = cum_text.replace(cum_key, get_indicator_cumulative(indicator, month))
-                #     document.tables[0].rows[row].cells[6].text = cum_new_text
-                #
-                # if diff_key in diff_text:
-                #     diff_new_text = diff_text.replace(diff_key, get_indicator_diff_results(indicator, month))
-                #     document.tables[0].rows[row].cells[7].text = diff_new_text
-
             except Exception as ex:
                 print(ex.message)
                 continue
 
-    # for row in range(0, 40):
-    #     for cell in range(6, 9):
-    #         try:
-    #             table.rows[row].cells[cell].text
-    #         except Exception as ex:
-    #             print(ex.message)
-                # continue
-
-    # for table in document.tables:
-        # print(table)
-        # print(table.rows)
-        # for row in table.rows:
-            # print(key_r)
-            # for cell in row.cells:
-            #     continue
-                # print(key_c)
-                # print(cell.text)
-        # print(table.rows[0].cells)
-        # print(table.rows[0].cells[0].text)
-        # if p.cell.text == 'No':
-        #     p.text = 'Mai'
-    # newtitle = document.paragraphs[0].text.replace('1', '2')
-    # document.paragraphs[0].text = newtitle
-    path2file2 = path + '/AIReports/HPM Table January 2019.docx'
+    path2file2 = '{}/{}/{}'.format(path, 'AIReports', filename)
     document.save(path2file2)
-
-
-def create_hpm_docx():
-
-    from docx import Document
-    from docx.shared import Inches
-    from internos.users.models import Section
-
-    sections = Section.objects.filter(have_hpm_indicator=True)
-
-    document = Document()
-
-    document.add_heading('HPM Table - Data as of January 2019', 0)
-
-    records = (
-        (3, '101', 'Spam'),
-        (7, '422', 'Eggs'),
-        (4, '631', 'Spam, spam, eggs, and spam')
-    )
-
-    table = document.add_table(rows=1, cols=7)
-    hdr_cells = table.rows[0].cells
-    hdr_cells[0].text = 'SUMMARY OF PROGRAMME RESULTS - January 2019 SITREP - LEBANON'
-    hdr_cells[1].text = 'Sector Target'
-    hdr_cells[2].text = 'Sector Result'
-    hdr_cells[3].text = 'Change since last report'
-    hdr_cells[4].text = 'UNICEF Target (2019)'
-    hdr_cells[5].text = 'UNICEF Result'
-    hdr_cells[6].text = 'Change since last report'
-
-    for qty, id, desc in records:
-        row_cells = table.add_row().cells
-        row_cells[0].text = str(qty)
-        row_cells[1].text = id
-        row_cells[2].text = desc
-
-    document.add_page_break()
-
-    document.save('demo.docx')
+    return path2file2

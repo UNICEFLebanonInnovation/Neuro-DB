@@ -36,4 +36,9 @@ urlpatterns = [
         view=views.LiveReportView.as_view(),
         name='live_report'
     ),
+    url(
+        regex=r'^activityinfo/HPM-report/$',
+        view=views.HPMExportViewSet.as_view(),
+        name='hpm_report'
+    ),
 ]
