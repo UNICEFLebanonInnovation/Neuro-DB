@@ -289,16 +289,25 @@
                                 {% endfor %}
                             </tr>
                             {% for item2 in item1.sub_indicators.all %}
-                              {% if item2.master_indicator == 0 %}
+                              {% if item2.master_indicator == 0 or item2.master_indicator_sub == 0 %}
                               <tr>
                                   <!--<td>{{ item2.id }}</td>-->
-                                  <td>{{ item2.ai_id }}</td>
-                                  <th {% if item2.separator_indocator %}style="background-color: #ca292940;"{% endif %}>
-                                    {{ item2.name }}
-                                    {% if item2.explication %}
-                                    <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
-                                    {% endif %}
-                                  </th>
+                                  {% if item2.master_indicator_sub_sub %}
+                                    <th colspan="2">
+                                      {{ item2.name }}
+                                      {% if item2.explication %}
+                                      <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
+                                      {% endif %}
+                                    </th>
+                                  {% else %}
+                                    <td>{{ item2.ai_id }}</td>
+                                    <th>
+                                      {{ item2.name }}
+                                      {% if item2.explication %}
+                                      <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
+                                      {% endif %}
+                                    </th>
+                                  {% endif %}
                                   <!--<td>Site</td>-->
                                   <td>{{ item2.awp_code }}</td>
                                   <td>{{ item2.target|number_format }}</td>
