@@ -289,7 +289,7 @@
                                 {% endfor %}
                             </tr>
                             {% for item2 in item1.sub_indicators.all %}
-                              {% if item2.master_indicator == 0 or item2.master_indicator_sub == 0 %}
+                              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
                               <tr>
                                   <!--<td>{{ item2.id }}</td>-->
                                   {% if item2.master_indicator_sub_sub %}
