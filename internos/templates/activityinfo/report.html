@@ -320,7 +320,7 @@
                               </tr>
                               {% endif %}
                                 {% for item3 in item2.sub_indicators.all %}
-                                  {% if item3.master_indicator == 0 %}
+                                  {% if item3.master_indicator == 0 or item3.master_indicator_sub == 0 %}
                                   <tr>
                                       <!--<td>{{ item3.id }}</td>-->
                                       <td>{{ item3.ai_id }}</td>
