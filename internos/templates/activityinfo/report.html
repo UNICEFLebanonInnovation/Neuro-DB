@@ -190,7 +190,7 @@
                           <!--<th>#</th>-->
                           <th class="w-100" content="Indicator ID" style="vertical-align: middle;">Indicator ID</th>
                           <th class="w-400" content="ActivityInfo Indicators" style="vertical-align: middle;">ActivityInfo Indicators</th>
-                          <th class="w-120" content="Level of reporting" style="vertical-align: middle;">Level of reporting</th>
+                          <!--<th class="w-120" content="Level of reporting" style="vertical-align: middle;">Level of reporting</th>-->
                           <th class="w-100" content="AWP Code" style="vertical-align: middle;">AWP Code</th>
                           <th class="w-100" content="Target" style="vertical-align: middle;">Target</th>
                           <th class="w-130" content="Cumulative Results of All Months" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
@@ -225,7 +225,7 @@
                                   {% endif %}
                                 </th>
                               {% endif %}
-                              <td>Site</td>
+                              <!--<td>Site</td>-->
                               <td>{{ item.awp_code }}</td>
                               <td>
                                 {% if item.measurement_type == 'percentage' %}
@@ -269,7 +269,7 @@
                                     {% endif %}
                                   </th>
                                 {% endif %}
-                                <td>Site</td>
+                                <!--<td>Site</td>-->
                                 <td>{{ item1.awp_code }}</td>
                                 <td>{{ item1.target|number_format }}</td>
                                 <td>
@@ -299,7 +299,7 @@
                                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
                                     {% endif %}
                                   </th>
-                                  <td>Site</td>
+                                  <!--<td>Site</td>-->
                                   <td>{{ item2.awp_code }}</td>
                                   <td>{{ item2.target|number_format }}</td>
                                   <td>
