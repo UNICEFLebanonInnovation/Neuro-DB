@@ -331,7 +331,7 @@ class Indicator(models.Model):
     indicator_master = models.CharField(max_length=250, blank=True, null=True)
     indicator_info = models.CharField(max_length=250, blank=True, null=True)
     reporting_level = models.CharField(max_length=254, blank=True, null=True)
-    awp_code = models.CharField(max_length=1500, blank=True, null=True)
+    awp_code = models.CharField(max_length=1500, blank=True, null=True, verbose_name='RWP')
     target = models.PositiveIntegerField(default=0)
     target_sector = models.PositiveIntegerField(default=0)
     target_sub_total = models.PositiveIntegerField(default=0)
