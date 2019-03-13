@@ -104,6 +104,13 @@ def get_indicator_unit(indicator, value):
 @register.assignment_tag
 def get_indicator_diff_results(indicator, month=None):
     try:
+        if not indicator:
+            return get_indicator_unit(indicator, 0)
+
+        if isinstance(indicator, int):
+            from internos.activityinfo.models import Indicator
+            indicator = Indicator.objects.get(id=indicator)
+
         cumulative_values = indicator.cumulative_values
         previous_month = str(int(month) - 1)
         current_month = str(month)
@@ -128,6 +135,13 @@ def get_indicator_diff_results(indicator, month=None):
 @register.assignment_tag
 def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
     try:
+        if not indicator:
+            return get_indicator_unit(indicator, 0)
+
+        if isinstance(indicator, int):
+            from internos.activityinfo.models import Indicator
+            indicator = Indicator.objects.get(id=indicator)
+
         cumulative_values = indicator.cumulative_values
 
         if partner and gov and not partner == '0' and not gov == '0':
@@ -203,6 +217,7 @@ def get_indicator_data(ai_id, month=None):
     try:
         indicator = Indicator.objects.get(id=ai_id)
         data = {
+            'id': indicator.id,
             'name': indicator.name,
             'target_sector': indicator.target_sector,
             'target': indicator.target,
