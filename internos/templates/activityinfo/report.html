@@ -128,7 +128,7 @@
                       <!--<a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;">
                         <i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>
                       </a>-->
-                      <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;"
+                      <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;"
                           data-step="5" data-intro="Open live ActivityInfo Dashboard">
                         <i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>
                       </a>
@@ -211,7 +211,6 @@
                       </thead>
                       <tbody>
                         {% for item in master_indicators %}
-
                           {% get_indicator_cumulative item month selected_partner selected_governorate as cumulative_value %}
                           {% to_display_indicator selected_filter cumulative_value as display_indicator %}
 
@@ -258,7 +257,8 @@
                                 </td>
                               {% endfor %}
                           </tr>
-                          {% for item1 in item.sub_indicators.all %}
+                          {% get_sub_indicators_data item.id as sub_indicators %}
+                          {% for item1 in sub_indicators %}
                             <tr {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
                                 <!--<td>{{ item1.id }}</td>-->
                                 {% if item1.master_indicator_sub %}
@@ -296,7 +296,8 @@
                                   </td>
                                 {% endfor %}
                             </tr>
-                            {% for item2 in item1.sub_indicators.all %}
+                            {% get_sub_indicators_data item1.id as sub_indicators1 %}
+                            {% for item2 in sub_indicators1 %}
                               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
                               <tr>
                                   <!--<td>{{ item2.id }}</td>-->
@@ -336,38 +337,6 @@
                                   {% endfor %}
                               </tr>
                               {% endif %}
-                                <!--{% for item3 in item2.sub_indicators.all %}-->
-                                  <!--{% if item3.master_indicator == 0 and item3.master_indicator_sub == 0 and item3.master_indicator_sub_sub == 0 %}-->
-                                  <!--<tr>-->
-                                      <!--&lt;!&ndash;<td>{{ item3.id }}</td>&ndash;&gt;-->
-                                      <!--<td>{{ item3.ai_id }}</td>-->
-                                      <!--<th>-->
-                                        <!--{{ item3.name }}-->
-                                        <!--{% if item3.explication %}-->
-                                        <!--<i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item3.explication }}"></i>-->
-                                        <!--{% endif %}-->
-                                      <!--</th>-->
-                                      <!--&lt;!&ndash;<td>Site</td>&ndash;&gt;-->
-                                      <!--<td>{{ item3.awp_code }}</td>-->
-                                      <!--<td>{{ item3.target|number_format }}</td>-->
-                                      <!--<td>-->
-                                         <!--{% get_indicator_cumulative item3 month selected_partner selected_governorate as cumulative_value %}-->
-                                         <!--{{ cumulative_value }}-->
-                                      <!--</td>-->
-                                    <!--<td>-->
-                                      <!--{% get_indicator_achieved item3 month selected_partner selected_governorate as achieved %}-->
-                                      <!--{{ achieved }}%-->
-                                    <!--</td>-->
-                                      <!--<td style="background-color:{{ item2.status_color }}; color: #FFF;">{{ item3.status }}</td>-->
-                                      <!--{% for month, month_name in months %}-->
-                                        <!--<td>-->
-                                          <!--{% get_indicator_value item3 month selected_partner selected_governorate as value %}-->
-                                          <!--{{ value }}-->
-                                        <!--</td>-->
-                                      <!--{% endfor %}-->
-                                  <!--</tr>-->
-                                  <!--{% endif %}-->
-                                <!--{% endfor %}-->
                             {% endfor %}
                           {% endfor %}
                         {% endif %}

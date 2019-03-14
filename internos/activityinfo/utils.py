@@ -26,23 +26,6 @@ def r_script_command_line(script_name, ai_db):
     return 1
 
 
-def sync_live_data(db):
-    from internos.activityinfo.models import Database, ActivityReportLive
-    from internos.backends.models import ImportLog
-    month_name = datetime.datetime.now().strftime("%B")
-    model = ActivityReportLive.objects.none()
-
-    ActivityReportLive.objects.filter(database_id=db.ai_id).delete()
-
-    ImportLog.objects.create(
-        object_id=db.ai_id,
-        object_name=db.name,
-        object_type='AI_LIVE',
-        month=month_name,
-        status=True)
-    return add_rows(ai_id=db.ai_id, model=model)
-
-
 def read_data_from_file(ai_id, forced=False):
     from internos.activityinfo.models import Database, ActivityReport
     from internos.backends.models import ImportLog
@@ -985,7 +968,7 @@ def update_partner_data(ai_db):
 def update_hpm_table_docx(indicators, month, filename):
 
     from docx import Document
-    from internos.activityinfo.templatetags.util_tags import get_indicator_cumulative, get_indicator_diff_results
+    from internos.activityinfo.templatetags.util_tags import get_indicator_hpm_data
 
     path = os.path.dirname(os.path.abspath(__file__))
     path2file = path+'/AIReports/HPM Table template 2019.docx'
@@ -993,108 +976,107 @@ def update_hpm_table_docx(indicators, month, filename):
     document = Document(path2file)
 
     # Education 1
-    document.tables[0].rows[2].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(0, month)
-    document.tables[0].rows[2].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(0, month)
+    document.tables[0].rows[2].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['cumulative'])
+    document.tables[0].rows[2].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['last_report_changes'])
 
-    document.tables[0].rows[3].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(0, month)
-    document.tables[0].rows[3].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(0, month)
+    document.tables[0].rows[3].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['cumulative'])
+    document.tables[0].rows[3].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['last_report_changes'])
 
-    document.tables[0].rows[4].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(0, month)
-    document.tables[0].rows[4].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(0, month)
+    document.tables[0].rows[4].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['cumulative'])
+    document.tables[0].rows[4].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['last_report_changes'])
 
     # Education 2
-    document.tables[0].rows[5].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(0, month)
-    document.tables[0].rows[5].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(0, month)
+    document.tables[0].rows[5].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['cumulative'])
+    document.tables[0].rows[5].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['last_report_changes'])
 
-    document.tables[0].rows[6].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(0, month)
-    document.tables[0].rows[6].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(0, month)
+    document.tables[0].rows[6].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['cumulative'])
+    document.tables[0].rows[6].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['last_report_changes'])
 
-    document.tables[0].rows[7].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(0, month)
-    document.tables[0].rows[7].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(0, month)
+    document.tables[0].rows[7].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['cumulative'])
+    document.tables[0].rows[7].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['last_report_changes'])
 
-    document.tables[0].rows[8].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(0, month)
-    document.tables[0].rows[8].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(0, month)
+    document.tables[0].rows[8].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['cumulative'])
+    document.tables[0].rows[8].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['last_report_changes'])
 
     # CP
-    document.tables[0].rows[10].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1789, month)
-    document.tables[0].rows[10].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1789, month)
+    document.tables[0].rows[10].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1789, month)['cumulative'])
+    document.tables[0].rows[10].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1789, month)['last_report_changes'])
 
-    document.tables[0].rows[11].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1654, month)
-    document.tables[0].rows[11].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1654, month)
+    document.tables[0].rows[11].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1654, month)['cumulative'])
+    document.tables[0].rows[11].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1654, month)['last_report_changes'])
 
-    document.tables[0].rows[12].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(2740, month)
-    document.tables[0].rows[12].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(2740, month)
+    document.tables[0].rows[12].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(2740, month)['cumulative'])
+    document.tables[0].rows[12].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(2740, month)['last_report_changes'])
 
     # WASH
-    document.tables[0].rows[14].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1519, month)
-    document.tables[0].rows[14].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1519, month)
+    document.tables[0].rows[14].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1519, month)['cumulative'])
+    document.tables[0].rows[14].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1519, month)['last_report_changes'])
 
-    document.tables[0].rows[15].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1527, month)
-    document.tables[0].rows[15].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1527, month)
+    document.tables[0].rows[15].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1527, month)['cumulative'])
+    document.tables[0].rows[15].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1527, month)['last_report_changes'])
 
-    document.tables[0].rows[16].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1504, month)
-    document.tables[0].rows[16].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1504, month)
+    document.tables[0].rows[16].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1504, month)['cumulative'])
+    document.tables[0].rows[16].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1504, month)['last_report_changes'])
 
-    document.tables[0].rows[17].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1535, month)
-    document.tables[0].rows[17].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1535, month)
+    document.tables[0].rows[17].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1535, month)['cumulative'])
+    document.tables[0].rows[17].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1535, month)['last_report_changes'])
 
     # H&N
-    document.tables[0].rows[19].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(2621, month)
-    document.tables[0].rows[19].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(2621, month)
+    document.tables[0].rows[19].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(2621, month)['cumulative'])
+    document.tables[0].rows[19].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(2621, month)['last_report_changes'])
 
-    document.tables[0].rows[20].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(2638, month)
-    document.tables[0].rows[20].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(2638, month)
+    document.tables[0].rows[20].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(2638, month)['cumulative'])
+    document.tables[0].rows[20].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(2638, month)['last_report_changes'])
 
-    document.tables[0].rows[21].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(2178, month)
-    document.tables[0].rows[21].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(2178, month)
+    document.tables[0].rows[21].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(2178, month)['cumulative'])
+    document.tables[0].rows[21].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(2178, month)['last_report_changes'])
 
     # Y&A
-    document.tables[0].rows[23].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(3032, month)
-    document.tables[0].rows[23].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(3032, month)
+    document.tables[0].rows[23].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(3032, month)['cumulative'])
+    document.tables[0].rows[23].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(3032, month)['last_report_changes'])
 
-    document.tables[0].rows[24].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(3071, month)
-    document.tables[0].rows[24].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(3071, month)
+    document.tables[0].rows[24].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(3071, month)['cumulative'])
+    document.tables[0].rows[24].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(3071, month)['last_report_changes'])
 
-    document.tables[0].rows[25].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(3179, month)
-    document.tables[0].rows[25].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(3179, month)
+    document.tables[0].rows[25].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(3179, month)['cumulative'])
+    document.tables[0].rows[25].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(3179, month)['last_report_changes'])
 
-    document.tables[0].rows[26].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(3347, month)
-    document.tables[0].rows[26].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(3347, month)
+    document.tables[0].rows[26].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(3347, month)['cumulative'])
+    document.tables[0].rows[26].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(3347, month)['last_report_changes'])
 
     # SP
-    document.tables[0].rows[28].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(850, month)
-    document.tables[0].rows[28].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(850, month)
+    document.tables[0].rows[28].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(850, month)['cumulative'])
+    document.tables[0].rows[28].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(850, month)['last_report_changes'])
 
-    document.tables[0].rows[29].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(783, month)
-    document.tables[0].rows[29].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(783, month)
+    document.tables[0].rows[29].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(783, month)['cumulative'])
+    document.tables[0].rows[29].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(783, month)['last_report_changes'])
 
     # C4D
-    document.tables[0].rows[31].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1396, month)
-    document.tables[0].rows[31].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1396, month)
+    document.tables[0].rows[31].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1396, month)['cumulative'])
+    document.tables[0].rows[31].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1396, month)['last_report_changes'])
 
     # PPL
-    document.tables[0].rows[33].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1121, month)
-    document.tables[0].rows[33].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1121, month)
+    document.tables[0].rows[33].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1121, month)['cumulative'])
+    document.tables[0].rows[33].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1121, month)['last_report_changes'])
 
-    document.tables[0].rows[34].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1149, month)
-    document.tables[0].rows[34].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1149, month)
+    document.tables[0].rows[34].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1149, month)['cumulative'])
+    document.tables[0].rows[34].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1149, month)['last_report_changes'])
 
-    document.tables[0].rows[35].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1178, month)
-    document.tables[0].rows[35].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1178, month)
+    document.tables[0].rows[35].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1178, month)['cumulative'])
+    document.tables[0].rows[35].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1178, month)['last_report_changes'])
 
-    document.tables[0].rows[36].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1195, month)
-    document.tables[0].rows[36].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1195, month)
+    document.tables[0].rows[36].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1195, month)['cumulative'])
+    document.tables[0].rows[36].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1195, month)['last_report_changes'])
 
-    document.tables[0].rows[37].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(0, month)
-    document.tables[0].rows[37].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(0, month)
+    document.tables[0].rows[37].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['cumulative'])
+    document.tables[0].rows[37].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(0, month)['last_report_changes'])
 
-    document.tables[0].rows[38].cells[6].paragraphs[0].runs[0].text = get_indicator_cumulative(1299, month)
-    document.tables[0].rows[38].cells[7].paragraphs[0].runs[0].text = get_indicator_diff_results(1299, month)
+    document.tables[0].rows[38].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1299, month)['cumulative'])
+    document.tables[0].rows[38].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1299, month)['last_report_changes'])
 
     path2file2 = '{}/{}/{}'.format(path, 'AIReports', filename)
     document.save(path2file2)
     return path2file2
-
 
 
 def update_hpm_table_docx1(indicators, month, filename):
@@ -1102,7 +1084,7 @@ def update_hpm_table_docx1(indicators, month, filename):
     # import sys
     # import docx
     from docx import Document
-    from internos.activityinfo.templatetags.util_tags import get_indicator_cumulative, get_indicator_diff_results
+    from internos.activityinfo.templatetags.util_tags import get_indicator_cumulative, get_indicator_hpm_data
 
     path = os.path.dirname(os.path.abspath(__file__))
     path2file = path+'/AIReports/HPM Table template 2019.docx'

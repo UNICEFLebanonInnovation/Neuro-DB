@@ -53,29 +53,15 @@ def import_data_and_generate_monthly_report():
 
 
 @app.task
-def import_live_data():
+def import_data_and_generate_live_report():
     from internos.activityinfo.models import Database
+    from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values
 
     databases = Database.objects.filter(reporting_year__current=True)
     for db in databases:
         logger.info('1. Import report: '+db.name)
-        r_script_command_line('ai_generate_excel.R', db)
-
-
-@app.task
-def calculate_live_values():
-    from internos.activityinfo.utils import sync_live_data, link_indicators_data, calculate_indicators_values
-    from internos.activityinfo.models import Database
-
-    databases = Database.objects.filter(reporting_year__current=True)
-    for db in databases:
-        logger.info('-----------------------------------------')
-        logger.info(db.name)
-        logger.info('1. Import data forced')
-        sync_live_data(db)
-        logger.info('2. Link indicators')
+        import_data_via_r_script(db)
+        logger.info('2. Link data: ' + db.name)
         link_indicators_data(db, report_type='live')
-        logger.info('3. Reset values')
-        logger.info('4. Calculate indicator values')
+        logger.info('3. Calculate indicator values')
         calculate_indicators_values(db, report_type='live')
-        logger.info('-----------------------------------------')
