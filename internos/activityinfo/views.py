@@ -73,7 +73,7 @@ class DashboardView(TemplateView):
 
 class ReportView(TemplateView):
 
-    template_name = 'activityinfo/report.html'
+    template_name = 'activityinfo/testtemplate.html'
 
     def get_context_data(self, **kwargs):
         selected_filter = False
