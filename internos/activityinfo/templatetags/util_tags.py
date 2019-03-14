@@ -86,6 +86,17 @@ def number_format(value):
 
 
 @register.assignment_tag
+def to_display_indicator(selected_filters, cumulative_result):
+    if not selected_filters:
+        return True
+
+    if selected_filters and cumulative_result == '0':
+        return False
+
+    return True
+
+
+@register.assignment_tag
 def get_indicator_unit(indicator, value):
 
     if not value:
