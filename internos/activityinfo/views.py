@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
+import os
 import datetime
 from django.db.models import Q
 from django.views.generic import ListView, TemplateView
@@ -320,7 +321,7 @@ class HPMExportViewSet(ListView):
         return response
 
 
-class ExportViewSet(ListView):
+class ExportViewSet1(ListView):
 
     model = ActivityReport
     queryset = ActivityReport.objects.all()
@@ -356,3 +357,30 @@ class ExportViewSet(ListView):
         }
         from internos.backends.gistfile import get_model_as_csv_file_response
         return get_model_as_csv_file_response(meta, content_type='text/csv', filename=filename)
+
+
+class ExportViewSet(ListView):
+
+    model = ActivityReport
+    queryset = ActivityReport.objects.none()
+
+    def get(self, request, *args, **kwargs):
+
+        ai_id = self.request.GET.get('ai_id', 0)
+        instance = Database.objects.get(ai_id=ai_id)
+
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month = last_month.strftime("%m")
+        month_name = last_month.strftime("%B")
+
+        path = os.path.dirname(os.path.abspath(__file__))
+        path2file = path+'/AIReports/'+str(ai_id)+'_ai_data.csv'
+
+        filename = '{}_{}_{}_{} Raw data.csv'.format(month_name, month, instance.reporting_year.name, instance.label)
+
+        with open(path2file, 'r') as f:
+            response = HttpResponse(f.read(), content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=%s;' % filename
+        return response
