@@ -664,7 +664,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     )
     actions = [
         'import_basic_data',
-        # 'update_basic_data',
+        'update_basic_data',
         # 'import_data',
         # 'import_reports',
         'import_reports_forced',
@@ -735,11 +735,13 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     def update_basic_data(self, request, queryset):
         objects = 0
         for db in queryset:
-            objects += db.import_data(import_new=False)
+            objects += db.import_data(import_new=False, update_only=True)
         self.message_user(
             request,
             "{} objects created.".format(objects)
         )
+
+    update_basic_data.short_description = 'Step 0a: Update Indicators basic data (only once - ask Ali before!!!)'
 
     def update_partner_data(self, request, queryset):
         for db in queryset:

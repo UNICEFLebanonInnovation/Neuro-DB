@@ -96,7 +96,7 @@ class Database(models.Model):
         master_indicator.save()
         master_indicator.sub_indicators.add(ai_indicator)
 
-    def import_data(self, import_new=True):
+    def import_data(self, import_new=True, update_only=False):
         from .utils import get_awp_code, get_label
         """
         Import all activities, indicators and partners from
@@ -159,8 +159,9 @@ class Database(models.Model):
                         new_instance = True
                         objects += 1
 
-                    # ai_indicator.name = indicator['name']
-                    # ai_indicator.label = get_label(indicator)
+                    if update_only:
+                        ai_indicator.name = indicator['name']
+                        ai_indicator.label = get_label(indicator)
 
                     if new_instance:
                         ai_indicator.awp_code = get_awp_code(indicator['name'])
