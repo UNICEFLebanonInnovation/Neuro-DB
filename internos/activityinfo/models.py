@@ -267,6 +267,7 @@ class Partner(models.Model):
     def detailed_info(self):
         partner_etools = self.partner_etools
         return {
+            'etl_id': partner_etools.etl_id,
             'name': partner_etools.name,
             'type': partner_etools.partner_type,
             'rating': partner_etools.rating,

@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 
 import logging
-
+import datetime
+import json
 from model_utils.choices import Choices
 from django.conf import settings
 from django.contrib.postgres.fields.array import ArrayField
@@ -98,12 +99,20 @@ class PartnerOrganization(models.Model):
     @property
     def interventions_details(self):
         data = []
-        for item in self.interventions.all().order_by('start'):
+        now = datetime.datetime.now()
+
+        for item in self.interventions.filter(end__year=now.year).order_by('start'):
             data.append({
+                'etl_id': item.etl_id,
                 'number': item.number,
                 'start': item.start,
                 'end': item.end,
-                'document_type': item.document_type
+                'document_type': item.document_type,
+                'total_unicef_budget': item.total_unicef_budget,
+                'budget_currency': item.budget_currency,
+                'total_budget': item.total_budget,
+                'offices_names': item.offices_names,
+                'location_p_codes': item.location_p_codes
             })
         return data
 

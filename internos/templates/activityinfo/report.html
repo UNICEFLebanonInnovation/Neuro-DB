@@ -357,37 +357,70 @@
   <div class="modal-dialog">
 
     <!-- Modal content-->
-    <div class="modal-content">
+    <div class="modal-content" style="width: 800px !important;">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
         <h4 class="modal-title">Partner Profile</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="width: 800px !important;">
         <div class="row">
-          <div class="col-md-3">Partner name:</div>
-          <div class="col-md-6">{{ partner_info.name }}</div>
+          <div class="col-md-12" style="font-size: 16px;">
+            <i class="fa fa-user" style="color: #0089d2;"></i>
+            <a href="https://etools.unicef.org/pmp/partners/{{ partner_info.etl_id }}/details" target="_blank">
+              {{ partner_info.name }} <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+            </a>
+          </div>
         </div>
         <div class="row">
-          <div class="col-md-3">Partner type:</div>
-          <div class="col-md-6">{{ partner_info.type }}</div>
+          <div class="col-md-12" style="font-size: 16px;">
+            <i class="fa fa-tags" style="color: #0089d2;"></i>
+            {{ partner_info.type }}
+          </div>
         </div>
         <div class="row">
-          <div class="col-md-3">Risk rating:</div>
-          <div class="col-md-6">{{ partner_info.rating }}</div>
+          <div class="col-md-12" style="font-size: 16px;">
+            <i class="fa fa-star-o" style="color: #0089d2;"></i>
+            {{ partner_info.rating }}
+          </div>
         </div>
+
+        <div class="clearfix"></div>
+        <br />
+
         {% if partner_info.interventions %}
         <div class="row">
-          <h5 class="modal-title">Partner Interventions</h5>
+          <h5 class="modal-title">Interventions</h5>
         </div>
+        <br />
         {% endif %}
         {% for inter in partner_info.interventions %}
-          <div class="row">
-            <div class="col-md-3">Reference</div>
-            <div class="col-md-12">{{ inter.number }} - {{ inter.start }} - {{ inter.end }}</div>
+          <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+            <div class="col-md-6">
+              <i class="fa fa-file-text-o" style="font-size: 16px; color: #0089d2;"></i>
+              <a href="https://etools.unicef.org/pmp/interventions/{{ inter.etl_id }}/details" target="_blank">
+                {{ inter.number }}
+                <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+              </a>
+            </div>
+            <div class="col-md-2">
+              <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.start }}
+            </div>
+            <div class="col-md-2">
+              <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.end }}
+            </div>
           </div>
-          <div class="row">
-            <div class="col-md-3">Document type</div>
-            <div class="col-md-6">{{ inter.document_type }}</div>
+
+          <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+            <div class="col-md-6">
+              <i class="fa fa-map-o" style="font-size: 16px; color: #0089d2;"></i>
+              {% for p_code in inter.location_p_codes %}
+                {{ p_code }}
+              {% endfor %}
+            </div>
+            <div class="col-md-2">
+              <i class="fa fa-usd" style="font-size: 16px; color: #0089d2;"></i>
+              {{ inter.total_budget }} {{ inter.budget_currency }}
+            </div>
           </div>
         {% endfor %}
       </div>
