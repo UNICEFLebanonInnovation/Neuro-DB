@@ -300,11 +300,17 @@ def get_indicator_hpm_data(ai_id, month=None):
             if month in cumulative_values:
                 cumulative = cumulative_values[month]
 
+        cumulative = "{:,}".format(round(cumulative), 1)
+        cumulative = cumulative.replace('.0', '')
+
+        last_report_changes = "{:,}".format(round(get_indicator_diff_results(indicator, month), 1))
+        last_report_changes = last_report_changes.replace('.0', '')
+
         data = {
             'id': ai_id,
             'name': indicator.name,
-            'cumulative': "{:,}".format(round(cumulative), 1),
-            'last_report_changes': "{:,}".format(round(get_indicator_diff_results(indicator, month), 1))
+            'cumulative': cumulative,
+            'last_report_changes': last_report_changes
         }
 
         return data
