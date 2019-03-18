@@ -304,13 +304,15 @@ class HPMExportViewSet(ListView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        month = int(last_month.strftime("%m"))
-        month_name = last_month.strftime("%B")
-        month = int(self.request.GET.get('month', month))
+        month = int(self.request.GET.get('month', last_month.strftime("%m"))) - 1
 
-        filename = "HPM Table {} 2019.docx".format(month_name)
+        months = []
+        for i in range(1, 13):
+            months.append((datetime.date(2008, i, 1).strftime('%B')))
 
-        new_file = update_hpm_table_docx(self.queryset, month, month_name, filename)
+        filename = "HPM Table {} 2019.docx".format(months[month])
+
+        new_file = update_hpm_table_docx(self.queryset, month, months[month], filename)
 
         with open(new_file, 'rb') as fh:
             response = HttpResponse(
