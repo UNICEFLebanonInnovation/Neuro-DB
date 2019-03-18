@@ -965,7 +965,7 @@ def update_partner_data(ai_db):
     return objects
 
 
-def update_hpm_table_docx(indicators, month, filename):
+def update_hpm_table_docx(indicators, month, month_name, filename):
 
     from docx import Document
     from internos.activityinfo.templatetags.util_tags import get_indicator_hpm_data
@@ -974,6 +974,8 @@ def update_hpm_table_docx(indicators, month, filename):
     path2file = path+'/AIReports/HPM Table template 2019.docx'
 
     document = Document(path2file)
+
+    document.paragraphs[0].runs[1].text = month_name
 
     # Education 1
     document.tables[0].rows[2].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(3942, month)['cumulative'])

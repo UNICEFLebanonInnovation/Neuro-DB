@@ -310,7 +310,7 @@ class HPMExportViewSet(ListView):
 
         filename = "HPM Table {} 2019.docx".format(month_name)
 
-        new_file = update_hpm_table_docx(self.queryset, month, filename)
+        new_file = update_hpm_table_docx(self.queryset, month, month_name, filename)
 
         with open(new_file, 'rb') as fh:
             response = HttpResponse(
