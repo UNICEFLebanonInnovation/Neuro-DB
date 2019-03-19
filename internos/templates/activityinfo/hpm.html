@@ -49,20 +49,24 @@
                 <div class="x_panel">
                   <div class="x_title">
                     <h2><strong>HPM Table – Data as of {{ month_name }} 2019</strong></h2>
-                    <!--<ul class="nav navbar-left" style="margin-top: -7px;">-->
-                      <!--<li class="dropdown">-->
-                        <!--<a id="drop6" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"-->
-                           <!--data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">-->
-                                    <!--<i class="fa fa-download faa-bounce animated-hover" style="font-size: 25px;"></i>-->
-                          <!--<span class="caret"></span>-->
-                        <!--</a>-->
-                        <!--<ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">-->
-                          <!--<li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Monthly report</a>-->
-                          <!--<li role="presentation" class="divider"></li>-->
-                        <!--</ul>-->
-                      <!--</li>-->
-                    <!--</ul>-->
-                    <ul class="nav navbar-left" style="margin-top: -16px;" data-step="6" data-intro="Download Dashboard report and raw data">
+                    <ul class="nav navbar-left" style="margin-top: -11px; margin-left: 40px;" data-step="6" data-intro="Download Dashboard report and raw data">
+                      <li class="dropdown">
+                        <a id="drop4" href="#" style="font-size: 20px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
+                           data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                    <i class="fa fa-table faa-bounce animated-hover" style="font-size: 20px;"></i>
+                                    HPM report
+                          <span class="caret"></span>
+                        </a>
+                        <ul id="menu1" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
+                          <li role="presentation" class="divider" style="margin-top: -1px;"></li>
+                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:hpm' %}?month=1">January</a>
+                          <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
+                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:hpm' %}?month=2">February</a>
+                          <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
+                        </ul>
+                      </li>
+                    </ul>
+                    <ul class="nav navbar-left" style="margin-top: -16px; margin-left: 40px;" data-step="6" data-intro="Download Dashboard report and raw data">
                       <li class="dropdown">
                         <a id="drop5" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
                            data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
