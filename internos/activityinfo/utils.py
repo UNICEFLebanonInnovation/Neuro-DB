@@ -449,6 +449,43 @@ def calculate_indicators_cumulative_results(ai_db, report_type=None):
     return indicators.count()
 
 
+def reset_hpm_indicators_values(ai_id):
+    from internos.activityinfo.models import Indicator
+
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_id)
+    for indicator in indicators:
+        indicator.values_hpm = {}
+        indicator.cumulative_values_hpm = {}
+        indicator.save()
+
+    return indicators.count()
+
+
+def calculate_indicators_cumulative_hpm(ai_db):
+    from internos.activityinfo.models import Indicator
+
+    # indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
+    indicators = Indicator.objects.filter(hpm_indicator=True)
+
+    for indicator in indicators:
+        cum_month = {}
+
+        values = indicator.values_hpm
+
+        for month in values:
+            c_value = 0
+            for c_month in range(1, int(month) + 1):
+                c_value += float(values[str(c_month)])
+                cum_month[str(month)] = c_value
+
+        indicator.cumulative_values_hpm = {
+            'months': cum_month,
+        }
+        indicator.save()
+
+    return indicators.count()
+
+
 def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=False):
     from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
 
@@ -471,6 +508,7 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
     last_month = int(datetime.datetime.now().strftime("%m"))
+    reporting_month = str(last_month - 1)
 
     for indicator in indicators:
         for month in range(1, last_month):
@@ -516,6 +554,8 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
                 indicator.values_partners_live.update(values_partners)
                 indicator.values_partners_gov_live.update(values_partners_gov)
             else:
+                if month == reporting_month:
+                    indicator.values_hpm[reporting_month] = values_month
                 indicator.values[month] = values_month
                 indicator.values_gov.update(values_gov)
                 indicator.values_partners.update(values_partners)
@@ -541,6 +581,7 @@ def calculate_indicators_values_percentage(ai_db, report_type=None):
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
     last_month = int(datetime.datetime.now().strftime("%m"))
+    reporting_month = str(last_month - 1)
 
     for indicator in indicators:
         for month in range(1, last_month):
@@ -614,6 +655,8 @@ def calculate_indicators_values_percentage(ai_db, report_type=None):
                 indicator.values_partners_live.update(values_partners)
                 indicator.values_partners_gov_live.update(values_partners_gov)
             else:
+                if month == reporting_month:
+                    indicator.values_hpm[reporting_month] = values_month
                 indicator.values[month] = values_month
                 indicator.values_gov.update(values_gov)
                 indicator.values_partners.update(values_partners)
@@ -640,6 +683,7 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
     last_month = int(datetime.datetime.now().strftime("%m"))
+    reporting_month = str(last_month - 1)
 
     for indicator in indicators:
         for month in range(1, last_month):
@@ -708,6 +752,8 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
                 indicator.values_partners_live.update(values_partners)
                 indicator.values_partners_gov_live.update(values_partners_gov)
             else:
+                if month == reporting_month:
+                    indicator.values_hpm[reporting_month] = values_month
                 indicator.values[month] = values_month
                 indicator.values_gov.update(values_gov)
                 indicator.values_partners.update(values_partners)
@@ -734,6 +780,7 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
     last_month = int(datetime.datetime.now().strftime("%m"))
+    reporting_month = str(last_month - 1)
 
     for indicator in indicators:
         for month in range(1, last_month):
@@ -807,6 +854,8 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
                 indicator.values_partners_live.update(values_partners)
                 indicator.values_partners_gov_live.update(values_partners_gov)
             else:
+                if month == reporting_month:
+                    indicator.values_hpm[reporting_month] = values_month
                 indicator.values[month] = values_month
                 indicator.values_gov.update(values_gov)
                 indicator.values_partners.update(values_partners)
@@ -830,6 +879,7 @@ def calculate_individual_indicators_values(ai_db, report_type=None):
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
     last_month = int(datetime.datetime.now().strftime("%m"))
+    reporting_month = str(last_month - 1)
 
     for indicator in indicators:
         for month in range(1, last_month):
@@ -838,6 +888,8 @@ def calculate_individual_indicators_values(ai_db, report_type=None):
             if report_type == 'live':
                 indicator.values_live[str(month)] = result
             else:
+                if month == reporting_month:
+                    indicator.values_hpm[reporting_month] = result
                 indicator.values[str(month)] = result
 
             for gov1 in governorates1:

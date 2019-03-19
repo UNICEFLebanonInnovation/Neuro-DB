@@ -65,3 +65,14 @@ def import_data_and_generate_live_report():
         link_indicators_data(db, report_type='live')
         logger.info('3. Calculate indicator values')
         calculate_indicators_values(db, report_type='live')
+
+
+@app.task
+def copy_indicators_values_to_hpm():
+    from internos.activityinfo.models import Indicator
+
+    indicators = Indicator.objects.all()
+
+    for indicator in indicators:
+        indicator.values_hpm = indicator.values
+        indicator.save()

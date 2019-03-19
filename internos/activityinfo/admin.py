@@ -222,6 +222,7 @@ class IndicatorResource(resources.ModelResource):
             'denominator_indicator',
             'numerator_indicator',
             'values',
+            'values_hpm',
             'values_gov',
             'values_partners',
             'values_partners_gov',
@@ -244,6 +245,7 @@ class IndicatorResource(resources.ModelResource):
             'calculated_indicator',
             'calculated_percentage',
             'cumulative_values',
+            'cumulative_values_hpm',
             'hpm_indicator',
             'separator_indicator',
             'values_live',
@@ -367,9 +369,6 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'numerator_indicator',
                 'sub_indicators',
                 'summation_sub_indicators',
-                # 'denominator_summation',
-                # 'numerator_summation',
-                # 'cumulative_values',
             ]
         }),
         ('Calculated Values', {
@@ -380,6 +379,13 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'values_partners',
                 'values_partners_gov',
                 'cumulative_values',
+            ]
+        }),
+        ('Calculated HPM Values', {
+            'classes': ('suit-tab', 'suit-tab-hpm-values',),
+            'fields': [
+                'values_hpm',
+                'cumulative_values_hpm',
             ]
         }),
         ('Calculated Values live', {
@@ -397,6 +403,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
     suit_form_tabs = (
                       ('general', 'Indicator'),
                       ('report-values', 'Report values'),
+                      ('hpm-values', 'HPM values'),
                       ('live-values', 'Live values'),
                     )
 
@@ -671,8 +678,10 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'link_indicators_data',
         'calculate_indicators_values',
         'calculate_indicators_cumulative_results',
+        'calculate_indicators_cumulative_hpm',
         'calculate_indicators_status',
         'reset_indicators_values',
+        'reset_hpm_indicators_values',
         'update_partner_data',
         'generate_indicator_tags',
         'calculate_sum_target',
@@ -820,6 +829,14 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 "{} indicators pre-calculated values removed and for database {} ".format(reports, db.name)
             )
 
+    def reset_hpm_indicators_values(self, request, queryset):
+        for db in queryset:
+            reports = reset_hpm_indicators_values(db.ai_id)
+            self.message_user(
+                request,
+                "{} indicators pre-calculated HPM values removed and for database {} ".format(reports, db.name)
+            )
+
     def calculate_indicators_values(self, request, queryset):
         for db in queryset:
             reports = calculate_indicators_values(db)
@@ -835,6 +852,14 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             self.message_user(
                 request,
                 "{} indicators values cumulative calculated for database {}".format(reports, db.name)
+            )
+
+    def calculate_indicators_cumulative_hpm(self, request, queryset):
+        for db in queryset:
+            reports = calculate_indicators_cumulative_hpm(db)
+            self.message_user(
+                request,
+                "{} indicators values cumulative HPM for database {}".format(reports, db.name)
             )
 
     def calculate_indicators_status(self, request, queryset):
