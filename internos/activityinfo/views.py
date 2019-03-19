@@ -280,10 +280,13 @@ class HPMView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        # month_number = last_month.strftime("%m")
-        # month = int(last_month.strftime("%m"))
-        month_name = last_month.strftime("%B")
         month = int(self.request.GET.get('month', last_month.strftime("%m")))
+
+        months = []
+        for i in range(1, 13):
+            months.append((datetime.date(2008, i, 1).strftime('%B')))
+
+        month_name = months[month - 1]
 
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
 
