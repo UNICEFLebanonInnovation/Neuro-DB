@@ -502,7 +502,7 @@ function export_table_to_csv(html, filename) {
             if($(cols[j]).attr('colspan') == '2') {
               row.push('');
             }
-            row.push(cols[j].innerText);
+            row.push('"'+cols[j].innerText+'"');
         }
 
 		csv.push(row.join(","));
