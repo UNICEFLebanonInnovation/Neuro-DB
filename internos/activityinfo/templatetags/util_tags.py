@@ -292,7 +292,16 @@ def get_indicator_hpm_data(ai_id, month=None):
     try:
         cumulative = 0
         indicator = Indicator.objects.get(id=int(ai_id))
-        cumulative_values = indicator.cumulative_values_hpm
+        if month == 2:
+            cumulative_values = indicator.cumulative_values_hpm
+        else:
+            cumulative_values = indicator.cumulative_values
+
+        values_hpm = indicator.values_hpm
+        last_month = month - 1
+        last_month_value = 0
+        if last_month in values_hpm:
+            last_month_value = values_hpm[last_month]
 
         if month and 'months' in cumulative_values:
             month = str(month)
@@ -303,7 +312,7 @@ def get_indicator_hpm_data(ai_id, month=None):
         cumulative = "{:,}".format(round(cumulative), 1)
         cumulative = cumulative.replace('.0', '')
 
-        last_report_changes = "{:,}".format(round(get_indicator_diff_results(indicator, month), 1))
+        last_report_changes = "{:,}".format(round(cumulative - last_month_value, 1))
         last_report_changes = last_report_changes.replace('.0', '')
 
         data = {
