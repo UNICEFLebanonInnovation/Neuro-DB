@@ -1,4 +1,5 @@
 import json
+import datetime
 from django import template
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import Group
@@ -290,19 +291,24 @@ def get_indicator_hpm_data(ai_id, month=None):
     }
 
     try:
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        last_month_number = int(last_month.strftime("%m"))
+
         cumulative = 0
         indicator = Indicator.objects.get(id=int(ai_id))
-        if month == 2:
-            cumulative_values = indicator.cumulative_values_hpm
-        else:
+        if str(month) == str(last_month_number):
             cumulative_values = indicator.cumulative_values
+        else:
+            cumulative_values = indicator.cumulative_values_hpm
 
         values_hpm = indicator.values_hpm
-        last_month = int(month) - 1
+        previous_month = int(month) - 1
         last_month_value = 0
 
-        if str(last_month) in values_hpm:
-            last_month_value = values_hpm[str(last_month)]
+        if str(previous_month) in values_hpm:
+            last_month_value = values_hpm[str(previous_month)]
 
         if month and 'months' in cumulative_values:
             month = str(month)
@@ -313,8 +319,11 @@ def get_indicator_hpm_data(ai_id, month=None):
         cumulative_result = "{:,}".format(round(cumulative), 1)
         cumulative_result = cumulative_result.replace('.0', '')
 
-        last_report_changes = "{:,}".format(round(int(cumulative) - int(last_month_value), 1))
-        last_report_changes = last_report_changes.replace('.0', '')
+        if last_month_value == 0:
+            last_report_changes = 0
+        else:
+            last_report_changes = "{:,}".format(round(int(cumulative) - int(last_month_value), 1))
+            last_report_changes = last_report_changes.replace('.0', '')
 
         data = {
             'id': ai_id,
@@ -325,7 +334,7 @@ def get_indicator_hpm_data(ai_id, month=None):
 
         return data
     except Exception as ex:
-        print(ex)
+        # print(ex)
         return data
 
 
