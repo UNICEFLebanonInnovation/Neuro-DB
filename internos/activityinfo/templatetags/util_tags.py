@@ -324,7 +324,7 @@ def get_indicator_hpm_data(ai_id, month=None):
 
         return data
     except Exception as ex:
-        # print(ex)
+        print(ex)
         return data
 
 
