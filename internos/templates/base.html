@@ -60,7 +60,7 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="/" class="site_title"><img src="{% static 'images/logo.png' %}" height="50" width="50" alt=""/>
+              <a href="/" class="site_title" data-step="1" data-intro="Go to home page"><img src="{% static 'images/logo.png' %}" height="50" width="50" alt=""/>
                 <span>Neuro-DB</span>
               </a>
             </div>
@@ -85,7 +85,7 @@
 
             <!-- sidebar menu -->
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-              <div class="menu_section">
+              <div class="menu_section" data-step="2" data-intro="Navigation menu for other sections">
                 <h3>General</h3>
                 <ul class="nav side-menu">
                   <li><a><i class="fa fa-table"></i> AI Dashboards <span class="fa fa-chevron-down"></span></a>
@@ -108,8 +108,12 @@
                 <!--<i class="fa fa-phone"></i>-->
               </div>
 
-              <div class="menu_section" style="position: fixed; bottom: 5px; left: 11px;" data-step="1" data-intro="For any technical issue please call Ali Chamseddine or Mohamad Karnib">
-                  <a class="user-profile">
+              <div class="menu_section" style="position: fixed; bottom: 5px; left: 11px;" data-step="3"
+                   data-intro="For technical issue please call Ali Chamseddine or Mohamad Karnib">
+                  <a class="user-profile" href="mailto:achamseddine@unicef.org;mkranib@unicef.org?subject=ActivityInfo: Techincal issue"
+                   data-toggle="tooltip" data-placement="right" data-html="true"
+                    title="For technical issue please call: <br />
+                    Ali Chamseddine or Mohamad Karnib">
                       <img src="{% static 'images/support-1.jpg' %}" alt="" style="width: 50px; height: 50px;"/>
                   </a>
               </div>
