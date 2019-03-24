@@ -26,36 +26,41 @@ def r_script_command_line(script_name, ai_db):
     return 1
 
 
-def read_data_from_file(ai_id, forced=False):
-    from internos.activityinfo.models import Database, ActivityReport
-    from internos.backends.models import ImportLog
-    month_name = datetime.datetime.now().strftime("%B")
-    model = ActivityReport.objects.none()
+def read_data_from_file(ai_id, forced=False, report_type=None):
+    from internos.activityinfo.models import Database, ActivityReport, ActivityReportLive
+    # from internos.backends.models import ImportLog
+    # month_name = datetime.datetime.now().strftime("%B")
+
+    if report_type == 'live':
+        model = ActivityReportLive.objects.none()
+        ActivityReportLive.objects.filter(database_id=ai_id).delete()
+        return add_rows(ai_id=ai_id, model=model)
 
     if forced:
+        model = ActivityReport.objects.none()
         ActivityReport.objects.filter(database_id=ai_id).delete()
         return add_rows(ai_id=ai_id, model=model)
 
-    try:
-        ImportLog.objects.get(
-            object_id=ai_id,
-            object_type='AI',
-            month=month_name,
-            status=True)
-        return update_rows(ai_id)
-    except ImportLog.DoesNotExist:
-        ImportLog.objects.create(
-            object_id=ai_id,
-            object_name=Database.objects.get(ai_id=ai_id).name,
-            object_type='AI',
-            month=month_name,
-            status=True)
-        return add_rows(ai_id=ai_id, model=model)
+    # try:
+    #     ImportLog.objects.get(
+    #         object_id=ai_id,
+    #         object_type='AI',
+    #         month=month_name,
+    #         status=True)
+    #     return update_rows(ai_id)
+    # except ImportLog.DoesNotExist:
+    #     ImportLog.objects.create(
+    #         object_id=ai_id,
+    #         object_name=Database.objects.get(ai_id=ai_id).name,
+    #         object_type='AI',
+    #         month=month_name,
+    #         status=True)
+    #     return add_rows(ai_id=ai_id, model=model)
 
 
-def import_data_via_r_script(ai_db):
+def import_data_via_r_script(ai_db, report_type=None):
     r_script_command_line('ai_generate_excel.R', ai_db)
-    total = read_data_from_file(ai_db.ai_id, True)
+    total = read_data_from_file(ai_db.ai_id, True, report_type)
     return total
 
 
@@ -361,15 +366,15 @@ def reset_indicators_values(ai_id, report_type=None):
 
 
 def calculate_indicators_values(ai_db, report_type=None):
-    reset_indicators_values(ai_db.ai_id, report_type)
+    # reset_indicators_values(ai_db.ai_id, report_type)
     calculate_individual_indicators_values(ai_db, report_type)
-    calculate_master_indicators_values(ai_db, report_type, True)
-    calculate_master_indicators_values(ai_db, report_type)
-    calculate_master_indicators_values_percentage(ai_db, report_type)
-    calculate_master_indicators_values_denominator_multiplication(ai_db, report_type)
-    calculate_indicators_values_percentage(ai_db, report_type)
-    calculate_indicators_cumulative_results(ai_db, report_type)
-    calculate_indicators_status(ai_db)
+    # calculate_master_indicators_values(ai_db, report_type, True)
+    # calculate_master_indicators_values(ai_db, report_type)
+    # calculate_master_indicators_values_percentage(ai_db, report_type)
+    # calculate_master_indicators_values_denominator_multiplication(ai_db, report_type)
+    # calculate_indicators_values_percentage(ai_db, report_type)
+    # calculate_indicators_cumulative_results(ai_db, report_type)
+    # calculate_indicators_status(ai_db)
 
     return 0
 
@@ -496,8 +501,11 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
         indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
                                               master_indicator=True)
 
+    last_month = int(datetime.datetime.now().strftime("%m"))
+
     if report_type == 'live':
         report = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
+        last_month = last_month + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
 
@@ -507,7 +515,6 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    last_month = int(datetime.datetime.now().strftime("%m"))
     reporting_month = str(last_month - 1)
 
     for indicator in indicators:
@@ -570,8 +577,11 @@ def calculate_indicators_values_percentage(ai_db, report_type=None):
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
                                           calculated_indicator=True)
 
+    last_month = int(datetime.datetime.now().strftime("%m"))
+
     if report_type == 'live':
         report = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
+        last_month = last_month + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
     if ai_db.is_funded_by_unicef:
@@ -580,7 +590,6 @@ def calculate_indicators_values_percentage(ai_db, report_type=None):
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    last_month = int(datetime.datetime.now().strftime("%m"))
     reporting_month = str(last_month - 1)
 
     for indicator in indicators:
@@ -671,9 +680,11 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
                                           master_indicator=True,
                                           measurement_type='percentage')
+    last_month = int(datetime.datetime.now().strftime("%m"))
 
     if report_type == 'live':
         report = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
+        last_month = last_month + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
     if ai_db.is_funded_by_unicef:
@@ -682,7 +693,6 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    last_month = int(datetime.datetime.now().strftime("%m"))
     reporting_month = str(last_month - 1)
 
     for indicator in indicators:
@@ -769,8 +779,11 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
                                           master_indicator=True,
                                           measurement_type='percentage_x')
 
+    last_month = int(datetime.datetime.now().strftime("%m"))
+
     if report_type == 'live':
         report = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
+        last_month = last_month + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
     if ai_db.is_funded_by_unicef:
@@ -779,7 +792,6 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    last_month = int(datetime.datetime.now().strftime("%m"))
     reporting_month = str(last_month - 1)
 
     for indicator in indicators:
@@ -867,8 +879,11 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
 def calculate_individual_indicators_values(ai_db, report_type=None):
     from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
 
+    last_month = int(datetime.datetime.now().strftime("%m"))
+
     if report_type == 'live':
         report = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
+        last_month = last_month + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
     if ai_db.is_funded_by_unicef:
@@ -878,7 +893,6 @@ def calculate_individual_indicators_values(ai_db, report_type=None):
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    last_month = int(datetime.datetime.now().strftime("%m"))
     reporting_month = str(last_month - 1)
 
     for indicator in indicators:

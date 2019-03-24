@@ -193,11 +193,9 @@ class LiveReportView(TemplateView):
 
         partner_info = {}
         today = datetime.date.today()
-        first = today.replace(day=1)
-        last_month = first - datetime.timedelta(days=1)
-        month_number = last_month.strftime("%m")
-        month = int(last_month.strftime("%m"))
-        month_name = last_month.strftime("%B")
+        month_number = today.strftime("%m")
+        month = int(today.strftime("%m"))
+        month_name = today.strftime("%B")
 
         ai_id = int(self.request.GET.get('ai_id', 0))
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
@@ -214,7 +212,7 @@ class LiveReportView(TemplateView):
                 if partner.partner_etools:
                     partner_info = partner.detailed_info
             except Exception as ex:
-                print(ex)
+                # print(ex)
                 pass
 
         if selected_partner or selected_governorate:
