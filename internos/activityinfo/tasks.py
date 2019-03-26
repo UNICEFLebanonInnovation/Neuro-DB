@@ -59,6 +59,7 @@ def import_data_and_generate_live_report():
 
     databases = Database.objects.filter(reporting_year__current=True)
     for db in databases:
+        print(db.name)
         logger.info('1. Import report: '+db.name)
         import_data_via_r_script(db, report_type='live')
         logger.info('2. Link data: ' + db.name)

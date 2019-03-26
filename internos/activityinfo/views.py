@@ -193,6 +193,7 @@ class LiveReportView(TemplateView):
 
         partner_info = {}
         today = datetime.date.today()
+        day_number = today.strftime("%d")
         month_number = today.strftime("%m")
         month = int(today.strftime("%m"))
         month_name = today.strftime("%B")
@@ -265,7 +266,8 @@ class LiveReportView(TemplateView):
             'governorates': governorates,
             'master_indicators': master_indicators,
             'selected_filter': selected_filter,
-            'partner_info': partner_info
+            'partner_info': partner_info,
+            'day_number': day_number
         }
 
 

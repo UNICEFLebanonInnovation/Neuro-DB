@@ -265,8 +265,8 @@ def calculate_sum_target(ai_id):
 
 def link_indicators_data(ai_db, report_type=None):
     result = link_indicators_activity_report(ai_db, report_type)
-    link_ai_partners(report_type)
-    link_etools_partners()
+    # link_ai_partners(report_type)
+    # link_etools_partners()
 
     return result
 
@@ -366,15 +366,15 @@ def reset_indicators_values(ai_id, report_type=None):
 
 
 def calculate_indicators_values(ai_db, report_type=None):
-    # reset_indicators_values(ai_db.ai_id, report_type)
+    reset_indicators_values(ai_db.ai_id, report_type)
     calculate_individual_indicators_values(ai_db, report_type)
-    # calculate_master_indicators_values(ai_db, report_type, True)
-    # calculate_master_indicators_values(ai_db, report_type)
-    # calculate_master_indicators_values_percentage(ai_db, report_type)
-    # calculate_master_indicators_values_denominator_multiplication(ai_db, report_type)
-    # calculate_indicators_values_percentage(ai_db, report_type)
-    # calculate_indicators_cumulative_results(ai_db, report_type)
-    # calculate_indicators_status(ai_db)
+    calculate_master_indicators_values(ai_db, report_type, True)
+    calculate_master_indicators_values(ai_db, report_type)
+    calculate_master_indicators_values_percentage(ai_db, report_type)
+    calculate_master_indicators_values_denominator_multiplication(ai_db, report_type)
+    calculate_indicators_values_percentage(ai_db, report_type)
+    calculate_indicators_cumulative_results(ai_db, report_type)
+    calculate_indicators_status(ai_db)
 
     return 0
 

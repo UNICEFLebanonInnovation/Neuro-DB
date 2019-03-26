@@ -145,8 +145,8 @@
                           <!--<th class="w-120" content="Level of reporting" style="vertical-align: middle;">Level of reporting</th>-->
                           <th content="RWP" style="vertical-align: middle; width: 98px; max-width: 98px;">RWP</th>
                           <th content="Target" style="vertical-align: middle;  width: 98px; max-width: 98px;">Target</th>
-                          <th content="Cumulative Results of All Months" style="vertical-align: middle; width: 127px; max-width: 127px;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
-                            Cumulative Results <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
+                          <th content="As of today" style="vertical-align: middle; width: 127px; max-width: 127px;" data-toggle="tooltip" data-placement="top" title="As of today (Starting January)">
+                            As of today <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
                           </th>
                           <th content="Total Percentage achieved of all months" style="vertical-align: middle; width: 127px; max-width: 127px;" data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">
                             % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
@@ -160,7 +160,7 @@
 
                   <div class="x_content" style="height: 600px; overflow: scroll;">
 
-                    <table id="exporttable1" content="{{ month_name }}_{{ month_number }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard.csv"
+                    <table id="exporttable1" content="{{ day_number }}_{{ month_number }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard - Live data.csv"
                            data-tableName="Dashboard - {{ database.label }} - 2019"
                            class="table table-striped table-bordered">
                       <thead style="display:none;">
@@ -171,8 +171,8 @@
                           <!--<th class="w-120" content="Level of reporting" style="vertical-align: middle;">Level of reporting</th>-->
                           <th class="w-100" content="RWP" style="vertical-align: middle;">RWP</th>
                           <th class="w-100" content="Target" style="vertical-align: middle;">Target</th>
-                          <th class="w-130" content="Cumulative Results of All Months" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
-                            Cumulative Results <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
+                          <th class="w-130" content="As of today" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="As of today (Starting January)">
+                            As of today <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
                           </th>
                           <th class="w-130" content="Total Percentage achieved of all months" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">
                             % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
