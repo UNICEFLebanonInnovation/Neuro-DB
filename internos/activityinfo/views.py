@@ -129,7 +129,36 @@ class ReportView(TemplateView):
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
+        none_ai_indicators = Indicator.objects.filter(activity__none_ai_database=database)
+
         master_indicators = master_indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'explication',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+        ).distinct()
+
+        none_ai_indicators = none_ai_indicators.values(
             'id',
             'ai_id',
             'name',
@@ -176,7 +205,8 @@ class ReportView(TemplateView):
             'governorates': governorates,
             'master_indicators': master_indicators,
             'partner_info': partner_info,
-            'selected_filter': selected_filter
+            'selected_filter': selected_filter,
+            'none_ai_indicators': none_ai_indicators
         }
 
 

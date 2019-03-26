@@ -285,6 +285,7 @@ class Activity(models.Model):
 
     ai_id = models.PositiveIntegerField(unique=True)
     database = models.ForeignKey(Database)
+    none_ai_database = models.ForeignKey(Database, blank=True, null=True, related_name='+')
     name = models.CharField(max_length=1500)
     location_type = models.CharField(max_length=254)
 

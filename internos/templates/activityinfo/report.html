@@ -37,6 +37,10 @@
 .w-400 { width: 400px; max-width: 400px;}
 .w-500 { width: 500px; max-width: 500px;}
 
+.collapse-all.active, .expanded-all.active {
+  color: #0089d2;
+}
+
 </style>
 
 <!-- Add IntroJs styles -->
@@ -119,7 +123,10 @@
   <div class="w-1002 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2><strong>Dashboard - {{ database.label }} - 2019</strong>
+                    <h2>
+                      <a href="#" class="collapse-all"><i class="fa fa-th-large"></i></a>
+                      <a href="#" class="expanded-all active"><i class="fa fa-bars"></i></a>
+                      <strong>Dashboard - {{ database.label }} - 2019</strong>
                       <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
                              aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
@@ -215,7 +222,7 @@
                           {% to_display_indicator selected_filter cumulative_value as display_indicator %}
 
                           {% if display_indicator %}
-                          <tr {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;"{% elif item.individual_indicator %}style="background-color:#dadada;"{% endif %}>
+                          <tr class="level1" itemid="{{ item.id }}" {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;"{% elif item.individual_indicator %}style="background-color:#dadada;"{% endif %}>
                               <!--<td>{{ item.id }}</td>-->
                               {% if item.master_indicator %}
                                 <th colspan="2" class="w-500">
@@ -259,7 +266,7 @@
                           </tr>
                           {% get_sub_indicators_data item.id as sub_indicators %}
                           {% for item1 in sub_indicators %}
-                            <tr {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
+                            <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}" {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
                                 <!--<td>{{ item1.id }}</td>-->
                                 {% if item1.master_indicator_sub %}
                                   <th colspan="2" class="w-500">
@@ -299,7 +306,7 @@
                             {% get_sub_indicators_data item1.id as sub_indicators1 %}
                             {% for item2 in sub_indicators1 %}
                               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
-                              <tr>
+                              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}" itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                                   <!--<td>{{ item2.id }}</td>-->
                                   {% if item2.master_indicator_sub_sub %}
                                     <th class="w-500" colspan="2">
@@ -340,6 +347,40 @@
                             {% endfor %}
                           {% endfor %}
                         {% endif %}
+                        {% endfor %}
+                        <tr style="background-color:#6ad0f9; color: white;">
+                          <td colspan="19">
+                            UNICEF Sections - 2019 Internal Reporting
+                          </td>
+                        </tr>
+                        {% for no_item in none_ai_indicators %}
+                          <tr>
+                              <td class="w-100">{{ no_item.ai_id }}</td>
+                              <th class="w-400">
+                                {{ no_item.name }}
+                                {% if no_item.explication %}
+                                <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ no_item.explication }}"></i>
+                                {% endif %}
+                              </th>
+                              <!--<td>Site</td>-->
+                              <td class="w-100">{{ no_item.awp_code }}</td>
+                              <td class="w-100">{{ no_item.target|number_format }}</td>
+                              <td class="w-130">
+                                 {% get_indicator_cumulative no_item month selected_partner selected_governorate as cumulative_value %}
+                                 {{ cumulative_value }}
+                              </td>
+                              <td class="w-130">
+                                {% get_indicator_achieved no_item month selected_partner selected_governorate as achieved %}
+                                {{ achieved }}%
+                              </td>
+                              <td class="w-70" style="background-color:{{ no_item.status_color }}; color: #FFF;">{{ no_item.status }}</td>
+                              {% for month, month_name in months %}
+                                <td class="w-70">
+                                  {% get_indicator_value no_item month selected_partner selected_governorate as value %}
+                                  {{ value }}
+                                </td>
+                              {% endfor %}
+                          </tr>
                         {% endfor %}
                       </tbody>
                     </table>
@@ -441,19 +482,68 @@
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
   <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
-  <script src="{% static 'vendors/tableexport/xlsx.core.js' %}"></script>
+  <!--<script src="{% static 'vendors/tableexport/xlsx.core.js' %}"></script>-->
   <!--<script src="{% static 'vendors/tableexport/Blob.js' %}"></script>-->
-  <script src="{% static 'vendors/tableexport/FileSaver.js' %}"></script>
-  <script src="{% static 'vendors/tableexport/tableexport.js' %}"></script>
+  <!--<script src="{% static 'vendors/tableexport/FileSaver.js' %}"></script>-->
+  <!--<script src="{% static 'vendors/tableexport/tableexport.js' %}"></script>-->
 <script>
 
-<!--$("table#exporttable1").tableExport({-->
-    <!--headings: true,                    // (Boolean), display table headings (th/td elements) in the <thead>-->
-    <!--formats: ["xls", "csv", "xlsx"],    // (String[]), filetypes for the export-->
-    <!--fileName: "id",                    // (id, String), filename for the downloaded file-->
-    <!--bootstrap: true,                   // (Boolean), style buttons using bootstrap-->
-    <!--position: "top"                 // (top, bottom), position of the caption element relative to table-->
-<!--});-->
+$(document).ready(function(){
+
+    $('.expanded-all').click(function(){
+        $('.expanded-all').addClass('active');
+        $('.collapse-all').removeClass('active');
+
+        $('.level1').removeClass('collapsed');
+        $('.level2').removeClass('collapsed');
+        $('.level3').removeClass('collapsed');
+
+        $('.level1').show();
+        $('.level2').show();
+        $('.level3').show();
+    });
+
+    $('.collapse-all').click(function(){
+        $('.expanded-all').removeClass('active');
+        $('.collapse-all').addClass('active');
+
+        $('.level1').addClass('collapsed');
+        $('.level2').addClass('collapsed');
+        $('.level3').addClass('collapsed');
+
+        $('.level2').hide();
+        $('.level3').hide();
+    });
+
+    $('.level1').dblclick(function(){
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level2-'+itemid;
+      var sub_sub_items = 'tr.level3-'+itemid;
+
+      if($(this).hasClass('collapsed')){
+          $(sub_items).show();
+          $(this).removeClass('collapsed');
+      }else{
+          $(sub_items).hide();
+          $(sub_items).addClass('collapsed');
+          $(sub_sub_items).hide();
+          $(this).addClass('collapsed');
+      }
+    });
+
+    $('.level2').dblclick(function(){
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level3-'+itemid;
+
+      if($(this).hasClass('collapsed')){
+          $(sub_items).show();
+          $(this).removeClass('collapsed');
+      }else{
+          $(sub_items).hide();
+          $(this).addClass('collapsed');
+      }
+    });
+});
 
 function download_csv(csv, filename) {
     var csvFile;
