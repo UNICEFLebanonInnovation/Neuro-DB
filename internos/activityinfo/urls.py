@@ -41,4 +41,10 @@ urlpatterns = [
         view=views.HPMExportViewSet.as_view(),
         name='hpm_report'
     ),
+
+    url(
+        regex=r'^activityinfo/test/$',
+        view=views.TestView.as_view(),
+        name='test'
+    ),
 ]

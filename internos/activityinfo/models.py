@@ -333,6 +333,7 @@ class Indicator(models.Model):
     indicator_details = models.CharField(max_length=250, blank=True, null=True)
     indicator_master = models.CharField(max_length=250, blank=True, null=True)
     indicator_info = models.CharField(max_length=250, blank=True, null=True)
+    ai_indicator = models.CharField(max_length=250, blank=True, null=True)
     reporting_level = models.CharField(max_length=254, blank=True, null=True)
     awp_code = models.CharField(max_length=1500, blank=True, null=True, verbose_name='RWP')
     target = models.PositiveIntegerField(default=0)
@@ -393,7 +394,7 @@ class Indicator(models.Model):
         return self.name
 
     @property
-    def ai_indicator(self):
+    def get_ai_indicator(self):
         if len(str(self.ai_id)) == 10:
             return self.ai_id
         return '{0:0>10}'.format(self.ai_id)
@@ -491,3 +492,57 @@ class ActivityReportLive(ActivityReport):
 
     class Meta:
         ordering = ['id']
+
+
+class LiveActivityReport(TimeStampedModel):
+    end_date = models.CharField(max_length=250, blank=True, null=True)
+    form = models.CharField(max_length=1000, blank=True, null=True)
+    form_category = models.CharField(max_length=1000, blank=True, null=True)
+    ai_indicator = models.ForeignKey(Indicator, blank=True, null=True)
+    indicator_category = models.CharField(max_length=1000, blank=True, null=True)
+    indicator_id = models.CharField(max_length=250, blank=True, null=True)
+    indicator_name = models.CharField(max_length=1000, blank=True, null=True)
+    indicator_details = models.CharField(max_length=1000, blank=True, null=True)
+    indicator_master = models.CharField(max_length=250, blank=True, null=True)
+    indicator_info = models.CharField(max_length=250, blank=True, null=True)
+    indicator_units = models.CharField(max_length=250, blank=True, null=True)
+    indicator_value = models.FloatField(blank=True, null=True)
+    indicator_sub_value = models.CharField(max_length=250, blank=True, null=True)
+    indicator_awp_code = models.CharField(max_length=254, blank=True, null=True)
+    location_adminlevel_cadastral_area = models.CharField(max_length=250, blank=True, null=True)
+    location_adminlevel_cadastral_area_code = models.CharField(max_length=250, blank=True, null=True)
+    location_adminlevel_caza = models.CharField(max_length=250, blank=True, null=True)
+    location_adminlevel_caza_code = models.CharField(max_length=250, blank=True, null=True)
+    location_adminlevel_governorate = models.CharField(max_length=250, blank=True, null=True)
+    location_adminlevel_governorate_code = models.CharField(max_length=250, blank=True, null=True)
+    governorate = models.CharField(max_length=250, blank=True, null=True)
+    location_alternate_name = models.CharField(max_length=250, blank=True, null=True)
+    location_latitude = models.CharField(max_length=250, blank=True, null=True)
+    location_longitude = models.CharField(max_length=250, blank=True, null=True)
+    location_name = models.CharField(max_length=250, blank=True, null=True)
+    partner_description = models.CharField(max_length=250, blank=True, null=True)
+    partner_id = models.CharField(max_length=250, blank=True, null=True)
+    partner_ai = models.ForeignKey(Partner, blank=True, null=True, related_name='+')
+    partner_label = models.CharField(max_length=250, blank=True, null=True)
+    project_description = models.CharField(max_length=250, blank=True, null=True)
+    project_label = models.CharField(max_length=250, blank=True, null=True)
+    lcrp_appeal = models.CharField(max_length=250, blank=True, null=True)
+    funded_by = models.CharField(max_length=250, blank=True, null=True)
+    report_id = models.CharField(max_length=250, blank=True, null=True)
+    site_id = models.CharField(max_length=250, blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
+    outreach_platform = models.CharField(max_length=250, blank=True, null=True)
+    database_id = models.CharField(max_length=250, blank=True, null=True)
+    database = models.CharField(max_length=250, blank=True, null=True)
+    month = models.CharField(max_length=250, blank=True, null=True)
+    day = models.CharField(max_length=250, blank=True, null=True)
+    month_name = models.CharField(max_length=250, blank=True, null=True)
+    year = models.CharField(max_length=250, blank=True, null=True)
+    master_indicator = models.BooleanField(default=False)
+    master_indicator_sub = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+    pending = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['id']
+        models.Index(fields=['indicator_id', 'partner_id', 'start_date', 'location_adminlevel_governorate_code', 'funded_by'])

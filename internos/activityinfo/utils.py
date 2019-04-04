@@ -27,13 +27,13 @@ def r_script_command_line(script_name, ai_db):
 
 
 def read_data_from_file(ai_id, forced=False, report_type=None):
-    from internos.activityinfo.models import Database, ActivityReport, ActivityReportLive
+    from internos.activityinfo.models import Database, ActivityReport, LiveActivityReport
     # from internos.backends.models import ImportLog
     # month_name = datetime.datetime.now().strftime("%B")
 
     if report_type == 'live':
-        model = ActivityReportLive.objects.none()
-        ActivityReportLive.objects.filter(database_id=ai_id).delete()
+        model = LiveActivityReport.objects.none()
+        LiveActivityReport.objects.filter(database_id=ai_id).delete()
         return add_rows(ai_id=ai_id, model=model)
 
     if forced:
@@ -272,11 +272,11 @@ def link_indicators_data(ai_db, report_type=None):
 
 
 def link_indicators_activity_report(ai_db, report_type=None):
-    from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
+    from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
 
     ctr = 0
     if report_type == 'live':
-        reports = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
+        reports = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
     else:
         reports = ActivityReport.objects.filter(database_id=ai_db.ai_id)
 
@@ -302,11 +302,11 @@ def link_indicators_activity_report(ai_db, report_type=None):
 
 
 def link_ai_partners(report_type=None):
-    from internos.activityinfo.models import Partner, ActivityReport, ActivityReportLive
+    from internos.activityinfo.models import Partner, ActivityReport, LiveActivityReport
 
     ctr = 0
     if report_type == 'live':
-        reports = ActivityReportLive.objects.all()
+        reports = LiveActivityReport.objects.all()
     else:
         reports = ActivityReport.objects.all()
 
@@ -366,26 +366,138 @@ def reset_indicators_values(ai_id, report_type=None):
 
 
 def calculate_indicators_values(ai_db, report_type=None):
+    print('reset_indicators_values')
     reset_indicators_values(ai_db.ai_id, report_type)
-    calculate_individual_indicators_values(ai_db, report_type)
-    calculate_master_indicators_values(ai_db, report_type, True)
-    calculate_master_indicators_values(ai_db, report_type)
+    print('calculate_individual_indicators_values_2')
+    if report_type == 'live':
+        calculate_individual_indicators_values_2(ai_db)
+    else:
+        calculate_individual_indicators_values_1(ai_db)
+    print('calculate_master_indicators_values')
+    calculate_master_indicators_values_1(ai_db, report_type, True)
+    print('calculate_master_indicators_values')
+    calculate_master_indicators_values_1(ai_db, report_type)
+    print('calculate_master_indicators_values_percentage')
     calculate_master_indicators_values_percentage(ai_db, report_type)
+    print('calculate_master_indicators_values_denominator_multiplication')
     calculate_master_indicators_values_denominator_multiplication(ai_db, report_type)
-    calculate_indicators_values_percentage(ai_db, report_type)
-    calculate_indicators_cumulative_results(ai_db, report_type)
+    print('calculate_indicators_values_percentage')
+    calculate_indicators_values_percentage_1(ai_db, report_type)  # DONE
+    print('calculate_indicators_cumulative_results')
+    calculate_indicators_cumulative_results_1(ai_db, report_type)
+    print('calculate_indicators_status')
     calculate_indicators_status(ai_db)
 
     return 0
 
 
+def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
+    from django.db import connection
+    from internos.activityinfo.models import Indicator
+
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).only(
+        'values',
+        'values_gov',
+        'values_partners',
+        'values_partners_gov',
+        'values_live',
+        'values_gov_live',
+        'values_partners_live',
+        'values_partners_gov_live',
+        'values_hpm',
+        'cumulative_values',
+        'cumulative_values_live',
+    )
+
+    last_month = int(datetime.datetime.now().strftime("%m"))
+    reporting_month = str(last_month - 1)
+
+    rows_data = {}
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT distinct ai.id, ai.ai_indicator, aa.id, aa.name, ai.values, ai.values_live, " 
+        "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, " 
+        "ai.values_partners_gov, ai.values_partners_gov_live "
+        "FROM public.activityinfo_indicator ai, public.activityinfo_activity aa "
+        "WHERE ai.activity_id = aa.id AND aa.database_id = %s",
+        [ai_db.id])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        rows_data[row[0]] = row
+
+    for indicator in indicators.iterator():
+        values_month = {}
+        values_partners = {}
+        values_gov = {}
+        values_partners_gov = {}
+        if indicator.id in rows_data:
+            indicator_values = rows_data[indicator.id]
+
+            if report_type == 'live':
+                values = indicator_values[5]  # values_live
+                values1 = indicator_values[7]  # values_gov_live
+                values2 = indicator_values[9]  # values_partners_live
+                values3 = indicator_values[11]  # values_partners_gov_live
+            else:
+                values = indicator_values[4]  # values
+                values1 = indicator_values[6]  # values_gov
+                values2 = indicator_values[8]  # values_partners
+                values3 = indicator_values[10]  # values_partners_gov
+
+            for key in values:
+                val = values[key]
+                if row[0] in values_month:
+                    val = values_month[row[0]] + val
+                values_month[row[0]] = val
+
+            for key in values1:
+                val = values1[key]
+                if row[0] in values_gov:
+                    val = values_gov[row[0]] + val
+                values_gov[row[0]] = val
+
+            for key in values2:
+                val = values2[key]
+                if row[0] in values_partners:
+                    val = values_partners[row[0]] + val
+                values_partners[row[0]] = val
+                # if month == reporting_month:
+                #     indicator.values_hpm[reporting_month] = values_month
+
+            for key in values3:
+                val = values3[key]
+                if row[0] in values_partners_gov:
+                    val = values_partners_gov[row[0]] + val
+                values_partners_gov[row[0]] = val
+
+            if report_type == 'live':
+                indicator.cumulative_values_live = {
+                    'months': values_month,
+                    'partners': values_partners,
+                    'govs': values_gov,
+                    'partners_govs': values_partners_gov
+                }
+            else:
+                indicator.cumulative_values = {
+                    'months': values_month,
+                    'partners': values_partners,
+                    'govs': values_gov,
+                    'partners_govs': values_partners_gov
+                }
+
+            indicator.save()
+
+    return indicators.count()
+
+
 def calculate_indicators_cumulative_results(ai_db, report_type=None):
-    from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
+    from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
 
     if report_type == 'live':
-        report = ActivityReportLive.objects.filter(database=ai_db)
+        report = LiveActivityReport.objects.filter(database=ai_db)
     else:
         report = ActivityReport.objects.filter(database=ai_db)
 
@@ -416,7 +528,9 @@ def calculate_indicators_cumulative_results(ai_db, report_type=None):
         for month in values:
             c_value = 0
             for c_month in range(1, int(month) + 1):
-                c_value += float(values[str(c_month)])
+                c_value = 0
+                if c_month in values:
+                    c_value += float(values[str(c_month)])
                 cum_month[str(month)] = c_value
 
             for partner in partners:
@@ -491,8 +605,9 @@ def calculate_indicators_cumulative_hpm(ai_db):
     return indicators.count()
 
 
-def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=False):
-    from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
+def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators=False):
+    from django.db import connection
+    from internos.activityinfo.models import Indicator
 
     if sub_indicators:
         indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
@@ -501,10 +616,123 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
         indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
                                               master_indicator=True)
 
+    indicators = indicators.only(
+        'summation_sub_indicators',
+        'values',
+        'values_gov',
+        'values_partners',
+        'values_partners_gov',
+        'values_live',
+        'values_gov_live',
+        'values_partners_live',
+        'values_partners_gov_live',
+        'values_hpm',
+    )
+
+    last_month = int(datetime.datetime.now().strftime("%m"))
+    reporting_month = str(last_month - 1)
+
+    rows_data = {}
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT distinct a1.id, a1.ai_indicator, ai.ai_indicator, ai.id, ai.values, ai.values_live, "
+        "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, ai.values_partners_gov, " 
+        "ai.values_partners_gov_live, a1.master_indicator, a1.master_indicator_sub "
+        "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, " 
+        "public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator ai " 
+        "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id " 
+        "AND aa.database_id = %s AND (a1.master_indicator = true or a1.master_indicator_sub = true)",
+        [ai_db.id])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        rows_data[row[0]] = row
+
+    for indicator in indicators.iterator():
+        values_month = {}
+        values_partners = {}
+        values_gov = {}
+        values_partners_gov = {}
+        if indicator.id in rows_data:
+            sub_indicator_values = rows_data[indicator.id]
+
+            if report_type == 'live':
+                values = sub_indicator_values[5]  # values_live
+                values1 = sub_indicator_values[7]  # values_gov_live
+                values2 = sub_indicator_values[9]  # values_partners_live
+                values3 = sub_indicator_values[11]  # values_partners_gov_live
+            else:
+                values = sub_indicator_values[4]  # values
+                values1 = sub_indicator_values[6]  # values_gov
+                values2 = sub_indicator_values[8]  # values_partners
+                values3 = sub_indicator_values[10]  # values_partners_gov
+
+            for key in values:
+                val = values[key]
+                if row[0] in values_month:
+                    val = values_month[row[0]] + val
+                values_month[row[0]] = val
+
+            for key in values1:
+                val = values1[key]
+                if row[0] in values_gov:
+                    val = values_gov[row[0]] + val
+                values_gov[row[0]] = val
+
+            for key in values2:
+                val = values2[key]
+                if row[0] in values_partners:
+                    val = values_partners[row[0]] + val
+                values_partners[row[0]] = val
+                # if month == reporting_month:
+                #     indicator.values_hpm[reporting_month] = values_month
+
+            for key in values3:
+                val = values3[key]
+                if row[0] in values_partners_gov:
+                    val = values_partners_gov[row[0]] + val
+                values_partners_gov[row[0]] = val
+
+            if report_type == 'live':
+                indicator.values_live = values_month
+                indicator.values_gov_live = values_gov
+                indicator.values_partners_live = values_partners
+                indicator.values_partners_gov_live = values_partners_gov
+            else:
+                indicator.values = values_month
+                indicator.values_gov = values_gov
+                indicator.values_partners = values_partners
+                indicator.values_partners_gov = values_partners_gov
+
+            indicator.save()
+
+
+def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=False):
+    from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
+
+    if sub_indicators:
+        indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
+                                              master_indicator_sub=True)
+    else:
+        indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
+                                              master_indicator=True)
+
+    indicators = indicators.only(
+        'values',
+        'values_gov',
+        'values_partners',
+        'values_partners_gov',
+        'values_live',
+        'values_gov_live',
+        'values_partners_live',
+        'values_partners_gov_live',
+        'values_hpm',
+    )
+
     last_month = int(datetime.datetime.now().strftime("%m"))
 
     if report_type == 'live':
-        report = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
+        report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
         last_month = last_month + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
@@ -512,20 +740,33 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
     if ai_db.is_funded_by_unicef:
         report = report.filter(funded_by='UNICEF')
 
+    report = report.only('partner_id', 'location_adminlevel_governorate_code')
+
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
     reporting_month = str(last_month - 1)
 
-    for indicator in indicators:
+    for indicator in indicators.iterator():
         for month in range(1, last_month):
             month = str(month)
             values_month = 0
             values_gov = {}
             values_partners = {}
             values_partners_gov = {}
-            sub_indicators = indicator.summation_sub_indicators.all()
-            for sub_ind in sub_indicators:
+
+            sub_indicators = indicator.summation_sub_indicators.all().only(
+                'values',
+                'values_gov',
+                'values_partners',
+                'values_partners_gov',
+                'values_live',
+                'values_gov_live',
+                'values_partners_live',
+                'values_partners_gov_live',
+                'values_hpm',
+            )
+            for sub_ind in sub_indicators.iterator():
                 if report_type == 'live':
                     values_month += float(sub_ind.values_live[month]) if month in sub_ind.values_live else 0
                 else:
@@ -571,37 +812,167 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
         indicator.save()
 
 
-def calculate_indicators_values_percentage(ai_db, report_type=None):
-    from internos.activityinfo.models import Indicator, ActivityReport,ActivityReportLive
+def calculate_indicators_values_percentage_1(ai_db, report_type=None):
+    from django.db import connection
+    from internos.activityinfo.models import Indicator
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
-                                          calculated_indicator=True)
+                                          calculated_indicator=True).only(
+        'denominator_indicator',
+        'numerator_indicator',
+        'denominator_multiplication',
+        'values',
+        'values_gov',
+        'values_partners',
+        'values_partners_gov',
+        'values_live',
+        'values_gov_live',
+        'values_partners_live',
+        'values_partners_gov_live',
+        'values_hpm',
+    )
+
+    last_month = int(datetime.datetime.now().strftime("%m"))
+    reporting_month = str(last_month - 1)
+
+    rows_data = {}
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT distinct a1.id, a1.calculated_percentage, aa.name, ai.id, ai.values, ai.values_live, "
+        "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, ai.values_partners_gov, "
+        "ai.values_partners_gov_live "
+        "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, "
+        "public.activityinfo_indicator_sub_indicators ais, public.activityinfo_indicator ai "
+        "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id " 
+        "AND aa.database_id = %s AND a1.calculated_indicator = true",
+        [ai_db.id])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        rows_data[row[0]] = row
+
+    for indicator in indicators.iterator():
+        values_month = {}
+        values_partners = {}
+        values_gov = {}
+        values_partners_gov = {}
+        if indicator.id in rows_data:
+            indicator_values = rows_data[indicator.id]
+            reporting_level = indicator_values[2]
+            calculated_percentage = indicator_values[1]
+
+            if report_type == 'live':
+                values = indicator_values[5]  # values_live
+                values1 = indicator_values[7]  # values_gov_live
+                values2 = indicator_values[9]  # values_partners_live
+                values3 = indicator_values[11]  # values_partners_gov_live
+            else:
+                values = indicator_values[4]  # values
+                values1 = indicator_values[6]  # values_gov
+                values2 = indicator_values[8]  # values_partners
+                values3 = indicator_values[10]  # values_partners_gov
+
+            for key in values:
+                val = values[key]
+                try:
+                    if reporting_level == 'Municipality level':
+                        values_month[key] = val * calculated_percentage / 100
+                    elif reporting_level == 'Site level':
+                        values_month[key] = val * calculated_percentage / 100
+                except Exception as ex:
+                    values_month[key] = 0
+
+            for key in values1:
+                val = values1[key]
+                try:
+                    if reporting_level == 'Municipality level':
+                        values_gov[key] = val * calculated_percentage / 100
+                    elif reporting_level == 'Site level':
+                        values_gov[key] = val * calculated_percentage / 100
+                except Exception as ex:
+                    values_gov[key] = 0
+
+            for key in values2:
+                val = values2[key]
+                try:
+                    if reporting_level == 'Municipality level':
+                        values_partners[key] = val * calculated_percentage / 100
+                    elif reporting_level == 'Site level':
+                        values_partners[key] = val * calculated_percentage / 100
+                except Exception as ex:
+                    values_partners[key] = 0
+
+            for key in values3:
+                val = values3[key]
+                try:
+                    if reporting_level == 'Municipality level':
+                        values_partners_gov[key] = val * calculated_percentage / 100
+                    elif reporting_level == 'Site level':
+                        values_partners_gov[key] = val * calculated_percentage / 100
+                except Exception as ex:
+                    values_partners_gov[key] = 0
+
+            if report_type == 'live':
+                indicator.values_live = values_month
+                indicator.values_gov_live = values_gov
+                indicator.values_partners_live = values_partners
+                indicator.values_partners_gov_live = values_partners_gov
+            else:
+                indicator.values = values_month
+                indicator.values_gov = values_gov
+                indicator.values_partners = values_partners
+                indicator.values_partners_gov = values_partners_gov
+
+            indicator.save()
+
+
+def calculate_indicators_values_percentage(ai_db, report_type=None):
+    from internos.activityinfo.models import Indicator, ActivityReport,LiveActivityReport
+
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
+                                          calculated_indicator=True).only(
+        'denominator_indicator',
+        'numerator_indicator',
+        'denominator_multiplication',
+        'values',
+        'values_gov',
+        'values_partners',
+        'values_partners_gov',
+        'values_live',
+        'values_gov_live',
+        'values_partners_live',
+        'values_partners_gov_live',
+        'values_hpm',
+    )
 
     last_month = int(datetime.datetime.now().strftime("%m"))
 
     if report_type == 'live':
-        report = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
+        report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
         last_month = last_month + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
     if ai_db.is_funded_by_unicef:
         report = report.filter(funded_by='UNICEF')
 
+    report = report.only('partner_id', 'location_adminlevel_governorate_code')
+
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
     reporting_month = str(last_month - 1)
 
-    for indicator in indicators:
+    for indicator in indicators.iterator():
+        top_indicator = indicator.sub_indicators.all().first()
+        reporting_level = top_indicator.activity.name
+        percentage = indicator.calculated_percentage
+
         for month in range(1, last_month):
             month = str(month)
             values_month = 0
             values_gov = {}
             values_partners = {}
             values_partners_gov = {}
-            top_indicator = indicator.sub_indicators.all().first()
-            reporting_level = top_indicator.activity.name
-            percentage = indicator.calculated_percentage
 
             try:
                 if report_type == 'live':
@@ -675,27 +1046,42 @@ def calculate_indicators_values_percentage(ai_db, report_type=None):
 
 
 def calculate_master_indicators_values_percentage(ai_db, report_type=None):
-    from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
+    from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
                                           master_indicator=True,
-                                          measurement_type='percentage')
+                                          measurement_type='percentage').only(
+        'denominator_indicator',
+        'numerator_indicator',
+        'denominator_multiplication',
+        'values',
+        'values_gov',
+        'values_partners',
+        'values_partners_gov',
+        'values_live',
+        'values_gov_live',
+        'values_partners_live',
+        'values_partners_gov_live',
+        'values_hpm',
+    )
     last_month = int(datetime.datetime.now().strftime("%m"))
 
     if report_type == 'live':
-        report = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
+        report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
         last_month = last_month + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
     if ai_db.is_funded_by_unicef:
         report = report.filter(funded_by='UNICEF')
 
+    report = report.only('partner_id', 'location_adminlevel_governorate_code')
+
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
     reporting_month = str(last_month - 1)
 
-    for indicator in indicators:
+    for indicator in indicators.iterator():
         for month in range(1, last_month):
             month = str(month)
             values_gov = {}
@@ -773,28 +1159,43 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
 
 
 def calculate_master_indicators_values_denominator_multiplication(ai_db, report_type=None):
-    from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
+    from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
                                           master_indicator=True,
-                                          measurement_type='percentage_x')
+                                          measurement_type='percentage_x').only(
+        'denominator_indicator',
+        'numerator_indicator',
+        'denominator_multiplication',
+        'values',
+        'values_gov',
+        'values_partners',
+        'values_partners_gov',
+        'values_live',
+        'values_gov_live',
+        'values_partners_live',
+        'values_partners_gov_live',
+        'values_hpm',
+    )
 
     last_month = int(datetime.datetime.now().strftime("%m"))
 
     if report_type == 'live':
-        report = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
+        report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
         last_month = last_month + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
     if ai_db.is_funded_by_unicef:
         report = report.filter(funded_by='UNICEF')
 
+    report = report.only('partner_id', 'location_adminlevel_governorate_code')
+
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
     reporting_month = str(last_month - 1)
 
-    for indicator in indicators:
+    for indicator in indicators.iterator():
         for month in range(1, last_month):
             month = str(month)
             values_gov = {}
@@ -876,6 +1277,366 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
         indicator.save()
 
 
+def calculate_individual_indicators_values_11(ai_db):
+
+    from internos.activityinfo.models import Indicator, ActivityReport
+
+    last_month = int(datetime.datetime.now().strftime("%m"))
+
+    reports = ActivityReport.objects.filter(database_id=ai_db.ai_id)
+    if ai_db.is_funded_by_unicef:
+        reports = reports.filter(funded_by='UNICEF')
+
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(ai_id__isnull=True).only(
+        'ai_indicator',
+        'values_live',
+        'values_gov_live',
+        'values_partners_live')
+    partners = reports.values('partner_id').distinct().order_by('partner_id')
+    governorates = reports.values('location_adminlevel_governorate_code').distinct()
+    governorates1 = reports.values('location_adminlevel_governorate_code').distinct()
+    reporting_month = str(last_month - 1)
+
+    for indicator in indicators.iterator():
+        qs_raw = ActivityReport.objects.raw(
+            "SELECT id FROM activityinfo_activityreport "
+            "WHERE indicator_id = %s AND funded_by = %s ",
+            [indicator.ai_indicator, 'UNICEF'])
+        try:
+            count = qs_raw[0]
+        except Exception as ex:
+            # print(ex.message)
+            continue
+
+        for month in range(1, last_month):
+            month = str(month)
+            result = 0
+            qs_raw = ActivityReport.objects.raw(
+                "SELECT id, SUM(indicator_value) as indicator_value FROM activityinfo_activityreport "
+                "WHERE date_part('month', start_date) = %s AND indicator_id = %s AND funded_by = %s "
+                "GROUP BY id",
+                [month, indicator.ai_indicator, 'UNICEF'])
+            try:
+                result = qs_raw[0].indicator_value
+            except Exception:
+                continue
+
+            if month == reporting_month:
+                indicator.values_hpm[reporting_month] = result
+            indicator.values[str(month)] = result
+
+            for gov1 in governorates1:
+                value = 0
+                key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
+
+                qs_raw = ActivityReport.objects.raw(
+                    "SELECT id, SUM(indicator_value) as indicator_value FROM activityinfo_activityreport "
+                    "WHERE date_part('month', start_date) = %s AND indicator_id = %s AND funded_by = %s "
+                    "AND location_adminlevel_governorate_code = %s "
+                    "GROUP BY id",
+                    [month, indicator.ai_indicator, 'UNICEF', gov1['location_adminlevel_governorate_code']])
+                try:
+                    value = qs_raw[0].indicator_value
+                except Exception:
+                    pass
+
+                indicator.values_gov[str(key)] = value
+
+            for partner in partners:
+                value1 = 0
+                key1 = "{}-{}".format(month, partner['partner_id'])
+
+                qs_raw = ActivityReport.objects.raw(
+                    "SELECT id, SUM(indicator_value) as indicator_value FROM activityinfo_activityreport "
+                    "WHERE date_part('month', start_date) = %s AND indicator_id = %s AND funded_by = %s "
+                    "AND partner_id = %s "
+                    "GROUP BY id",
+                    [month, indicator.ai_indicator, 'UNICEF', partner['partner_id']])
+                try:
+                    value1 = qs_raw[0].indicator_value
+                except Exception:
+                    continue
+
+                indicator.values_partners[str(key1)] = value1
+
+                for gov in governorates:
+                    value2 = 0
+                    key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
+
+                    qs_raw = ActivityReport.objects.raw(
+                        "SELECT id, SUM(indicator_value) as indicator_value FROM activityinfo_activityreport "
+                        "WHERE date_part('month', start_date) = %s AND indicator_id = %s AND funded_by = %s "
+                        "AND partner_id = %s AND location_adminlevel_governorate_code = %s "
+                        "GROUP BY id",
+                        [month, indicator.ai_indicator, 'UNICEF', partner['partner_id'], gov['location_adminlevel_governorate_code']])
+                    try:
+                        value2 = qs_raw[0].indicator_value
+                    except Exception:
+                        pass
+
+                    indicator.values_partners_gov[str(key2)] = value2
+
+            indicator.save()
+
+
+def calculate_individual_indicators_values_1(ai_db):
+    from django.db import connection
+    from internos.activityinfo.models import Indicator
+
+    last_month = int(datetime.datetime.now().strftime("%m"))
+    reporting_month = str(last_month - 1)
+    ai_id = str(ai_db.ai_id)
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(ai_id__isnull=True).only(
+        'ai_indicator',
+        'values',
+        'values_gov',
+        'values_partners',
+        'values_partners_gov')
+
+    rows_months = {}
+    rows_partners = {}
+    rows_govs = {}
+    rows_partners_govs = {}
+    values_hpm = {}
+    cursor = connection.cursor()
+    for month in range(1, last_month):
+        month = str(month)
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value "
+                "FROM activityinfo_activityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "GROUP BY indicator_id",
+                [month, ai_id, 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value "
+                "FROM activityinfo_activityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "GROUP BY indicator_id",
+                [month, ai_id])
+        rows = cursor.fetchall()
+
+        for row in rows:
+            if row[0] not in rows_months:
+                rows_months[row[0]] = {}
+            rows_months[row[0]][month] = row[1]
+
+            if month == reporting_month:
+                if row[0] not in values_hpm:
+                    values_hpm[row[0]] = {}
+                values_hpm[row[0]] = row[1]
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
+                "FROM activityinfo_activityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "GROUP BY indicator_id, location_adminlevel_governorate_code",
+                [month, ai_id, 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
+                "FROM activityinfo_activityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "GROUP BY indicator_id, location_adminlevel_governorate_code",
+                [month, ai_id])
+        rows = cursor.fetchall()
+
+        for row in rows:
+            if row[0] not in rows_govs:
+                rows_govs[row[0]] = {}
+            key = "{}-{}".format(month, row[2])
+            rows_govs[row[0]][key] = row[1]
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
+                "FROM activityinfo_activityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "GROUP BY indicator_id, partner_id",
+                [month, ai_id, 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
+                "FROM activityinfo_activityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "GROUP BY indicator_id, partner_id",
+                [month, ai_id])
+        rows = cursor.fetchall()
+
+        for row in rows:
+            if row[0] not in rows_partners:
+                rows_partners[row[0]] = {}
+            key = "{}-{}".format(month, row[2])
+            rows_partners[row[0]][key] = row[1]
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
+                "FROM activityinfo_activityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
+                [month, ai_id, 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
+                "FROM activityinfo_activityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
+                [month, ai_id])
+        rows = cursor.fetchall()
+
+        for row in rows:
+            if row[0] not in rows_partners_govs:
+                rows_partners_govs[row[0]] = {}
+            key = "{}-{}-{}".format(month, row[2], row[3])
+            rows_partners_govs[row[0]][key] = row[1]
+
+    for indicator in indicators.iterator():
+        if indicator.ai_indicator in rows_months:
+            indicator.values = rows_months[indicator.ai_indicator]
+
+        if indicator.ai_indicator in values_hpm:
+            indicator.values_hpm[reporting_month] = values_hpm[indicator.ai_indicator]
+
+        if indicator.ai_indicator in rows_partners:
+            indicator.values_partners = rows_partners[indicator.ai_indicator]
+
+        if indicator.ai_indicator in rows_govs:
+            indicator.values_gov = rows_govs[indicator.ai_indicator]
+
+        if indicator.ai_indicator in rows_partners_govs:
+            indicator.values_partners_gov = rows_partners_govs[indicator.ai_indicator]
+
+        indicator.save()
+
+
+def calculate_individual_indicators_values_2(ai_db):
+    from django.db import connection
+    from internos.activityinfo.models import Indicator
+
+    last_month = int(datetime.datetime.now().strftime("%m"))
+    ai_id = str(ai_db.ai_id)
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(ai_id__isnull=True).only(
+        'ai_indicator',
+        'values_live',
+        'values_gov_live',
+        'values_partners_live',
+        'values_partners_gov_live')
+
+    rows_months = {}
+    rows_partners = {}
+    rows_govs = {}
+    rows_partners_govs = {}
+    cursor = connection.cursor()
+    for month in range(1, last_month):
+        month = str(month)
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "GROUP BY indicator_id",
+                [month, ai_id, 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "GROUP BY indicator_id",
+                [month, ai_id])
+        rows = cursor.fetchall()
+
+        for row in rows:
+            if row[0] not in rows_months:
+                rows_months[row[0]] = {}
+            rows_months[row[0]][month] = row[1]
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "GROUP BY indicator_id, location_adminlevel_governorate_code",
+                [month, ai_id, 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "GROUP BY indicator_id, location_adminlevel_governorate_code",
+                [month, ai_id])
+        rows = cursor.fetchall()
+
+        for row in rows:
+            if row[0] not in rows_govs:
+                rows_govs[row[0]] = {}
+            key = "{}-{}".format(month, row[2])
+            rows_govs[row[0]][key] = row[1]
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "GROUP BY indicator_id, partner_id",
+                [month, ai_id, 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "GROUP BY indicator_id, partner_id",
+                [month, ai_id])
+        rows = cursor.fetchall()
+
+        for row in rows:
+            if row[0] not in rows_partners:
+                rows_partners[row[0]] = {}
+            key = "{}-{}".format(month, row[2])
+            rows_partners[row[0]][key] = row[1]
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
+                [month, ai_id, 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
+                [month, ai_id])
+        rows = cursor.fetchall()
+
+        for row in rows:
+            if row[0] not in rows_partners_govs:
+                rows_partners_govs[row[0]] = {}
+            key = "{}-{}-{}".format(month, row[2], row[3])
+            rows_partners_govs[row[0]][key] = row[1]
+
+    for indicator in indicators.iterator():
+        if indicator.ai_indicator in rows_months:
+            indicator.values_live = rows_months[indicator.ai_indicator]
+
+        if indicator.ai_indicator in rows_partners:
+            indicator.values_partners_live = rows_partners[indicator.ai_indicator]
+
+        if indicator.ai_indicator in rows_govs:
+            indicator.values_gov_live = rows_govs[indicator.ai_indicator]
+
+        if indicator.ai_indicator in rows_partners_govs:
+            indicator.values_partners_gov_live = rows_partners_govs[indicator.ai_indicator]
+
+        indicator.save()
+
+
+#  todo not using it
 def calculate_individual_indicators_values(ai_db, report_type=None):
     from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
 
@@ -955,6 +1716,7 @@ def calculate_indicators_status(database):
     days_passed_per = (total_days * 100) / year_days
 
     indicators = Indicator.objects.filter(activity__database__ai_id=database.ai_id)
+
     for indicator in indicators:
         cumulative_per = indicator.cumulative_per
         off_track = days_passed_per - 10
@@ -974,11 +1736,12 @@ def calculate_indicators_status(database):
     return indicators.count()
 
 
+#  todo not using it
 def get_individual_indicator_value(ai_db, indicator_id, month=None, partner=None, gov=None, report_type=None):
-    from internos.activityinfo.models import ActivityReport, ActivityReportLive
+    from internos.activityinfo.models import ActivityReport, LiveActivityReport
 
     if report_type == 'live':
-        reports = ActivityReportLive.objects.filter(ai_indicator=indicator_id)
+        reports = LiveActivityReport.objects.filter(ai_indicator=indicator_id)
     else:
         reports = ActivityReport.objects.filter(ai_indicator=indicator_id)
     if ai_db.is_funded_by_unicef:
@@ -992,7 +1755,10 @@ def get_individual_indicator_value(ai_db, indicator_id, month=None, partner=None
     if gov:
         reports = reports.filter(location_adminlevel_governorate_code=gov)
 
+    reports = reports.values('indicator_value')
+
     total = reports.aggregate(Sum('indicator_value'))
+
     return total['indicator_value__sum'] if total['indicator_value__sum'] else 0
 
 
@@ -1197,7 +1963,7 @@ def update_hpm_table_docx1(indicators, month, filename):
                 # if diff_key == '1504':
                 # print(inline[i].text)
                 if diff_key in inline[i].text:
-                    document.tables[0].rows[row].cells[7].paragraphs[0].runs[i].text = get_indicator_diff_results(indicator, month)
+                    document.tables[0].rows[row].cells[7].paragraphs[0].runs[i].text = 0
 
             # except Exception as ex:
                 # print(ex.message)

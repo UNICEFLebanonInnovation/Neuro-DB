@@ -567,10 +567,17 @@ class ActivityReportAdmin(RelatedFieldAdmin):
         'indicator_awp_code',
         'partner_id'
     )
+    fields = (
+
+    )
+    readonly_fields = (
+        'ai_indicator',
+        'partner_ai',
+    )
     date_hierarchy = 'start_date'
 
 
-class ActivityReportLiveAdmin(RelatedFieldAdmin):
+class LiveActivityReportAdmin(RelatedFieldAdmin):
     # resources = ActivityReportResource
     list_filter = (
         'start_date',
@@ -912,5 +919,5 @@ admin.site.register(Indicator, IndicatorAdmin)
 admin.site.register(AttributeGroup, AttributeGroupAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(ActivityReport, ActivityReportAdmin)
-admin.site.register(ActivityReportLive, ActivityReportLiveAdmin)
+admin.site.register(LiveActivityReport, LiveActivityReportAdmin)
 

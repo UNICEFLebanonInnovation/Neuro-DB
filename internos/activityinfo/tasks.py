@@ -38,6 +38,15 @@ def link_partners(report_type=None):
 
 
 @app.task
+def generate_indicators_number():
+    from internos.activityinfo.models import Indicator
+
+    for indicator in Indicator.objects.all():
+        indicator.ai_indicator = indicator.get_ai_indicator
+        indicator.save()
+
+
+@app.task
 def import_data_and_generate_monthly_report():
     from internos.activityinfo.models import Database
     from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values
@@ -53,18 +62,21 @@ def import_data_and_generate_monthly_report():
 
 
 @app.task
-def import_data_and_generate_live_report():
+def import_data_and_generate_live_report(database):
     from internos.activityinfo.models import Database
     from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values
 
     databases = Database.objects.filter(reporting_year__current=True)
+    if database:
+        databases = databases.filter(ai_id=database)
+
     for db in databases:
         print(db.name)
-        logger.info('1. Import report: '+db.name)
-        import_data_via_r_script(db, report_type='live')
-        logger.info('2. Link data: ' + db.name)
-        link_indicators_data(db, report_type='live')
-        logger.info('3. Calculate indicator values')
+        # print('1. Import report: '+db.name)
+        # import_data_via_r_script(db, report_type='live')
+        # print('2. Link data: ' + db.name)
+        # link_indicators_data(db, report_type='live')
+        print('3. Calculate indicator values')
         calculate_indicators_values(db, report_type='live')
 
 
