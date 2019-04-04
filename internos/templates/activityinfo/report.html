@@ -124,23 +124,25 @@
                 <div class="x_panel">
                   <div class="x_title">
                     <h2>
-                      <a href="#" class="collapse-all" style="font-size: 25px;"><i class="fa fa-th-large"></i></a>
-                      <a href="#" class="expanded-all active" style="font-size: 25px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
+                      <span data-step="7" data-intro="Collapse / Expand master indicators">
+                        <a href="#" class="collapse-all" style="font-size: 25px;"><i class="fa fa-th-large"></i></a>
+                        <a href="#" class="expanded-all active" style="font-size: 25px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
+                      </span>
                       <strong>Dashboard - {{ database.label }} - 2019</strong>
                       <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
                              aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
-                             style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="7" data-intro="Search for a specific Indicator">
+                             style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="8" data-intro="Search for a specific Indicator">
                       <!--<a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>-->
                       <!--<a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;">
                         <i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>
                       </a>-->
                       <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring" style="padding-left: 20px;"
-                          data-step="8" data-intro="Open live ActivityInfo Dashboard">
+                          data-step="9" data-intro="Open live ActivityInfo Dashboard">
                         <i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>
                       </a>
                     </h2>
-                    <ul class="nav navbar-left" style="margin-top: -7px;" data-step="9" data-intro="Download Dashboard report and raw data">
+                    <ul class="nav navbar-left" style="margin-top: -7px;" data-step="10" data-intro="Download Dashboard report and raw data">
                       <li class="dropdown">
                         <a id="drop5" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
                            data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
