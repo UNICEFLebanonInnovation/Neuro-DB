@@ -72,10 +72,10 @@ def import_data_and_generate_live_report(database):
 
     for db in databases:
         print(db.name)
-        # print('1. Import report: '+db.name)
-        # import_data_via_r_script(db, report_type='live')
-        # print('2. Link data: ' + db.name)
-        # link_indicators_data(db, report_type='live')
+        print('1. Import report: '+db.name)
+        import_data_via_r_script(db, report_type='live')
+        print('2. Link data: ' + db.name)
+        link_indicators_data(db, report_type='live')
         print('3. Calculate indicator values')
         calculate_indicators_values(db, report_type='live')
 
