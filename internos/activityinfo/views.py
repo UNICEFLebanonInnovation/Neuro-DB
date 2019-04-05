@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 import os
 import datetime
+import calendar
 from django.db.models import Q
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -252,8 +253,12 @@ class LiveReportView(TemplateView):
         if selected_partner == '0' and selected_governorate == '0':
             selected_filter = False
 
-        partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+        partners = {}
+        for partner in report.values('partner_label', 'partner_id').distinct():
+            partners[partner['partner_id']] = partner['partner_label']
+        governorates = {}
+        for gov in report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct():
+            governorates[gov['location_adminlevel_governorate_code']] = gov['location_adminlevel_governorate']
 
         master_indicators = Indicator.objects.filter(activity__database=database).order_by('sequence')
         if database.mapped_db:
@@ -310,13 +315,16 @@ class HPMView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
+        day_number = int(today.strftime("%d"))
         month = int(self.request.GET.get('month', last_month.strftime("%m")))
+        if day_number < 15:
+            month = month - 1
+
+        month_name = calendar.month_name[month]
 
         months = []
         for i in range(1, 13):
             months.append((datetime.date(2008, i, 1).strftime('%B')))
-
-        month_name = months[month - 1]
 
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
 

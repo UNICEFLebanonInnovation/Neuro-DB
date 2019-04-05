@@ -58,8 +58,8 @@
           </a>
           <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
             <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}&partner=0&partner_name=All Partners&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">All Partners</a></li>
-            {% for partner in partners %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}&partner={{ partner.partner_id }}&partner_name={{ partner.partner_label }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">{{ partner.partner_label }}</a></li>
+            {% for partner_id, partner_label in partners.items %}
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}&partner={{ partner_id }}&partner_name={{ partner_label }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">{{ partner_label }}</a></li>
             {% endfor %}
           </ul>
         </li>
@@ -81,8 +81,8 @@
           </a>
           <ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop7" style="z-index: 3000;">
             <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate=0&governorate_name=All Governorates">All Governorates</a></li>
-            {% for gov in governorates %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ gov.location_adminlevel_governorate_code }}&governorate_name={{ gov.location_adminlevel_governorate }}">{{ gov.location_adminlevel_governorate }}</a></li>
+            {% for gov_code, gov_name in governorates.items %}
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ gov_code }}&governorate_name={{ gov_name }}">{{ gov_name }}</a></li>
             {% endfor %}
           </ul>
         </li>
@@ -123,12 +123,17 @@
   <div class="w-1002 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2><strong>Dashboard - {{ database.label }} - 2019</strong>
+                    <h2>
+                      <span data-step="7" data-intro="Collapse / Expand master indicators">
+                        <a href="#" class="collapse-all" style="font-size: 25px;"><i class="fa fa-th-large"></i></a>
+                        <a href="#" class="expanded-all active" style="font-size: 25px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
+                      </span>
+                      <strong>Dashboard - {{ database.label }} - 2019</strong>
                       <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
                              aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
-                             style="position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;">
-                      <a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>
+                             style="position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="8" data-intro="Search for a specific Indicator">
+                      <a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" data-step="9" data-intro="Download Dashboard report and raw data" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>
                     </h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
@@ -187,7 +192,7 @@
                           {% to_display_indicator selected_filter cumulative_value as display_indicator %}
 
                           {% if display_indicator %}
-                          <tr {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;"{% elif item.individual_indicator %}style="background-color:#dadada;"{% endif %}>
+                          <tr class="level1" itemid="{{ item.id }}" {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;"{% elif item.individual_indicator %}style="background-color:#dadada;"{% endif %}>
                               <!--<td>{{ item.id }}</td>-->
                               {% if item.master_indicator %}
                                 <th colspan="2" class="w-500">
@@ -229,7 +234,7 @@
                           </tr>
                           {% get_sub_indicators_data item.id as sub_indicators %}
                           {% for item1 in sub_indicators %}
-                            <tr {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
+                            <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}" {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
                                 <!--<td>{{ item1.id }}</td>-->
                                 {% if item1.master_indicator_sub %}
                                   <th colspan="2" class="w-500">
@@ -267,7 +272,7 @@
                             {% get_sub_indicators_data item1.id as sub_indicators1 %}
                             {% for item2 in sub_indicators1 %}
                               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
-                              <tr>
+                              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}" itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                                   <!--<td>{{ item2.id }}</td>-->
                                   {% if item2.master_indicator_sub_sub %}
                                     <th class="w-500" colspan="2">
@@ -413,13 +418,63 @@
   <script src="{% static 'vendors/tableexport/tableexport.js' %}"></script>
 <script>
 
-<!--$("table#exporttable1").tableExport({-->
-    <!--headings: true,                    // (Boolean), display table headings (th/td elements) in the <thead>-->
-    <!--formats: ["xls", "csv", "xlsx"],    // (String[]), filetypes for the export-->
-    <!--fileName: "id",                    // (id, String), filename for the downloaded file-->
-    <!--bootstrap: true,                   // (Boolean), style buttons using bootstrap-->
-    <!--position: "top"                 // (top, bottom), position of the caption element relative to table-->
-<!--});-->
+$(document).ready(function(){
+
+    $('.expanded-all').click(function(){
+        $('.expanded-all').addClass('active');
+        $('.collapse-all').removeClass('active');
+
+        $('.level1').removeClass('collapsed');
+        $('.level2').removeClass('collapsed');
+        $('.level3').removeClass('collapsed');
+
+        $('.level1').show();
+        $('.level2').show();
+        $('.level3').show();
+    });
+
+    $('.collapse-all').click(function(){
+        $('.expanded-all').removeClass('active');
+        $('.collapse-all').addClass('active');
+
+        $('.level1').addClass('collapsed');
+        $('.level2').addClass('collapsed');
+        $('.level3').addClass('collapsed');
+
+        $('.level2').hide();
+        $('.level3').hide();
+    });
+
+    $('.level1').dblclick(function(){
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level2-'+itemid;
+      var sub_sub_items = 'tr.level3-'+itemid;
+
+      if($(this).hasClass('collapsed')){
+          $(sub_items).show();
+          $(this).removeClass('collapsed');
+      }else{
+          $(sub_items).hide();
+          $(sub_items).addClass('collapsed');
+          $(sub_sub_items).hide();
+          $(this).addClass('collapsed');
+      }
+    });
+
+    $('.level2').dblclick(function(){
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level3-'+itemid;
+
+      if($(this).hasClass('collapsed')){
+          $(sub_items).show();
+          $(this).removeClass('collapsed');
+      }else{
+          $(sub_items).hide();
+          $(this).addClass('collapsed');
+      }
+    });
+});
+
 
 function download_csv(csv, filename) {
     var csvFile;
