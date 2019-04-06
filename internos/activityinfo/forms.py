@@ -46,16 +46,16 @@ class IndicatorForm(forms.ModelForm):
          queryset=Indicator.objects.none()
          # queryset=Indicator.objects.filter(master_indicator_sub=True)
     )
-    # sub_indicators = forms.ModelMultipleChoiceField(
-    #     required=False,
-    #     queryset=Indicator.objects.all(),
-    #     widget=FilteredSelectMultiple('indicator', is_stacked=False)
-    # )
-    # summation_sub_indicators = forms.ModelMultipleChoiceField(
-    #     required=False,
-    #     queryset=Indicator.objects.all(),
-    #     widget=FilteredSelectMultiple('indicator', is_stacked=False)
-    # )
+    sub_indicators = forms.ModelMultipleChoiceField(
+        required=False,
+        queryset=Indicator.objects.none(),
+        widget=FilteredSelectMultiple('indicator', is_stacked=False)
+    )
+    summation_sub_indicators = forms.ModelMultipleChoiceField(
+        required=False,
+        queryset=Indicator.objects.none(),
+        widget=FilteredSelectMultiple('indicator', is_stacked=False)
+    )
     # denominator_summation = forms.ModelMultipleChoiceField(
     #     required=False,
     #     queryset=Indicator.objects.all(),

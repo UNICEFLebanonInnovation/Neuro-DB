@@ -396,6 +396,7 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
     from internos.activityinfo.models import Indicator
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).only(
+        'id',
         'values',
         'values_gov',
         'values_partners',
@@ -445,31 +446,33 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
                 values2 = indicator_values[8]  # values_partners
                 values3 = indicator_values[10]  # values_partners_gov
 
-            for key in values:
-                val = values[key]
-                if row[0] in values_month:
-                    val = values_month[row[0]] + val
-                values_month[row[0]] = val
+            for month in sorted(values):
+                c_value = 0
+                for c_month in range(1, int(month) + 1):
+                    if str(c_month) in values:
+                        c_value += float(values[str(c_month)])
+                    values_month[str(month)] = c_value
 
-            for key in values1:
-                val = values1[key]
-                if row[0] in values_gov:
-                    val = values_gov[row[0]] + val
-                values_gov[row[0]] = val
+            for key in sorted(values1):
+                c_value = 0
+                for c_key in range(0, int(sorted(values1.keys()).index(key)) + 1):
+                    c_key = sorted(values1)[c_key]
+                    c_value += float(values1[c_key])
+                    values_gov[c_key] = c_value
 
-            for key in values2:
-                val = values2[key]
-                if row[0] in values_partners:
-                    val = values_partners[row[0]] + val
-                values_partners[row[0]] = val
-                # if month == reporting_month:
-                #     indicator.values_hpm[reporting_month] = values_month
+            for key in sorted(values2):
+                c_value = 0
+                for c_key in range(0, int(sorted(values2.keys()).index(key)) + 1):
+                    c_key = sorted(values2)[c_key]
+                    c_value += float(values2[c_key])
+                    values_partners[c_key] = c_value
 
-            for key in values3:
-                val = values3[key]
-                if row[0] in values_partners_gov:
-                    val = values_partners_gov[row[0]] + val
-                values_partners_gov[row[0]] = val
+            for key in sorted(values3):
+                c_value = 0
+                for c_key in range(0, int(sorted(values3.keys()).index(key)) + 1):
+                    c_key = sorted(values3)[c_key]
+                    c_value += float(values3[c_key])
+                    values_partners_gov[c_key] = c_value
 
             if report_type == 'live':
                 indicator.cumulative_values_live = {
@@ -494,7 +497,7 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
 def calculate_indicators_cumulative_results(ai_db, report_type=None):
     from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
 
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id, id=3470)
 
     if report_type == 'live':
         report = LiveActivityReport.objects.filter(database=ai_db)
@@ -669,29 +672,29 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
 
             for key in values:
                 val = values[key]
-                if row[0] in values_month:
-                    val = values_month[row[0]] + val
-                values_month[row[0]] = val
+                if key in values_month:
+                    val = values_month[key] + val
+                values_month[key] = val
+                if str(key) == str(reporting_month):
+                    indicator.values_hpm[reporting_month] = val
 
             for key in values1:
                 val = values1[key]
-                if row[0] in values_gov:
-                    val = values_gov[row[0]] + val
-                values_gov[row[0]] = val
+                if key in values_gov:
+                    val = values_gov[key] + val
+                values_gov[key] = val
 
             for key in values2:
                 val = values2[key]
-                if row[0] in values_partners:
-                    val = values_partners[row[0]] + val
-                values_partners[row[0]] = val
-                # if month == reporting_month:
-                #     indicator.values_hpm[reporting_month] = values_month
+                if key in values_partners:
+                    val = values_partners[key] + val
+                values_partners[key] = val
 
             for key in values3:
                 val = values3[key]
-                if row[0] in values_partners_gov:
-                    val = values_partners_gov[row[0]] + val
-                values_partners_gov[row[0]] = val
+                if key in values_partners_gov:
+                    val = values_partners_gov[key] + val
+                values_partners_gov[key] = val
 
             if report_type == 'live':
                 indicator.values_live = values_month
@@ -707,6 +710,7 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
             indicator.save()
 
 
+#  todo to remove
 def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=False):
     from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
 
@@ -829,7 +833,6 @@ def calculate_indicators_values_percentage_1(ai_db, report_type=None):
         'values_gov_live',
         'values_partners_live',
         'values_partners_gov_live',
-        'values_hpm',
     )
 
     last_month = int(datetime.datetime.now().strftime("%m"))
@@ -926,6 +929,7 @@ def calculate_indicators_values_percentage_1(ai_db, report_type=None):
             indicator.save()
 
 
+#  todo to remove
 def calculate_indicators_values_percentage(ai_db, report_type=None):
     from internos.activityinfo.models import Indicator, ActivityReport,LiveActivityReport
 
@@ -1277,6 +1281,7 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
         indicator.save()
 
 
+#  todo to remove
 def calculate_individual_indicators_values_11(ai_db):
 
     from internos.activityinfo.models import Indicator, ActivityReport

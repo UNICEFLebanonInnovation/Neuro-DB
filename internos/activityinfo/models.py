@@ -545,4 +545,4 @@ class LiveActivityReport(TimeStampedModel):
 
     class Meta:
         ordering = ['id']
-        models.Index(fields=['indicator_id', 'partner_id', 'start_date', 'location_adminlevel_governorate_code', 'funded_by'])
+        # models.Index(fields=['indicator_id', 'partner_id', 'start_date', 'location_adminlevel_governorate_code', 'funded_by'])

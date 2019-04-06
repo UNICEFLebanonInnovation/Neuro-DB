@@ -284,6 +284,11 @@ class LiveReportView(TemplateView):
             'values_partners',
             'values_gov',
             'values',
+            'cumulative_values_live',
+            'values_partners_gov_live',
+            'values_partners_live',
+            'values_gov_live',
+            'values_live',
         ).distinct()
 
         return {
