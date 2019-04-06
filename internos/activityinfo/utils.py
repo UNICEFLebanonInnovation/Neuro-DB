@@ -497,7 +497,7 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
 def calculate_indicators_cumulative_results(ai_db, report_type=None):
     from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
 
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id, id=3470)
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
 
     if report_type == 'live':
         report = LiveActivityReport.objects.filter(database=ai_db)
