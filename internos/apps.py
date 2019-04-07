@@ -30,6 +30,7 @@ class SuitConfig(DjangoSuitConfig):
             ChildItem(model='etools.agreement'),
             ChildItem(model='etools.pca'),
             ChildItem(model='etools.travel'),
+            ChildItem(model='etools.engagement'),
         ], icon='fa fa-list'),
         ParentItem('Users', children=[
             ChildItem('Users', model='users.user'),

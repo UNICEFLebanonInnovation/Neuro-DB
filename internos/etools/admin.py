@@ -5,7 +5,14 @@ from import_export import resources, fields
 from import_export import fields
 from import_export.admin import ImportExportModelAdmin
 
-from .models import PartnerOrganization, Agreement, PCA, PartnerStaffMember, Travel
+from .models import (
+    PartnerOrganization,
+    Agreement,
+    PCA,
+    PartnerStaffMember,
+    Travel,
+    Engagement,
+)
 
 
 class PartnerStaffMemberInline(admin.TabularInline):
@@ -185,4 +192,5 @@ admin.site.register(PartnerOrganization, PartnerOrganizationAdmin)
 admin.site.register(Agreement, AgreementAdmin)
 admin.site.register(PCA, PCAAdmin)
 admin.site.register(Travel)
+admin.site.register(Engagement)
 admin.site.register(PartnerStaffMember, PartnerStaffMemberAdmin)

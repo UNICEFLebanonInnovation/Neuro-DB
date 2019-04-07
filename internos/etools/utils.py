@@ -159,6 +159,126 @@ def update_individual_intervention_data(partner=None):
             continue
 
 
+def sync_audit_data():
+    from internos.etools.models import Engagement, PartnerOrganization
+    instances = get_data('etools.unicef.org', '/api/audit/engagements/?page_size=1000', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
+    instances = json.loads(instances)
+    for item in instances['results']:
+
+        instance, new_instance = Engagement.objects.get_or_create(id=int(item['id']))
+
+        instance.unique_id = item['unique_id']
+        instance.agreement = item['agreement']
+        instance.engagement_type = item['engagement_type']
+        instance.total_value = item['total_value']
+        instance.partner = PartnerOrganization.objects.get(etl_id=item['partner']['id'])
+        instance.status = item['status']
+        instance.status_date = item['status_date']
+
+        instance.save()
+        sync_audit_individual_data(instance)
+
+
+def sync_audit_individual_data(instance):
+    from internos.etools.models import PCA
+
+    api_func = '/api/audit/engagement/'
+    if instance.engagement_type == instance.TYPE_AUDIT:
+        api_func = '/api/audit/audits/{}/'.format(instance.id)
+
+    elif instance.engagement_type == instance.TYPE_MICRO_ASSESSMENT:
+        api_func = '/api/audit/micro-assessments/{}/'.format(instance.id)
+
+    elif instance.engagement_type == instance.TYPE_SPOT_CHECK:
+        api_func = '/api/audit/spot-checks/{}/'.format(instance.id)
+
+    elif instance.engagement_type == instance.TYPE_SPECIAL_AUDIT:
+        api_func = '/api/audit/special-audits/{}/'.format(instance.id)
+
+    data = get_data('etools.unicef.org', api_func, 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
+    data = json.loads(data)
+
+    if 'face_form_start_date' in data:
+        instance.face_form_start_date = data['face_form_start_date']
+    if 'face_form_end_date' in data:
+        instance.face_form_end_date = data['face_form_end_date']
+    if 'cancel_comment' in data:
+        instance.cancel_comment = data['cancel_comment']
+
+    instance.agreement = data['agreement']
+    instance.po_item = data['po_item']
+
+    if 'related_agreement' in data:
+        instance.related_agreement = data['related_agreement']
+
+    if 'exchange_rate' in data:
+        instance.exchange_rate = data['exchange_rate']
+
+    if 'total_amount_tested' in data:
+        instance.total_amount_tested = data['total_amount_tested']
+
+    if 'total_amount_of_ineligible_expenditure' in data:
+        instance.total_amount_of_ineligible_expenditure = data['total_amount_of_ineligible_expenditure']
+
+    if 'internal_controls' in data:
+        instance.internal_controls = data['internal_controls']
+
+    if 'amount_refunded' in data:
+        instance.amount_refunded = data['amount_refunded']
+
+    if 'additional_supporting_documentation_provided' in data:
+        instance.additional_supporting_documentation_provided = data['additional_supporting_documentation_provided']
+
+    if 'justification_provided_and_accepted' in data:
+        instance.justification_provided_and_accepted = data['justification_provided_and_accepted']
+
+    if 'write_off_required' in data:
+        instance.write_off_required = data['write_off_required']
+
+    if 'explanation_for_additional_information' in data:
+        instance.explanation_for_additional_information = data['explanation_for_additional_information']
+
+    if 'audited_expenditure' in data:
+        instance.audited_expenditure = data['audited_expenditure']
+
+    if 'financial_findings' in data:
+        instance.financial_findings = data['financial_findings']
+
+    if 'audit_opinion' in data:
+        instance.audit_opinion = data['audit_opinion']
+
+    if 'pending_unsupported_amount' in data:
+        instance.pending_unsupported_amount = data['pending_unsupported_amount']
+
+    if 'findings' in data:
+        instance.findings = data['findings']
+
+    instance.partner_contacted_at = data['partner_contacted_at']
+    instance.start_date = data['start_date']
+    instance.end_date = data['end_date']
+    instance.authorized_officers = data['authorized_officers']
+    for pd in data['active_pd']:
+        instance.active_pd.add(PCA.objects.get(etl_id=pd['id']))
+
+    instance.staff_members = data['staff_members']
+
+    instance.date_of_cancel = data['date_of_cancel']
+    instance.date_of_final_report = data['date_of_final_report']
+    instance.date_of_report_submit = data['date_of_report_submit']
+    instance.date_of_comments_by_ip = data['date_of_comments_by_ip']
+    instance.date_of_comments_by_unicef = data['date_of_comments_by_unicef']
+    instance.date_of_draft_report_to_ip = data['date_of_draft_report_to_ip']
+    instance.date_of_draft_report_to_unicef = data['date_of_draft_report_to_unicef']
+    instance.date_of_field_visit = data['date_of_field_visit']
+
+    if 'joint_audit' in data:
+        instance.joint_audit = data['joint_audit']
+    if 'shared_ip_with' in data:
+        instance.shared_ip_with = data['shared_ip_with']
+
+    instance.save()
+
+
 def get_data(url, apifunc, token, protocol='HTTPS'):
 
     # headers = {"Content-type": "application/json", "Authorization": token}
