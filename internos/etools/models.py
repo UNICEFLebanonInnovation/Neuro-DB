@@ -503,17 +503,19 @@ class Travel(models.Model):
     report_note = models.TextField(default='', blank=True, verbose_name=_('Report Note'))
     misc_expenses = models.TextField(default='', blank=True, verbose_name=_('Misc Expenses'))
 
-    status = FSMField(default=PLANNED, choices=CHOICES, protected=True, verbose_name=_('Status'))
+    status = models.CharField(max_length=500, default=PLANNED, choices=CHOICES, verbose_name=_('Status'))
     traveler = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, related_name='travels',
         verbose_name=_('Travellert'),
         on_delete=models.CASCADE,
     )
+    traveler_name = models.CharField(max_length=500, blank=True, null=True)
     supervisor = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, related_name='+',
         verbose_name=_('Supervisor'),
         on_delete=models.CASCADE,
     )
+    supervisor_name = models.CharField(max_length=500, blank=True, null=True)
     section = models.ForeignKey(
         'users.Section', null=True, blank=True, related_name='+', verbose_name=_('Section'),
         on_delete=models.CASCADE,
@@ -545,6 +547,10 @@ class Travel(models.Model):
     approved_cost_travel_agencies = models.DecimalField(max_digits=20, decimal_places=4, null=True, blank=True,
                                                         default=None, verbose_name=_('Approved Cost Travel Agencies'))
 
+    itinerary_set = ArrayField(models.CharField(max_length=10000), blank=True, null=True)
+    activities_set = ArrayField(models.CharField(max_length=10000), blank=True, null=True)
+    attachments_set = ArrayField(models.CharField(max_length=10000), blank=True, null=True)
+
     def __str__(self):
         return self.reference_number
 
@@ -568,7 +574,7 @@ class TravelActivity(models.Model):
     )
     locations = models.ManyToManyField('locations.Location', related_name='+', verbose_name=_('Locations'))
     primary_traveler = models.ForeignKey(
-        settings.AUTH_USER_MODEL, verbose_name=_('Primary Traveler'), on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL, verbose_name=_('Primary Traveler'), on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateTimeField(null=True, blank=True, verbose_name=_('Date'))
 
     class Meta:

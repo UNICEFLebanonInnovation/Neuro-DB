@@ -188,9 +188,42 @@ class PartnerStaffMemberAdmin(ImportExportModelAdmin):
     )
 
 
+@admin.register(Engagement)
+class EngagementAdmin(admin.ModelAdmin):
+    list_display = [
+        '__str__', 'status', 'partner', 'date_of_field_visit',
+        'engagement_type', 'start_date', 'end_date',
+    ]
+    list_filter = [
+        'status', 'start_date', 'end_date', 'status', 'engagement_type',
+    ]
+    readonly_fields = ('status', 'partner',)
+    search_fields = 'partner__name', 'agreement__auditor_firm__name',
+    fields = (
+        'unique_id',
+        'engagement_type',
+        'status',
+        'start_date',
+        'end_date',
+        'partner',
+        'partner_contacted_at',
+        'total_value',
+        'exchange_rate',
+        'date_of_field_visit',
+        'date_of_draft_report_to_ip',
+        'date_of_comments_by_ip',
+        'date_of_draft_report_to_unicef',
+        'date_of_comments_by_unicef',
+        'date_of_report_submit',
+        'date_of_final_report',
+        'date_of_cancel',
+        'cancel_comment',
+    )
+
+
 admin.site.register(PartnerOrganization, PartnerOrganizationAdmin)
 admin.site.register(Agreement, AgreementAdmin)
 admin.site.register(PCA, PCAAdmin)
 admin.site.register(Travel)
-admin.site.register(Engagement)
+# admin.site.register(Engagement)
 admin.site.register(PartnerStaffMember, PartnerStaffMemberAdmin)

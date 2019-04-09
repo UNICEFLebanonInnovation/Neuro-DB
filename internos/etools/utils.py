@@ -279,6 +279,62 @@ def sync_audit_individual_data(instance):
     instance.save()
 
 
+def sync_trip_data():
+    from internos.etools.models import Engagement, PartnerOrganization, Travel
+    instances = get_data('etools.unicef.org', '/api/t2f/travels/?page_size=100', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
+    instances = json.loads(instances)
+    for item in instances['data']:
+
+        instance, new_instance = Travel.objects.get_or_create(id=item['id'])
+
+        instance.reference_number = item['reference_number']
+        instance.traveler_name = item['traveler']
+        instance.purpose = item['purpose']
+        instance.status = item['status']
+        instance.start_date = item['start_date']
+        instance.end_date = item['end_date']
+        instance.supervisor_name = item['supervisor_name']
+
+        instance.save()
+        sync_trip_individual_data(instance)
+
+
+def sync_trip_individual_data(instance):
+    from internos.etools.models import TravelActivity, PartnerOrganization
+    data = get_data('etools.unicef.org', '/api/t2f/travels/{}/'.format(instance.id),
+                         'Token 36f06547a4b930c6608e503db49f1e45305351c2')
+    item = json.loads(data)
+
+    instance.international_travel = item['international_travel']
+    instance.ta_required = item['ta_required']
+    instance.itinerary_set = item['itinerary']
+    instance.activities_set = item['activities']
+    for activity in item['activities']:
+        act_instance, new_instance = TravelActivity.objects.get_or_create(
+            id=activity['id'],
+            # travels=instance,
+            travel_type=activity['travel_type'],
+        )
+        if activity['partner']:
+            act_instance.partner = PartnerOrganization.objects.get(etl_id=activity['partner'])
+        act_instance.save()
+
+    instance.mode_of_travel = item['mode_of_travel']
+    instance.estimated_travel_cost = item['estimated_travel_cost']
+    instance.completed_at = item['completed_at']
+    instance.canceled_at = item['canceled_at']
+    instance.rejection_note = item['rejection_note']
+    instance.cancellation_note = item['cancellation_note']
+    instance.attachments_set = item['attachments']
+    instance.certification_note = item['certification_note']
+    instance.report = item['report']
+    instance.additional_note = item['additional_note']
+    instance.misc_expenses = item['misc_expenses']
+    instance.first_submission_date = item['first_submission_date']
+
+    instance.save()
+
+
 def get_data(url, apifunc, token, protocol='HTTPS'):
 
     # headers = {"Content-type": "application/json", "Authorization": token}
