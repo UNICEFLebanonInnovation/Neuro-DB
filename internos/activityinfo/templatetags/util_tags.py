@@ -287,7 +287,11 @@ def get_indicator_hpm_data(ai_id, month=None):
         'id': 0,
         'name': 0,
         'cumulative': 0,
-        'last_report_changes': 0
+        'last_report_changes': 0,
+        'boys': 0,
+        'girls': 0,
+        'male': 0,
+        'female': 0,
     }
 
     try:
@@ -329,12 +333,16 @@ def get_indicator_hpm_data(ai_id, month=None):
             'id': ai_id,
             'name': indicator.name,
             'cumulative': cumulative_result,
-            'last_report_changes': last_report_changes
+            'last_report_changes': last_report_changes,
+            'boys': str(round(indicator.values_hpm['boys'])).replace('.0', '') if 'boys' in indicator.values_hpm else 0,
+            'girls': str(round(indicator.values_hpm['girls'])).replace('.0', '') if 'girls' in indicator.values_hpm else 0,
+            'male': str(round(indicator.values_hpm['male'])).replace('.0', '') if 'male' in indicator.values_hpm else 0,
+            'female': str(round(indicator.values_hpm['female'])).replace('.0', '') if 'female' in indicator.values_hpm else 0,
         }
 
         return data
     except Exception as ex:
-        # print(ex)
+        print(ex)
         return data
 
 

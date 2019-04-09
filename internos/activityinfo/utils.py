@@ -2009,6 +2009,72 @@ def update_hpm_table_docx(indicators, month, month_name, filename):
     document.tables[0].rows[38].cells[6].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1299, month)['cumulative'])
     document.tables[0].rows[38].cells[7].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1299, month)['last_report_changes'])
 
+    # Footnotes
+
+    #  CP
+    hpm_data = get_indicator_hpm_data(1789, month)
+    document.tables[0].rows[42].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Boys', hpm_data['male'])
+    document.tables[0].rows[42].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Girls', hpm_data['female'])
+
+    hpm_data = get_indicator_hpm_data(1654, month)
+    document.tables[0].rows[43].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Boys', hpm_data['male'])
+    document.tables[0].rows[43].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Girls', hpm_data['female'])
+
+    #  WASH
+    hpm_data = get_indicator_hpm_data(1519, month)
+    document.tables[0].rows[44].cells[4].paragraphs[0].runs[0].text = '{}: {}%'.format('Boys', hpm_data['boys'])
+    document.tables[0].rows[44].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Girls', hpm_data['girls'])
+    document.tables[0].rows[44].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Female', hpm_data['female'])
+    document.tables[0].rows[44].cells[9].paragraphs[0].runs[0].text = '{}: {}%'.format('Male', hpm_data['male'])
+
+    hpm_data = get_indicator_hpm_data(1527, month)
+    document.tables[0].rows[45].cells[4].paragraphs[0].runs[0].text = '{}: {}%'.format('Boys', hpm_data['boys'])
+    document.tables[0].rows[45].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Girls', hpm_data['girls'])
+    document.tables[0].rows[45].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Female', hpm_data['female'])
+    document.tables[0].rows[45].cells[9].paragraphs[0].runs[0].text = '{}: {}%'.format('Male', hpm_data['male'])
+
+    # hpm_data = get_indicator_hpm_data(1504, month)
+    # document.tables[0].rows[46].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Boys', hpm_data['male'])
+    # document.tables[0].rows[46].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Girls', hpm_data['female'])
+
+    hpm_data = get_indicator_hpm_data(1535, month)
+    document.tables[0].rows[47].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Boys', hpm_data['male'])
+    document.tables[0].rows[47].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Girls', hpm_data['female'])
+
+    #  Y&A
+    hpm_data = get_indicator_hpm_data(3032, month)
+    document.tables[0].rows[49].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Male', hpm_data['male'])
+    document.tables[0].rows[49].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Female', hpm_data['female'])
+
+    hpm_data = get_indicator_hpm_data(3071, month)
+    document.tables[0].rows[50].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Male', hpm_data['male'])
+    document.tables[0].rows[50].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Female', hpm_data['female'])
+
+    hpm_data = get_indicator_hpm_data(3179, month)
+    document.tables[0].rows[51].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Male', hpm_data['male'])
+    document.tables[0].rows[51].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Female', hpm_data['female'])
+
+    hpm_data = get_indicator_hpm_data(3347, month)
+    document.tables[0].rows[52].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Male', hpm_data['male'])
+    document.tables[0].rows[52].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Female', hpm_data['female'])
+
+    #  PPL
+    hpm_data = get_indicator_hpm_data(1121, month)
+    document.tables[0].rows[55].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Boys', hpm_data['male'])
+    document.tables[0].rows[55].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Girls', hpm_data['female'])
+
+    hpm_data = get_indicator_hpm_data(1149, month)
+    document.tables[0].rows[56].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Boys', hpm_data['male'])
+    document.tables[0].rows[56].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Girls', hpm_data['female'])
+
+    hpm_data = get_indicator_hpm_data(1178, month)
+    document.tables[0].rows[57].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Boys', hpm_data['male'])
+    document.tables[0].rows[57].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Girls', hpm_data['female'])
+
+    hpm_data = get_indicator_hpm_data(1195, month)
+    document.tables[0].rows[58].cells[6].paragraphs[0].runs[0].text = '{}: {}%'.format('Boys', hpm_data['male'])
+    document.tables[0].rows[58].cells[7].paragraphs[0].runs[0].text = '{}: {}%'.format('Girls', hpm_data['female'])
+
     path2file2 = '{}/{}/{}'.format(path, 'AIReports', filename)
     document.save(path2file2)
     return path2file2
