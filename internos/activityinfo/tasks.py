@@ -7,6 +7,7 @@ from .utils import r_script_command_line
 
 logger = logging.getLogger(__name__)
 
+
 def read_form_data(formid):
     client = ActivityInfoClient()
     response = client.make_request('resources/form/M2142704628/query/rows').json()
