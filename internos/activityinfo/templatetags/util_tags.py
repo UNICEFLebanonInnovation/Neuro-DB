@@ -409,15 +409,15 @@ def get_indicator_live_value(indicator, month=None, partner=None, gov=None):
     try:
         if partner and gov and not partner == '0' and not gov == '0':
             key = "{}-{}-{}".format(month, partner, gov)
-            return get_indicator_unit(indicator, indicator['values_partners_gov'][key])
+            return get_indicator_unit(indicator, indicator['values_partners_gov_live'][key])
         if partner and not partner == '0':
             key = "{}-{}".format(month, partner)
-            return get_indicator_unit(indicator, indicator['values_partners'][key])
+            return get_indicator_unit(indicator, indicator['values_partners_live'][key])
         if gov and not gov == '0':
             key = "{}-{}".format(month, gov)
-            return get_indicator_unit(indicator, indicator['values_gov'][key])
+            return get_indicator_unit(indicator, indicator['values_gov_live'][key])
 
-        return get_indicator_unit(indicator,indicator['values'][str(month)])
+        return get_indicator_unit(indicator,indicator['values_live'][str(month)])
     except Exception as ex:
         # print(ex)
         return get_indicator_unit(indicator, 0)
