@@ -868,7 +868,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
     def calculate_indicators_cumulative_results(self, request, queryset):
         for db in queryset:
-            reports = calculate_indicators_cumulative_results(db)
+            reports = calculate_indicators_cumulative_results_1(db)
             self.message_user(
                 request,
                 "{} indicators values cumulative calculated for database {}".format(reports, db.name)

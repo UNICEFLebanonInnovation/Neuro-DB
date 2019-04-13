@@ -446,33 +446,62 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
                 values2 = indicator_values[8]  # values_partners
                 values3 = indicator_values[10]  # values_partners_gov
 
-            for month in sorted(values):
-                c_value = 0
-                for c_month in range(1, int(month) + 1):
-                    if str(c_month) in values:
-                        c_value += float(values[str(c_month)])
-                    values_month[str(month)] = c_value
+            # for month in sorted(values):
+            #     c_value = 0
+            #     for c_month in range(1, int(month) + 1):
+            #         if str(c_month) in values:
+            #             c_value += float(values[str(c_month)])
+            #         values_month[str(month)] = c_value
 
-            for key in sorted(values1):
-                c_value = 0
-                for c_key in range(0, int(sorted(values1.keys()).index(key)) + 1):
-                    c_key = sorted(values1)[c_key]
-                    c_value += float(values1[c_key])
-                    values_gov[c_key] = c_value
+            c_value = 0
+            for key, value in values.items():
+                c_value += value
+                values_month = c_value
 
-            for key in sorted(values2):
-                c_value = 0
-                for c_key in range(0, int(sorted(values2.keys()).index(key)) + 1):
-                    c_key = sorted(values2)[c_key]
-                    c_value += float(values2[c_key])
-                    values_partners[c_key] = c_value
+            # for key in sorted(values1):
+            #     c_value = 0
+            #     for c_key in range(0, int(sorted(values1.keys()).index(key)) + 1):
+            #         c_key = sorted(values1)[c_key]
+            #         c_value += float(values1[c_key])
+            #         values_gov[c_key] = c_value
 
-            for key in sorted(values3):
-                c_value = 0
-                for c_key in range(0, int(sorted(values3.keys()).index(key)) + 1):
-                    c_key = sorted(values3)[c_key]
-                    c_value += float(values3[c_key])
-                    values_partners_gov[c_key] = c_value
+            for key, value in values1.items():
+                keys = key.split('-')
+                gov = keys[1]
+                if gov in values_gov:
+                    values_gov[gov] = values_gov[gov] + value
+                else:
+                    values_gov[gov] = value
+
+            # for key in sorted(values2):
+            #     c_value = 0
+            #     for c_key in range(0, int(sorted(values2.keys()).index(key)) + 1):
+            #         c_key = sorted(values2)[c_key]
+            #         c_value += float(values2[c_key])
+            #         values_partners[c_key] = c_value
+
+            for key, value in values2.items():
+                keys = key.split('-')
+                partner = keys[1]
+                if partner in values_partners:
+                    values_partners[partner] = values_partners[partner] + value
+                else:
+                    values_partners[partner] = value
+
+            # for key in sorted(values3):
+            #     c_value = 0
+            #     for c_key in range(0, int(sorted(values3.keys()).index(key)) + 1):
+            #         c_key = sorted(values3)[c_key]
+            #         c_value += float(values3[c_key])
+            #         values_partners_gov[c_key] = c_value
+
+            for key, value in values3.items():
+                keys = key.split('-')
+                gov_partner = '{}-{}'.format(keys[1], keys[2])
+                if gov_partner in values_partners_gov:
+                    values_partners_gov[gov_partner] = values_partners_gov[gov_partner] + value
+                else:
+                    values_partners_gov[gov_partner] = value
 
             if report_type == 'live':
                 indicator.cumulative_values_live = {

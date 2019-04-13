@@ -88,6 +88,8 @@ def number_format(value):
 
 @register.assignment_tag
 def to_display_indicator(selected_filters, cumulative_result):
+    print(selected_filters)
+    print(cumulative_result)
     if not selected_filters:
         return True
 
@@ -152,7 +154,7 @@ def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
 
         if partner and gov and not partner == '0' and not gov == '0':
             cumulative_values = cumulative_values.get('partners_govs')
-            key = '{}-{}'.format(partner, gov)
+            key = '{}-{}'.format(gov, partner)
             if key in cumulative_values:
                 return get_indicator_unit(indicator, cumulative_values[key])
 
@@ -166,11 +168,14 @@ def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
             if gov in cumulative_values:
                 return get_indicator_unit(indicator, cumulative_values[gov])
 
-        if month and 'months' in cumulative_values:
-            month = str(month)
-            cumulative_values = cumulative_values.get('months')
-            if month in cumulative_values:
-                return get_indicator_unit(indicator, cumulative_values[month])
+        if 'months' in cumulative_values:
+            return get_indicator_unit(indicator, cumulative_values.get('months'))
+
+        # if month and 'months' in cumulative_values:
+        #     month = str(month)
+        #     cumulative_values = cumulative_values.get('months')
+        #     if month in cumulative_values:
+        #         return get_indicator_unit(indicator, cumulative_values[month])
 
         return get_indicator_unit(indicator, 0)
     except Exception as ex:
@@ -186,7 +191,9 @@ def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None)
 
         if partner and gov and not partner == '0' and not gov == '0':
             cumulative_values = cumulative_values.get('partners_govs')
-            key = '{}-{}'.format(partner, gov)
+            print(cumulative_values)
+            key = '{}-{}'.format(gov, partner)
+            print(key)
             if key in cumulative_values:
                 return get_indicator_unit(indicator, cumulative_values[key])
 
@@ -200,15 +207,18 @@ def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None)
             if gov in cumulative_values:
                 return get_indicator_unit(indicator, cumulative_values[gov])
 
-        if month and 'months' in cumulative_values:
-            month = str(month)
-            cumulative_values = cumulative_values.get('months')
-            if month in cumulative_values:
-                return get_indicator_unit(indicator, cumulative_values[month])
+        if 'months' in cumulative_values:
+            return get_indicator_unit(indicator, cumulative_values.get('months'))
+
+        # if month and 'months' in cumulative_values:
+        #     month = str(month)
+        #     cumulative_values = cumulative_values.get('months')
+        #     if month in cumulative_values:
+        #         return get_indicator_unit(indicator, cumulative_values[month])
 
         return get_indicator_unit(indicator, 0)
     except Exception as ex:
-        # print(ex)
+        print(ex)
         return get_indicator_unit(indicator, 0)
 
 
@@ -220,7 +230,7 @@ def get_indicator_achieved(indicator, month=None, partner=None, gov=None):
 
         if partner and gov and not partner == '0' and not gov == '0':
             cumulative_values = cumulative_values.get('partners_govs')
-            key = '{}-{}'.format(partner, gov)
+            key = '{}-{}'.format(gov, partner)
             if key in cumulative_values:
                 return round((cumulative_values[key] * 100.0) / indicator['target'], 2)
 
@@ -234,11 +244,14 @@ def get_indicator_achieved(indicator, month=None, partner=None, gov=None):
             if gov in cumulative_values:
                 return round((cumulative_values[gov] * 100.0) / indicator['target'], 2)
 
-        if month and 'months' in cumulative_values:
-            month = str(month)
-            cumulative_values = cumulative_values.get('months')
-            if month in cumulative_values:
-                return round((cumulative_values[month] * 100.0) / indicator['target'], 2)
+        if 'months' in cumulative_values:
+            return get_indicator_unit(indicator, cumulative_values.get('months'))
+
+        # if month and 'months' in cumulative_values:
+        #     month = str(month)
+        #     cumulative_values = cumulative_values.get('months')
+        #     if month in cumulative_values:
+        #         return round((cumulative_values[month] * 100.0) / indicator['target'], 2)
 
         return 0
     except Exception as ex:
@@ -253,7 +266,7 @@ def get_indicator_live_achieved(indicator, month=None, partner=None, gov=None):
 
         if partner and gov and not partner == '0' and not gov == '0':
             cumulative_values = cumulative_values.get('partners_govs')
-            key = '{}-{}'.format(partner, gov)
+            key = '{}-{}'.format(gov, partner)
             if key in cumulative_values:
                 return round((cumulative_values[key] * 100.0) / indicator['target'], 2)
 
@@ -267,11 +280,14 @@ def get_indicator_live_achieved(indicator, month=None, partner=None, gov=None):
             if gov in cumulative_values:
                 return round((cumulative_values[gov] * 100.0) / indicator['target'], 2)
 
-        if month and 'months' in cumulative_values:
-            month = str(month)
-            cumulative_values = cumulative_values.get('months')
-            if month in cumulative_values:
-                return round((cumulative_values[month] * 100.0) / indicator['target'], 2)
+        if 'months' in cumulative_values:
+            return get_indicator_unit(indicator, cumulative_values.get('months'))
+
+        # if month and 'months' in cumulative_values:
+        #     month = str(month)
+        #     cumulative_values = cumulative_values.get('months')
+        #     if month in cumulative_values:
+        #         return round((cumulative_values[month] * 100.0) / indicator['target'], 2)
 
         return 0
     except Exception as ex:
