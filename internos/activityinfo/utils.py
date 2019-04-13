@@ -644,7 +644,6 @@ def calculate_indicators_tags_hpm(ai_db):
     indicators = Indicator.objects.filter(hpm_indicator=True)
 
     for indicator in indicators.iterator():
-        # print(indicator.id)
         c_key = indicator.cumulative_values['months'].keys()[-1]
         m_value = indicator.cumulative_values['months'][c_key]
         sub_indicators = indicator.summation_sub_indicators.all().only(
@@ -657,14 +656,10 @@ def calculate_indicators_tags_hpm(ai_db):
             'values_hpm',
             'cumulative_values',
         )
-        # print(sub_indicators)
         tag_boys = sub_indicators.filter(tag_gender__name='Boys')
         tag_girls = sub_indicators.filter(tag_gender__name='Girls')
         tag_male = sub_indicators.filter(tag_gender__name='Male')
         tag_female = sub_indicators.filter(tag_gender__name='Female')
-
-        # print(tag_girls.count())
-        # print(tag_boys.count())
 
         tag_male_value = 0
         for ind_tag in tag_male:
@@ -678,7 +673,7 @@ def calculate_indicators_tags_hpm(ai_db):
         try:
             indicator.values_hpm['male'] = float(tag_male_value) * 100 / float(m_value)
         except Exception as ex:
-            print(ex.message)
+            # print(ex.message)
             indicator.values_hpm['male'] = 0
 
         tag_female_value = 0
@@ -692,7 +687,7 @@ def calculate_indicators_tags_hpm(ai_db):
         try:
             indicator.values_hpm['female'] = float(tag_female_value) * 100 / float(m_value)
         except Exception as ex:
-            print(ex.message)
+            # print(ex.message)
             indicator.values_hpm['female'] = 0
 
         tag_boys_value = 0
@@ -705,7 +700,7 @@ def calculate_indicators_tags_hpm(ai_db):
         try:
             indicator.values_hpm['boys'] = float(tag_boys_value) * 100 / float(m_value)
         except Exception as ex:
-            print(ex.message)
+            # print(ex.message)
             indicator.values_hpm['boys'] = 0
 
         tag_girls_value = 0
@@ -718,10 +713,8 @@ def calculate_indicators_tags_hpm(ai_db):
         try:
             indicator.values_hpm['girls'] = float(tag_girls_value) * 100 / float(m_value)
         except Exception as ex:
-            print(ex.message)
+            # print(ex.message)
             indicator.values_hpm['girls'] = 0
-
-        # print(indicator.values_hpm)
 
         indicator.save()
 

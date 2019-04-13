@@ -191,9 +191,7 @@ def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None)
 
         if partner and gov and not partner == '0' and not gov == '0':
             cumulative_values = cumulative_values.get('partners_govs')
-            print(cumulative_values)
             key = '{}-{}'.format(gov, partner)
-            print(key)
             if key in cumulative_values:
                 return get_indicator_unit(indicator, cumulative_values[key])
 
@@ -218,7 +216,7 @@ def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None)
 
         return get_indicator_unit(indicator, 0)
     except Exception as ex:
-        print(ex)
+        # print(ex)
         return get_indicator_unit(indicator, 0)
 
 
@@ -358,7 +356,7 @@ def get_indicator_hpm_data(ai_id, month=None):
 
         return data
     except Exception as ex:
-        print(ex)
+        # print(ex)
         return data
 
 
