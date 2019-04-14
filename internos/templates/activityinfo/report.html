@@ -466,7 +466,98 @@
             </div>
           </div>
         {% endfor %}
+
+        {% if partner_info.programmatic_visits %}
+          <br />
+          <div class="row">
+            <h5 class="modal-title">{{ partner_info.programmatic_visits.nbr_visits }} Programmatic Visit(s) in {{ year }}</h5>
+          </div>
+          <br />
+          <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+            <div class="col-md-6">
+              <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+              {{ partner_info.programmatic_visits.last_visit.travel }} {{ partner_info.programmatic_visits.last_visit.travel.purpose }}
+              <a href="https://etools.unicef.org/t2f/edit-travel/{{ partner_info.programmatic_visits.last_visit.travel.id }}" target="_blank">
+                <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+              </a>
+            </div>
+            <div class="col-md-6">
+              <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i>
+              Last Visit in {{ partner_info.programmatic_visits.last_visit.date }}
+            </div>
+          </div>
+        {% endif %}
+
+        {% if partner_info.audits.nbr_audits %}
+          <br />
+          <div class="row">
+            <h5 class="modal-title">{{ partner_info.audits.nbr_audits }} Audits(s) in {{ year }}</h5>
+          </div>
+          <br />
+          <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+            <div class="col-md-6">
+              <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+              {{ partner_info.audits.last_audit }}
+              <a href="https://etools.unicef.org/ap/audits/{{ partner_info.audits.last_audit.id }}" target="_blank">
+                <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+              </a>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if partner_info.micro_assessments.nbr_audits %}
+          <br />
+          <div class="row">
+            <h5 class="modal-title">{{ partner_info.micro_assessments.nbr_audits }} Micro assessment(s) in {{ year }}</h5>
+          </div>
+          <br />
+          <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+            <div class="col-md-6">
+              <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+              {{ partner_info.micro_assessments.last_audit }}
+              <a href="https://etools.unicef.org/ap/micro-assessments/{{ partner_info.micro_assessments.last_audit.id }}" target="_blank">
+                <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+              </a>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if partner_info.spot_checks.nbr_audits %}
+          <br />
+          <div class="row">
+            <h5 class="modal-title">{{ partner_info.spot_checks.nbr_audits }} spot_checks(s) in {{ year }}</h5>
+          </div>
+          <br />
+          <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+            <div class="col-md-6">
+              <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+              {{ partner_info.spot_checks.last_audit }}
+              <a href="https://etools.unicef.org/ap/spot-checks/{{ partner_info.spot_checks.last_audit.id }}" target="_blank">
+                <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+              </a>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if partner_info.special_visits.nbr_audits %}
+          <br />
+          <div class="row">
+            <h5 class="modal-title">{{ partner_info.special_visits.nbr_audits }} Special Visits(s) in {{ year }}</h5>
+          </div>
+          <br />
+          <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+            <div class="col-md-6">
+              <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+              {{ partner_info.special_visits.last_audit }}
+              <a href="https://etools.unicef.org/ap/special-visits/{{ partner_info.special_visits.last_audit.id }}" target="_blank">
+                <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+              </a>
+            </div>
+          </div>
+        {% endif %}
+
       </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>

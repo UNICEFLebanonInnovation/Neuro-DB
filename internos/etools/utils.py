@@ -281,28 +281,31 @@ def sync_audit_individual_data(instance):
 
 def sync_trip_data():
     from internos.etools.models import Engagement, PartnerOrganization, Travel
-    instances = get_data('etools.unicef.org', '/api/t2f/travels/?page_size=100', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
-    instances = json.loads(instances)
-    for item in instances['data']:
+    for page in range(320, 350):
+        print(page)
+        api_func = '/api/t2f/travels/?page={}&page_size={}'.format(page, 100)
+        instances = get_data('etools.unicef.org', api_func, 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
+        instances = json.loads(instances)
+        for item in instances['data']:
 
-        instance, new_instance = Travel.objects.get_or_create(id=item['id'])
+            instance, new_instance = Travel.objects.get_or_create(id=item['id'])
 
-        instance.reference_number = item['reference_number']
-        instance.traveler_name = item['traveler']
-        instance.purpose = item['purpose']
-        instance.status = item['status']
-        instance.start_date = item['start_date']
-        instance.end_date = item['end_date']
-        instance.supervisor_name = item['supervisor_name']
+            instance.reference_number = item['reference_number']
+            instance.traveler_name = item['traveler']
+            instance.purpose = item['purpose']
+            instance.status = item['status']
+            instance.start_date = item['start_date']
+            instance.end_date = item['end_date']
+            instance.supervisor_name = item['supervisor_name']
 
-        instance.save()
-        sync_trip_individual_data(instance)
+            instance.save()
+            # sync_trip_individual_data(instance)
 
 
 def sync_trip_individual_data(instance):
-    from internos.etools.models import TravelActivity, PartnerOrganization
+    from internos.etools.models import TravelActivity, PartnerOrganization, PCA
     data = get_data('etools.unicef.org', '/api/t2f/travels/{}/'.format(instance.id),
-                         'Token 36f06547a4b930c6608e503db49f1e45305351c2')
+                    'Token 36f06547a4b930c6608e503db49f1e45305351c2')
     item = json.loads(data)
 
     instance.international_travel = item['international_travel']
@@ -310,13 +313,23 @@ def sync_trip_individual_data(instance):
     instance.itinerary_set = item['itinerary']
     instance.activities_set = item['activities']
     for activity in item['activities']:
-        act_instance, new_instance = TravelActivity.objects.get_or_create(
-            id=activity['id'],
-            # travels=instance,
-            travel_type=activity['travel_type'],
-        )
+        instance.travel_type = activity['travel_type'].lower()
+        act_instance, new_instance = TravelActivity.objects.get_or_create(id=activity['id'])
+
+        act_instance.travel_type = activity['travel_type'].lower()
+        if activity['date']:
+            act_instance.date = activity['date']
+        else:
+            act_instance.date = instance.start_date
+        act_instance.is_primary_traveler = activity['is_primary_traveler']
+        act_instance.travel = instance
+
         if activity['partner']:
             act_instance.partner = PartnerOrganization.objects.get(etl_id=activity['partner'])
+
+        if activity['partnership']:
+            act_instance.partnership = PCA.objects.get(etl_id=activity['partnership'])
+
         act_instance.save()
 
     instance.mode_of_travel = item['mode_of_travel']

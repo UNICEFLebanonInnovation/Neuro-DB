@@ -8,10 +8,13 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
+from internos.activityinfo.views import IndexView
+
 urlpatterns = [
     # url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
-    url(r'^', include('internos.activityinfo.urls', namespace='activityinfo'), name='home'),
-    url(r'^etools', include('internos.etools.urls', namespace='etools'), name='etools'),
+    url(r'^$', view=IndexView.as_view(), name='index'),
+    url(r'^activityinfo/', include('internos.activityinfo.urls', namespace='activityinfo'), name='activityinfo'),
+    url(r'^etools/', include('internos.etools.urls', namespace='etools'), name='etools'),
     url(r'^winterization/', include('internos.winterization.urls', namespace='winterization')),
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
 

@@ -88,8 +88,7 @@ def number_format(value):
 
 @register.assignment_tag
 def to_display_indicator(selected_filters, cumulative_result):
-    print(selected_filters)
-    print(cumulative_result)
+
     if not selected_filters:
         return True
 

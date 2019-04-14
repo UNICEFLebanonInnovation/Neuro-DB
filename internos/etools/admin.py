@@ -11,6 +11,8 @@ from .models import (
     PCA,
     PartnerStaffMember,
     Travel,
+    TravelActivity,
+    ItineraryItem,
     Engagement,
 )
 
@@ -221,9 +223,84 @@ class EngagementAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(Travel)
+class TravelAdmin(admin.ModelAdmin):
+    list_filter = (
+        'status',
+        'travel_type',
+        'traveler',
+        'section',
+        'start_date',
+    )
+    search_fields = (
+        'reference_number',
+    )
+    list_display = (
+        'reference_number',
+        'traveler',
+        'status',
+        'start_date',
+        'end_date',
+        'section'
+    )
+    readonly_fields = (
+        'status',
+    )
+    raw_id_fields = (
+        'traveler',
+        'supervisor'
+    )
+    date_hierarchy = 'start_date'
+
+
+@admin.register(TravelActivity)
+class TravelActivityAdmin(admin.ModelAdmin):
+    list_filter = (
+        'travel_type',
+        'partner',
+        'date',
+    )
+    search_fields = (
+        'primary_traveler__first_name',
+        'primary_traveler__last_name',
+    )
+    list_display = (
+        'travel',
+        # 'primary_traveler',
+        'travel_type',
+        'date'
+    )
+    raw_id_fields = (
+        'primary_traveler',
+    )
+    date_hierarchy = 'date'
+
+
+@admin.register(ItineraryItem)
+class ItineraryItemAdmin(admin.ModelAdmin):
+    list_filter = (
+        'travel',
+        'departure_date',
+        'arrival_date',
+        'origin',
+        'destination'
+    )
+    search_fields = (
+        'travel__reference_number',
+    )
+    list_display = (
+        'travel',
+        'departure_date',
+        'arrival_date',
+        'origin',
+        'destination'
+    )
+
+
+
 admin.site.register(PartnerOrganization, PartnerOrganizationAdmin)
 admin.site.register(Agreement, AgreementAdmin)
 admin.site.register(PCA, PCAAdmin)
-admin.site.register(Travel)
+# admin.site.register(Travel)
 # admin.site.register(Engagement)
 admin.site.register(PartnerStaffMember, PartnerStaffMemberAdmin)

@@ -197,6 +197,7 @@ class ReportView(TemplateView):
             'selected_governorate_name': selected_governorate_name,
             'reports': report.order_by('id'),
             'month': month,
+            'year': today.year,
             'month_name': month_name,
             'month_number': month_number,
             'months': months,

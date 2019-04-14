@@ -10,7 +10,7 @@ from django.http import HttpResponse, JsonResponse
 
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
-from .models import PartnerOrganization, Engagement
+from .models import PartnerOrganization, Engagement, Travel, TravelType, TravelActivity
 from internos.users.models import Section
 from internos.activityinfo.models import Database
 
@@ -27,8 +27,15 @@ class PartnerProfileView(TemplateView):
         micro_assessments = engagements.filter(engagement_type='ma')
         special_audits = engagements.filter(engagement_type='sa')
 
+        travels = Travel.objects.all()
+        programmatic_visits = travels.filter(travel_type='programmatic visit', start_date__year='2019')
+        # programmatic_visits = TravelActivity.objects.filter(travel_type='programmatic visit', travel__end_date__year=2019)
+        # programmatic_visits = TravelActivity.objects.filter(Q(travel_type='programmatic visit') | Q(travel_type='Programmatic Visit')).filter(travel__start_date__year='2019')
+        # programmatic_visits = TravelActivity.objects.filter(Q(travel_type='programmatic visit') | Q(travel_type='Programmatic Visit'))
+        # programmatic_visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING)
+
         partners = engagements.values('partner_id', 'partner__name').distinct()
-        print(partners)
+        # print(partners)
 
         return {
             'databases': databases,
@@ -37,4 +44,5 @@ class PartnerProfileView(TemplateView):
             'nbr_audits': audits.count(),
             'nbr_micro_assessments': micro_assessments.count(),
             'nbr_special_audits': special_audits.count(),
+            'programmatic_visits': programmatic_visits.count(),
         }

@@ -130,6 +130,51 @@ class PartnerOrganization(models.Model):
     )
 
     @property
+    def programmatic_visits(self):
+        today = datetime.date.today()
+        travels = self.travelactivity_set.filter(travel_type='programmatic visit', date__year=today.year).order_by('date')
+        return {
+            'nbr_visits': travels.count(),
+            'last_visit': travels.last()
+        }
+
+    @property
+    def audits(self):
+        today = datetime.date.today()
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_AUDIT, start_date__year=today.year).order_by('start_date')
+        return {
+            'nbr_audits': items.count(),
+            'last_audit': items.last()
+        }
+
+    @property
+    def micro_assessments(self):
+        today = datetime.date.today()
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_MICRO_ASSESSMENT, start_date__year=today.year).order_by('start_date')
+        return {
+            'nbr_audits': items.count(),
+            'last_audit': items.last()
+        }
+
+    @property
+    def spot_checks(self):
+        today = datetime.date.today()
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPOT_CHECK, start_date__year=today.year).order_by('start_date')
+        return {
+            'nbr_audits': items.count(),
+            'last_audit': items.last()
+        }
+
+    @property
+    def special_audits(self):
+        today = datetime.date.today()
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPECIAL_AUDIT, start_date__year=today.year).order_by('start_date')
+        return {
+            'nbr_audits': items.count(),
+            'last_audit': items.last()
+        }
+
+    @property
     def interventions_details(self):
         data = []
         now = datetime.datetime.now()
@@ -549,7 +594,11 @@ class Travel(models.Model):
 
     itinerary_set = ArrayField(models.CharField(max_length=10000), blank=True, null=True)
     activities_set = ArrayField(models.CharField(max_length=10000), blank=True, null=True)
+    # activities_set
     attachments_set = ArrayField(models.CharField(max_length=10000), blank=True, null=True)
+    travel_type = models.CharField(max_length=64, blank=True,
+                                   default=TravelType.PROGRAMME_MONITORING,
+                                   verbose_name=_('Travel Type'))
 
     def __str__(self):
         return self.reference_number
@@ -557,16 +606,15 @@ class Travel(models.Model):
 
 class TravelActivity(models.Model):
     travels = models.ManyToManyField('Travel', related_name='activities', verbose_name=_('Travels'))
-    travel_type = models.CharField(max_length=64, choices=TravelType.CHOICES, blank=True,
+    travel = models.ForeignKey('Travel', related_name='travels', blank=True, null=True, verbose_name=_('Travels'))
+    travel_type = models.CharField(max_length=64, blank=True,
                                    default=TravelType.PROGRAMME_MONITORING,
                                    verbose_name=_('Travel Type'))
     partner = models.ForeignKey(
-        PartnerOrganization, null=True, blank=True, related_name='+',
+        PartnerOrganization, null=True, blank=True, related_name='travelactivity_set',
         verbose_name=_('Partner'),
         on_delete=models.CASCADE,
     )
-    # Partnership has to be filtered based on partner
-    # TODO: assert self.partnership.agreement.partner == self.partner
     partnership = models.ForeignKey(
         PCA, null=True, blank=True, related_name='travel_activities',
         verbose_name=_('Partnership'),
@@ -576,13 +624,10 @@ class TravelActivity(models.Model):
     primary_traveler = models.ForeignKey(
         settings.AUTH_USER_MODEL, verbose_name=_('Primary Traveler'), on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateTimeField(null=True, blank=True, verbose_name=_('Date'))
+    is_primary_traveler = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = _("Travel Activities")
-
-    @property
-    def travel(self):
-        return self.travels.filter(traveler=self.primary_traveler).first()
 
     @property
     def task_number(self):
@@ -810,7 +855,8 @@ class Engagement(models.Model):
     partner = models.ForeignKey(
         PartnerOrganization, verbose_name=_('Partner'),
         on_delete=models.CASCADE,
-        blank=True, null=True
+        blank=True, null=True,
+        related_name='engagement_set'
     )
     partner_contacted_at = models.DateField(verbose_name=_('Date IP was contacted'), blank=True, null=True)
     engagement_type = models.CharField(verbose_name=_('Engagement Type'), max_length=10, choices=TYPES)
@@ -908,9 +954,6 @@ class Engagement(models.Model):
         verbose_name = _('Engagement')
         verbose_name_plural = _('Engagements')
 
-    def __str__(self):
-        return '{} {}'.format(self.get_engagement_type_display(), self.reference_number)
-
     @property
     def displayed_status(self):
         if self.status != self.STATUSES.partner_contacted:
@@ -939,6 +982,9 @@ class Engagement(models.Model):
     @property
     def reference_number(self):
         return self.unique_id
+
+    def __str__(self):
+        return '{} {}'.format(self.displayed_status, self.reference_number)
 
 
 class Finding(models.Model):

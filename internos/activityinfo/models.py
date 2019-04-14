@@ -272,6 +272,11 @@ class Partner(models.Model):
             'type': partner_etools.partner_type,
             'rating': partner_etools.rating,
             'interventions': partner_etools.interventions_details,
+            'programmatic_visits': partner_etools.programmatic_visits,
+            'audits': partner_etools.audits,
+            'micro_assessments': partner_etools.micro_assessments,
+            'spot_checks': partner_etools.spot_checks,
+            'special_audits': partner_etools.special_audits,
         }
 
     class Meta:
