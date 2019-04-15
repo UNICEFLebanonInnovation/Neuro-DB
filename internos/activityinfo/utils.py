@@ -785,8 +785,11 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
 
             for key in values:
                 val = values[key]
+                print(key)
+                print(values)
                 if key in values_month:
                     val = values_month[key] + val
+                    print(val)
                 values_month[key] = val
                 if str(key) == str(reporting_month):
                     indicator.values_hpm[reporting_month] = val
