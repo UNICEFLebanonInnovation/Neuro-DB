@@ -762,7 +762,10 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
 
     rows = cursor.fetchall()
     for row in rows:
-        rows_data[row[0]] = row
+        if row[0] not in rows_data:
+            rows_data[row[0]] = {}
+
+        rows_data[row[0]][row[3]] = row
 
     for indicator in indicators.iterator():
         values_month = {}
@@ -770,58 +773,57 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
         values_gov = {}
         values_partners_gov = {}
         if indicator.id in rows_data:
-            sub_indicator_values = rows_data[indicator.id]
+            indicator_values = rows_data[indicator.id]
+            for key, key_values in indicator_values.items():
+                sub_indicator_values = indicator_values[key]
 
-            if report_type == 'live':
-                values = sub_indicator_values[5]  # values_live
-                values1 = sub_indicator_values[7]  # values_gov_live
-                values2 = sub_indicator_values[9]  # values_partners_live
-                values3 = sub_indicator_values[11]  # values_partners_gov_live
-            else:
-                values = sub_indicator_values[4]  # values
-                values1 = sub_indicator_values[6]  # values_gov
-                values2 = sub_indicator_values[8]  # values_partners
-                values3 = sub_indicator_values[10]  # values_partners_gov
+                if report_type == 'live':
+                    values = sub_indicator_values[5]  # values_live
+                    values1 = sub_indicator_values[7]  # values_gov_live
+                    values2 = sub_indicator_values[9]  # values_partners_live
+                    values3 = sub_indicator_values[11]  # values_partners_gov_live
+                else:
+                    values = sub_indicator_values[4]  # values
+                    values1 = sub_indicator_values[6]  # values_gov
+                    values2 = sub_indicator_values[8]  # values_partners
+                    values3 = sub_indicator_values[10]  # values_partners_gov
 
-            for key in values:
-                val = values[key]
-                print(key)
-                print(values)
-                if key in values_month:
-                    val = values_month[key] + val
-                    print(val)
-                values_month[key] = val
-                if str(key) == str(reporting_month):
-                    indicator.values_hpm[reporting_month] = val
+                for key in values:
+                    val = values[key]
+                    if key in values_month:
+                        val = values_month[key] + val
+                    values_month[key] = val
+                    if str(key) == str(reporting_month):
+                        indicator.values_hpm[reporting_month] = val
 
-            for key in values1:
-                val = values1[key]
-                if key in values_gov:
-                    val = values_gov[key] + val
-                values_gov[key] = val
+                for key in values1:
+                    val = values1[key]
+                    if key in values_gov:
+                        val = values_gov[key] + val
+                    values_gov[key] = val
 
-            for key in values2:
-                val = values2[key]
-                if key in values_partners:
-                    val = values_partners[key] + val
-                values_partners[key] = val
+                for key in values2:
+                    val = values2[key]
+                    if key in values_partners:
+                        val = values_partners[key] + val
+                    values_partners[key] = val
 
-            for key in values3:
-                val = values3[key]
-                if key in values_partners_gov:
-                    val = values_partners_gov[key] + val
-                values_partners_gov[key] = val
+                for key in values3:
+                    val = values3[key]
+                    if key in values_partners_gov:
+                        val = values_partners_gov[key] + val
+                    values_partners_gov[key] = val
 
-            if report_type == 'live':
-                indicator.values_live = values_month
-                indicator.values_gov_live = values_gov
-                indicator.values_partners_live = values_partners
-                indicator.values_partners_gov_live = values_partners_gov
-            else:
-                indicator.values = values_month
-                indicator.values_gov = values_gov
-                indicator.values_partners = values_partners
-                indicator.values_partners_gov = values_partners_gov
+                if report_type == 'live':
+                    indicator.values_live = values_month
+                    indicator.values_gov_live = values_gov
+                    indicator.values_partners_live = values_partners
+                    indicator.values_partners_gov_live = values_partners_gov
+                else:
+                    indicator.values = values_month
+                    indicator.values_gov = values_gov
+                    indicator.values_partners = values_partners
+                    indicator.values_partners_gov = values_partners_gov
 
             indicator.save()
 
