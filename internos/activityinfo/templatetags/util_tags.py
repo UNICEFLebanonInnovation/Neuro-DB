@@ -219,11 +219,13 @@ def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None)
         return get_indicator_unit(indicator, 0)
 
 
-
 @register.assignment_tag
 def get_indicator_achieved(indicator, month=None, partner=None, gov=None):
     try:
         cumulative_values = indicator['cumulative_values']
+
+        if not indicator['target']:
+            return 0
 
         if partner and gov and not partner == '0' and not gov == '0':
             cumulative_values = cumulative_values.get('partners_govs')
@@ -260,6 +262,9 @@ def get_indicator_achieved(indicator, month=None, partner=None, gov=None):
 def get_indicator_live_achieved(indicator, month=None, partner=None, gov=None):
     try:
         cumulative_values = indicator['cumulative_values_live']
+
+        if not indicator['target']:
+            return 0
 
         if partner and gov and not partner == '0' and not gov == '0':
             cumulative_values = cumulative_values.get('partners_govs')
