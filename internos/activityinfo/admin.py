@@ -257,9 +257,9 @@ class IndicatorResource(resources.ModelResource):
 
 
 class IndicatorAdmin(ImportExportModelAdmin):
-    # form = IndicatorForm
-    # formset = IndicatorFormSet
-    # resource_class = IndicatorResource
+    form = IndicatorForm
+    formset = IndicatorFormSet
+    resource_class = IndicatorResource
     search_fields = (
         'ai_id',
         'name',
@@ -364,11 +364,11 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'calculated_indicator',
                 'calculated_percentage',
                 'measurement_type',
-                # 'denominator_indicator',
-                # 'denominator_multiplication',
-                # 'numerator_indicator',
-                # 'sub_indicators',
-                # 'summation_sub_indicators',
+                'denominator_indicator',
+                'denominator_multiplication',
+                'numerator_indicator',
+                'sub_indicators',
+                'summation_sub_indicators',
             ]
         }),
         ('Calculated Values', {
