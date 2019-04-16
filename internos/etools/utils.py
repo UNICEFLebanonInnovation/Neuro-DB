@@ -310,7 +310,6 @@ def sync_trip_individual_data(instance):
     data = get_data('etools.unicef.org', '/api/t2f/travels/{}/'.format(instance.id),
                     'Token 36f06547a4b930c6608e503db49f1e45305351c2')
     item = json.loads(data)
-    print(item['attachments'])
 
     instance.international_travel = item['international_travel']
     instance.ta_required = item['ta_required']
