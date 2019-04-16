@@ -647,8 +647,7 @@ def calculate_indicators_tags_hpm(ai_db):
     indicators = Indicator.objects.filter(hpm_indicator=True)
 
     for indicator in indicators.iterator():
-        c_key = indicator.cumulative_values['months'].keys()[-1]
-        m_value = indicator.cumulative_values['months'][c_key]
+        m_value = indicator.cumulative_values['months']
         sub_indicators = indicator.summation_sub_indicators.all().only(
             'name',
             'values',
@@ -668,8 +667,7 @@ def calculate_indicators_tags_hpm(ai_db):
         for ind_tag in tag_male:
             c_value = 0
             if 'months' in ind_tag.cumulative_values:
-                c_key = ind_tag.cumulative_values['months'].keys()[-1]
-                c_value = ind_tag.cumulative_values['months'][c_key]
+                c_value = ind_tag.cumulative_values['months']
 
             tag_male_value += c_value
 
@@ -683,8 +681,7 @@ def calculate_indicators_tags_hpm(ai_db):
         for ind_tag in tag_female:
             c_value = 0
             if 'months' in ind_tag.cumulative_values:
-                c_key = ind_tag.cumulative_values['months'].keys()[-1]
-                c_value = ind_tag.cumulative_values['months'][c_key]
+                c_value = ind_tag.cumulative_values['months']
             tag_female_value += c_value
 
         try:
@@ -697,8 +694,7 @@ def calculate_indicators_tags_hpm(ai_db):
         for ind_tag in tag_boys:
             c_value = 0
             if 'months' in ind_tag.cumulative_values:
-                c_key = ind_tag.cumulative_values['months'].keys()[-1]
-                c_value = ind_tag.cumulative_values['months'][c_key]
+                c_value = ind_tag.cumulative_values['months']
             tag_boys_value += c_value
         try:
             indicator.values_hpm['boys'] = float(tag_boys_value) * 100 / float(m_value)
@@ -710,8 +706,7 @@ def calculate_indicators_tags_hpm(ai_db):
         for ind_tag in tag_girls:
             c_value = 0
             if 'months' in ind_tag.cumulative_values:
-                c_key = ind_tag.cumulative_values['months'].keys()[-1]
-                c_value = ind_tag.cumulative_values['months'][c_key]
+                c_value = ind_tag.cumulative_values['months']
             tag_girls_value += c_value
         try:
             indicator.values_hpm['girls'] = float(tag_girls_value) * 100 / float(m_value)
