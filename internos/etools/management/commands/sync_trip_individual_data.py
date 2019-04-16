@@ -9,8 +9,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from internos.etools.models import Travel
-        # travels = Travel.objects.all()
-        travels = Travel.objects.filter(travel_type='programmatic visit', id=34280)
+        travels = Travel.objects.all()
+        # travels = Travel.objects.filter()
         for instance in travels.iterator():
             # print(instance.id)
             sync_trip_individual_data(instance)
