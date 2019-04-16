@@ -625,9 +625,12 @@ def calculate_indicators_cumulative_hpm(ai_db):
 
         for month in values:
             c_value = 0
-            for c_month in range(1, int(month) + 1):
-                c_value += float(values[str(c_month)])
-                cum_month[str(month)] = c_value
+            try:
+                for c_month in range(1, int(month) + 1):
+                    c_value += float(values[str(c_month)])
+                    cum_month[str(month)] = c_value
+            except Exception:
+                continue
 
         indicator.cumulative_values_hpm = {
             'months': cum_month,
