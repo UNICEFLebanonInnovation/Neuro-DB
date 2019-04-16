@@ -34,15 +34,22 @@ class PartnerProfileView(TemplateView):
         # programmatic_visits = TravelActivity.objects.filter(Q(travel_type='programmatic visit') | Q(travel_type='Programmatic Visit'))
         # programmatic_visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING)
 
-        partners = engagements.values('partner_id', 'partner__name').distinct()
-        # print(partners)
+        partners_info = []
+        # partners = PartnerOrganization.objects.exclude(interventions__isnull=False).exclude(hidden=True).exclude(deleted_flag=True)
+        partners = PartnerOrganization.objects.exclude(hidden=True).exclude(deleted_flag=True)
+        for partner in partners:
+            partners_info.append(
+                partner.detailed_info
+            )
 
         return {
             'databases': databases,
             'partners': partners,
+            'nbr_partners': partners.count(),
             'nbr_spot_checks': spot_checks.count(),
             'nbr_audits': audits.count(),
             'nbr_micro_assessments': micro_assessments.count(),
             'nbr_special_audits': special_audits.count(),
             'programmatic_visits': programmatic_visits.count(),
+            'partners_info': partners_info
         }

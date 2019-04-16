@@ -253,6 +253,9 @@ def sync_audit_individual_data(instance):
     if 'findings' in data:
         instance.findings = data['findings']
 
+    if 'findings' in data:
+        instance.findings_sets = data['findings']
+
     instance.partner_contacted_at = data['partner_contacted_at']
     instance.start_date = data['start_date']
     instance.end_date = data['end_date']

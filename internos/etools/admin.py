@@ -1,6 +1,7 @@
 
 from django.contrib import admin
-
+from django.contrib.postgres.fields import JSONField, ArrayField
+from django_json_widget.widgets import JSONEditorWidget
 from import_export import resources, fields
 from import_export import fields
 from import_export.admin import ImportExportModelAdmin
@@ -220,8 +221,21 @@ class EngagementAdmin(admin.ModelAdmin):
         'date_of_final_report',
         'date_of_cancel',
         'cancel_comment',
+        'internal_controls',
+        'final_report',
+        'audited_expenditure',
+        'financial_findings',
+        'audit_opinion',
+        'description',
+        'finding',
+        'pending_unsupported_amount',
+        'findings',
     )
 
+    formfield_overrides = {
+        JSONField: {'widget': JSONEditorWidget(attrs={'initial': 'parsed'})},
+        # models.ManyToManyField: {'widget': FilteredSelectMultiple('indicator', is_stacked=False)}
+    }
 
 @admin.register(Travel)
 class TravelAdmin(admin.ModelAdmin):

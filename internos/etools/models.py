@@ -128,6 +128,9 @@ class PartnerOrganization(models.Model):
         blank=True, null=True,
         verbose_name=u'Risk Rating'
     )
+    deleted_flag = models.BooleanField(default=False)
+    blocked = models.BooleanField(default=False)
+    hidden = models.BooleanField(default=False)
 
     @property
     def programmatic_visits(self):
@@ -144,34 +147,41 @@ class PartnerOrganization(models.Model):
         items = self.engagement_set.filter(engagement_type=Engagement.TYPE_AUDIT, start_date__year=today.year).order_by('start_date')
         return {
             'nbr_audits': items.count(),
-            'last_audit': items.last()
+            'last_audit': items.last(),
+            'audits': items
         }
 
     @property
     def micro_assessments(self):
         today = datetime.date.today()
-        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_MICRO_ASSESSMENT, start_date__year=today.year).order_by('start_date')
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_MICRO_ASSESSMENT).order_by('start_date')
+        # items = self.engagement_set.filter(engagement_type=Engagement.TYPE_MICRO_ASSESSMENT, start_date__year=today.year).order_by('start_date')
         return {
             'nbr_audits': items.count(),
-            'last_audit': items.last()
+            'last_audit': items.last(),
+            'audits': items
         }
 
     @property
     def spot_checks(self):
         today = datetime.date.today()
-        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPOT_CHECK, start_date__year=today.year).order_by('start_date')
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPOT_CHECK).order_by('start_date')
+        # items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPOT_CHECK, start_date__year=today.year).order_by('start_date')
         return {
             'nbr_audits': items.count(),
-            'last_audit': items.last()
+            'last_audit': items.last(),
+            'audits': items
         }
 
     @property
     def special_audits(self):
         today = datetime.date.today()
-        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPECIAL_AUDIT, start_date__year=today.year).order_by('start_date')
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPECIAL_AUDIT).order_by('start_date')
+        # items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPECIAL_AUDIT, start_date__year=today.year).order_by('start_date')
         return {
             'nbr_audits': items.count(),
-            'last_audit': items.last()
+            'last_audit': items.last(),
+            'audits': items
         }
 
     @property
@@ -193,6 +203,23 @@ class PartnerOrganization(models.Model):
                 'location_p_codes': item.location_p_codes
             })
         return data
+
+    @property
+    def detailed_info(self):
+        return {
+            'id': self.etl_id,
+            'name': self.name,
+            'short_name': self.short_name,
+            'description': self.description,
+            'type': self.partner_type,
+            'rating': self.rating,
+            'interventions': self.interventions_details,
+            'programmatic_visits': self.programmatic_visits,
+            'audits': self.audits,
+            'micro_assessments': self.micro_assessments,
+            'spot_checks': self.spot_checks,
+            'special_audits': self.special_audits,
+        }
 
     class Meta:
         ordering = ['name']
@@ -948,11 +975,21 @@ class Engagement(models.Model):
     pending_unsupported_amount = models.CharField(max_length=250, blank=True, null=True)
 
     findings = ArrayField(models.CharField(max_length=10000), blank=True, null=True)
+    findings_sets = JSONField(blank=True, null=True)
 
     class Meta:
         ordering = ('id',)
         verbose_name = _('Engagement')
         verbose_name_plural = _('Engagements')
+
+    # @property
+    # def findings_sets(self):
+    #     data = []
+    #     for item in self.findings:
+    #         print(type(item))
+    #         data.append(json.dumps(item))
+    #
+    #     return data
 
     @property
     def displayed_status(self):
@@ -984,7 +1021,7 @@ class Engagement(models.Model):
         return self.unique_id
 
     def __str__(self):
-        return '{} {}'.format(self.displayed_status, self.reference_number)
+        return '{} on: {} {}'.format(self.DISPLAY_STATUSES[self.displayed_status], self.displayed_status_date, self.reference_number)
 
 
 class Finding(models.Model):
