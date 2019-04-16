@@ -82,6 +82,8 @@
         <button type="button" itemref="micro-assessments" class="btn btn-default btn-filter">Micro Assessments</button>
         <button type="button" itemref="spot-checks" class="btn btn-default btn-filter">Spot Checks</button>
         <button type="button" itemref="special-visits" class="btn btn-default btn-filter">Special Visits</button>
+        <button type="button" itemref="programmatic-visits" class="btn btn-default btn-filter">Programmatic Visits</button>
+        <button type="button" itemref="programmatic-visits-completed" class="btn btn-default btn-filter">Completed Programmatic Visits</button>
       </div>
       <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
          title="Show me some tips" style="padding-left: 20px;">
@@ -101,7 +103,9 @@
         {% elif partner.rating == 'high' %}panel-danger{% else %}panel-success{% endif %}"
            pcas="{{ partner.interventions|length }}" audits="{{ partner.audits.nbr_audits }}"
            micro-assessments="{{ partner.micro_assessments.nbr_audits }}"
-           spot-checks="{{ partner.spot_checks.nbr_audits }}" special-visits="{{ partner.special_visits.nbr_audits }}">
+           spot-checks="{{ partner.spot_checks.nbr_audits }}" special-visits="{{ partner.special_visits.nbr_audits }}"
+           programmatic-visits="{{ partner.programmatic_visits.nbr_visits }}"
+           programmatic-visits-completed="{{ partner.programmatic_visits.nbr_completed }}">
 
           <div class="panel-heading">
             <h3 class="panel-title">
@@ -153,6 +157,57 @@
             {% else %}
               <div class="panel-body">
                 <h5 class="modal-title"><span class="label label-primary">0</span> Interventions</h5>
+              </div>
+            {% endif %}
+
+            {% if partner.programmatic_visits.nbr_visits %}
+            <div class="panel-footer">
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.programmatic_visits.nbr_visits }}</span> Programmatic Visit(s)</h5>
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_planned }}</span> Planned</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_submitted }}</span> Submitted</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_approved }}</span> Approved</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_completed }}</span> Completed</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_cancelled }}</span> Cancelled</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_rejected }}</span> Rejected</div>
+                </div>
+                {% for audit in partner.programmatic_visits.completed %}
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-6">
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ audit }}
+                    <a href="https://etools.unicef.org/t2f/edit-travel/{{ audit.travel_id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                  </div>
+                  <div class="col-md-6">
+                    {% if audit.partnership_id %}
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ audit.partnership }}
+                    <a href="https://etools.unicef.org/pmp/interventions/{{ audit.partnership_id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-12">
+                    <strong><span class="label label-primary">{{ audit.travel.attachments_sets|length }}</span> Attachment(s)</strong>
+                    <p>
+                      {% for att in audit.travel.attachments_sets %}
+                      <i class="fa fa-file-pdf-o"></i>
+                      <a href="{{ att.url }}" target="_blank">
+                        {{ att.name }}
+                        <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                      </a>
+                      <br/>
+                      {% endfor %}
+                    </p>
+                  </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+              <div class="panel-footer">
+                <h5 class="modal-title"><span class="label label-primary">0</span> Programmatic Visits</h5>
               </div>
             {% endif %}
 

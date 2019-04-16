@@ -138,7 +138,15 @@ class PartnerOrganization(models.Model):
         travels = self.travelactivity_set.filter(travel_type='programmatic visit', date__year=today.year).order_by('date')
         return {
             'nbr_visits': travels.count(),
-            'last_visit': travels.last()
+            'nbr_planned': travels.filter(travel__status=Travel.PLANNED).count(),
+            'nbr_submitted': travels.filter(travel__status=Travel.SUBMITTED).count(),
+            'nbr_approved': travels.filter(travel__status=Travel.APPROVED).count(),
+            'nbr_completed': travels.filter(travel__status=Travel.COMPLETED).count(),
+            'nbr_cancelled': travels.filter(travel__status=Travel.CANCELLED).count(),
+            'nbr_rejected': travels.filter(travel__status=Travel.REJECTED).count(),
+            'last_visit': travels.last(),
+            'audits': travels,
+            'completed': travels.filter(travel__status=Travel.COMPLETED),
         }
 
     @property
@@ -623,6 +631,7 @@ class Travel(models.Model):
     activities_set = ArrayField(models.CharField(max_length=10000), blank=True, null=True)
     # activities_set
     attachments_set = ArrayField(models.CharField(max_length=10000), blank=True, null=True)
+    attachments_sets = JSONField(blank=True, null=True)
     travel_type = models.CharField(max_length=64, blank=True,
                                    default=TravelType.PROGRAMME_MONITORING,
                                    verbose_name=_('Travel Type'))
@@ -689,7 +698,7 @@ class TravelActivity(models.Model):
         return travel.get_object_url()
 
     def __str__(self):
-        return '{} - {}'.format(self.travel_type, self.date)
+        return '{} - {}'.format(self.travel.reference_number, self.date)
 
 
 class ItineraryItem(models.Model):

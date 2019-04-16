@@ -237,6 +237,7 @@ class EngagementAdmin(admin.ModelAdmin):
         # models.ManyToManyField: {'widget': FilteredSelectMultiple('indicator', is_stacked=False)}
     }
 
+
 @admin.register(Travel)
 class TravelAdmin(admin.ModelAdmin):
     list_filter = (
