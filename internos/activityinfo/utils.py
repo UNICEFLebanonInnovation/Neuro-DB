@@ -1948,13 +1948,14 @@ def update_indicators_hpm_data():
     for indicator in indicators.iterator():
         for month in range(1, last_month):
             value = 0
+            month = str(month)
             values = indicator.values
             values_hpm = indicator.values_hpm
             if month in values:
-                value = values[str(month)]
+                value = values[month]
 
             if month not in values_hpm:
-                indicator.values_hpm[str(month)] = value
+                indicator.values_hpm[month] = value
 
         indicator.save()
 
