@@ -689,6 +689,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'calculate_indicators_status',
         'reset_indicators_values',
         'update_indicators_report',
+        'update_hpm_report',
         'reset_hpm_indicators_values',
         'update_indicators_hpm',
         'calculate_indicators_cumulative_hpm',
