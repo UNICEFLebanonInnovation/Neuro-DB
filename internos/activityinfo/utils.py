@@ -1954,9 +1954,11 @@ def update_indicators_hpm_data():
             values_hpm = indicator.values_hpm
             if month in values:
                 value = values[month]
+                print(value)
 
             if month not in values_hpm:
                 indicator.values_hpm[month] = value
+                print('ok')
 
         indicator.save()
 
