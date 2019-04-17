@@ -244,13 +244,7 @@ def get_indicator_achieved(indicator, month=None, partner=None, gov=None):
                 return round((cumulative_values[gov] * 100.0) / indicator['target'], 2)
 
         if 'months' in cumulative_values:
-            return get_indicator_unit(indicator, cumulative_values.get('months'))
-
-        # if month and 'months' in cumulative_values:
-        #     month = str(month)
-        #     cumulative_values = cumulative_values.get('months')
-        #     if month in cumulative_values:
-        #         return round((cumulative_values[month] * 100.0) / indicator['target'], 2)
+            return round((cumulative_values['months'] * 100.0) / indicator['target'], 2)
 
         return 0
     except Exception as ex:
@@ -283,13 +277,7 @@ def get_indicator_live_achieved(indicator, month=None, partner=None, gov=None):
                 return round((cumulative_values[gov] * 100.0) / indicator['target'], 2)
 
         if 'months' in cumulative_values:
-            return get_indicator_unit(indicator, cumulative_values.get('months'))
-
-        # if month and 'months' in cumulative_values:
-        #     month = str(month)
-        #     cumulative_values = cumulative_values.get('months')
-        #     if month in cumulative_values:
-        #         return round((cumulative_values[month] * 100.0) / indicator['target'], 2)
+            return round((cumulative_values['months'] * 100.0) / indicator['target'], 2)
 
         return 0
     except Exception as ex:
