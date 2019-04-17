@@ -335,8 +335,11 @@ def get_indicator_hpm_data(ai_id, month=None):
         if month and 'months' in cumulative_values:
             month = str(month)
             cumulative_values = cumulative_values.get('months')
-            if month in cumulative_values:
-                cumulative = cumulative_values[month]
+            if isinstance(cumulative_values, dict):
+                if month in cumulative_values:
+                    cumulative = cumulative_values[month]
+            else:
+                cumulative = cumulative_values
 
         cumulative_result = "{:,}".format(round(cumulative), 1)
         cumulative_result = cumulative_result.replace('.0', '')
@@ -352,10 +355,10 @@ def get_indicator_hpm_data(ai_id, month=None):
             'name': indicator.name,
             'cumulative': cumulative_result,
             'last_report_changes': last_report_changes,
-            'boys': str(round(indicator.values_hpm['boys'])).replace('.0', '') if 'boys' in indicator.values_hpm else 0,
-            'girls': str(round(indicator.values_hpm['girls'])).replace('.0', '') if 'girls' in indicator.values_hpm else 0,
-            'male': str(round(indicator.values_hpm['male'])).replace('.0', '') if 'male' in indicator.values_hpm else 0,
-            'female': str(round(indicator.values_hpm['female'])).replace('.0', '') if 'female' in indicator.values_hpm else 0,
+            'boys': str(round(indicator.values_tags['boys'])).replace('.0', '') if 'boys' in indicator.values_tags else 0,
+            'girls': str(round(indicator.values_tags['girls'])).replace('.0', '') if 'girls' in indicator.values_tags else 0,
+            'male': str(round(indicator.values_tags['male'])).replace('.0', '') if 'male' in indicator.values_tags else 0,
+            'female': str(round(indicator.values_tags['female'])).replace('.0', '') if 'female' in indicator.values_tags else 0,
         }
 
         return data

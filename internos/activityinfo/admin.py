@@ -385,6 +385,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
             'classes': ('suit-tab', 'suit-tab-hpm-values',),
             'fields': [
                 'values_hpm',
+                'values_tags',
                 'cumulative_values_hpm',
             ]
         }),

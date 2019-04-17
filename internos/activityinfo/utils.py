@@ -606,6 +606,7 @@ def reset_hpm_indicators_values():
     indicators = Indicator.objects.filter(hpm_indicator=True)
     for indicator in indicators:
         indicator.values_hpm = {}
+        # indicator.values_tags = {}
         indicator.cumulative_values_hpm = {}
         indicator.save()
 
@@ -654,6 +655,7 @@ def calculate_indicators_tags_hpm():
             'values_partners_gov',
             'values_live',
             'values_hpm',
+            'values_tags',
             'cumulative_values',
         )
         tag_boys = sub_indicators.filter(tag_gender__name='Boys')
@@ -671,10 +673,10 @@ def calculate_indicators_tags_hpm():
                 tag_male_value += c_value
 
         try:
-            indicator.values_hpm['male'] = float(tag_male_value) * 100 / float(m_value)
+            indicator.values_tags['male'] = float(tag_male_value) * 100 / float(m_value)
         except Exception as ex:
             # print(ex.message)
-            indicator.values_hpm['male'] = 0
+            indicator.values_tags['male'] = 0
 
         tag_female_value = 0
         for ind_tag in tag_female:
@@ -686,10 +688,10 @@ def calculate_indicators_tags_hpm():
                 tag_female_value += c_value
 
         try:
-            indicator.values_hpm['female'] = float(tag_female_value) * 100 / float(m_value)
+            indicator.values_tags['female'] = float(tag_female_value) * 100 / float(m_value)
         except Exception as ex:
             # print(ex.message)
-            indicator.values_hpm['female'] = 0
+            indicator.values_tags['female'] = 0
 
         tag_boys_value = 0
         for ind_tag in tag_boys:
@@ -701,10 +703,10 @@ def calculate_indicators_tags_hpm():
                 tag_boys_value += c_value
 
         try:
-            indicator.values_hpm['boys'] = float(tag_boys_value) * 100 / float(m_value)
+            indicator.values_tags['boys'] = float(tag_boys_value) * 100 / float(m_value)
         except Exception as ex:
             # print(ex.message)
-            indicator.values_hpm['boys'] = 0
+            indicator.values_tags['boys'] = 0
 
         tag_girls_value = 0
         for ind_tag in tag_girls:
@@ -716,10 +718,10 @@ def calculate_indicators_tags_hpm():
                 tag_girls_value += c_value
 
         try:
-            indicator.values_hpm['girls'] = float(tag_girls_value) * 100 / float(m_value)
+            indicator.values_tags['girls'] = float(tag_girls_value) * 100 / float(m_value)
         except Exception as ex:
             # print(ex.message)
-            indicator.values_hpm['girls'] = 0
+            indicator.values_tags['girls'] = 0
 
         indicator.save()
 
@@ -1950,15 +1952,12 @@ def update_indicators_hpm_data():
             value = 0
             month = str(month)
             values = indicator.values
-            print(values)
             values_hpm = indicator.values_hpm
             if month in values:
                 value = values[month]
-                print(value)
 
             if month not in values_hpm:
                 indicator.values_hpm[month] = value
-                print('ok')
 
         indicator.save()
 

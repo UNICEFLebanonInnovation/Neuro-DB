@@ -363,6 +363,7 @@ class Indicator(models.Model):
     numerator_summation = models.ManyToManyField('self', blank=True, related_name='+')
     values = JSONField(blank=True, null=True)
     values_hpm = JSONField(blank=True, null=True, default={})
+    values_tags = JSONField(blank=True, null=True, default={})
     values_gov = JSONField(blank=True, null=True)
     values_partners = JSONField(blank=True, null=True)
     values_partners_gov = JSONField(blank=True, null=True)
