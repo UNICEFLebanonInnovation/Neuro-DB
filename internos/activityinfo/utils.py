@@ -600,10 +600,10 @@ def calculate_indicators_cumulative_results(ai_db, report_type=None):
     return indicators.count()
 
 
-def reset_hpm_indicators_values(ai_id):
+def reset_hpm_indicators_values():
     from internos.activityinfo.models import Indicator
 
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_id)
+    indicators = Indicator.objects.filter(hpm_indicator=True)
     for indicator in indicators:
         indicator.values_hpm = {}
         indicator.cumulative_values_hpm = {}
@@ -612,10 +612,9 @@ def reset_hpm_indicators_values(ai_id):
     return indicators.count()
 
 
-def calculate_indicators_cumulative_hpm(ai_db):
+def calculate_indicators_cumulative_hpm():
     from internos.activityinfo.models import Indicator
 
-    # indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
     indicators = Indicator.objects.filter(hpm_indicator=True)
 
     for indicator in indicators:
@@ -640,10 +639,9 @@ def calculate_indicators_cumulative_hpm(ai_db):
     return indicators.count()
 
 
-def calculate_indicators_tags_hpm(ai_db):
+def calculate_indicators_tags_hpm():
     from internos.activityinfo.models import Indicator
 
-    # indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
     indicators = Indicator.objects.filter(hpm_indicator=True)
 
     for indicator in indicators.iterator():
@@ -800,8 +798,8 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
                     if key in values_month:
                         val = values_month[key] + val
                     values_month[key] = val
-                    if str(key) == str(reporting_month):
-                        indicator.values_hpm[reporting_month] = val
+                    # if str(key) == str(reporting_month):
+                    #     indicator.values_hpm[reporting_month] = val
 
                 for key in values1:
                     val = values1[key]
@@ -931,8 +929,8 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
                 indicator.values_partners_live.update(values_partners)
                 indicator.values_partners_gov_live.update(values_partners_gov)
             else:
-                if month == reporting_month:
-                    indicator.values_hpm[reporting_month] = values_month
+                # if month == reporting_month:
+                #     indicator.values_hpm[reporting_month] = values_month
                 indicator.values[month] = values_month
                 indicator.values_gov.update(values_gov)
                 indicator.values_partners.update(values_partners)
@@ -1164,8 +1162,8 @@ def calculate_indicators_values_percentage(ai_db, report_type=None):
                 indicator.values_partners_live.update(values_partners)
                 indicator.values_partners_gov_live.update(values_partners_gov)
             else:
-                if month == reporting_month:
-                    indicator.values_hpm[reporting_month] = values_month
+                # if month == reporting_month:
+                #     indicator.values_hpm[reporting_month] = values_month
                 indicator.values[month] = values_month
                 indicator.values_gov.update(values_gov)
                 indicator.values_partners.update(values_partners)
@@ -1277,8 +1275,8 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
                 indicator.values_partners_live.update(values_partners)
                 indicator.values_partners_gov_live.update(values_partners_gov)
             else:
-                if month == reporting_month:
-                    indicator.values_hpm[reporting_month] = values_month
+                # if month == reporting_month:
+                #     indicator.values_hpm[reporting_month] = values_month
                 indicator.values[month] = values_month
                 indicator.values_gov.update(values_gov)
                 indicator.values_partners.update(values_partners)
@@ -1396,8 +1394,8 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
                 indicator.values_partners_live.update(values_partners)
                 indicator.values_partners_gov_live.update(values_partners_gov)
             else:
-                if month == reporting_month:
-                    indicator.values_hpm[reporting_month] = values_month
+                # if month == reporting_month:
+                #     indicator.values_hpm[reporting_month] = values_month
                 indicator.values[month] = values_month
                 indicator.values_gov.update(values_gov)
                 indicator.values_partners.update(values_partners)
@@ -1451,8 +1449,8 @@ def calculate_individual_indicators_values_11(ai_db):
             except Exception:
                 continue
 
-            if month == reporting_month:
-                indicator.values_hpm[reporting_month] = result
+            # if month == reporting_month:
+            #     indicator.values_hpm[reporting_month] = result
             indicator.values[str(month)] = result
 
             for gov1 in governorates1:
@@ -1553,10 +1551,10 @@ def calculate_individual_indicators_values_1(ai_db):
                 rows_months[row[0]] = {}
             rows_months[row[0]][month] = row[1]
 
-            if month == reporting_month:
-                if row[0] not in values_hpm:
-                    values_hpm[row[0]] = {}
-                values_hpm[row[0]] = row[1]
+            # if month == reporting_month:
+            #     if row[0] not in values_hpm:
+            #         values_hpm[row[0]] = {}
+            #     values_hpm[row[0]] = row[1]
 
         if ai_db.is_funded_by_unicef:
             cursor.execute(
@@ -1628,8 +1626,8 @@ def calculate_individual_indicators_values_1(ai_db):
         if indicator.ai_indicator in rows_months:
             indicator.values = rows_months[indicator.ai_indicator]
 
-        if indicator.ai_indicator in values_hpm:
-            indicator.values_hpm[reporting_month] = values_hpm[indicator.ai_indicator]
+        # if indicator.ai_indicator in values_hpm:
+        #     indicator.values_hpm[reporting_month] = values_hpm[indicator.ai_indicator]
 
         if indicator.ai_indicator in rows_partners:
             indicator.values_partners = rows_partners[indicator.ai_indicator]
@@ -1793,8 +1791,8 @@ def calculate_individual_indicators_values(ai_db, report_type=None):
             if report_type == 'live':
                 indicator.values_live[str(month)] = result
             else:
-                if month == reporting_month:
-                    indicator.values_hpm[reporting_month] = result
+                # if month == reporting_month:
+                #     indicator.values_hpm[reporting_month] = result
                 indicator.values[str(month)] = result
 
             for gov1 in governorates1:
@@ -1930,6 +1928,35 @@ def update_partner_data(ai_db):
         raise e
 
     return objects
+
+
+def update_hpm_report():
+    update_indicators_hpm_data()
+    calculate_indicators_cumulative_hpm()
+    calculate_indicators_tags_hpm()
+
+
+def update_indicators_hpm_data():
+    from internos.activityinfo.models import Indicator
+
+    last_month = int(datetime.datetime.now().strftime("%m"))
+    indicators = Indicator.objects.filter(hpm_indicator=True).only(
+        'values',
+        'values_hpm',
+    )
+
+    for indicator in indicators.iterator():
+        for month in range(1, last_month):
+            value = 0
+            values = indicator.values
+            values_hpm = indicator.values_hpm
+            if month in values:
+                value = values[str(month)]
+
+            if month not in values_hpm:
+                indicator.values_hpm[str(month)] = value
+
+        indicator.save()
 
 
 def update_hpm_table_docx(indicators, month, month_name, filename):
