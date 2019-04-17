@@ -647,6 +647,8 @@ def calculate_indicators_tags_hpm():
 
     for indicator in indicators.iterator():
         m_value = indicator.cumulative_values['months']
+        if isinstance(m_value, dict):
+            m_value = 0
         sub_indicators = indicator.summation_sub_indicators.all().only(
             'name',
             'values',
@@ -669,8 +671,10 @@ def calculate_indicators_tags_hpm():
             if 'months' in ind_tag.cumulative_values:
                 c_value = ind_tag.cumulative_values['months']
 
-            if isinstance(c_value, (int, long)):
-                tag_male_value += c_value
+            if isinstance(c_value, dict):
+                c_value = 0
+
+            tag_male_value += float(c_value)
 
         try:
             indicator.values_tags['male'] = float(tag_male_value) * 100 / float(m_value)
@@ -684,8 +688,10 @@ def calculate_indicators_tags_hpm():
             if 'months' in ind_tag.cumulative_values:
                 c_value = ind_tag.cumulative_values['months']
 
-            if isinstance(c_value, (int, long)):
-                tag_female_value += c_value
+            if isinstance(c_value, dict):
+                c_value = 0
+
+            tag_female_value += c_value
 
         try:
             indicator.values_tags['female'] = float(tag_female_value) * 100 / float(m_value)
@@ -699,8 +705,10 @@ def calculate_indicators_tags_hpm():
             if 'months' in ind_tag.cumulative_values:
                 c_value = ind_tag.cumulative_values['months']
 
-            if isinstance(c_value, (int, long)):
-                tag_boys_value += c_value
+            if isinstance(c_value, dict):
+                c_value = 0
+
+            tag_boys_value += c_value
 
         try:
             indicator.values_tags['boys'] = float(tag_boys_value) * 100 / float(m_value)
@@ -714,8 +722,10 @@ def calculate_indicators_tags_hpm():
             if 'months' in ind_tag.cumulative_values:
                 c_value = ind_tag.cumulative_values['months']
 
-            if isinstance(c_value, (int, long)):
-                tag_girls_value += c_value
+            if isinstance(c_value, dict):
+                c_value = 0
+
+            tag_girls_value += c_value
 
         try:
             indicator.values_tags['girls'] = float(tag_girls_value) * 100 / float(m_value)
