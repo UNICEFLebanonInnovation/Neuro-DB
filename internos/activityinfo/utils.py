@@ -1950,6 +1950,7 @@ def update_indicators_hpm_data():
             value = 0
             month = str(month)
             values = indicator.values
+            print(values)
             values_hpm = indicator.values_hpm
             if month in values:
                 value = values[month]
