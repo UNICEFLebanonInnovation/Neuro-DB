@@ -135,7 +135,20 @@ class PartnerOrganization(models.Model):
     @property
     def programmatic_visits(self):
         today = datetime.date.today()
-        travels = self.travelactivity_set.filter(travel_type='programmatic visit', date__year=today.year).order_by('date')
+        travels = self.travelactivity_set.filter(travel_type='programmatic visit',
+                                                 date__year=today.year).order_by('date').only(
+            'id',
+            'partnership_id',
+            'partnership__number',
+            'travel__status',
+            'travel__attachments_sets',
+        ).values(
+            'id',
+            'partnership_id',
+            'partnership__number',
+            'travel__status',
+            'travel__attachments_sets',
+        )
         return {
             'nbr_visits': travels.count(),
             'nbr_planned': travels.filter(travel__status=Travel.PLANNED).count(),
@@ -152,7 +165,16 @@ class PartnerOrganization(models.Model):
     @property
     def audits(self):
         today = datetime.date.today()
-        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_AUDIT, start_date__year=today.year).order_by('start_date')
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_AUDIT,
+                                           start_date__year=today.year).order_by('start_date').only(
+            'id',
+            'findings_sets',
+            'internal_controls',
+        ).values(
+            'id',
+            'findings_sets',
+            'internal_controls',
+        )
         return {
             'nbr_audits': items.count(),
             'last_audit': items.last(),
@@ -162,7 +184,16 @@ class PartnerOrganization(models.Model):
     @property
     def micro_assessments(self):
         today = datetime.date.today()
-        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_MICRO_ASSESSMENT).order_by('start_date')
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_MICRO_ASSESSMENT
+                                           ).order_by('start_date').only(
+            'id',
+            'findings_sets',
+            'internal_controls',
+        ).values(
+            'id',
+            'findings_sets',
+            'internal_controls',
+        )
         # items = self.engagement_set.filter(engagement_type=Engagement.TYPE_MICRO_ASSESSMENT, start_date__year=today.year).order_by('start_date')
         return {
             'nbr_audits': items.count(),
@@ -173,7 +204,15 @@ class PartnerOrganization(models.Model):
     @property
     def spot_checks(self):
         today = datetime.date.today()
-        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPOT_CHECK).order_by('start_date')
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPOT_CHECK).only(
+            'id',
+            'findings_sets',
+            'internal_controls',
+        ).order_by('start_date').values(
+            'id',
+            'findings_sets',
+            'internal_controls',
+        )
         # items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPOT_CHECK, start_date__year=today.year).order_by('start_date')
         return {
             'nbr_audits': items.count(),
@@ -184,7 +223,15 @@ class PartnerOrganization(models.Model):
     @property
     def special_audits(self):
         today = datetime.date.today()
-        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPECIAL_AUDIT).order_by('start_date')
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPECIAL_AUDIT).only(
+            'id',
+            'findings_sets',
+            'internal_controls',
+        ).order_by('start_date').values(
+            'id',
+            'findings_sets',
+            'internal_controls',
+        )
         # items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPECIAL_AUDIT, start_date__year=today.year).order_by('start_date')
         return {
             'nbr_audits': items.count(),
@@ -196,19 +243,42 @@ class PartnerOrganization(models.Model):
     def interventions_details(self):
         data = []
         now = datetime.datetime.now()
+        interventions = self.interventions.filter(end__year=now.year).order_by('start').only(
+            'etl_id',
+            'number',
+            'start',
+            'end',
+            'document_type',
+            'total_unicef_budget',
+            'budget_currency',
+            'total_budget',
+            'offices_names',
+            'location_p_codes'
+        ).values(
+            'etl_id',
+            'number',
+            'start',
+            'end',
+            'document_type',
+            'total_unicef_budget',
+            'budget_currency',
+            'total_budget',
+            'offices_names',
+            'location_p_codes'
+        )
 
-        for item in self.interventions.filter(end__year=now.year).order_by('start'):
+        for item in interventions.iterator():
             data.append({
-                'etl_id': item.etl_id,
-                'number': item.number,
-                'start': item.start,
-                'end': item.end,
-                'document_type': item.document_type,
-                'total_unicef_budget': item.total_unicef_budget,
-                'budget_currency': item.budget_currency,
-                'total_budget': item.total_budget,
-                'offices_names': item.offices_names,
-                'location_p_codes': item.location_p_codes
+                'etl_id': item['etl_id'],
+                'number': item['number'],
+                'start': item['start'],
+                'end': item['end'],
+                'document_type': item['document_type'],
+                'total_unicef_budget': item['total_unicef_budget'],
+                'budget_currency': item['budget_currency'],
+                'total_budget': item['total_budget'],
+                'offices_names': item['offices_names'],
+                'location_p_codes': item['location_p_codes']
             })
         return data
 

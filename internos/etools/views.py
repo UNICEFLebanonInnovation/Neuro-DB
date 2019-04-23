@@ -37,7 +37,7 @@ class PartnerProfileView(TemplateView):
         partners_info = []
         # partners = PartnerOrganization.objects.exclude(interventions__isnull=False).exclude(hidden=True).exclude(deleted_flag=True)
         partners = PartnerOrganization.objects.exclude(hidden=True).exclude(deleted_flag=True)
-        for partner in partners:
+        for partner in partners.iterator():
             partners_info.append(
                 partner.detailed_info
             )

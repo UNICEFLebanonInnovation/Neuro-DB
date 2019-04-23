@@ -183,16 +183,16 @@
                   <div class="col-md-6">
                     {% if audit.partnership_id %}
                     <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
-                    {{ audit.partnership }}
+                    {{ audit.partnership__number }}
                     <a href="https://etools.unicef.org/pmp/interventions/{{ audit.partnership_id }}" target="_blank">
                       <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                     </a>
                     {% endif %}
                   </div>
                   <div class="col-md-12">
-                    <strong><span class="label label-primary">{{ audit.travel.attachments_sets|length }}</span> Attachment(s)</strong>
+                    <strong><span class="label label-primary">{{ audit.travel__attachments_sets|length }}</span> Attachment(s)</strong>
                     <p>
-                      {% for att in audit.travel.attachments_sets %}
+                      {% for att in audit.travel__attachments_sets %}
                       <i class="fa fa-file-pdf-o"></i>
                       <a href="{{ att.url }}" target="_blank">
                         {{ att.name }}
