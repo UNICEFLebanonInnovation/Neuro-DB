@@ -11,6 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
 from .models import PartnerOrganization, Engagement, Travel, TravelType, TravelActivity
+from .utils import get_partner_profile_details
 from internos.users.models import Section
 from internos.activityinfo.models import Database
 
@@ -37,10 +38,12 @@ class PartnerProfileView(TemplateView):
         partners_info = []
         # partners = PartnerOrganization.objects.exclude(interventions__isnull=False).exclude(hidden=True).exclude(deleted_flag=True)
         partners = PartnerOrganization.objects.exclude(hidden=True).exclude(deleted_flag=True)
-        for partner in partners.iterator():
-            partners_info.append(
-                partner.detailed_info
-            )
+        # for partner in partners.iterator():
+        #     partners_info.append(
+        #         partner.detailed_info
+        #     )
+
+        partners_info = get_partner_profile_details()
 
         return {
             'databases': databases,

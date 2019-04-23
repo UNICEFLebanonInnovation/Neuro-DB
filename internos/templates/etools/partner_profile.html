@@ -98,14 +98,14 @@
     </div>
     <div class="row" id="partner_profile">
 
-    {% for partner in partners_info %}
+    {% for key, partner in partners_info.items %}
       <div class="partner-profile panel {% if partner.rating == 'low' %}panel-info{% elif partner.rating == 'medium' %}panel-warning
         {% elif partner.rating == 'high' %}panel-danger{% else %}panel-success{% endif %}"
-           pcas="{{ partner.interventions|length }}" audits="{{ partner.audits.nbr_audits }}"
-           micro-assessments="{{ partner.micro_assessments.nbr_audits }}"
-           spot-checks="{{ partner.spot_checks.nbr_audits }}" special-visits="{{ partner.special_visits.nbr_audits }}"
-           programmatic-visits="{{ partner.programmatic_visits.nbr_visits }}"
-           programmatic-visits-completed="{{ partner.programmatic_visits.nbr_completed }}">
+           pcas="{{ partner.interventions|length }}" audits="{{ partner.audits|length }}"
+           micro-assessments="{{ partner.micro_assessments|length }}"
+           spot-checks="{{ partner.spot_checks|length }}" special-visits="{{ partner.special_visits|length }}"
+           programmatic-visits="{{ partner.programmatic_visits|length }}"
+           programmatic-visits-completed="{{ partner.programmatic_visits_completed|length }}">
 
           <div class="panel-heading">
             <h3 class="panel-title">
@@ -139,7 +139,7 @@
                     <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.start }}
                   </div>
                   <div class="col-md-2">
-                    <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.end }}
+                    <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.end_date }}
                   </div>
                   <div class="col-md-6">
                     <i class="fa fa-map-o" style="font-size: 16px; color: #0089d2;"></i>
@@ -160,22 +160,22 @@
               </div>
             {% endif %}
 
-            {% if partner.programmatic_visits.nbr_visits %}
+            {% if partner.programmatic_visits|length %}
             <div class="panel-footer">
-              <h5 class="modal-title"><span class="label label-primary">{{ partner.programmatic_visits.nbr_visits }}</span> Programmatic Visit(s)</h5>
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.programmatic_visits|length }}</span> Programmatic Visit(s)</h5>
                 <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
                   <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_planned }}</span> Planned</div>
                   <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_submitted }}</span> Submitted</div>
                   <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_approved }}</span> Approved</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_completed }}</span> Completed</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_completed|length }}</span> Completed</div>
                   <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_cancelled }}</span> Cancelled</div>
                   <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_rejected }}</span> Rejected</div>
                 </div>
-                {% for audit in partner.programmatic_visits.completed %}
+                {% for audit in partner.programmatic_visits_completed %}
                 <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
                   <div class="col-md-6">
                     <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
-                    {{ audit }}
+                    {{ audit.reference_number }}
                     <a href="https://etools.unicef.org/t2f/edit-travel/{{ audit.travel_id }}" target="_blank">
                       <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                     </a>
@@ -183,16 +183,16 @@
                   <div class="col-md-6">
                     {% if audit.partnership_id %}
                     <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
-                    {{ audit.partnership__number }}
+                    {{ audit.number }}
                     <a href="https://etools.unicef.org/pmp/interventions/{{ audit.partnership_id }}" target="_blank">
                       <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                     </a>
                     {% endif %}
                   </div>
                   <div class="col-md-12">
-                    <strong><span class="label label-primary">{{ audit.travel__attachments_sets|length }}</span> Attachment(s)</strong>
+                    <strong><span class="label label-primary">{{ audit.attachments_sets|length }}</span> Attachment(s)</strong>
                     <p>
-                      {% for att in audit.travel__attachments_sets %}
+                      {% for att in audit.attachments_sets %}
                       <i class="fa fa-file-pdf-o"></i>
                       <a href="{{ att.url }}" target="_blank">
                         {{ att.name }}
@@ -211,15 +211,15 @@
               </div>
             {% endif %}
 
-            {% if partner.audits.nbr_audits %}
+            {% if partner.audits|length %}
             <div class="panel-footer">
-              <h5 class="modal-title"><span class="label label-primary">{{ partner.audits.nbr_audits }}</span> Audit(s)</h5>
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.audits|length }}</span> Audit(s)</h5>
 
-                {% for audit in partner.audits.audits %}
+                {% for audit in partner.audits %}
                 <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
                   <div class="col-md-6">
                     <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
-                    {{ audit }}
+                    {{ audit.displayed_name }}
                     <a href="https://etools.unicef.org/ap/audits/{{ audit.id }}" target="_blank">
                       <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                     </a>
@@ -258,15 +258,15 @@
               </div>
             {% endif %}
 
-            {% if partner.micro_assessments.nbr_audits %}
+            {% if partner.micro_assessments|length %}
             <div class="panel-footer">
-              <h5 class="modal-title"><span class="label label-primary">{{ partner.micro_assessments.nbr_audits }}</span> Micro Assessment(s)</h5>
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.micro_assessments|length }}</span> Micro Assessment(s)</h5>
 
-                {% for audit in partner.micro_assessments.audits %}
+                {% for audit in partner.micro_assessments %}
                 <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
                   <div class="col-md-6">
                     <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
-                    {{ audit }}
+                    {{ audit.displayed_name }}
                     <a href="https://etools.unicef.org/ap/micro-assessments/{{ audit.id }}" target="_blank">
                       <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                     </a>
@@ -305,14 +305,14 @@
               </div>
             {% endif %}
 
-            {% if partner.spot_checks.nbr_audits %}
+            {% if partner.spot_checks|length %}
             <div class="panel-footer">
-                <h5 class="modal-title"><span class="label label-primary">{{ partner.spot_checks.nbr_audits }}</span> Spot Check(s)</h5>
-                {% for audit in partner.spot_checks.audits %}
+                <h5 class="modal-title"><span class="label label-primary">{{ partner.spot_checks|length }}</span> Spot Check(s)</h5>
+                {% for audit in partner.spot_checks %}
                 <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
                   <div class="col-md-6">
                     <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
-                    {{ audit }}
+                    {{ audit.displayed_name }}
                     <a href="https://etools.unicef.org/ap/spot-checks/{{ audit.id }}" target="_blank">
                       <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                     </a>
@@ -351,15 +351,15 @@
               </div>
             {% endif %}
 
-            {% if partner.special_visits.nbr_audits %}
+            {% if partner.special_visits|length %}
             <div class="panel-footer">
-              <h5 class="modal-title"><span class="label label-primary">{{ partner.special_visits.nbr_audits }}</span> Special Visit(s)</h5>
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.special_visits|length }}</span> Special Visit(s)</h5>
 
-                {% for audit in partner.special_visits.audits %}
+                {% for audit in partner.special_visits %}
                 <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
                   <div class="col-md-6">
                     <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
-                    {{ audit }}
+                    {{ audit.displayed_name }}
                     <a href="https://etools.unicef.org/ap/special-visits/{{ audit.id }}" target="_blank">
                       <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                     </a>

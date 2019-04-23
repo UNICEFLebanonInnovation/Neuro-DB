@@ -481,6 +481,11 @@ class PCA(models.Model):
         verbose_name='Partnership end date',
         help_text=u'The date the Intervention will end'
     )
+    end_date = models.DateField(
+        null=True, blank=True,
+        verbose_name='Partnership end date',
+        help_text=u'The date the Intervention will end'
+    )
     initiation_date = models.DateField(
         null=True, blank=True,
         verbose_name=u'Submission Date',
@@ -941,6 +946,10 @@ class Engagement(models.Model):
         max_length=255,
         blank=True, null=True
     )
+    displayed_name = models.CharField(
+        max_length=500,
+        blank=True, null=True
+    )
 
     status = models.CharField(verbose_name=_('Status'),
                               max_length=30, choices=STATUSES,
@@ -1100,7 +1109,19 @@ class Engagement(models.Model):
         return self.unique_id
 
     def __str__(self):
-        return '{} on: {} {}'.format(self.DISPLAY_STATUSES[self.displayed_status], self.displayed_status_date, self.reference_number)
+        return '{} on: {} {}'.format(
+            self.DISPLAY_STATUSES[self.displayed_status],
+            self.displayed_status_date,
+            self.reference_number
+        )
+
+    def save(self, **kwargs):
+        self.displayed_name = '{} on: {} {}'.format(
+            self.DISPLAY_STATUSES[self.displayed_status],
+            self.displayed_status_date,
+            self.reference_number
+        )
+        super(Engagement, self).save(**kwargs)
 
 
 class Finding(models.Model):
