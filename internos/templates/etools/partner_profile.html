@@ -123,141 +123,6 @@
 
           <div id="collapse{{ partner.id }}" class="panel-collapse collapse">
 
-            {% if partner.interventions %}
-            <div class="panel-body">
-                <h5 class="modal-title"><span class="label label-primary">{{ partner.interventions|length }}</span> Interventions</h5>
-              {% for inter in partner.interventions %}
-                <div class="" style="padding-top: 5px; padding-bottom: 5px;">
-                  <div class="col-md-6">
-                    <i class="fa fa-file-text-o" style="font-size: 16px; color: #0089d2;"></i>
-                    <a href="https://etools.unicef.org/pmp/interventions/{{ inter.etl_id }}/details" target="_blank">
-                      {{ inter.number }}
-                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
-                    </a>
-                  </div>
-                  <div class="col-md-2">
-                    <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.start }}
-                  </div>
-                  <div class="col-md-2">
-                    <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.end_date }}
-                  </div>
-                  <div class="col-md-6">
-                    <i class="fa fa-map-o" style="font-size: 16px; color: #0089d2;"></i>
-                    {% for p_code in inter.location_p_codes %}
-                      {{ p_code }}
-                    {% endfor %}
-                  </div>
-                  <div class="col-md-4">
-                    <i class="fa fa-usd" style="font-size: 16px; color: #0089d2;"></i>
-                    {{ inter.total_budget }} {{ inter.budget_currency }}
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-            {% else %}
-              <div class="panel-body">
-                <h5 class="modal-title"><span class="label label-primary">0</span> Interventions</h5>
-              </div>
-            {% endif %}
-
-            {% if partner.programmatic_visits|length %}
-            <div class="panel-footer">
-              <h5 class="modal-title"><span class="label label-primary">{{ partner.programmatic_visits|length }}</span> Programmatic Visit(s)</h5>
-                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_planned|length }}</span> Planned</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_submitted|length }}</span> Submitted</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_approved|length }}</span> Approved</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_completed|length }}</span> Completed</div>
-                  <!--<div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_cancelled }}</span> Cancelled</div>-->
-                  <!--<div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_rejected }}</span> Rejected</div>-->
-                </div>
-                {% for audit in partner.programmatic_visits_completed %}
-                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
-                  <div class="col-md-6">
-                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
-                    {{ audit.reference_number }}
-                    <a href="https://etools.unicef.org/t2f/edit-travel/{{ audit.travel_id }}" target="_blank">
-                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
-                    </a>
-                  </div>
-                  <div class="col-md-6">
-                    {% if audit.partnership_id %}
-                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
-                    {{ audit.number }}
-                    <a href="https://etools.unicef.org/pmp/interventions/{{ audit.partnership_id }}" target="_blank">
-                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
-                    </a>
-                    {% endif %}
-                  </div>
-                  <div class="col-md-12">
-                    <strong><span class="label label-primary">{{ audit.attachments_sets|length }}</span> Attachment(s)</strong>
-                    <p>
-                      {% for att in audit.attachments_sets %}
-                      <i class="fa fa-file-pdf-o"></i>
-                      <a href="{{ att.url }}" target="_blank">
-                        {{ att.name }}
-                        <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
-                      </a>
-                      <br/>
-                      {% endfor %}
-                    </p>
-                  </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-              <div class="panel-footer">
-                <h5 class="modal-title"><span class="label label-primary">0</span> Programmatic Visits</h5>
-              </div>
-            {% endif %}
-
-            {% if partner.audits|length %}
-            <div class="panel-footer">
-              <h5 class="modal-title"><span class="label label-primary">{{ partner.audits|length }}</span> Audit(s)</h5>
-
-                {% for audit in partner.audits %}
-                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
-                  <div class="col-md-6">
-                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
-                    {{ audit.displayed_name }}
-                    <a href="https://etools.unicef.org/ap/audits/{{ audit.id }}" target="_blank">
-                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
-                    </a>
-                  </div>
-                </div>
-                {% if audit.findings %}
-                <div class="row">
-                  <span class="label label-primary">{{ audit.findings|length }}</span> Finding(s) and Recommendation(s)
-                  {% for finding in audit.findings_sets %}
-                  <div class="row">
-                    <div class="col-md-6">
-                      <strong><i class="fa fa-flag" style="color: {% if finding.priority == 'high' %}red{% else %}orange{% endif %}"></i> Finding and Recommendation ({{ finding.category_of_observation }})</strong>
-                      <p>{{ finding.recommendation }}</p>
-                    </div>
-                    <div class="col-md-6">
-                      <strong><i class="fa fa-sticky-note"></i> Agreed Action by IP</strong>
-                      <strong><i class="fa fa-calendar"></i> Deadline of action: </strong> {{ finding.deadline_of_action }}
-                      <p>{{ finding.agreed_action_by_ip }}</p>
-                    </div>
-                  </div>
-                  {% endfor %}
-                </div>
-                {% endif %}
-                {% if audit.internal_controls %}
-                <strong><i class="fa fa-sticky-note"></i> Internal Controls</strong>
-                <div class="row sidebar-box">
-                    <p><i>{{ audit.internal_controls }}</i></p>
-                    <p class="read-more"><button type="button" class="btn btn-info">Read More...</button></p>
-                </div>
-                {% endif %}
-                {% endfor %}
-            </div>
-            {% else %}
-              <div class="panel-footer">
-                <h5 class="modal-title"><span class="label label-primary">0</span> Audits</h5>
-              </div>
-            {% endif %}
-
             {% if partner.micro_assessments|length %}
             <div class="panel-footer">
               <h5 class="modal-title"><span class="label label-primary">{{ partner.micro_assessments|length }}</span> Micro Assessment(s)</h5>
@@ -305,6 +170,94 @@
               </div>
             {% endif %}
 
+            {% if partner.interventions %}
+            <div class="panel-body" style="border-top: 1px solid #ddd;">
+                <h5 class="modal-title"><span class="label label-primary">{{ partner.interventions|length }}</span> Interventions</h5>
+              {% for inter in partner.interventions %}
+                <div class="" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-6">
+                    <i class="fa fa-file-text-o" style="font-size: 16px; color: #0089d2;"></i>
+                    <a href="https://etools.unicef.org/pmp/interventions/{{ inter.etl_id }}/details" target="_blank">
+                      {{ inter.number }}
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                  </div>
+                  <div class="col-md-2">
+                    <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.start }}
+                  </div>
+                  <div class="col-md-2">
+                    <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.end_date }}
+                  </div>
+                  <div class="col-md-6">
+                    <i class="fa fa-map-o" style="font-size: 16px; color: #0089d2;"></i>
+                    {% for p_code in inter.location_p_codes %}
+                      {{ p_code }}
+                    {% endfor %}
+                  </div>
+                  <div class="col-md-4">
+                    <i class="fa fa-usd" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ inter.total_budget }} {{ inter.budget_currency }}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            {% else %}
+              <div class="panel-body">
+                <h5 class="modal-title"><span class="label label-primary">0</span> Interventions</h5>
+              </div>
+            {% endif %}
+
+            {% if partner.programmatic_visits|length %}
+            <div class="panel-footer">
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.programmatic_visits|length }}</span> Programmatic Visit(s)</h5>
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_planned|length }}</span> Planned</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_submitted|length }}</span> Submitted</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_approved|length }}</span> Approved</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_completed|length }}</span> Completed</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_cancelled|length }}</span> Cancelled</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_rejected|length }}</span> Rejected</div>
+                </div>
+                {% for audit in partner.programmatic_visits_completed %}
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-6">
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ audit.reference_number }}
+                    <a href="https://etools.unicef.org/t2f/edit-travel/{{ audit.travel_id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                  </div>
+                  <div class="col-md-6">
+                    {% if audit.partnership_id %}
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ audit.number }}
+                    <a href="https://etools.unicef.org/pmp/interventions/{{ audit.partnership_id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-12">
+                    <strong><span class="label label-primary">{{ audit.attachments_sets|length }}</span> Attachment(s)</strong>
+                    <p>
+                      {% for att in audit.attachments_sets %}
+                      <i class="fa fa-file-pdf-o"></i>
+                      <a href="{{ att.url }}" target="_blank">
+                        {{ att.name }}
+                        <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                      </a>
+                      <br/>
+                      {% endfor %}
+                    </p>
+                  </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+              <div class="panel-footer">
+                <h5 class="modal-title"><span class="label label-primary">0</span> Programmatic Visits</h5>
+              </div>
+            {% endif %}
+
             {% if partner.spot_checks|length %}
             <div class="panel-footer">
                 <h5 class="modal-title"><span class="label label-primary">{{ partner.spot_checks|length }}</span> Spot Check(s)</h5>
@@ -348,6 +301,53 @@
             {% else %}
               <div class="panel-footer">
                 <h5 class="modal-title"><span class="label label-primary">0</span> Spot Checks</h5>
+              </div>
+            {% endif %}
+
+            {% if partner.audits|length %}
+            <div class="panel-footer">
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.audits|length }}</span> Audit(s)</h5>
+
+                {% for audit in partner.audits %}
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-6">
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ audit.displayed_name }}
+                    <a href="https://etools.unicef.org/ap/audits/{{ audit.id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                  </div>
+                </div>
+                {% if audit.findings %}
+                <div class="row">
+                  <span class="label label-primary">{{ audit.findings|length }}</span> Finding(s) and Recommendation(s)
+                  {% for finding in audit.findings_sets %}
+                  <div class="row">
+                    <div class="col-md-6">
+                      <strong><i class="fa fa-flag" style="color: {% if finding.priority == 'high' %}red{% else %}orange{% endif %}"></i> Finding and Recommendation ({{ finding.category_of_observation }})</strong>
+                      <p>{{ finding.recommendation }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <strong><i class="fa fa-sticky-note"></i> Agreed Action by IP</strong>
+                      <strong><i class="fa fa-calendar"></i> Deadline of action: </strong> {{ finding.deadline_of_action }}
+                      <p>{{ finding.agreed_action_by_ip }}</p>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+                {% if audit.internal_controls %}
+                <strong><i class="fa fa-sticky-note"></i> Internal Controls</strong>
+                <div class="row sidebar-box">
+                    <p><i>{{ audit.internal_controls }}</i></p>
+                    <p class="read-more"><button type="button" class="btn btn-info">Read More...</button></p>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+              <div class="panel-footer">
+                <h5 class="modal-title"><span class="label label-primary">0</span> Audits</h5>
               </div>
             {% endif %}
 
