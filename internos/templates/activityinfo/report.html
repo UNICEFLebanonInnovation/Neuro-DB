@@ -49,52 +49,37 @@
 <!-- top tiles -->
 <div class="row" style="clear: both;">
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
-    <h3 style="margin-top: 0px;">Filter by:</h3>
+    <h3 style="margin-top: 0px;"><i class="fa fa-filter"></i> Filter by:</h3>
   </div>
 
+
+<form action="{% url 'activityinfo:report' %}" method="get">
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="4" data-intro="Filter options by partner">
-
-      <ul class="nav nav-pills" role="tablist">
-        <li role="presentation" class="dropdown">
-          <a id="drop6" href="#" style="font-size: 20px; padding-top: 0px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-            <i class="fa fa-filter"></i> {{ selected_partner_name }}
-            <span class="caret"></span>
-          </a>
-          <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner=0&partner_name=All Partners&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">All Partners</a></li>
-            {% for partner in partners %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ partner.partner_id }}&partner_name={{ partner.partner_label }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">{{ partner.partner_label }}</a></li>
-            {% endfor %}
-          </ul>
-        </li>
-        {% if partner_info %}
-          <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
-             data-toggle="modal" data-target="#partnerModal"></i>
-        {% endif %}
-      </ul>
-
+      <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
+      <select class="selectpicker show-tick" data-actions-box="true" multiple title="Choose one or more partner" name="partners" data-style="btn-info" id="filter_partners">
+          {% for partner in partners %}
+              <option value="{{ partner.partner_id }}" {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}</option>
+          {% endfor %}
+      </select>
+      {% if partner_info %}
+        <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
+           data-toggle="modal" data-target="#partnerModal"></i>
+      {% endif %}
   </div>
 
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">
-
-      <ul class="nav nav-pills" role="tablist">
-        <li role="presentation" class="dropdown">
-          <a id="drop7" href="#" style="font-size: 20px; padding-top: 0px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-            <i class="fa fa-filter"></i> {{ selected_governorate_name }}
-            <span class="caret"></span>
-          </a>
-          <ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop7" style="z-index: 3000;">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate=0&governorate_name=All Governorates">All Governorates</a></li>
-            {% for gov in governorates %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ gov.location_adminlevel_governorate_code }}&governorate_name={{ gov.location_adminlevel_governorate }}">{{ gov.location_adminlevel_governorate }}</a></li>
-            {% endfor %}
-          </ul>
-        </li>
-      </ul>
-
+      <select class="selectpicker show-tick" title="Choose one of the governorate" name="governorate" data-style="btn-info" id="filter_govs">
+          {% for gov in governorates %}
+              <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorate %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
+          {% endfor %}
+      </select>
   </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-success">Search</button>
+      <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}" class="btn btn-warning">Cancel</a>
+    </div>
 
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="6" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="6" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
 
   <!--<span data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">-->
     <i class="fa fa-user faa-pulse animated-hover" data-toggle="tooltip" data-placement="bottom" data-html="true"
@@ -116,6 +101,27 @@
 
   </div>
 
+</form>
+
+
+  <!--<div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">-->
+
+      <!--<ul class="nav nav-pills" role="tablist">-->
+        <!--<li role="presentation" class="dropdown">-->
+          <!--<a id="drop7" href="#" style="font-size: 20px; padding-top: 0px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">-->
+            <!--<i class="fa fa-filter"></i> {{ selected_governorate_name }}-->
+            <!--<span class="caret"></span>-->
+          <!--</a>-->
+          <!--<ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop7" style="z-index: 3000;">-->
+            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate=0&governorate_name=All Governorates">All Governorates</a></li>-->
+            <!--{% for gov in governorates %}-->
+            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ gov.location_adminlevel_governorate_code }}&governorate_name={{ gov.location_adminlevel_governorate }}">{{ gov.location_adminlevel_governorate }}</a></li>-->
+            <!--{% endfor %}-->
+          <!--</ul>-->
+        <!--</li>-->
+      <!--</ul>-->
+
+  <!--</div>-->
 </div>
 
 <!-- /top tiles -->
@@ -220,7 +226,7 @@
                       </thead>
                       <tbody>
                         {% for item in master_indicators %}
-                          {% get_indicator_cumulative item month selected_partner selected_governorate as cumulative_value %}
+                          {% get_indicator_cumulative item month selected_partners selected_governorate as cumulative_value %}
                           {% to_display_indicator selected_filter cumulative_value as display_indicator %}
 
                           {% if display_indicator %}
@@ -255,13 +261,13 @@
                                 {{ cumulative_value }}
                               </td>
                               <td class="w-130">
-                                {% get_indicator_achieved item month selected_partner selected_governorate as achieved %}
+                                {% get_indicator_achieved item month selected_partners selected_governorate as achieved %}
                                 {{ achieved }}%
                               </td>
                               <td class="w-70" style="background-color:{{ item.status_color }}; color: #FFF;">{{ item.status }}</td>
                               {% for month, month_name in months %}
                                 <td class="w-70">
-                                  {% get_indicator_value item month selected_partner selected_governorate as value %}
+                                  {% get_indicator_value item month selected_partners selected_governorate as value %}
                                   {{ value }}
                                 </td>
                               {% endfor %}
@@ -290,17 +296,17 @@
                                 <td class="w-100">{{ item1.awp_code }}</td>
                                 <td class="w-100">{{ item1.target|number_format }}</td>
                                 <td class="w-130">
-                                   {% get_indicator_cumulative item1 month selected_partner selected_governorate as cumulative_value %}
+                                   {% get_indicator_cumulative item1 month selected_partners selected_governorate as cumulative_value %}
                                    {{ cumulative_value }}
                                 </td>
                                 <td class="w-130">
-                                  {% get_indicator_achieved item1 month selected_partner selected_governorate as achieved %}
+                                  {% get_indicator_achieved item1 month selected_partners selected_governorate as achieved %}
                                   {{ achieved }}%
                                 </td>
                                 <td class="w-70" style="background-color:{{ item1.status_color }}; color: #FFF;">{{ item1.status }}</td>
                                 {% for month, month_name in months %}
                                   <td class="w-70">
-                                      {% get_indicator_value item1 month selected_partner selected_governorate as value %}
+                                      {% get_indicator_value item1 month selected_partners selected_governorate as value %}
                                       {{ value }}
                                   </td>
                                 {% endfor %}
@@ -330,17 +336,17 @@
                                   <td class="w-100">{{ item2.awp_code }}</td>
                                   <td class="w-100">{{ item2.target|number_format }}</td>
                                   <td class="w-130">
-                                     {% get_indicator_cumulative item2 month selected_partner selected_governorate as cumulative_value %}
+                                     {% get_indicator_cumulative item2 month selected_partners selected_governorate as cumulative_value %}
                                      {{ cumulative_value }}
                                   </td>
                                   <td class="w-130">
-                                    {% get_indicator_achieved item2 month selected_partner selected_governorate as achieved %}
+                                    {% get_indicator_achieved item2 month selected_partners selected_governorate as achieved %}
                                     {{ achieved }}%
                                   </td>
                                   <td class="w-70" style="background-color:{{ item2.status_color }}; color: #FFF;">{{ item2.status }}</td>
                                   {% for month, month_name in months %}
                                     <td class="w-70">
-                                      {% get_indicator_value item2 month selected_partner selected_governorate as value %}
+                                      {% get_indicator_value item2 month selected_partners selected_governorate as value %}
                                       {{ value }}
                                     </td>
                                   {% endfor %}
@@ -368,17 +374,17 @@
                               <td class="w-100">{{ no_item.awp_code }}</td>
                               <td class="w-100">{{ no_item.target|number_format }}</td>
                               <td class="w-130">
-                                 {% get_indicator_cumulative no_item month selected_partner selected_governorate as cumulative_value %}
+                                 {% get_indicator_cumulative no_item month selected_partners selected_governorate as cumulative_value %}
                                  {{ cumulative_value }}
                               </td>
                               <td class="w-130">
-                                {% get_indicator_achieved no_item month selected_partner selected_governorate as achieved %}
+                                {% get_indicator_achieved no_item month selected_partners selected_governorate as achieved %}
                                 {{ achieved }}%
                               </td>
                               <td class="w-70" style="background-color:{{ no_item.status_color }}; color: #FFF;">{{ no_item.status }}</td>
                               {% for month, month_name in months %}
                                 <td class="w-70">
-                                  {% get_indicator_value no_item month selected_partner selected_governorate as value %}
+                                  {% get_indicator_value no_item month selected_partners selected_governorate as value %}
                                   {{ value }}
                                 </td>
                               {% endfor %}
@@ -575,13 +581,21 @@
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
   <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
-  <!--<script src="{% static 'vendors/tableexport/xlsx.core.js' %}"></script>-->
-  <!--<script src="{% static 'vendors/tableexport/Blob.js' %}"></script>-->
-  <!--<script src="{% static 'vendors/tableexport/FileSaver.js' %}"></script>-->
-  <!--<script src="{% static 'vendors/tableexport/tableexport.js' %}"></script>-->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
+
+<!-- (Optional) Latest compiled and minified JavaScript translation files -->
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/i18n/defaults-*.min.js"></script>-->
+
 <script>
 
 $(document).ready(function(){
+
+    $('#filter_partners').selectpicker();
+    $('#filter_govs').selectpicker();
 
     $('.expanded-all').click(function(){
         $('.expanded-all').addClass('active');

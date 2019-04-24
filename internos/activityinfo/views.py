@@ -80,8 +80,10 @@ class ReportView(TemplateView):
     def get_context_data(self, **kwargs):
         selected_filter = False
         selected_partner = self.request.GET.get('partner', 0)
+        selected_partners = self.request.GET.getlist('partners', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorate = self.request.GET.get('governorate', 0)
+        selected_governorates = self.request.GET.get('governorates', 0)
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
         partner_info = {}
@@ -117,10 +119,12 @@ class ReportView(TemplateView):
                 print(ex)
                 pass
 
-        if selected_partner or selected_governorate:
+        # if selected_partner or selected_governorate:
+        if selected_partners or selected_governorate:
             selected_filter = True
 
-        if selected_partner == '0' and selected_governorate == '0':
+        # if selected_partner == '0' and selected_governorate == '0':
+        if selected_partners == [] and selected_governorate == '0':
             selected_filter = False
 
         partners = report.values('partner_label', 'partner_id').distinct()
@@ -192,8 +196,10 @@ class ReportView(TemplateView):
 
         return {
             'selected_partner': selected_partner,
+            'selected_partners': selected_partners,
             'selected_partner_name': selected_partner_name,
             'selected_governorate': selected_governorate,
+            'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
             'reports': report.order_by('id'),
             'month': month,

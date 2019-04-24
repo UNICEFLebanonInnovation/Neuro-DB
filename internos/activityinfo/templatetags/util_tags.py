@@ -149,18 +149,23 @@ def get_indicator_diff_results(indicator, month=None):
 def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
     try:
 
+        value = 0
         cumulative_values = indicator['cumulative_values']
 
-        if partner and gov and not partner == '0' and not gov == '0':
+        if partner and gov and not gov == '0':
             cumulative_values = cumulative_values.get('partners_govs')
-            key = '{}-{}'.format(gov, partner)
-            if key in cumulative_values:
-                return get_indicator_unit(indicator, cumulative_values[key])
+            for par in partner:
+                key = '{}-{}'.format(gov, par)
+                if key in cumulative_values:
+                    value += cumulative_values[key]
+            return get_indicator_unit(indicator, value)
 
-        if partner and not partner == '0' and 'partners' in cumulative_values:
+        if partner and 'partners' in cumulative_values:
             cumulative_values = cumulative_values.get('partners')
-            if partner in cumulative_values:
-                return get_indicator_unit(indicator, cumulative_values[partner])
+            for par in partner:
+                if par in cumulative_values:
+                    value += cumulative_values[par]
+            return get_indicator_unit(indicator, value)
 
         if gov and not gov == '0' and 'govs' in cumulative_values:
             cumulative_values = cumulative_values.get('govs')
@@ -227,16 +232,22 @@ def get_indicator_achieved(indicator, month=None, partner=None, gov=None):
         if not indicator['target']:
             return 0
 
-        if partner and gov and not partner == '0' and not gov == '0':
-            cumulative_values = cumulative_values.get('partners_govs')
-            key = '{}-{}'.format(gov, partner)
-            if key in cumulative_values:
-                return round((cumulative_values[key] * 100.0) / indicator['target'], 2)
+        value = 0
 
-        if partner and not partner == '0' and 'partners' in cumulative_values:
+        if partner and gov and not gov == '0':
+            cumulative_values = cumulative_values.get('partners_govs')
+            for par in partner:
+                key = '{}-{}'.format(gov, par)
+                if key in cumulative_values:
+                    value += cumulative_values[key]
+            return round((value * 100.0) / indicator['target'], 2)
+
+        if partner and 'partners' in cumulative_values:
             cumulative_values = cumulative_values.get('partners')
-            if partner in cumulative_values:
-                return round((cumulative_values[partner] * 100.0) / indicator['target'], 2)
+            for par in partner:
+                if par in cumulative_values:
+                    value += cumulative_values[par]
+                return round((value * 100.0) / indicator['target'], 2)
 
         if gov and not gov == '0' and 'govs' in cumulative_values:
             cumulative_values = cumulative_values.get('govs')
@@ -397,12 +408,17 @@ def get_sub_indicators_data(ai_id):
 @register.assignment_tag
 def get_indicator_value(indicator, month=None, partner=None, gov=None):
     try:
-        if partner and gov and not partner == '0' and not gov == '0':
-            key = "{}-{}-{}".format(month, partner, gov)
-            return get_indicator_unit(indicator, indicator['values_partners_gov'][key])
-        if partner and not partner == '0':
-            key = "{}-{}".format(month, partner)
-            return get_indicator_unit(indicator, indicator['values_partners'][key])
+        value = 0
+        if partner and gov and not gov == '0':
+            for par in partner:
+                key = "{}-{}-{}".format(month, par, gov)
+                value += indicator['values_partners_gov'][key]
+            return get_indicator_unit(indicator, value)
+        if partner:
+            for par in partner:
+                key = "{}-{}".format(month, par)
+                value += indicator['values_partners'][key]
+            return get_indicator_unit(indicator, value)
         if gov and not gov == '0':
             key = "{}-{}".format(month, gov)
             return get_indicator_unit(indicator, indicator['values_gov'][key])
