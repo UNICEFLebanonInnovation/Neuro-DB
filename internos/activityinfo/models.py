@@ -407,8 +407,8 @@ class Indicator(models.Model):
 
     @property
     def cumulative_per(self):
-        if self.cumulative_results and self.target:
-            return round((self.cumulative_results * 100.0) / self.target, 2)
+        if 'months' in self.cumulative_values and self.target:
+            return round((self.cumulative_values['months'] * 100.0) / self.target, 2)
         return 0
 
     @property
