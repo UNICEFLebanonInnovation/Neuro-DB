@@ -428,6 +428,9 @@ def get_partner_profile_details():
             'rating': row[6],
             'interventions': [],
             'programmatic_visits': [],
+            'programmatic_visits_planned': [],
+            'programmatic_visits_submitted': [],
+            'programmatic_visits_approved': [],
             'programmatic_visits_completed': [],
             'audits': [],
             'micro_assessments': [],
@@ -478,6 +481,75 @@ def get_partner_profile_details():
                 'number': row[3],
                 'status': row[4],
                 'attachments_sets': row[5],
+            })
+
+    #  programmatic_visits_planned
+    cursor.execute(
+        "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets, "
+        "tl.reference_number, ta.date " 
+        "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
+        "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
+        "AND ta.travel_type='programmatic visit' AND date_part('year', ta.date) = %s "
+        "AND tl.status = %s "
+        "ORDER BY ta.date", [now.year, Travel.PLANNED])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['programmatic_visits_planned'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'partnership_id': row[2],
+                'number': row[3],
+                'status': row[4],
+                'attachments_sets': row[5],
+                'reference_number': '{} - {}'.format(row[6], row[7]),
+            })
+
+    #  programmatic_visits_submitted
+    cursor.execute(
+        "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets, "
+        "tl.reference_number, ta.date " 
+        "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
+        "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
+        "AND ta.travel_type='programmatic visit' AND date_part('year', ta.date) = %s "
+        "AND tl.status = %s "
+        "ORDER BY ta.date", [now.year, Travel.SUBMITTED])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['programmatic_visits_submitted'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'partnership_id': row[2],
+                'number': row[3],
+                'status': row[4],
+                'attachments_sets': row[5],
+                'reference_number': '{} - {}'.format(row[6], row[7]),
+            })
+
+    #  programmatic_visits_approved
+    cursor.execute(
+        "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets, "
+        "tl.reference_number, ta.date " 
+        "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
+        "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
+        "AND ta.travel_type='programmatic visit' AND date_part('year', ta.date) = %s "
+        "AND tl.status = %s "
+        "ORDER BY ta.date", [now.year, Travel.APPROVED])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['programmatic_visits_approved'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'partnership_id': row[2],
+                'number': row[3],
+                'status': row[4],
+                'attachments_sets': row[5],
+                'reference_number': '{} - {}'.format(row[6], row[7]),
             })
 
     #  programmatic_visits_completed

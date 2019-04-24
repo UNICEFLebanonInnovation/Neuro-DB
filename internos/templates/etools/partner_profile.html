@@ -164,12 +164,12 @@
             <div class="panel-footer">
               <h5 class="modal-title"><span class="label label-primary">{{ partner.programmatic_visits|length }}</span> Programmatic Visit(s)</h5>
                 <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_planned }}</span> Planned</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_submitted }}</span> Submitted</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_approved }}</span> Approved</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_planned|length }}</span> Planned</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_submitted|length }}</span> Submitted</div>
+                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_approved|length }}</span> Approved</div>
                   <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_completed|length }}</span> Completed</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_cancelled }}</span> Cancelled</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_rejected }}</span> Rejected</div>
+                  <!--<div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_cancelled }}</span> Cancelled</div>-->
+                  <!--<div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits.nbr_rejected }}</span> Rejected</div>-->
                 </div>
                 {% for audit in partner.programmatic_visits_completed %}
                 <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
