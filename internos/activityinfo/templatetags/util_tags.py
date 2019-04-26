@@ -397,6 +397,7 @@ def get_sub_indicators_data(ai_id):
             'values_partners_live',
             'values_partners_gov_live',
             'cumulative_values_live',
+            'values_tags',
         ).distinct()
 
         return indicators
@@ -427,6 +428,19 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
     except Exception as ex:
         # print(ex)
         return get_indicator_unit(indicator, 0)
+
+
+@register.assignment_tag
+def get_indicator_tag_value(indicator, tag):
+    try:
+        value = 0
+        values_tags = indicator['values_tags']
+        if tag.name in values_tags:
+            value = values_tags[tag.name]
+        return str(round(value)).replace('.0', '')
+    except Exception as ex:
+        print(ex)
+        return 0
 
 
 @register.assignment_tag

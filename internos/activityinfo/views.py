@@ -10,7 +10,7 @@ from django.http import HttpResponse, JsonResponse
 
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
-from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner
+from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner, IndicatorTag
 from internos.users.models import Section
 
 
@@ -215,6 +215,127 @@ class ReportView(TemplateView):
             'partner_info': partner_info,
             'selected_filter': selected_filter,
             'none_ai_indicators': none_ai_indicators
+        }
+
+
+class ReportTagView(TemplateView):
+
+    template_name = 'activityinfo/report_tags.html'
+
+    def get_context_data(self, **kwargs):
+        selected_filter = False
+        selected_partner = self.request.GET.get('partner', 0)
+        selected_partners = self.request.GET.getlist('partners', [])
+        selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
+        selected_governorate = self.request.GET.get('governorate', 0)
+        selected_governorates = self.request.GET.get('governorates', 0)
+        selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+
+        partner_info = {}
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month_number = last_month.strftime("%m")
+        month = int(last_month.strftime("%m"))
+        month_name = last_month.strftime("%B")
+
+        ai_id = int(self.request.GET.get('ai_id', 0))
+        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
+        tags = IndicatorTag.objects.all()
+
+        if ai_id:
+            database = Database.objects.get(ai_id=ai_id)
+        else:
+            try:
+                section = self.request.user.section
+                database = Database.objects.get(section=section, reporting_year__current=True)
+            except Exception:
+                database = Database.objects.filter(reporting_year__current=True).first()
+
+        report = ActivityReport.objects.filter(database=database)
+        if database.is_funded_by_unicef:
+            report = report.filter(funded_by__contains='UNICEF')
+
+        if selected_partner:
+            try:
+                partner = Partner.objects.get(number=selected_partner)
+                if partner.partner_etools:
+                    partner_info = partner.detailed_info
+            except Exception as ex:
+                print(ex)
+                pass
+
+        # if selected_partner or selected_governorate:
+        if selected_partners or selected_governorate:
+            selected_filter = True
+
+        # if selected_partner == '0' and selected_governorate == '0':
+        if selected_partners == [] and selected_governorate == '0':
+            selected_filter = False
+
+        partners = report.values('partner_label', 'partner_id').distinct()
+        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+
+        master_indicators = Indicator.objects.filter(activity__database=database).order_by('sequence')
+        if database.mapped_db:
+            master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
+
+        none_ai_indicators = Indicator.objects.filter(activity__none_ai_database=database)
+
+        master_indicators = master_indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'explication',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+            'values_tags',
+        ).distinct()
+
+        months = []
+        for i in range(1, 13):
+            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
+        return {
+            'selected_partner': selected_partner,
+            'selected_partners': selected_partners,
+            'selected_partner_name': selected_partner_name,
+            'selected_governorate': selected_governorate,
+            'selected_governorates': selected_governorates,
+            'selected_governorate_name': selected_governorate_name,
+            'reports': report.order_by('id'),
+            'month': month,
+            'year': today.year,
+            'month_name': month_name,
+            'month_number': month_number,
+            'months': months,
+            'database': database,
+            'databases': databases,
+            'partners': partners,
+            'governorates': governorates,
+            'master_indicators': master_indicators,
+            'partner_info': partner_info,
+            'selected_filter': selected_filter,
+            'none_ai_indicators': none_ai_indicators,
+            'tags': tags
         }
 
 

@@ -188,6 +188,20 @@ class ActivityAdmin(ImportExportModelAdmin):
     )
 
 
+class TagAgeFilter(admin.SimpleListFilter):
+    title = 'Tag Age'
+
+    parameter_name = 'tag_age'
+
+    def lookups(self, request, model_admin):
+        return ((l.id, l.name) for l in IndicatorTag.objects.filter(type='age'))
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(tag_age_id__exact=self.value())
+        return queryset
+
+
 class IndicatorResource(resources.ModelResource):
 
     class Meta:
@@ -275,6 +289,9 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'hpm_indicator',
         'separator_indicator',
         'tag_gender',
+        'tag_age',
+        'tag_nationality',
+        'tag_disability',
     )
     suit_list_filter_horizontal = (
         'activity__database__reporting_year',
@@ -287,6 +304,9 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'hpm_indicator',
         'separator_indicator',
         'tag_gender',
+        'tag_age',
+        'tag_nationality',
+        'tag_disability',
     )
     list_display = (
         'id',
@@ -299,6 +319,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'activity',
         'category',
         'sequence',
+        # 'values_tags'
     )
     filter_horizontal = (
         'sub_indicators',
@@ -309,6 +330,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'target',
         'target_sector',
         'sequence',
+        # 'values_tags'
     )
 
     formfield_overrides = {
@@ -695,6 +717,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'update_indicators_hpm',
         'calculate_indicators_cumulative_hpm',
         'calculate_indicators_tags_hpm',
+        'calculate_indicators_tags',
         'update_partner_data',
         'generate_indicator_tags',
         'calculate_sum_target',
@@ -905,6 +928,13 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             "{} indicators values Tag HPM for database".format(reports)
         )
 
+    def calculate_indicators_tags(self, request, queryset):
+        reports = calculate_indicators_tags()
+        self.message_user(
+            request,
+            "{} indicators values Tag".format(reports)
+        )
+
     def calculate_indicators_status(self, request, queryset):
         reports = 0
         for db in queryset:
@@ -929,6 +959,7 @@ class ReportingYearAdmin(admin.ModelAdmin):
 class IndicatorTagAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+        'label',
         'type',
         'tag_field'
     )

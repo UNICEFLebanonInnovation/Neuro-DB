@@ -32,6 +32,11 @@ urlpatterns = [
         name='report'
     ),
     url(
+        regex=r'^report-tags/$',
+        view=views.ReportTagView.as_view(),
+        name='report_tags'
+    ),
+    url(
         regex=r'^live-report/$',
         view=views.LiveReportView.as_view(),
         name='live_report'

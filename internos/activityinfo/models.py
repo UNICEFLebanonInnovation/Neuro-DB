@@ -304,6 +304,7 @@ class Activity(models.Model):
 class IndicatorTag(models.Model):
 
     name = models.CharField(max_length=254)
+    label = models.CharField(max_length=254, blank=True, null=True)
     type = models.CharField(max_length=254, blank=True, null=True)
     tag_field = models.CharField(max_length=254, blank=True, null=True)
 
