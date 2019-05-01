@@ -1,14 +1,45 @@
-from django.contrib import admin
-
+from celery import chain
+from django import forms
+from django.contrib import admin as basic_admin
+from django.contrib.gis import admin
+from django.forms import Textarea
+# from leaflet.admin import LeafletGeoAdmin
+from mptt.admin import MPTTModelAdmin
 from import_export import resources, fields
 from import_export import fields
 from import_export.admin import ImportExportModelAdmin
+from .models import LocationType, Location
 
-from .models import Location, LocationType
+
+class AutoSizeTextForm(forms.ModelForm):
+    """
+    Use textarea for name and description fields
+    """
+
+    class Meta:
+        widgets = {
+            'name': Textarea(),
+            'description': Textarea(),
+        }
+
+
+class ActiveLocationsFilter(basic_admin.SimpleListFilter):
+
+    title = 'Active Status'
+    parameter_name = 'is_active'
+
+    def lookups(self, request, model_admin):
+
+        return [
+            (True, 'Active'),
+            (False, 'Archived')
+        ]
+
+    def queryset(self, request, queryset):
+        return queryset.filter(**self.used_parameters)
 
 
 class LocationResource(resources.ModelResource):
-    class Meta:
         model = Location
         fields = (
             'id',
@@ -20,44 +51,31 @@ class LocationResource(resources.ModelResource):
         export_order = fields
 
 
+# class LocationAdmin(LeafletGeoAdmin, MPTTModelAdmin):
 class LocationAdmin(ImportExportModelAdmin):
+    save_as = True
     resource_class = LocationResource
-
-    search_fields = (
+    form = AutoSizeTextForm
+    fields = [
         'name',
-    )
+        'type',
+        'p_code',
+        'geom',
+        'point',
+    ]
     list_display = (
         'name',
-        'p_code',
         'type',
-        'parent',
+        'p_code',
+        # 'is_active',
     )
     list_filter = (
         'type',
-        'parent',
+        # ActiveLocationsFilter,
+        # 'parent',
     )
+    search_fields = ('name', 'p_code',)
 
 
-class LocationTypeResource(resources.ModelResource):
-    class Meta:
-        model = LocationType
-        fields = (
-            'id',
-            'name',
-        )
-        export_order = fields
-
-
-class LocationTypeAdmin(ImportExportModelAdmin):
-    resource_class = LocationTypeResource
-
-    search_fields = (
-        'name',
-    )
-    list_display = (
-        'name',
-    )
-
-
-admin.site.register(LocationType, LocationTypeAdmin)
 admin.site.register(Location, LocationAdmin)
+admin.site.register(LocationType)

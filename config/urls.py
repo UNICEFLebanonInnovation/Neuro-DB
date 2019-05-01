@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^$', view=IndexView.as_view(), name='index'),
     url(r'^activityinfo/', include('internos.activityinfo.urls', namespace='activityinfo'), name='activityinfo'),
     url(r'^etools/', include('internos.etools.urls', namespace='etools'), name='etools'),
+    url(r'^locations/', include('internos.locations.urls', namespace='locations'), name='locations'),
     url(r'^winterization/', include('internos.winterization.urls', namespace='winterization')),
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
 

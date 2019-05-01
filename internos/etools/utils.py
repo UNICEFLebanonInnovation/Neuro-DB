@@ -72,6 +72,8 @@ def sync_agreement_data():
 
 def sync_intervention_data():
     from internos.etools.models import Agreement, PartnerOrganization, PCA
+    from internos.locations.models import Location
+
     partners = get_data('etools.unicef.org', '/api/v2/interventions/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
 
     partners = json.loads(partners)
@@ -111,6 +113,10 @@ def sync_intervention_data():
         partner.fr_currency = item['fr_currency']
         partner.multi_curr_flag = item['multi_curr_flag']
         partner.location_p_codes = item['location_p_codes']
+
+        for p_code in item['location_p_codes']:
+            partner.locations.add(Location.objects.filter(p_code=p_code).first())
+
         partner.donors = item['donors']
         partner.donor_codes = item['donor_codes']
         partner.grants = item['grants']
