@@ -19,7 +19,6 @@
 
 {% block content %}
 <!-- top tiles -->
-{% include 'etools/statistics.html' %}
 <!-- /top tiles -->
 
 <style>
@@ -54,6 +53,22 @@
     background-color: #0089d2;
     color: white;
   }
+  span.trip-planned {
+    background-color: rgba(250,237,119,.6);
+  }
+  span.trip-submitted {
+    background-color: rgba(206,188,6,.6);
+  }
+  span.trip-approved {
+    background-color: rgba(141,198,63,.45);
+  }
+  span.trip-completed {
+    background-color: rgba(141,198,63,1);
+  }
+  .x_title span.label {
+      color: white;
+  }
+
 </style>
 
 <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
@@ -62,46 +77,83 @@
   <div class="col-md-12 col-sm-12 col-xs-12">
 
     <div class="x-panel">
-    <div class="x_title">
-      <h2>
-        <span data-step="5" data-intro="Collapse / Expand Partners info">
-          <a href="#" class="collapse-all" style="font-size: 25px;"><i class="fa fa-th-large"></i></a>
-          <a href="#" class="expanded-all active" style="font-size: 25px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
-        </span>
-        <strong>Partner Profile</strong>
-        <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
-               autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
-               aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
-               style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;"
-               data-step="6" data-intro="Search for a specific Partner by name">
-      </h2>
-      <div class="btn-group" role="group" aria-label="" style="padding-left: 15px; padding-top: 5px;" data-step="7" data-intro="Filter partners">
-        <button type="button" itemref="all" class="btn btn-default btn-filter-no on">All</button>
-        <button type="button" itemref="pcas" class="btn btn-default btn-filter">PCAs</button>
-        <button type="button" itemref="audits" class="btn btn-default btn-filter">Audits</button>
-        <button type="button" itemref="micro-assessments" class="btn btn-default btn-filter">Micro Assessments</button>
-        <button type="button" itemref="spot-checks" class="btn btn-default btn-filter">Spot Checks</button>
-        <button type="button" itemref="special-visits" class="btn btn-default btn-filter">Special Visits</button>
-        <button type="button" itemref="programmatic-visits" class="btn btn-default btn-filter">Programmatic Visits</button>
-        <button type="button" itemref="programmatic-visits-completed" class="btn btn-default btn-filter">Completed Programmatic Visits</button>
+      <div class="x_title">
+        <h2>
+          <span data-step="4" data-intro="Collapse / Expand Partners info">
+            <a href="#" class="collapse-all" style="font-size: 25px;"><i class="fa fa-th-large"></i></a>
+            <a href="#" class="expanded-all active" style="font-size: 25px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
+          </span>
+          <strong>Partner Profile</strong>
+          <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
+                 autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
+                 aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
+                 style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;"
+                 data-step="5" data-intro="Search for a specific Partner by name">
+        </h2>
+        <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
+           title="Show me some tips" style="padding-left: 20px;">
+          <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
+        </a>
+        <ul class="nav navbar-right panel_toolbox">
+          <li><a class="collapse-link"></a></li>
+        </ul>
+        <div class="clearfix"></div>
       </div>
-      <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
-         title="Show me some tips" style="padding-left: 20px;">
-        <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
-      </a>
-      <ul class="nav navbar-right panel_toolbox">
-        <li><a class="collapse-link"></a></li>
-      </ul>
       <div class="clearfix"></div>
-    </div>
-    <div class="clearfix"></div>
+
+      <div class="x_title" style="position: relative;">
+        <div class="btn-group" role="group" aria-label="" style="padding-left: 15px; padding-top: 5px;" data-step="6" data-intro="Filter partners">
+          <button type="button" itemref="all" class="btn btn-default btn-filter-no on">Reset filter</button>
+          <button type="button" itemref="pcas" class="btn btn-default btn-filter">
+            <span class="label label-primary">{{ nbr_interventions }}</span>
+            PCAs
+          </button>
+          <button type="button" itemref="active_pcas" class="btn btn-default btn-filter">
+            <span class="label label-primary">{{ nbr_active_interventions }}</span>
+            Active PCAs
+          </button>
+          <button type="button" itemref="audits" class="btn btn-default btn-filter">
+            <span class="label label-primary">{{ nbr_audits }}</span>
+            Audits
+          </button>
+          <button type="button" itemref="micro-assessments" class="btn btn-default btn-filter">
+            <span class="label label-primary">{{ nbr_micro_assessments }}</span>
+            Micro Assessments
+          </button>
+          <button type="button" itemref="spot-checks" class="btn btn-default btn-filter">
+            <span class="label label-primary">{{ nbr_spot_checks }}</span> Spot Checks
+          </button>
+          <button type="button" itemref="special-visits" class="btn btn-default btn-filter">
+            <span class="label label-primary">{{ nbr_special_audits }}</span>
+            Special Audits
+          </button>
+          <button type="button" itemref="programmatic-visits" class="btn btn-default btn-filter">
+            <span class="label label-primary">{{ programmatic_visits }}</span>
+            Programmatic Visits
+          </button>
+          <button type="button" itemref="programmatic-visits-completed" class="btn btn-default btn-filter">
+            <span class="label label-primary">{{ programmatic_visits_completed }}</span>
+            Completed Programmatic Visits
+          </button>
+        </div>
+
+        <ul class="nav nav-pills" role="tablist" style="position: fixed; right: 20px; top: 68px;" data-step="7" data-intro="Total partners">
+          <li role="presentation" class="active"><a><span class="badge" id="total-partners">{{ nbr_partners }}</span> Partners</a></li>
+        </ul>
+      </div>
+
     </div>
     <div class="row" id="partner_profile">
 
     {% for key, partner in partners_info.items %}
-      <div class="partner-profile panel {% if partner.rating == 'low' %}panel-info{% elif partner.rating == 'medium' %}panel-warning
-        {% elif partner.rating == 'high' %}panel-danger{% else %}panel-success{% endif %}"
-           pcas="{{ partner.interventions|length }}" audits="{{ partner.audits|length }}"
+      <div class="partner-profile panel {% if partner.rating == 'low' or partner.rating == 'Low' %}panel-success
+                                        {% elif partner.rating == 'medium' or partner.rating == 'Medium' %}panel-info
+                                        {% elif partner.rating == 'high' or partner.rating == 'High' %}panel-warning
+                                        {% elif partner.rating == 'significant' or partner.rating == 'Significant' %}panel-danger
+                                        {% else %}panel-default
+                                        {% endif %}"
+           pcas="{{ partner.interventions|length }}" active_pcas="{{ partner.interventions_active|length }}"
+           audits="{{ partner.audits|length }}"
            micro-assessments="{{ partner.micro_assessments|length }}"
            spot-checks="{{ partner.spot_checks|length }}" special-visits="{{ partner.special_visits|length }}"
            programmatic-visits="{{ partner.programmatic_visits|length }}"
@@ -112,7 +164,7 @@
               <a data-toggle="collapse" href="#collapse{{ partner.id }}">
                 <i class="fa fa-star-o" style="color: #0089d2;"></i>
                 <span class="label label-default">{{ partner.rating }}</span>
-                <span>{{ partner.name }}</span>
+                <span>{{ partner.name }} - {{ partner.vendor_number }}</span>
                   <a href="https://etools.unicef.org/pmp/partners/{{ partner.id }}/details" target="_blank">
                     <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                   </a>
@@ -211,12 +263,12 @@
             <div class="panel-footer">
               <h5 class="modal-title"><span class="label label-primary">{{ partner.programmatic_visits|length }}</span> Programmatic Visit(s)</h5>
                 <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_planned|length }}</span> Planned</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_submitted|length }}</span> Submitted</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_approved|length }}</span> Approved</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_completed|length }}</span> Completed</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_cancelled|length }}</span> Cancelled</div>
-                  <div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_rejected|length }}</span> Rejected</div>
+                  <div class="col-md-1"><span class="label trip-planned">{{ partner.programmatic_visits_planned|length }}</span> Planned</div>
+                  <div class="col-md-1"><span class="label trip-submitted">{{ partner.programmatic_visits_submitted|length }}</span> Submitted</div>
+                  <div class="col-md-1"><span class="label trip-approved">{{ partner.programmatic_visits_approved|length }}</span> Approved</div>
+                  <div class="col-md-1"><span class="label trip-completed">{{ partner.programmatic_visits_completed|length }}</span> Completed</div>
+                  <!--<div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_cancelled|length }}</span> Cancelled</div>-->
+                  <!--<div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_rejected|length }}</span> Rejected</div>-->
                 </div>
                 {% for audit in partner.programmatic_visits_completed %}
                 <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
@@ -353,7 +405,7 @@
 
             {% if partner.special_visits|length %}
             <div class="panel-footer">
-              <h5 class="modal-title"><span class="label label-primary">{{ partner.special_visits|length }}</span> Special Visit(s)</h5>
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.special_visits|length }}</span> Special Audit(s)</h5>
 
                 {% for audit in partner.special_visits %}
                 <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
@@ -395,7 +447,7 @@
             </div>
             {% else %}
             <div class="panel-footer">
-              <h5 class="modal-title"><span class="label label-primary">0</span> Special Visit</h5>
+              <h5 class="modal-title"><span class="label label-primary">0</span> Special Audit</h5>
             </div>
             {% endif %}
 
@@ -458,6 +510,10 @@
   });
 
   $('.btn-filter').click(function(){
+      $('.partner-profile').removeClass('active');
+      $('.btn-filter-no').removeClass('on');
+      $('#total-partners').text($('.partner-profile').length);
+
       if($(this).hasClass('on')){
         $(this).removeClass('on');
       }else{
@@ -474,7 +530,10 @@
           var itemref = $(this).attr('itemref');
           $('.partner-profile').filter(function() {
             return parseInt($(this).attr(itemref)) > 0;
-          }).show();
+          }).show(function(){
+              $(this).addClass('active');
+              $('#total-partners').text($('.partner-profile.active').length);
+          });
       });
   });
 

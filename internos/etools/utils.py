@@ -400,7 +400,7 @@ def link_partner_to_partnership():
 
 def get_partner_profile_details():
     from django.db import connection
-    from .models import Engagement, Travel
+    from .models import Engagement, Travel, PCA
 
     partners = {}
     interventions = []
@@ -413,7 +413,7 @@ def get_partner_profile_details():
 
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT id, etl_id, name, short_name, description, partner_type, rating " 
+        "SELECT id, etl_id, name, short_name, description, partner_type, rating, vendor_number " 
         "FROM public.etools_partnerorganization "
         "WHERE hidden = false AND deleted_flag = false")
 
@@ -422,11 +422,13 @@ def get_partner_profile_details():
         partners[row[0]] = {
             'id': row[1],
             'name': row[2],
+            'vendor_number': row[7],
             'short_name': row[3],
             'description': row[4],
             'partner_type': row[5],
             'rating': row[6],
             'interventions': [],
+            'interventions_active': [],
             'programmatic_visits': [],
             'programmatic_visits_planned': [],
             'programmatic_visits_submitted': [],
@@ -445,13 +447,38 @@ def get_partner_profile_details():
         "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
         "budget_currency, total_budget, offices_names, location_p_codes " 
         "FROM public.etools_pca "
-        "WHERE date_part('year', end_date) = %s "
-        "ORDER BY start", [now.year])
+        "WHERE date_part('year', end_date) = %s AND status <> %s "
+        "ORDER BY start", [now.year, PCA.CANCELLED])
 
     rows = cursor.fetchall()
     for row in rows:
         if row[1] in partners:
             partners[row[1]]['interventions'].append({
+                'etl_id': row[0],
+                'partner_id': row[1],
+                'number': row[2],
+                'start': row[3],
+                'end_date': row[4],
+                'document_type': row[5],
+                'total_unicef_budget': row[6],
+                'budget_currency': row[7],
+                'total_budget': row[8],
+                'offices_names': row[9],
+                'location_p_codes': row[10]
+            })
+
+    #  Active interventions
+    cursor.execute(
+        "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
+        "budget_currency, total_budget, offices_names, location_p_codes " 
+        "FROM public.etools_pca "
+        "WHERE date_part('year', end_date) = %s AND status = %s "
+        "ORDER BY start", [now.year, PCA.ACTIVE])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['interventions_active'].append({
                 'etl_id': row[0],
                 'partner_id': row[1],
                 'number': row[2],
@@ -471,7 +498,8 @@ def get_partner_profile_details():
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
         "AND ta.travel_type='programmatic visit' AND date_part('year', ta.date) = %s "
-        "ORDER BY ta.date", [now.year])
+        "AND (tl.status = %s OR tl.status = %s OR tl.status = %s OR tl.status = %s)"
+        "ORDER BY ta.date", [now.year, Travel.PLANNED, Travel.SUBMITTED, Travel.APPROVED, Travel.COMPLETED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -627,8 +655,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s "
-        "ORDER BY start_date", [Engagement.TYPE_MICRO_ASSESSMENT])
+        "WHERE engagement_type = %s AND status <> %s "
+        "ORDER BY start_date", [Engagement.TYPE_MICRO_ASSESSMENT, Engagement.CANCELLED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -645,8 +673,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s "
-        "ORDER BY start_date", [Engagement.TYPE_SPOT_CHECK])
+        "WHERE engagement_type = %s AND status <> %s "
+        "ORDER BY start_date", [Engagement.TYPE_SPOT_CHECK, Engagement.CANCELLED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -663,8 +691,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s "
-        "ORDER BY start_date", [Engagement.TYPE_AUDIT])
+        "WHERE engagement_type = %s AND status <> %s "
+        "ORDER BY start_date", [Engagement.TYPE_AUDIT, Engagement.CANCELLED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -681,8 +709,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s "
-        "ORDER BY start_date", [Engagement.TYPE_SPECIAL_AUDIT])
+        "WHERE engagement_type = %s AND status <> %s "
+        "ORDER BY start_date", [Engagement.TYPE_SPECIAL_AUDIT, Engagement.CANCELLED])
 
     rows = cursor.fetchall()
     for row in rows:
