@@ -17,4 +17,9 @@ urlpatterns = [
         name='locations_detail_pcode'
     ),
     url(r'^autocomplete/$', views.LocationQuerySetView.as_view(), name='locations_autocomplete'),
+    url(
+        regex=r'^site-profile/$',
+        view=views.SiteProfileView.as_view(),
+        name='site_profile'
+    ),
 ]

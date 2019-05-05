@@ -47,8 +47,11 @@ DJANGO_APPS = [
     # Admin
     'internos.apps.SuitConfig',
     'django.contrib.admin',
+    'django.contrib.gis',
     'django_json_widget',
     'prettyjson',
+    'leaflet',
+    'mptt',
 ]
 THIRD_PARTY_APPS = [
     # 'django_mysql',

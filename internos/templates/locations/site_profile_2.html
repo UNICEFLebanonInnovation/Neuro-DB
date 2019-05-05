@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block ai_reports %}
+  {% for db in databases %}
+    <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+  {% endfor %}
+{% endblock %}
+
+{% block ai_databases %}
+  {% for db in databases %}
+    <li><a href="{% url 'activityinfo:dashboard' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+  {% endfor %}
+{% endblock %}
+
+{% block project_title %}Site Profile{% endblock %}
+
+{% block content %}
+
+<style>
+  #viewDiv { height: 500px; width: 700px; }
+</style>
+
+<div style="position: relative;">
+  <div id="viewDiv"></div>
+  <div class="modal-body" style="position: absolute; border-radius: 5px; box-shadow: -5px 5px 10px; top: 60px; right: 50px; width: 400px; height: 500px;">
+
+    <div class="row" style="min-height: 50px; border: 1px solid; border-radius: 2px; padding: 5px; margin: 2px; margin-top: 5px;">
+      <h3 class="modal-title"><span class="label label-default">5</span> Interventions</h3>
+    </div>
+
+    <div class="row" style="min-height: 50px; border: 1px solid; border-radius: 2px; padding: 5px; margin: 2px; margin-top: 5px;">
+      <h3 class="modal-title"><span class="label label-default">15</span> Programmatic Visits</h3>
+    </div>
+
+    <div class="row" style="min-height: 50px; border: 1px solid; border-radius: 2px; padding: 5px; margin: 2px; margin-top: 5px;">
+      <h3 class="modal-title"><span class="label label-default">256</span> Winter kits distributed</h3>
+    </div>
+
+    <div class="row" style="min-height: 50px; border: 1px solid; border-radius: 2px; padding: 5px; margin: 2px; margin-top: 5px;">
+      <h3 class="modal-title"><span class="label label-default">15</span> Supply items distributed</h3>
+    </div>
+
+    <div class="row" style="min-height: 50px; border: 1px solid; border-radius: 2px; padding: 5px; margin: 2px; margin-top: 5px;">
+      <h3 class="modal-title"><span class="label label-default">XXX $</span> Cash distributed</h3>
+    </div>
+
+    <div class="row" style="min-height: 50px; border: 1px solid; border-radius: 2px; padding: 5px; margin: 2px; margin-top: 5px;">
+      <h3 class="modal-title"><span class="label label-default">376</span> Household outreached for X programme</h3>
+    </div>
+
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.11/"></script>
+
+<script type="text/javascript">
+
+var symbol = {
+  style: "square",
+  color: "blue",
+  size: "8px",  // pixels
+  outline: {  // autocasts as new SimpleLineSymbol()
+    color: [ 255, 255, 0 ],
+    width: 3  // points
+  }
+};
+
+var symbol_icon = {
+  url: "{% static 'images/location-map-pin.png' %}",
+  height:34,
+  width:24,
+};
+
+console.log(symbol_icon);
+
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/symbols/SimpleMarkerSymbol",
+      "esri/symbols/PictureMarkerSymbol",
+      "esri/geometry/Point",
+      "esri/Graphic",
+    ], function(Map, MapView, SimpleMarkerSymbol, PictureMarkerSymbol, Point, Graphic) {
+
+      var map = new Map({
+        basemap: "topo-vector"
+      });
+
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [35.82685, 34.3461],
+        zoom: 11
+      });
+
+      var marker = new SimpleMarkerSymbol(symbol);
+      var marker_icon = new PictureMarkerSymbol(symbol_icon);
+
+      var point = new Point(35.82685, 34.3461);
+      var graphic = new Graphic(point, marker_icon);
+
+      view.graphics.add(graphic);
+
+    });
+
+</script>
+
+{% endblock %}

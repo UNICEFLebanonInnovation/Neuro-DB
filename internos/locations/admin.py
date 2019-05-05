@@ -3,7 +3,7 @@ from django import forms
 from django.contrib import admin as basic_admin
 from django.contrib.gis import admin
 from django.forms import Textarea
-# from leaflet.admin import LeafletGeoAdmin
+from leaflet.admin import LeafletGeoAdmin
 from mptt.admin import MPTTModelAdmin
 from import_export import resources, fields
 from import_export import fields
@@ -51,11 +51,11 @@ class LocationResource(resources.ModelResource):
         export_order = fields
 
 
-# class LocationAdmin(LeafletGeoAdmin, MPTTModelAdmin):
-class LocationAdmin(ImportExportModelAdmin):
+class LocationAdmin(LeafletGeoAdmin, MPTTModelAdmin):
+# class LocationAdmin(ImportExportModelAdmin):
     save_as = True
-    resource_class = LocationResource
-    form = AutoSizeTextForm
+    # resource_class = LocationResource
+    # form = AutoSizeTextForm
     fields = [
         'name',
         'type',
@@ -67,6 +67,8 @@ class LocationAdmin(ImportExportModelAdmin):
         'name',
         'type',
         'p_code',
+        'point',
+        'point_lat_long'
         # 'is_active',
     )
     list_filter = (

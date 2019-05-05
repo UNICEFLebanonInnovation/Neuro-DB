@@ -1,3 +1,12 @@
+from __future__ import absolute_import, unicode_literals
+
+import os
+import datetime
+import calendar
+from django.db.models import Q
+from django.views.generic import ListView, TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse, JsonResponse
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, viewsets
@@ -5,6 +14,7 @@ from rest_framework.generics import ListAPIView
 
 from .models import Location
 from .serializers import LocationLightSerializer, LocationSerializer
+from internos.activityinfo.models import Database
 
 
 class LocationsViewSet(mixins.RetrieveModelMixin,
@@ -66,3 +76,15 @@ class LocationQuerySetView(ListAPIView):
 
         # return maximum 7 records
         return qs.all()[:7]
+
+
+class SiteProfileView(TemplateView):
+
+    template_name = 'locations/site_profile_2.html'
+
+    def get_context_data(self, **kwargs):
+        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
+
+        return {
+            'databases': databases,
+        }
