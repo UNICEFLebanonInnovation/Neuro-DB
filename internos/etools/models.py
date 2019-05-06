@@ -131,6 +131,7 @@ class PartnerOrganization(models.Model):
     deleted_flag = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
+    comments = models.TextField(blank=True, null=True)
 
     @property
     def programmatic_visits(self):

@@ -415,13 +415,14 @@ def get_partner_profile_details():
 
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT id, etl_id, name, short_name, description, partner_type, rating, vendor_number " 
+        "SELECT id, etl_id, name, short_name, description, partner_type, rating, vendor_number, comments " 
         "FROM public.etools_partnerorganization "
         "WHERE hidden = false AND deleted_flag = false")
 
     rows = cursor.fetchall()
     for row in rows:
         partners[row[0]] = {
+            'db_id': row[0],
             'id': row[1],
             'name': row[2],
             'vendor_number': row[7],
@@ -429,6 +430,7 @@ def get_partner_profile_details():
             'description': row[4],
             'partner_type': row[5],
             'rating': row[6],
+            'comments': row[8],
             'interventions': [],
             'interventions_active': [],
             'pds': [],

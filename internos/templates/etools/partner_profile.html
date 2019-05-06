@@ -256,9 +256,23 @@
           </div>
 
           <div id="collapse{{ partner.id }}" class="panel-collapse collapse">
-
+            <div class="panel-footer" style="border-top: 1px solid #ddd;">
+                <div class="input-group">
+                  <span class="input-group-addon" id="basic-addon1">
+                    <i style="font-size: 24px; color: #337ab7;" class="glyphicon glyphicon-comment"></i>
+                  </span>
+                  {% if request.user.is_authenticated %}
+                  <textarea rows="2" cols="20" class="form-control" id="partner_comments_{{ partner.db_id }}">{% if partner.comments %}{{ partner.comments }}{% endif %}</textarea>
+                  <span class="input-group-addon">
+                    <button type="button" class="btn btn-success save-comments" itemscope="url" itemid="{{ partner.db_id }}" itemref="#partner_comments_{{ partner.db_id }}"><i class="fa fa-floppy-o"></i> Save</button>
+                  </span>
+                  {% else %}
+                  <textarea rows="2" cols="20" class="form-control" disabled>{% if partner.comments %}{{ partner.comments }}{% endif %}</textarea>
+                  {% endif %}
+                </div>
+            </div>
             {% if partner.micro_assessments|length %}
-            <div class="panel-footer">
+            <div class="panel-footer" style="border-top: 1px solid #ddd;">
               <h5 class="modal-title"><span class="label label-primary">{{ partner.micro_assessments|length }}</span> Micro Assessment(s)</h5>
 
                 {% for audit in partner.micro_assessments %}
@@ -336,7 +350,7 @@
               {% endfor %}
             </div>
             {% else %}
-              <div class="panel-body">
+              <div class="panel-body" style="border-top: 1px solid #ddd;">
                 <h5 class="modal-title"><span class="label label-primary">0</span> Interventions</h5>
               </div>
             {% endif %}
@@ -581,6 +595,12 @@
     }
   });
 
+  $('.save-comments').click(function(){
+      var itemid = $(this).attr('itemid');
+      var comments = $($(this).attr('itemref')).val();
+      update_data_server($(this).attr('itemscope'), {'comments': comments});
+  });
+
   $('.btn-filter-no').click(function(){
       $('.partner-profile').show();
       $('.btn-filter').removeClass('on');
@@ -676,6 +696,24 @@ $(".sidebar-box button").click(function() {
   return false;
 
 });
+
+function update_data_server(url, data)
+{
+    $.ajax({
+        type: "PUT",
+        url: url,
+        data: data,
+        cache: false,
+        dataType: 'json',
+        success: function (response, result, jqXHR) {
+            if(jqXHR.status == 200){
+            }
+        },
+        error: function (response) {
+            console.log(response);
+        }
+    });
+}
 
 </script>
 
