@@ -116,10 +116,9 @@ def sync_intervention_data():
         partner.grants = item['grants']
 
         partner.save()
-        # update_individual_intervention_data(partner)
 
 
-def update_individual_intervention_data(partner=None):
+def sync_individual_intervention_data(partner=None):
     from internos.etools.models import Agreement, PartnerOrganization, PCA
     interventions = PCA.objects.all()
 
@@ -127,8 +126,9 @@ def update_individual_intervention_data(partner=None):
         item = get_data('etools.unicef.org', '/api/v2/interventions/'+partner.etl_id+'/',
                         'Token 36f06547a4b930c6608e503db49f1e45305351c2')
 
-        item = json.loads(item)
         try:
+            item = json.loads(item)
+
             partner.partner = PartnerOrganization.objects.get(etl_id=item['partner_id'])
             partner.agreement = Agreement.objects.get(etl_id=item['agreement'])
             partner.number = item['number']
@@ -375,9 +375,11 @@ def get_data(url, apifunc, token, protocol='HTTPS'):
 
     if not response.status == 200:
         if response.status == 400 or response.status == 403:
-            raise Exception(str(response.status) + response.reason + response.read())
+            return False
+            # raise Exception(str(response.status) + response.reason + response.read())
         else:
-            raise Exception(str(response.status) + response.reason)
+            return False
+            # raise Exception(str(response.status) + response.reason)
 
     conn.close()
 
@@ -429,6 +431,10 @@ def get_partner_profile_details():
             'rating': row[6],
             'interventions': [],
             'interventions_active': [],
+            'pds': [],
+            'pds_active': [],
+            'sffas': [],
+            'sffas_active': [],
             'programmatic_visits': [],
             'programmatic_visits_planned': [],
             'programmatic_visits_submitted': [],
@@ -445,7 +451,7 @@ def get_partner_profile_details():
     #  interventions
     cursor.execute(
         "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
-        "budget_currency, total_budget, offices_names, location_p_codes " 
+        "budget_currency, total_budget, offices_names, location_p_codes, status " 
         "FROM public.etools_pca "
         "WHERE date_part('year', end_date) = %s AND status <> %s "
         "ORDER BY start", [now.year, PCA.CANCELLED])
@@ -464,13 +470,14 @@ def get_partner_profile_details():
                 'budget_currency': row[7],
                 'total_budget': row[8],
                 'offices_names': row[9],
-                'location_p_codes': row[10]
+                'location_p_codes': row[10],
+                'status': row[11]
             })
 
     #  Active interventions
     cursor.execute(
         "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
-        "budget_currency, total_budget, offices_names, location_p_codes " 
+        "budget_currency, total_budget, offices_names, location_p_codes, status " 
         "FROM public.etools_pca "
         "WHERE date_part('year', end_date) = %s AND status = %s "
         "ORDER BY start", [now.year, PCA.ACTIVE])
@@ -489,7 +496,112 @@ def get_partner_profile_details():
                 'budget_currency': row[7],
                 'total_budget': row[8],
                 'offices_names': row[9],
-                'location_p_codes': row[10]
+                'location_p_codes': row[10],
+                'status': row[11]
+            })
+
+    #  PDs
+    cursor.execute(
+        "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
+        "budget_currency, total_budget, offices_names, location_p_codes, status " 
+        "FROM public.etools_pca "
+        "WHERE date_part('year', end_date) = %s AND status <> %s AND document_type = %s "
+        "ORDER BY start", [now.year, PCA.CANCELLED, PCA.PD])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['pds'].append({
+                'etl_id': row[0],
+                'partner_id': row[1],
+                'number': row[2],
+                'start': row[3],
+                'end_date': row[4],
+                'document_type': row[5],
+                'total_unicef_budget': row[6],
+                'budget_currency': row[7],
+                'total_budget': row[8],
+                'offices_names': row[9],
+                'location_p_codes': row[10],
+                'status': row[11]
+            })
+
+    #  Active PDs
+    cursor.execute(
+        "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
+        "budget_currency, total_budget, offices_names, location_p_codes, status " 
+        "FROM public.etools_pca "
+        "WHERE date_part('year', end_date) = %s AND status = %s AND document_type = %s "
+        "ORDER BY start", [now.year, PCA.ACTIVE, PCA.PD])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['pds_active'].append({
+                'etl_id': row[0],
+                'partner_id': row[1],
+                'number': row[2],
+                'start': row[3],
+                'end_date': row[4],
+                'document_type': row[5],
+                'total_unicef_budget': row[6],
+                'budget_currency': row[7],
+                'total_budget': row[8],
+                'offices_names': row[9],
+                'location_p_codes': row[10],
+                'status': row[11]
+            })
+
+    # SFFAs
+    cursor.execute(
+        "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
+        "budget_currency, total_budget, offices_names, location_p_codes, status " 
+        "FROM public.etools_pca "
+        "WHERE date_part('year', end_date) = %s AND status <> %s AND document_type = %s "
+        "ORDER BY start", [now.year, PCA.CANCELLED, PCA.SSFA])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['sffas'].append({
+                'etl_id': row[0],
+                'partner_id': row[1],
+                'number': row[2],
+                'start': row[3],
+                'end_date': row[4],
+                'document_type': row[5],
+                'total_unicef_budget': row[6],
+                'budget_currency': row[7],
+                'total_budget': row[8],
+                'offices_names': row[9],
+                'location_p_codes': row[10],
+                'status': row[11]
+            })
+
+    #  Active SFFAs
+    cursor.execute(
+        "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
+        "budget_currency, total_budget, offices_names, location_p_codes, status " 
+        "FROM public.etools_pca "
+        "WHERE date_part('year', end_date) = %s AND status = %s AND document_type = %s "
+        "ORDER BY start", [now.year, PCA.ACTIVE, PCA.SSFA])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['sffas_active'].append({
+                'etl_id': row[0],
+                'partner_id': row[1],
+                'number': row[2],
+                'start': row[3],
+                'end_date': row[4],
+                'document_type': row[5],
+                'total_unicef_budget': row[6],
+                'budget_currency': row[7],
+                'total_budget': row[8],
+                'offices_names': row[9],
+                'location_p_codes': row[10],
+                'status': row[11]
             })
 
     #  programmatic_visits
@@ -655,8 +767,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s AND status <> %s "
-        "ORDER BY start_date", [Engagement.TYPE_MICRO_ASSESSMENT, Engagement.CANCELLED])
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_MICRO_ASSESSMENT, Engagement.CANCELLED, now.year])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -673,8 +785,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s AND status <> %s "
-        "ORDER BY start_date", [Engagement.TYPE_SPOT_CHECK, Engagement.CANCELLED])
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_SPOT_CHECK, Engagement.CANCELLED, now.year])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -691,8 +803,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s AND status <> %s "
-        "ORDER BY start_date", [Engagement.TYPE_AUDIT, Engagement.CANCELLED])
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_AUDIT, Engagement.CANCELLED, now.year])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -709,8 +821,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s AND status <> %s "
-        "ORDER BY start_date", [Engagement.TYPE_SPECIAL_AUDIT, Engagement.CANCELLED])
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_SPECIAL_AUDIT, Engagement.CANCELLED, now.year])
 
     rows = cursor.fetchall()
     for row in rows:

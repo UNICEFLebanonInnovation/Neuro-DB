@@ -103,39 +103,113 @@
 
       <div class="x_title" style="position: relative;">
         <div class="btn-group" role="group" aria-label="" style="padding-left: 15px; padding-top: 5px;" data-step="6" data-intro="Filter partners">
-          <button type="button" itemref="all" class="btn btn-default btn-filter-no on">Reset filter</button>
-          <button type="button" itemref="pcas" class="btn btn-default btn-filter">
-            <span class="label label-primary">{{ nbr_interventions }}</span>
-            PCAs
+
+          <button type="button" itemref="micro-assessments" class="btn btn-default btn-filter">
+            <span class="label label-primary">{{ nbr_micro_assessments }}</span>
+            Micro Assessments
           </button>
-          <button type="button" itemref="active_pcas" class="btn btn-default btn-filter">
-            <span class="label label-primary">{{ nbr_active_interventions }}</span>
-            Active PCAs
+
+          <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="label label-primary">{{ nbr_interventions }}</span> Interventions
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <button type="button" itemref="interventions" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_interventions }}</span>
+                    All Interventions
+                  </button>
+                </li>
+                <li>
+                  <button type="button" itemref="active_interventions" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_active_interventions }}</span>
+                    Active Interventions
+                  </button>
+                </li>
+
+                <li>
+                  <button type="button" itemref="pds" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_pds }}</span>
+                    PDs
+                  </button>
+                </li>
+                <li>
+                  <button type="button" itemref="active_pds" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_active_pds }}</span>
+                    Active PDs
+                  </button>
+                </li>
+
+                <li>
+                  <button type="button" itemref="sffas" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_sffas }}</span>
+                    SFFAs
+                  </button>
+                </li>
+                <li>
+                  <button type="button" itemref="active_sffas" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_active_sffas }}</span>
+                    Active SFFAs
+                  </button>
+                </li>
+              </ul>
+          </div>
+
+          <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="label label-primary">{{ programmatic_visits }}</span> Programmatic Visits
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                    <button type="button" itemref="programmatic-visits" class="btn btn-default btn-filter">
+                      <span class="label label-primary">{{ programmatic_visits }}</span>
+                      All Programmatic Visits
+                    </button>
+                </li>
+                <li>
+                    <button type="button" itemref="programmatic-visits-planned" class="btn btn-default btn-filter">
+                      <span class="label label-primary">{{ programmatic_visits_planned }}</span>
+                      Planned Programmatic Visits
+                    </button>
+                </li>
+                <li>
+                    <button type="button" itemref="programmatic-visits-submitted" class="btn btn-default btn-filter">
+                      <span class="label label-primary">{{ programmatic_visits_submitted }}</span>
+                      Submitted Programmatic Visits
+                    </button>
+                </li>
+                <li>
+                    <button type="button" itemref="programmatic-visits-approved" class="btn btn-default btn-filter">
+                      <span class="label label-primary">{{ programmatic_visits_approved }}</span>
+                      Approved Programmatic Visits
+                    </button>
+                </li>
+                <li>
+                    <button type="button" itemref="programmatic-visits-completed" class="btn btn-default btn-filter">
+                      <span class="label label-primary">{{ programmatic_visits_completed }}</span>
+                      Completed Programmatic Visits
+                    </button>
+                </li>
+              </ul>
+          </div>
+
+          <button type="button" itemref="spot-checks" class="btn btn-default btn-filter">
+            <span class="label label-primary">{{ nbr_spot_checks }}</span>
+            Spot Checks
           </button>
           <button type="button" itemref="audits" class="btn btn-default btn-filter">
             <span class="label label-primary">{{ nbr_audits }}</span>
             Audits
           </button>
-          <button type="button" itemref="micro-assessments" class="btn btn-default btn-filter">
-            <span class="label label-primary">{{ nbr_micro_assessments }}</span>
-            Micro Assessments
-          </button>
-          <button type="button" itemref="spot-checks" class="btn btn-default btn-filter">
-            <span class="label label-primary">{{ nbr_spot_checks }}</span> Spot Checks
-          </button>
           <button type="button" itemref="special-visits" class="btn btn-default btn-filter">
             <span class="label label-primary">{{ nbr_special_audits }}</span>
             Special Audits
           </button>
-          <button type="button" itemref="programmatic-visits" class="btn btn-default btn-filter">
-            <span class="label label-primary">{{ programmatic_visits }}</span>
-            Programmatic Visits
-          </button>
-          <button type="button" itemref="programmatic-visits-completed" class="btn btn-default btn-filter">
-            <span class="label label-primary">{{ programmatic_visits_completed }}</span>
-            Completed Programmatic Visits
-          </button>
         </div>
+
+        <button type="button" itemref="all" class="btn btn-warning btn-filter-no" style="padding-top: 2px; margin-top: 10px; margin-left: 15px;">Reset filter</button>
 
         <ul class="nav nav-pills" role="tablist" style="position: fixed; right: 20px; top: 68px;" data-step="7" data-intro="Total partners">
           <li role="presentation" class="active"><a><span class="badge" id="total-partners">{{ nbr_partners }}</span> Partners</a></li>
@@ -152,11 +226,19 @@
                                         {% elif partner.rating == 'significant' or partner.rating == 'Significant' %}panel-danger
                                         {% else %}panel-default
                                         {% endif %}"
-           pcas="{{ partner.interventions|length }}" active_pcas="{{ partner.interventions_active|length }}"
+           interventions="{{ partner.interventions|length }}"
+           active_interventions="{{ partner.interventions_active|length }}"
+           pds="{{ partner.pds|length }}"
+           active_pds="{{ partner.pds_active|length }}"
+           sffas="{{ partner.sffas|length }}"
+           active_sffas="{{ partner.sffas_active|length }}"
            audits="{{ partner.audits|length }}"
            micro-assessments="{{ partner.micro_assessments|length }}"
            spot-checks="{{ partner.spot_checks|length }}" special-visits="{{ partner.special_visits|length }}"
            programmatic-visits="{{ partner.programmatic_visits|length }}"
+           programmatic-visits-planned="{{ partner.programmatic_visits_planned|length }}"
+           programmatic-visits-submitted="{{ partner.programmatic_visits_submitted|length }}"
+           programmatic-visits-approved="{{ partner.programmatic_visits_approved|length }}"
            programmatic-visits-completed="{{ partner.programmatic_visits_completed|length }}">
 
           <div class="panel-heading">
@@ -230,7 +312,7 @@
                   <div class="col-md-6">
                     <i class="fa fa-file-text-o" style="font-size: 16px; color: #0089d2;"></i>
                     <a href="https://etools.unicef.org/pmp/interventions/{{ inter.etl_id }}/details" target="_blank">
-                      {{ inter.number }}
+                      {{ inter.document_type }} - {{ inter.status }} - {{ inter.number }}
                       <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                     </a>
                   </div>
@@ -502,16 +584,40 @@
   $('.btn-filter-no').click(function(){
       $('.partner-profile').show();
       $('.btn-filter').removeClass('on');
+      $('.partner-profile').removeClass('active');
+      $('#total-partners').text($('.partner-profile').length);
+  });
+
+  $('.btn-filter').click(function(){
+      $('.btn-filter').removeClass('on');
+      $('.partner-profile').removeClass('active');
+      $('#total-partners').text($('.partner-profile').length);
+
       if($(this).hasClass('on')){
         $(this).removeClass('on');
       }else{
         $(this).addClass('on');
       }
+
+      if($('.btn-filter.on').length){
+        $('.partner-profile').hide();
+      }else{
+        $('.partner-profile').show();
+      }
+
+      $('.btn-filter.on').each(function(i){
+          var itemref = $(this).attr('itemref');
+          $('.partner-profile').filter(function() {
+            return parseInt($(this).attr(itemref)) > 0;
+          }).show(function(){
+              $(this).addClass('active');
+              $('#total-partners').text($('.partner-profile.active').length);
+          });
+      });
   });
 
-  $('.btn-filter').click(function(){
+  $('.btn-filter').dblclick(function(){
       $('.partner-profile').removeClass('active');
-      $('.btn-filter-no').removeClass('on');
       $('#total-partners').text($('.partner-profile').length);
 
       if($(this).hasClass('on')){

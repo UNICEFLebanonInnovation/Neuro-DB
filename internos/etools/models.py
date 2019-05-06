@@ -397,11 +397,13 @@ class PCA(models.Model):
     ACTIVE = u'active'
     IMPLEMENTED = u'implemented'
     CANCELLED = u'cancelled'
+    ENDED = u'ended'
     PCA_STATUS = (
         (IN_PROCESS, u"In Process"),
         (ACTIVE, u"Active"),
         (IMPLEMENTED, u"Implemented"),
         (CANCELLED, u"Cancelled"),
+        (ENDED, u"Ended"),
     )
     PD = u'PD'
     SHPD = u'SHPD'
@@ -464,7 +466,7 @@ class PCA(models.Model):
     status = models.CharField(
         max_length=32,
         blank=True,
-        choices=PCA_STATUS,
+        # choices=PCA_STATUS,
         default=u'in_process',
         help_text=u'In Process = In discussion with partner, '
                   u'Active = Currently ongoing, '

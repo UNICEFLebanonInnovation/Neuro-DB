@@ -26,23 +26,27 @@ class PartnerProfileView(TemplateView):
         partners_info = []
         now = datetime.datetime.now()
 
-        engagements = Engagement.objects.exclude(status=Engagement.CANCELLED)
+        engagements = Engagement.objects.filter(start_date__year=now.year).exclude(status=Engagement.CANCELLED)
         spot_checks = engagements.filter(engagement_type='sc')
         audits = engagements.filter(engagement_type='audit')
         micro_assessments = engagements.filter(engagement_type='ma')
         special_audits = engagements.filter(engagement_type='sa')
 
         interventions = PCA.objects.filter(end__year=now.year).exclude(status=PCA.CANCELLED)
-        active_interventions = PCA.objects.filter(end__year=now.year, status=PCA.ACTIVE)
+        active_interventions = interventions.filter(status=PCA.ACTIVE)
 
-        programmatic_visits = TravelActivity.objects.filter(travel_type='programmatic visit',
-                                                            travel__start_date__year='2019').exclude(
-            travel__status=Travel.CANCELLED).exclude(
-            travel__status=Travel.REJECTED)
+        interventions_pd = interventions.filter(document_type=PCA.PD)
+        active_interventions_pd = interventions_pd.filter(status=PCA.ACTIVE)
 
-        programmatic_visits_completed = TravelActivity.objects.filter(travel_type='programmatic visit',
-                                                                      travel__start_date__year='2019',
-                                                                      travel__status=Travel.COMPLETED)
+        interventions_sffa = interventions.filter(document_type=PCA.SSFA)
+        active_interventions_sffa = interventions_sffa.filter(status=PCA.ACTIVE)
+
+        visits = TravelActivity.objects.filter(travel_type='programmatic visit', travel__start_date__year='2019')
+        programmatic_visits = visits.exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
+        programmatic_visits_planned = visits.filter(travel__status=Travel.PLANNED)
+        programmatic_visits_submitted = visits.filter(travel__status=Travel.SUBMITTED)
+        programmatic_visits_approved = visits.filter(travel__status=Travel.APPROVED)
+        programmatic_visits_completed = visits.filter(travel__status=Travel.COMPLETED)
 
         partners = PartnerOrganization.objects.exclude(hidden=True).exclude(deleted_flag=True)
 
@@ -53,12 +57,19 @@ class PartnerProfileView(TemplateView):
             'partners': partners,
             'nbr_interventions': interventions.count(),
             'nbr_active_interventions': active_interventions.count(),
+            'nbr_pds': interventions_pd.count(),
+            'nbr_active_pds': active_interventions_pd.count(),
+            'nbr_sffas': interventions_sffa.count(),
+            'nbr_active_sffas': active_interventions_sffa.count(),
             'nbr_partners': partners.count(),
             'nbr_spot_checks': spot_checks.count(),
             'nbr_audits': audits.count(),
             'nbr_micro_assessments': micro_assessments.count(),
             'nbr_special_audits': special_audits.count(),
             'programmatic_visits': programmatic_visits.count(),
+            'programmatic_visits_planned': programmatic_visits_planned.count(),
+            'programmatic_visits_submitted': programmatic_visits_submitted.count(),
+            'programmatic_visits_approved': programmatic_visits_approved.count(),
             'programmatic_visits_completed': programmatic_visits_completed.count(),
             'partners_info': partners_info
         }

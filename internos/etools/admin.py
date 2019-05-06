@@ -135,11 +135,13 @@ class PCAAdmin(ImportExportModelAdmin):
         'agreement',
         'document_type',
         'country_programme',
+        'status',
         'start',
         'end',
     )
 
     list_filter = (
+        'status',
         'partner',
         'document_type',
         'country_programme',
