@@ -131,7 +131,7 @@
                           </th>
                           <th class="w-70" content="Status" style="vertical-align: middle;">Status</th>
                           {% for tag in tags %}
-                            <th class="w-70" content="{{ tag.name }}" style="vertical-align: middle;">{{ tag.name }}</th>
+                            <th content="{{ tag.name }}" style="vertical-align: middle;">{{ tag.name }}</th>
                           {% endfor %}
                         </tr>
                       </thead>
@@ -139,25 +139,8 @@
                         {% for item in master_indicators %}
                           {% get_indicator_cumulative item month selected_partners selected_governorate as cumulative_value %}
 
-                          <tr class="level1" itemid="{{ item.id }}" {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;"{% elif item.individual_indicator %}style="background-color:#dadada;"{% endif %}>
-                              <!--<td>{{ item.id }}</td>-->
-                              {% if item.master_indicator %}
-                                <th colspan="2" class="w-500">
-                                  {{ item.name }}
-                                  {% if item.explication %}
-                                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item.explication }}"></i>
-                                  {% endif %}
-                                </th>
-                              {% else %}
-                                <td class="w-100">{{ item.ai_id }}</td>
-                                <th class="w-400">
-                                  {{ item.name }}
-                                  {% if item.explication %}
-                                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item.explication }}"></i>
-                                  {% endif %}
-                                </th>
-                              {% endif %}
-                              <!--<td>Site</td>-->
+                          <tr class="level1" itemid="{{ item.id }}">
+                            <th colspan="2" class="w-500">{{ item.name }}</th>
                               <td class="w-100">{{ item.awp_code }}</td>
                               <td class="w-100">
                                 {% if item.measurement_type == 'percentage' %}
@@ -175,7 +158,7 @@
                               </td>
                               <td class="w-70" style="background-color:{{ item.status_color }}; color: #FFF;">{{ item.status }}</td>
                                 {% for tag in tags %}
-                                <td class="w-70">
+                                <td>
                                   {% get_indicator_tag_value item tag as value %}
                                   {{ value }}%
                                 </td>
