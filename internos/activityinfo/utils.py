@@ -1978,6 +1978,44 @@ def calculate_indicators_status(database):
     return indicators.count()
 
 
+def assign_main_master_indicator():
+    from internos.activityinfo.models import Indicator
+
+    # Level 1
+    top_indicators = Indicator.objects.filter(master_indicator=True).only(
+        'sub_indicators',
+    )
+    print(top_indicators.count())
+
+    for indicator in top_indicators.iterator():
+        sub_indicators = indicator.sub_indicators.exclude(master_indicator=False)
+        sub_indicators.update(main_master_indicator=indicator)
+
+    # Level 2
+    top_indicators1 = Indicator.objects.filter(master_indicator_sub=True).only(
+        'sub_indicators',
+        'main_master_indicator',
+    )
+    print(top_indicators1.count())
+
+    for indicator in top_indicators1.iterator():
+        sub_indicators = indicator.sub_indicators.exclude(master_indicator_sub=False,
+                                                          master_indicator=False)
+        sub_indicators.update(main_master_indicator=indicator.main_master_indicator)
+
+    # Level 3
+    top_indicators2 = Indicator.objects.filter(master_indicator_sub_sub=True).only(
+        'sub_indicators',
+        'main_master_indicator',
+    )
+    print(top_indicators2.count())
+
+    for indicator in top_indicators2.iterator():
+        sub_indicators = indicator.sub_indicators.exclude(master_indicator_sub=False,
+                                                          master_indicator=False)
+        sub_indicators.update(main_master_indicator=indicator.main_master_indicator)
+
+
 #  todo not using it
 def get_individual_indicator_value(ai_db, indicator_id, month=None, partner=None, gov=None, report_type=None):
     from internos.activityinfo.models import ActivityReport, LiveActivityReport
