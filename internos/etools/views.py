@@ -7,11 +7,14 @@ from django.db.models import Q
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, JsonResponse
+from rest_framework import status
+from rest_framework import viewsets, mixins, permissions
 
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
 from .models import PartnerOrganization, PCA, Engagement, Travel, TravelType, TravelActivity
 from .utils import get_partner_profile_details
+from .serializers import PartnerOrganizationSerializer
 from internos.users.models import Section
 from internos.activityinfo.models import Database
 
@@ -73,3 +76,16 @@ class PartnerProfileView(TemplateView):
             'programmatic_visits_completed': programmatic_visits_completed.count(),
             'partners_info': partners_info
         }
+
+
+class CommentUpdateViewSet(mixins.RetrieveModelMixin,
+                           mixins.UpdateModelMixin,
+                           viewsets.GenericViewSet,
+                           SuperuserRequiredMixin):
+    """
+    Provides API operations around a Enrollment record
+    """
+    model = PartnerOrganization
+    queryset = PartnerOrganization.objects.all()
+    serializer_class = PartnerOrganizationSerializer
+    permission_classes = (permissions.IsAuthenticated,)

@@ -264,7 +264,8 @@
                   {% if request.user.is_authenticated %}
                   <textarea rows="2" cols="20" class="form-control" id="partner_comments_{{ partner.db_id }}">{% if partner.comments %}{{ partner.comments }}{% endif %}</textarea>
                   <span class="input-group-addon">
-                    <button type="button" class="btn btn-success save-comments" itemscope="url" itemid="{{ partner.db_id }}" itemref="#partner_comments_{{ partner.db_id }}"><i class="fa fa-floppy-o"></i> Save</button>
+                    <button type="button" class="btn btn-success save-comments" itemscope="/api/update-partner-comments/{{ partner.db_id }}/"
+                            itemid="{{ partner.db_id }}" itemref="#partner_comments_{{ partner.db_id }}"><i class="fa fa-floppy-o"></i> Save</button>
                   </span>
                   {% else %}
                   <textarea rows="2" cols="20" class="form-control" disabled>{% if partner.comments %}{{ partner.comments }}{% endif %}</textarea>
@@ -550,7 +551,7 @@
           </div>
         </div>
     {% endfor %}
-
+      {% csrf_token %}
       <div class="clearfix"></div>
     </div>
   </div>
@@ -564,6 +565,9 @@
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
 
 <script>
+    var user_token = '{{ user_token }}';
+    var href_full_path = '{{ request.build_absolute_uri }}';
+    var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
 
     $('.expanded-all').click(function(){
         $('.panel-collapse').addClass('in');
@@ -697,6 +701,17 @@ $(".sidebar-box button").click(function() {
 
 });
 
+function getHeader()
+{
+    var header = {
+        'Authorization': 'Token '+user_token,
+        'HTTP_REFERER': href_full_path,
+        'Cookie': 'token=Token '+user_token,
+        'X-CSRFToken': csrftoken
+    };
+    return header;
+}
+
 function update_data_server(url, data)
 {
     $.ajax({
@@ -704,6 +719,7 @@ function update_data_server(url, data)
         url: url,
         data: data,
         cache: false,
+        headers: getHeader(),
         dataType: 'json',
         success: function (response, result, jqXHR) {
             if(jqXHR.status == 200){

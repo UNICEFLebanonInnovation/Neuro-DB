@@ -79,6 +79,7 @@ class PartnerOrganizationAdmin(ImportExportModelAdmin):
         'shared_partner',
         'email',
         'phone_number',
+        'comments',
     )
     search_fields = (
         'name',
