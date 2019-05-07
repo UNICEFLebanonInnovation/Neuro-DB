@@ -57,10 +57,6 @@
                 <div class="x_panel">
                   <div class="x_title">
                     <h2>
-                      <span data-step="7" data-intro="Collapse / Expand master indicators">
-                        <a href="#" class="collapse-all" style="font-size: 25px;"><i class="fa fa-th-large"></i></a>
-                        <a href="#" class="expanded-all active" style="font-size: 25px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
-                      </span>
                       <strong>Dashboard - {{ database.label }} - 2019</strong>
                       <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
@@ -160,7 +156,7 @@
                                 {% for tag in tags %}
                                 <td>
                                   {% get_indicator_tag_value item tag as value %}
-                                  {{ value }}%
+                                  {{ value }}{% if value != "0" %}%{% endif %}
                                 </td>
                               {% endfor %}
                           </tr>
@@ -193,65 +189,6 @@
 
 <script>
 
-$(document).ready(function(){
-
-    $('#filter_partners').selectpicker();
-    $('#filter_govs').selectpicker();
-
-    $('.expanded-all').click(function(){
-        $('.expanded-all').addClass('active');
-        $('.collapse-all').removeClass('active');
-
-        $('.level1').removeClass('collapsed');
-        $('.level2').removeClass('collapsed');
-        $('.level3').removeClass('collapsed');
-
-        $('.level1').show();
-        $('.level2').show();
-        $('.level3').show();
-    });
-
-    $('.collapse-all').click(function(){
-        $('.expanded-all').removeClass('active');
-        $('.collapse-all').addClass('active');
-
-        $('.level1').addClass('collapsed');
-        $('.level2').addClass('collapsed');
-        $('.level3').addClass('collapsed');
-
-        $('.level2').hide();
-        $('.level3').hide();
-    });
-
-    $('.level1').dblclick(function(){
-      var itemid = $(this).attr('itemid');
-      var sub_items = 'tr.level2-'+itemid;
-      var sub_sub_items = 'tr.level3-'+itemid;
-
-      if($(this).hasClass('collapsed')){
-          $(sub_items).show();
-          $(this).removeClass('collapsed');
-      }else{
-          $(sub_items).hide();
-          $(sub_items).addClass('collapsed');
-          $(sub_sub_items).hide();
-          $(this).addClass('collapsed');
-      }
-    });
-
-    $('.level2').dblclick(function(){
-      var itemid = $(this).attr('itemid');
-      var sub_items = 'tr.level3-'+itemid;
-
-      if($(this).hasClass('collapsed')){
-          $(sub_items).show();
-          $(this).removeClass('collapsed');
-      }else{
-          $(sub_items).hide();
-          $(this).addClass('collapsed');
-      }
-    });
-});
 
 function download_csv(csv, filename) {
     var csvFile;

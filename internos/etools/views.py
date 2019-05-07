@@ -78,6 +78,30 @@ class PartnerProfileView(TemplateView):
         }
 
 
+class TripsMonitoringView(TemplateView):
+
+    template_name = 'etools/trips_monitoring.html'
+
+    def get_context_data(self, **kwargs):
+        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
+
+        return {
+            'databases': databases,
+        }
+
+
+class HACTView(TemplateView):
+
+    template_name = 'etools/hact.html'
+
+    def get_context_data(self, **kwargs):
+        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
+
+        return {
+            'databases': databases,
+        }
+
+
 class CommentUpdateViewSet(mixins.RetrieveModelMixin,
                            mixins.UpdateModelMixin,
                            viewsets.GenericViewSet,

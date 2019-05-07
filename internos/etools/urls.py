@@ -11,4 +11,14 @@ urlpatterns = [
         view=views.PartnerProfileView.as_view(),
         name='partner_profile'
     ),
+    url(
+        regex=r'^programmatic-visits-monitoring/$',
+        view=views.TripsMonitoringView.as_view(),
+        name='programmatic_visits_monitoring'
+    ),
+    url(
+        regex=r'^HACT/$',
+        view=views.HACTView.as_view(),
+        name='hact'
+    ),
 ]
