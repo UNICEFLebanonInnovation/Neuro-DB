@@ -127,7 +127,11 @@
                           </th>
                           <th class="w-70" content="Status" style="vertical-align: middle;">Status</th>
                           {% for tag in tags %}
+                            {% if tag.label %}
+                            <th content="{{ tag.label }}" style="vertical-align: middle;">{{ tag.label }}</th>
+                            {% else %}
                             <th content="{{ tag.name }}" style="vertical-align: middle;">{{ tag.name }}</th>
+                            {% endif %}
                           {% endfor %}
                         </tr>
                       </thead>
