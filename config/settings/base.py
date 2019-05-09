@@ -49,6 +49,7 @@ DJANGO_APPS = [
     'django.contrib.admin',
     'django_json_widget',
     'prettyjson',
+    'django.contrib.humanize',
 ]
 THIRD_PARTY_APPS = [
     # 'django_mysql',
@@ -62,6 +63,8 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'rest_framework.authtoken',
+    'bootstrap4',
+    'bootstrap',
 ]
 
 # Apps specific for this project go here.
@@ -74,6 +77,7 @@ LOCAL_APPS = [
     'internos.etools',
     'internos.locations',
     'internos.databook',
+    'internos.helpdesk',
     # Your stuff: custom apps go here
 ]
 

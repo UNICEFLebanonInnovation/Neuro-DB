@@ -37,6 +37,7 @@ class SuitConfig(DjangoSuitConfig):
             ChildItem('Sections', model='users.section'),
             ChildItem('Groups', 'auth.group'),
         ], icon='fa fa-users'),
+        ParentItem('Helpdesk'),
         ParentItem('Right Side Menu', children=[
             ChildItem('Password change', url='admin:password_change'),
 
