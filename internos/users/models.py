@@ -20,6 +20,13 @@ class Section(models.Model):
         return self.name
 
 
+class Office(models.Model):
+    name = models.CharField(max_length=256)
+
+    def __str__(self):
+        return self.name
+
+
 @python_2_unicode_compatible
 class User(AbstractUser):
 

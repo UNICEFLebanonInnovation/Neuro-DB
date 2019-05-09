@@ -677,7 +677,11 @@ class Travel(models.Model):
     )
     supervisor_name = models.CharField(max_length=500, blank=True, null=True)
     section = models.ForeignKey(
-        'users.Section', null=True, blank=True, related_name='+', verbose_name=_('Section'),
+        'users.Section', null=True, blank=True, related_name='+',
+        on_delete=models.CASCADE,
+    )
+    office = models.ForeignKey(
+        'users.Office', null=True, blank=True, related_name='+',
         on_delete=models.CASCADE,
     )
     start_date = models.DateTimeField(null=True, blank=True, verbose_name=_('Start Date'))

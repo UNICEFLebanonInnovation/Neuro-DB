@@ -15,7 +15,7 @@ from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
 from .models import PartnerOrganization, PCA, Engagement, Travel, TravelType, TravelActivity
 from .utils import get_partner_profile_details
 from .serializers import PartnerOrganizationSerializer
-from internos.users.models import Section
+from internos.users.models import Section, Office
 from internos.activityinfo.models import Database
 
 
@@ -44,7 +44,7 @@ class PartnerProfileView(TemplateView):
         interventions_sffa = interventions.filter(document_type=PCA.SSFA)
         active_interventions_sffa = interventions_sffa.filter(status=PCA.ACTIVE)
 
-        visits = TravelActivity.objects.filter(travel_type='programmatic visit', travel__start_date__year='2019')
+        visits = TravelActivity.objects.filter(travel_type='programmatic visit', travel__start_date__year=now.year)
         programmatic_visits = visits.exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
         programmatic_visits_planned = visits.filter(travel__status=Travel.PLANNED)
         programmatic_visits_submitted = visits.filter(travel__status=Travel.SUBMITTED)
@@ -83,10 +83,96 @@ class TripsMonitoringView(TemplateView):
     template_name = 'etools/trips_monitoring.html'
 
     def get_context_data(self, **kwargs):
+        now = datetime.datetime.now()
+
+        trip_details = {
+            'programmatic_visits': [],
+            'programmatic_visits_planned': [],
+            'programmatic_visits_submitted': [],
+            'programmatic_visits_approved': [],
+            'programmatic_visits_completed': []
+        }
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
+        sections = Section.objects.all()
+        offices = Office.objects.all()
+
+        visits = TravelActivity.objects.filter(travel_type='programmatic visit', travel__start_date__year=now.year)
+        programmatic_visits = visits.exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
+        programmatic_visits_planned = visits.filter(travel__status=Travel.PLANNED)
+        programmatic_visits_submitted = visits.filter(travel__status=Travel.SUBMITTED)
+        programmatic_visits_approved = visits.filter(travel__status=Travel.APPROVED)
+        programmatic_visits_completed = visits.filter(travel__status=Travel.COMPLETED)
+
+        # all visits
+        details = {'visits': []}
+        for visit in programmatic_visits:
+            travel = visit.travel
+            key = '{}-{}'.format(travel.section, travel.office)
+            if key not in details:
+                details[key] = 1
+            else:
+                details[key] += 1
+
+            details['visits'].append(visit)
+        trip_details['programmatic_visits'] = details
+
+        # planned visits
+        details = {'visits': []}
+        for visit in programmatic_visits_planned:
+            travel = visit.travel
+            key = '{}-{}'.format(travel.section, travel.office)
+            if key not in details:
+                details[key] = 1
+            else:
+                details[key] += 1
+
+            details['visits'].append(visit)
+        trip_details['programmatic_visits_planned'] = details
+
+        # submitted visits
+        details = {'visits': []}
+        for visit in programmatic_visits_submitted:
+            travel = visit.travel
+            key = '{}-{}'.format(travel.section, travel.office)
+            if key not in details:
+                details[key] = 1
+            else:
+                details[key] += 1
+
+            details['visits'].append(visit)
+        trip_details['programmatic_visits_submitted'] = details
+
+        # approved visits
+        details = {'visits': []}
+        for visit in programmatic_visits_approved:
+            travel = visit.travel
+            key = '{}-{}'.format(travel.section, travel.office)
+            if key not in details:
+                details[key] = 1
+            else:
+                details[key] += 1
+
+            details['visits'].append(visit)
+        trip_details['programmatic_visits_approved'] = details
+
+        # completed visits
+        details = {'visits': []}
+        for visit in programmatic_visits_completed:
+            travel = visit.travel
+            key = '{}-{}'.format(travel.section, travel.office)
+            if key not in details:
+                details[key] = 1
+            else:
+                details[key] += 1
+
+            details['visits'].append(visit)
+        trip_details['programmatic_visits_completed'] = details
 
         return {
             'databases': databases,
+            'sections': sections,
+            'offices': offices,
+            'trip_details': trip_details
         }
 
 

@@ -302,6 +302,8 @@ def sync_trip_data():
             instance.start_date = item['start_date']
             instance.end_date = item['end_date']
             instance.supervisor_name = item['supervisor_name']
+            instance.section_id = item['section']
+            instance.office_id = item['office']
 
             instance.save()
             # sync_trip_individual_data(instance)

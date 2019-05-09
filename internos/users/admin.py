@@ -5,7 +5,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from .models import User, Section
+from .models import User, Section, Office
 
 
 class MyUserChangeForm(UserChangeForm):
@@ -43,3 +43,4 @@ class MyUserAdmin(AuthUserAdmin):
 
 
 admin.site.register(Section)
+admin.site.register(Office)
