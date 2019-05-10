@@ -2080,6 +2080,42 @@ def update_partner_data(ai_db):
     return objects
 
 
+def update_indicator_data(ai_db, ai_field_name, field_name):
+    from internos.activityinfo.client import ActivityInfoClient
+    from internos.activityinfo.models import Indicator
+
+    client = ActivityInfoClient(ai_db.username, ai_db.password)
+
+    dbs = client.get_databases()
+    db_ids = [db['id'] for db in dbs]
+    if ai_db.ai_id not in db_ids:
+        raise Exception(
+            'DB with ID {} not found in ActivityInfo'.format(
+                ai_db.ai_id
+            ))
+
+    db_info = client.get_database(ai_db.ai_id)
+
+    objects = 0
+    try:
+
+        for activity in db_info['activities']:
+            for indicator in activity['indicators']:
+                try:
+                    ai_indicator = Indicator.objects.get(ai_id=indicator['id'])
+                except Indicator.DoesNotExist:
+                    continue
+
+                objects += 1
+                setattr(ai_indicator, ai_field_name, indicator[field_name])
+                ai_indicator.save()
+
+    except Exception as e:
+        raise e
+
+    return objects
+
+
 def update_hpm_report():
     update_indicators_hpm_data()
     calculate_indicators_cumulative_hpm()
