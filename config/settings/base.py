@@ -330,7 +330,7 @@ ADMIN_URL = r'^admin/'
 # ------------------------------------------------------------------------------
 
 
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['example.com', 'lebaaodb.unicef.org', '127.0.0.1', '158.113.238.10'])
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['example.com', 'lebanondb.unicef.org', '127.0.0.1', '158.113.238.10'])
 
 REST_FRAMEWORK = {
     # this setting fixes the bug where user can be logged in as AnonymousUser
