@@ -35,6 +35,7 @@ class SuitConfig(DjangoSuitConfig):
         ParentItem('Users', children=[
             ChildItem('Users', model='users.user'),
             ChildItem('Sections', model='users.section'),
+            ChildItem('Offices', model='users.office'),
             ChildItem('Groups', 'auth.group'),
         ], icon='fa fa-users'),
         ParentItem('Right Side Menu', children=[

@@ -3,6 +3,9 @@ from __future__ import absolute_import, unicode_literals
 
 from django import forms
 from django.contrib import admin
+from import_export import resources, fields
+from import_export import fields
+from import_export.admin import ImportExportModelAdmin
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from .models import User, Section, Office
@@ -42,5 +45,50 @@ class MyUserAdmin(AuthUserAdmin):
     search_fields = ['username']
 
 
-admin.site.register(Section)
-admin.site.register(Office)
+class OfficeResource(resources.ModelResource):
+
+    class Meta:
+        model = Office
+        fields = (
+            'id',
+            'name',
+        )
+        export_order = fields
+
+
+class OfficeAdmin(ImportExportModelAdmin):
+    resource_class = OfficeResource
+    list_display = (
+        'id',
+        'name',
+    )
+    search_fields = (
+        'name',
+    )
+
+
+class SectionResource(resources.ModelResource):
+
+    class Meta:
+        model = Section
+        fields = (
+            'id',
+            'name',
+        )
+        export_order = fields
+
+
+class SectionAdmin(ImportExportModelAdmin):
+    resource_class = SectionResource
+    list_display = (
+        'id',
+        'name',
+        'color',
+    )
+    search_fields = (
+        'name',
+    )
+
+
+admin.site.register(Section, SectionAdmin)
+admin.site.register(Office, OfficeAdmin)

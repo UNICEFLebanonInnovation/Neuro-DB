@@ -68,10 +68,37 @@
   .x_title span.label {
       color: white;
   }
+  div.trip-filter {
+    cursor: pointer;
+  }
 
 </style>
 
 <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
+
+<div class="row tile_count" data-step="4" data-intro="Some quick numbers">
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> All Visits</span>
+    <div class="count blue trip-filter" itemref="#all_trips">{{ trip_details.programmatic_visits.visits|length }}</div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Planned Visits</span>
+    <div class="count gray trip-filter" itemref="#planned_trips">{{ trip_details.programmatic_visits_planned.visits|length }}</div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Submitted Visits</span>
+    <div class="count gray trip-filter" itemref="#submitted_trips">{{ trip_details.programmatic_visits_submitted.visits|length }}</div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Approved Visits</span>
+    <div class="count gray trip-filter" itemref="#approved_trips">{{ trip_details.programmatic_visits.approved.visits|length }}</div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Completed Visits</span>
+    <div class="count gray trip-filter" itemref="#completed_trips">{{ trip_details.programmatic_visits.completed.visits|length }}</div>
+  </div>
+</div>
+
 
 <div class="row">
   <div class="col-md-12 col-sm-12 col-xs-12">
@@ -99,6 +126,14 @@
     </div>
     <div class="row" id="trips_monitor">
 
+      <ul class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="#">Table</a></li>
+        <li role="presentation" class=""><a href="#">Map</a></li>
+        <li role="presentation" class=""><a href="#">Report</a></li>
+      </ul>
+
+      {% include "etools/trip_details.html" with visits=trip_details.programmatic_visits table="all_trips" %}
+
       {% csrf_token %}
       <div class="clearfix"></div>
     </div>
@@ -115,6 +150,16 @@
     var user_token = '{{ user_token }}';
     var href_full_path = '{{ request.build_absolute_uri }}';
     var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
+
+    $(document).ready(function(){
+        $('ul.child_menu').hide();
+
+        $('div.trip-filter').click(function(){
+            $('div.trip-filter').removeClass('blue');
+            $(this).removeClass('gray').addClass('blue');
+        });
+    });
+
 </script>
 
 {% endblock %}

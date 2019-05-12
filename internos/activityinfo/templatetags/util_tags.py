@@ -461,3 +461,24 @@ def get_indicator_live_value(indicator, month=None, partner=None, gov=None):
         # print(ex)
         return get_indicator_unit(indicator, 0)
 
+
+@register.assignment_tag
+def get_array_value(data, key1=None, key2=None):
+    try:
+        key = 0
+        if key1 and key2:
+            key = '{}-{}'.format(key1, key2)
+
+        if key1 and not key2:
+            key = key1
+
+        if key2 and not key1:
+            key = key2
+
+        if key in data:
+            return data[key]
+
+        return 0
+    except Exception as ex:
+        # print(ex)
+        return 0

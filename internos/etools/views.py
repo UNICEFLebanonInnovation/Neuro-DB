@@ -13,7 +13,7 @@ from rest_framework import viewsets, mixins, permissions
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
 from .models import PartnerOrganization, PCA, Engagement, Travel, TravelType, TravelActivity
-from .utils import get_partner_profile_details
+from .utils import get_partner_profile_details, get_trip_details
 from .serializers import PartnerOrganizationSerializer
 from internos.users.models import Section, Office
 from internos.activityinfo.models import Database
@@ -96,77 +96,21 @@ class TripsMonitoringView(TemplateView):
         sections = Section.objects.all()
         offices = Office.objects.all()
 
-        visits = TravelActivity.objects.filter(travel_type='programmatic visit', travel__start_date__year=now.year)
+        visits = TravelActivity.objects.filter(travel_type='programmatic visit')
+        # visits = TravelActivity.objects.filter(travel_type='programmatic visit', travel__start_date__year=now.year)
         programmatic_visits = visits.exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
         programmatic_visits_planned = visits.filter(travel__status=Travel.PLANNED)
         programmatic_visits_submitted = visits.filter(travel__status=Travel.SUBMITTED)
         programmatic_visits_approved = visits.filter(travel__status=Travel.APPROVED)
         programmatic_visits_completed = visits.filter(travel__status=Travel.COMPLETED)
 
-        # all visits
-        details = {'visits': []}
-        for visit in programmatic_visits:
-            travel = visit.travel
-            key = '{}-{}'.format(travel.section, travel.office)
-            if key not in details:
-                details[key] = 1
-            else:
-                details[key] += 1
-
-            details['visits'].append(visit)
-        trip_details['programmatic_visits'] = details
-
-        # planned visits
-        details = {'visits': []}
-        for visit in programmatic_visits_planned:
-            travel = visit.travel
-            key = '{}-{}'.format(travel.section, travel.office)
-            if key not in details:
-                details[key] = 1
-            else:
-                details[key] += 1
-
-            details['visits'].append(visit)
-        trip_details['programmatic_visits_planned'] = details
-
-        # submitted visits
-        details = {'visits': []}
-        for visit in programmatic_visits_submitted:
-            travel = visit.travel
-            key = '{}-{}'.format(travel.section, travel.office)
-            if key not in details:
-                details[key] = 1
-            else:
-                details[key] += 1
-
-            details['visits'].append(visit)
-        trip_details['programmatic_visits_submitted'] = details
-
-        # approved visits
-        details = {'visits': []}
-        for visit in programmatic_visits_approved:
-            travel = visit.travel
-            key = '{}-{}'.format(travel.section, travel.office)
-            if key not in details:
-                details[key] = 1
-            else:
-                details[key] += 1
-
-            details['visits'].append(visit)
-        trip_details['programmatic_visits_approved'] = details
-
-        # completed visits
-        details = {'visits': []}
-        for visit in programmatic_visits_completed:
-            travel = visit.travel
-            key = '{}-{}'.format(travel.section, travel.office)
-            if key not in details:
-                details[key] = 1
-            else:
-                details[key] += 1
-
-            details['visits'].append(visit)
-        trip_details['programmatic_visits_completed'] = details
+        trip_details = {
+            'programmatic_visits': get_trip_details(programmatic_visits),
+            # 'programmatic_visits_planned': get_trip_details(programmatic_visits_planned),
+            # 'programmatic_visits_submitted': get_trip_details(programmatic_visits_submitted),
+            # 'programmatic_visits_approved': get_trip_details(programmatic_visits_approved),
+            # 'programmatic_visits_completed': get_trip_details(programmatic_visits_completed)
+        }
 
         return {
             'databases': databases,

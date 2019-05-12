@@ -1,7 +1,7 @@
 __author__ = 'achamseddine'
 
 from django.core.management.base import BaseCommand
-from internos.etools.utils import sync_trip_individual_data
+from internos.etools.tasks import sync_trip_individual_data
 
 
 class Command(BaseCommand):
