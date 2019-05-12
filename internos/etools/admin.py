@@ -136,6 +136,7 @@ class PCAAdmin(ImportExportModelAdmin):
         'agreement',
         'document_type',
         'country_programme',
+        'location_p_codes',
         'status',
         'start',
         'end',

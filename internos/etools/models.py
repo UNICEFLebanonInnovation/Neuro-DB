@@ -10,6 +10,8 @@ from django.db import connection, models
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django_fsm import FSMField, transition
 
+from internos.locations.models import Location
+
 log = logging.getLogger(__name__)
 
 
@@ -564,6 +566,11 @@ class PCA(models.Model):
     donor_codes = ArrayField(models.CharField(max_length=200), blank=True, null=True)
     flagged_sections = ArrayField(models.CharField(max_length=200), blank=True, null=True)
     location_p_codes = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    locations = models.ManyToManyField(
+        'locations.Location',
+        related_name='+',
+        blank=True
+    )
     offices = ArrayField(models.CharField(max_length=200), blank=True, null=True)
     cp_outputs = ArrayField(models.CharField(max_length=200), blank=True, null=True)
     planned_budget = ArrayField(models.CharField(max_length=200), blank=True, null=True)
