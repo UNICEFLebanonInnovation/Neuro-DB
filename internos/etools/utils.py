@@ -462,12 +462,12 @@ def get_trip_details(data_set):
     details = {'visits': [], 'locations': []}
     for visit in data_set:
         travel = visit.travel
-        # for location in visit.locations.filter(point__isnull=False).iterator():
-        #     details['locations'].append({
-        #         'name': location.name,
-        #         'latitude': location.point.x,
-        #         'longitude': location.point.y,
-        #     })
+        for location in visit.locations.filter(point__isnull=False).iterator():
+            details['locations'].append({
+                'name': location.name,
+                'latitude': location.point.x,
+                'longitude': location.point.y,
+            })
         if travel.section and travel.office:
             key = '{}-{}'.format(travel.section.name, travel.office.name)
             if key not in details:
