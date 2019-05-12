@@ -71,7 +71,8 @@ def sync_agreement_data():
 
 
 def sync_intervention_data():
-    from internos.etools.models import Agreement, PartnerOrganization, PCA
+    from internos.etools.models import PCA
+    from internos.locations.models import Location
     partners = get_data('etools.unicef.org', '/api/v2/interventions/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
 
     partners = json.loads(partners)
@@ -114,6 +115,9 @@ def sync_intervention_data():
         partner.donors = item['donors']
         partner.donor_codes = item['donor_codes']
         partner.grants = item['grants']
+
+        for p_code in item['location_p_codes']:
+            partner.locations.add(Location.objects.filter(p_code=p_code).first())
 
         partner.save()
 
@@ -306,11 +310,11 @@ def sync_trip_data():
             instance.office_id = item['office']
 
             instance.save()
-            # sync_trip_individual_data(instance)
 
 
 def sync_trip_individual_data(instance):
     from internos.etools.models import TravelActivity, PartnerOrganization, PCA
+    from internos.locations.models import Location
     data = get_data('etools.unicef.org', '/api/t2f/travels/{}/'.format(instance.id),
                     'Token 36f06547a4b930c6608e503db49f1e45305351c2')
     item = json.loads(data)
@@ -324,10 +328,12 @@ def sync_trip_individual_data(instance):
         act_instance, new_instance = TravelActivity.objects.get_or_create(id=activity['id'])
 
         act_instance.travel_type = activity['travel_type'].lower()
-        if activity['date']:
-            act_instance.date = activity['date']
-        else:
-            act_instance.date = instance.start_date
+
+        # if activity['date']:
+        #     act_instance.date = activity['date']
+        # else:
+        #     act_instance.date = instance.start_date
+
         act_instance.is_primary_traveler = activity['is_primary_traveler']
         act_instance.travel = instance
 
@@ -336,6 +342,10 @@ def sync_trip_individual_data(instance):
 
         if activity['partnership']:
             act_instance.partnership = PCA.objects.get(etl_id=activity['partnership'])
+
+        locations = activity['locations']
+        for location in locations:
+            act_instance.locations.add(Location.objects.filter(id=location).first())
 
         act_instance.save()
 
