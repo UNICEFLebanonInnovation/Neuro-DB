@@ -1978,6 +1978,42 @@ def calculate_indicators_status(database):
     return indicators.count()
 
 
+def assign_main_master_indicator():
+    from internos.activityinfo.models import Indicator
+
+    # Level 1
+    top_indicators = Indicator.objects.filter(master_indicator=True).only(
+        'sub_indicators',
+    )
+    print(top_indicators.count())
+
+    for indicator in top_indicators.iterator():
+        sub_indicators = indicator.sub_indicators.all()
+        sub_indicators.update(main_master_indicator=indicator)
+
+    # Level 2
+    top_indicators1 = Indicator.objects.filter(master_indicator_sub=True).only(
+        'sub_indicators',
+        'main_master_indicator',
+    )
+    print(top_indicators1.count())
+
+    for indicator in top_indicators1.iterator():
+        sub_indicators = indicator.sub_indicators.all()
+        sub_indicators.update(main_master_indicator=indicator.main_master_indicator)
+
+    # Level 3
+    top_indicators2 = Indicator.objects.filter(master_indicator_sub_sub=True).only(
+        'sub_indicators',
+        'main_master_indicator',
+    )
+    print(top_indicators2.count())
+
+    for indicator in top_indicators2.iterator():
+        sub_indicators = indicator.sub_indicators.all()
+        sub_indicators.update(main_master_indicator=indicator.main_master_indicator)
+
+
 #  todo not using it
 def get_individual_indicator_value(ai_db, indicator_id, month=None, partner=None, gov=None, report_type=None):
     from internos.activityinfo.models import ActivityReport, LiveActivityReport
@@ -2037,6 +2073,42 @@ def update_partner_data(ai_db):
             ai_partner.full_name = partner['fullName']
             ai_partner.database = ai_db
             ai_partner.save()
+
+    except Exception as e:
+        raise e
+
+    return objects
+
+
+def update_indicator_data(ai_db, ai_field_name, field_name):
+    from internos.activityinfo.client import ActivityInfoClient
+    from internos.activityinfo.models import Indicator
+
+    client = ActivityInfoClient(ai_db.username, ai_db.password)
+
+    dbs = client.get_databases()
+    db_ids = [db['id'] for db in dbs]
+    if ai_db.ai_id not in db_ids:
+        raise Exception(
+            'DB with ID {} not found in ActivityInfo'.format(
+                ai_db.ai_id
+            ))
+
+    db_info = client.get_database(ai_db.ai_id)
+
+    objects = 0
+    try:
+
+        for activity in db_info['activities']:
+            for indicator in activity['indicators']:
+                try:
+                    ai_indicator = Indicator.objects.get(ai_id=indicator['id'])
+                except Indicator.DoesNotExist:
+                    continue
+
+                objects += 1
+                setattr(ai_indicator, ai_field_name, indicator[field_name])
+                ai_indicator.save()
 
     except Exception as e:
         raise e

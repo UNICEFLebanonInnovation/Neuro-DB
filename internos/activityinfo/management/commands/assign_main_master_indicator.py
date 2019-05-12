@@ -1,11 +1,11 @@
 __author__ = 'achamseddine'
 
 from django.core.management.base import BaseCommand
-from internos.etools.tasks import sync_agreement_data
+from internos.activityinfo.utils import assign_main_master_indicator
 
 
 class Command(BaseCommand):
-    help = 'sync_agreement_data'
+    help = 'assign_main_master_indicator'
 
     def handle(self, *args, **options):
-        sync_agreement_data()
+        assign_main_master_indicator()

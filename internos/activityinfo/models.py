@@ -362,6 +362,7 @@ class Indicator(models.Model):
     numerator_indicator = models.ForeignKey('self', blank=True, null=True, related_name='+')
     denominator_summation = models.ManyToManyField('self', blank=True, related_name='+')
     numerator_summation = models.ManyToManyField('self', blank=True, related_name='+')
+    main_master_indicator = models.ForeignKey('self', blank=True, null=True, related_name='+')
     values = JSONField(blank=True, null=True)
     values_hpm = JSONField(blank=True, null=True, default={})
     values_tags = JSONField(blank=True, null=True, default={})

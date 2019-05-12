@@ -47,9 +47,4 @@ urlpatterns = [
         name='hpm_report'
     ),
 
-    url(
-        regex=r'^test/$',
-        view=views.TestView.as_view(),
-        name='test'
-    ),
 ]

@@ -79,6 +79,7 @@ class PartnerOrganizationAdmin(ImportExportModelAdmin):
         'shared_partner',
         'email',
         'phone_number',
+        'comments',
     )
     search_fields = (
         'name',
@@ -136,11 +137,13 @@ class PCAAdmin(ImportExportModelAdmin):
         'document_type',
         'country_programme',
         'location_p_codes',
+        'status',
         'start',
         'end',
     )
 
     list_filter = (
+        'status',
         'partner',
         'document_type',
         'country_programme',

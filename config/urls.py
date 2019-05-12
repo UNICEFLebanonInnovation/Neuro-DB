@@ -7,8 +7,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
+from rest_framework_nested import routers
+from rest_framework_swagger.views import get_swagger_view
 
 from internos.activityinfo.views import IndexView
+from internos.etools.views import CommentUpdateViewSet
+
+api = routers.SimpleRouter()
+api.register(r'update-partner-comments', CommentUpdateViewSet, base_name='update_partner_comments')
+schema_view = get_swagger_view(title='Neuro-DB API')
 
 urlpatterns = [
     # url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
@@ -27,8 +34,10 @@ urlpatterns = [
     url(r'^nested_admin/', include('nested_admin.urls')),
     url(r'^accounts/', include('allauth.urls')),
 
-    # Your stuff: custom urls includes go here
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api/docs/', schema_view),
 
+    url(r'^api/', include(api.urls)),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

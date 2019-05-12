@@ -721,6 +721,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'update_partner_data',
         'generate_indicator_tags',
         'calculate_sum_target',
+        'update_indicator_list_header',
     ]
 
     fieldsets = [
@@ -939,6 +940,15 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         reports = 0
         for db in queryset:
             reports = calculate_indicators_status(db)
+            self.message_user(
+                request,
+                "{} indicators status calculated for database {}".format(reports, db.name)
+            )
+
+    def update_indicator_list_header(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = update_indicator_data(ai_db=db, ai_field_name='list_header', field_name='listHeader')
             self.message_user(
                 request,
                 "{} indicators status calculated for database {}".format(reports, db.name)

@@ -62,6 +62,9 @@ THIRD_PARTY_APPS = [
     'import_export',
     'nested_admin',
     'smart_selects',
+    'rest_framework',
+    'rest_framework_swagger',
+    'rest_framework.authtoken',
 ]
 
 # Apps specific for this project go here.
@@ -330,4 +333,24 @@ ADMIN_URL = r'^admin/'
 # ------------------------------------------------------------------------------
 
 
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['example.com', 'lebaaodb.unicef.org', '127.0.0.1', '158.113.238.10'])
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['example.com', 'lebanondb.unicef.org', '127.0.0.1', '158.113.238.10'])
+
+REST_FRAMEWORK = {
+    # this setting fixes the bug where user can be logged in as AnonymousUser
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
+SWAGGER_SETTINGS = {
+    'is_authenticated': True,
+    'is_superuser': True,
+}

@@ -133,12 +133,15 @@ class PartnerOrganization(models.Model):
     deleted_flag = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
+    comments = models.TextField(blank=True, null=True)
 
     @property
     def programmatic_visits(self):
         today = datetime.date.today()
         travels = self.travelactivity_set.filter(travel_type='programmatic visit',
-                                                 date__year=today.year).order_by('date').only(
+                                                 date__year=today.year).exclude(
+            travel__status=Travel.CANCELLED).exclude(
+            travel__status=Travel.REJECTED).order_by('date').only(
             'id',
             'partnership_id',
             'partnership__number',
@@ -157,8 +160,8 @@ class PartnerOrganization(models.Model):
             'nbr_submitted': travels.filter(travel__status=Travel.SUBMITTED).count(),
             'nbr_approved': travels.filter(travel__status=Travel.APPROVED).count(),
             'nbr_completed': travels.filter(travel__status=Travel.COMPLETED).count(),
-            'nbr_cancelled': travels.filter(travel__status=Travel.CANCELLED).count(),
-            'nbr_rejected': travels.filter(travel__status=Travel.REJECTED).count(),
+            # 'nbr_cancelled': travels.filter(travel__status=Travel.CANCELLED).count(),
+            # 'nbr_rejected': travels.filter(travel__status=Travel.REJECTED).count(),
             'last_visit': travels.last(),
             'audits': travels,
             'completed': travels.filter(travel__status=Travel.COMPLETED),
@@ -168,7 +171,7 @@ class PartnerOrganization(models.Model):
     def audits(self):
         today = datetime.date.today()
         items = self.engagement_set.filter(engagement_type=Engagement.TYPE_AUDIT,
-                                           start_date__year=today.year).order_by('start_date').only(
+                                           start_date__year=today.year).exclude(status=Engagement.CANCELLED).order_by('start_date').only(
             'id',
             'findings_sets',
             'internal_controls',
@@ -187,7 +190,7 @@ class PartnerOrganization(models.Model):
     def micro_assessments(self):
         today = datetime.date.today()
         items = self.engagement_set.filter(engagement_type=Engagement.TYPE_MICRO_ASSESSMENT
-                                           ).order_by('start_date').only(
+                                           ).exclude(status=Engagement.CANCELLED).order_by('start_date').only(
             'id',
             'findings_sets',
             'internal_controls',
@@ -206,7 +209,7 @@ class PartnerOrganization(models.Model):
     @property
     def spot_checks(self):
         today = datetime.date.today()
-        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPOT_CHECK).only(
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPOT_CHECK).exclude(status=Engagement.CANCELLED).only(
             'id',
             'findings_sets',
             'internal_controls',
@@ -225,7 +228,7 @@ class PartnerOrganization(models.Model):
     @property
     def special_audits(self):
         today = datetime.date.today()
-        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPECIAL_AUDIT).only(
+        items = self.engagement_set.filter(engagement_type=Engagement.TYPE_SPECIAL_AUDIT).exclude(status=Engagement.CANCELLED).only(
             'id',
             'findings_sets',
             'internal_controls',
@@ -397,11 +400,13 @@ class PCA(models.Model):
     ACTIVE = u'active'
     IMPLEMENTED = u'implemented'
     CANCELLED = u'cancelled'
+    ENDED = u'ended'
     PCA_STATUS = (
         (IN_PROCESS, u"In Process"),
         (ACTIVE, u"Active"),
         (IMPLEMENTED, u"Implemented"),
         (CANCELLED, u"Cancelled"),
+        (ENDED, u"Ended"),
     )
     PD = u'PD'
     SHPD = u'SHPD'
@@ -464,7 +469,7 @@ class PCA(models.Model):
     status = models.CharField(
         max_length=32,
         blank=True,
-        choices=PCA_STATUS,
+        # choices=PCA_STATUS,
         default=u'in_process',
         help_text=u'In Process = In discussion with partner, '
                   u'Active = Currently ongoing, '
@@ -679,7 +684,11 @@ class Travel(models.Model):
     )
     supervisor_name = models.CharField(max_length=500, blank=True, null=True)
     section = models.ForeignKey(
-        'users.Section', null=True, blank=True, related_name='+', verbose_name=_('Section'),
+        'users.Section', null=True, blank=True, related_name='+',
+        on_delete=models.CASCADE,
+    )
+    office = models.ForeignKey(
+        'users.Office', null=True, blank=True, related_name='+',
         on_delete=models.CASCADE,
     )
     start_date = models.DateTimeField(null=True, blank=True, verbose_name=_('Start Date'))

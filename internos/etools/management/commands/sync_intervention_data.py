@@ -1,7 +1,7 @@
 __author__ = 'achamseddine'
 
 from django.core.management.base import BaseCommand
-from internos.etools.utils import sync_intervention_data, update_individual_intervention_data
+from internos.etools.tasks import sync_intervention_data
 
 
 class Command(BaseCommand):
@@ -9,4 +9,3 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         sync_intervention_data()
-        update_individual_intervention_data()

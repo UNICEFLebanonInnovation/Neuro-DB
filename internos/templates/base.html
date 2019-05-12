@@ -89,6 +89,7 @@
               <div class="menu_section" data-step="2" data-intro="Navigation menu for other sections">
                 <h3>General</h3>
                 <ul class="nav side-menu">
+
                   <li><a><i class="fa fa-table"></i> AI Dashboards <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       {% block ai_reports %}
@@ -106,6 +107,17 @@
                   <li><a href="{% url 'activityinfo:hpm' %}"><i class="fa fa-bar-chart-o"></i> HPM <span class="fa fa-file-text-o"></span></a></li>
                   <li><a href="{% url 'etools:partner_profile' %}"><i class="fa fa-slideshare"></i> Partner Profile <span class="fa fa-file-text-o"></span></a></li>
                   <li><a href="{% url 'locations:site_profile' %}"><i class="glyphicon glyphicon-map-marker"></i> Site Profile <span class="fa fa-file-text-o"></span></a></li>
+                  <li><a href="{% url 'activityinfo:hpm' %}"><i class="fa fa-bar-chart-o"></i> HPM </a></li>
+                  <!--<li><a href="{% url 'etools:partner_profile' %}"><i class="fa fa-slideshare"></i> Partner Profile <span class="fa fa-file-text-o"></span></a></li>-->
+
+                  <li><a><i class="fa fa-slideshare"></i>Partnership<span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="{% url 'etools:partner_profile' %}">Partner Profile</a></li>
+                      <li><a href="{% url 'etools:programmatic_visits_monitoring' %}">Programmatic Visits Monitoring (coming soon)</a></li>
+                      <li><a href="{% url 'etools:hact' %}">HACT (coming soon)</a></li>
+                    </ul>
+                  </li>
+
                 </ul>
 
                 <!--<i class="fa fa-phone"></i>-->
