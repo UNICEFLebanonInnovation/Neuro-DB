@@ -465,15 +465,25 @@ def get_trip_details(data_set):
         for location in visit.locations.filter(point__isnull=False).iterator():
             details['locations'].append({
                 'name': location.name,
+                'travel': travel.reference_number,
+                'travel_url': 'https://etools.unicef.org/t2f/edit-travel/{}'.format(travel.id),
+                'section': travel.section.name if travel.section else '',
+                'office': travel.office.name if travel.office else '',
+                'traveler_name': travel.traveler_name,
                 'latitude': location.point.y,
                 'longitude': location.point.x,
             })
         if travel.section and travel.office:
             key = '{}-{}'.format(travel.section.name, travel.office.name)
             if key not in details:
-                details[key] = 1
-            else:
-                details[key] += 1
+                details[key] = []
+            details[key].append({
+                'reference_number': travel.reference_number,
+                'purpose': travel.purpose,
+                'id': travel.id,
+                'traveler_name': travel.traveler_name,
+                'date': travel.start_date,
+            })
 
         if travel.section:
             if travel.section.name not in details:

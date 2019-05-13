@@ -331,7 +331,7 @@ def get_indicator_hpm_data(ai_id, month=None):
         if str(previous_month) in values_hpm:
             last_month_value = values_hpm[str(previous_month)]
 
-        if month and 'months' in cumulative_values:
+        if 'months' in cumulative_values:
             month = str(month)
             cumulative_values = cumulative_values.get('months')
             if isinstance(cumulative_values, dict):

@@ -84,39 +84,39 @@ class TripsMonitoringView(TemplateView):
 
     def get_context_data(self, **kwargs):
         now = datetime.datetime.now()
+        travel_status = self.request.GET.get('travel_status', 'all')
 
-        trip_details = {
-            'programmatic_visits': [],
-            'programmatic_visits_planned': [],
-            'programmatic_visits_submitted': [],
-            'programmatic_visits_approved': [],
-            'programmatic_visits_completed': []
-        }
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
         sections = Section.objects.all()
         offices = Office.objects.all()
 
         visits = TravelActivity.objects.filter(travel_type='programmatic visit')
         # visits = TravelActivity.objects.filter(travel_type='programmatic visit', travel__start_date__year=now.year)
+
+        if travel_status == 'all':
+            trips = visits.exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
+        else:
+            trips = visits.filter(travel__status=travel_status)
+
         programmatic_visits = visits.exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
         programmatic_visits_planned = visits.filter(travel__status=Travel.PLANNED)
         programmatic_visits_submitted = visits.filter(travel__status=Travel.SUBMITTED)
         programmatic_visits_approved = visits.filter(travel__status=Travel.APPROVED)
         programmatic_visits_completed = visits.filter(travel__status=Travel.COMPLETED)
 
-        trip_details = {
-            'programmatic_visits': get_trip_details(programmatic_visits),
-            # 'programmatic_visits_planned': get_trip_details(programmatic_visits_planned),
-            # 'programmatic_visits_submitted': get_trip_details(programmatic_visits_submitted),
-            # 'programmatic_visits_approved': get_trip_details(programmatic_visits_approved),
-            # 'programmatic_visits_completed': get_trip_details(programmatic_visits_completed)
-        }
+        trip_details = get_trip_details(trips)
 
         return {
             'databases': databases,
             'sections': sections,
             'offices': offices,
-            'trip_details': trip_details
+            'trip_details': trip_details,
+            'travel_status': travel_status,
+            'programmatic_visits': programmatic_visits.count(),
+            'programmatic_visits_planned': programmatic_visits_planned.count(),
+            'programmatic_visits_submitted': programmatic_visits_submitted.count(),
+            'programmatic_visits_approved': programmatic_visits_approved.count(),
+            'programmatic_visits_completed': programmatic_visits_completed.count(),
         }
 
 

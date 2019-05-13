@@ -457,13 +457,17 @@ class HPMView(TemplateView):
 
         months = []
         for i in range(1, 13):
-            months.append((datetime.date(2008, i, 1).strftime('%B')))
+            months.append({
+                'month': i,
+                'month_name': (datetime.date(2008, i, 1).strftime('%B'))
+            })
 
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
 
         return {
             'month_name': month_name,
             'month': month,
+            'months': months,
             'databases': databases,
         }
 

@@ -18,7 +18,32 @@
         <tr>
           <th class="w-100" style="background-color: {{ section.color }}">{{ section.name }}</th>
           {% for office in offices %}
-          <td class="w-100">{% get_array_value visits section.name office.name %}</td>
+          <td class="w-100 travel-counts">
+            {% get_array_value visits section.name office.name as data %}
+            {% if data %}
+              <span class="label label-primary">{{ data|length }}</span>
+              <div class="travel-details" style="display:none; box-shadow: -6px 14px 15px; padding: 8px;">
+              {% for travel in data %}
+                <div class="row">
+                  <div class="col-md-6">
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ travel.reference_number }} {{ travel.purpose }}
+                    <a href="https://etools.unicef.org/t2f/edit-travel/{{ travel.id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                  </div>
+                  <div class="col-md-6">
+                    <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ travel.date }}
+                  </div>
+                </div>
+              {% endfor %}
+              </div>
+            {% else %}
+                0
+            {% endif %}
+
+          </td>
           {% endfor %}
           <td>{% get_array_value visits section.name 0 %}</td>
         </tr>
