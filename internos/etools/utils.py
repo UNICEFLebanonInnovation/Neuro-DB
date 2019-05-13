@@ -465,8 +465,8 @@ def get_trip_details(data_set):
         for location in visit.locations.filter(point__isnull=False).iterator():
             details['locations'].append({
                 'name': location.name,
-                'latitude': location.point.x,
-                'longitude': location.point.y,
+                'latitude': location.point.y,
+                'longitude': location.point.x,
             })
         if travel.section and travel.office:
             key = '{}-{}'.format(travel.section.name, travel.office.name)
@@ -488,6 +488,7 @@ def get_trip_details(data_set):
                 details[travel.office.name] += 1
 
         details['visits'].append(visit)
-        print(details)
+
+    details['locations'] = json.dumps(details['locations'])
 
     return details
