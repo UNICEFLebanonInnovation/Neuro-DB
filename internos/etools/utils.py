@@ -502,3 +502,29 @@ def get_trip_details(data_set):
     details['locations'] = json.dumps(details['locations'])
 
     return details
+
+
+def get_interventions_details(data_set):
+    details = []
+    for intervention in data_set:
+        for location in intervention.locations.filter(point__isnull=False).iterator():
+            details.append({
+                'name': location.name,
+                'latitude': location.point.y,
+                'longitude': location.point.x,
+                'document_type': intervention.document_type,
+                'partner_name': intervention.partner_name,
+                'status': intervention.status,
+                'number': intervention.number,
+                # 'start': intervention.start,
+                # 'end_date': intervention.end_date,
+                'total_budget': '{} {}'.format(intervention.total_budget, intervention.budget_currency),
+                'url': 'https://etools.unicef.org/pmp/interventions/{}'.format(intervention.etl_id),
+                # 'section_names': intervention.section_names,
+                # 'offices_names': intervention.offices_names,
+            })
+
+    details = json.dumps(details)
+    # print(details)
+
+    return details

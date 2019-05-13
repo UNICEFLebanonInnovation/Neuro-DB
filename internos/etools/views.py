@@ -13,7 +13,7 @@ from rest_framework import viewsets, mixins, permissions
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
 from .models import PartnerOrganization, PCA, Engagement, Travel, TravelType, TravelActivity
-from .utils import get_partner_profile_details, get_trip_details
+from .utils import get_partner_profile_details, get_trip_details, get_interventions_details
 from .serializers import PartnerOrganizationSerializer
 from internos.users.models import Section, Office
 from internos.activityinfo.models import Database
@@ -75,6 +75,38 @@ class PartnerProfileView(TemplateView):
             'programmatic_visits_approved': programmatic_visits_approved.count(),
             'programmatic_visits_completed': programmatic_visits_completed.count(),
             'partners_info': partners_info
+        }
+
+
+class InterventionsView(TemplateView):
+
+    template_name = 'etools/interventions.html'
+
+    def get_context_data(self, **kwargs):
+        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
+
+        now = datetime.datetime.now()
+
+        interventions = PCA.objects.filter(end__year=now.year).exclude(status=PCA.CANCELLED)
+        active_interventions = interventions.filter(status=PCA.ACTIVE)
+
+        interventions_pd = interventions.filter(document_type=PCA.PD)
+        active_interventions_pd = interventions_pd.filter(status=PCA.ACTIVE)
+
+        interventions_sffa = interventions.filter(document_type=PCA.SSFA)
+        active_interventions_sffa = interventions_sffa.filter(status=PCA.ACTIVE)
+
+        locations = get_interventions_details(interventions)
+
+        return {
+            'databases': databases,
+            'locations': locations,
+            'nbr_interventions': interventions.count(),
+            'nbr_active_interventions': active_interventions.count(),
+            'nbr_pds': interventions_pd.count(),
+            'nbr_active_pds': active_interventions_pd.count(),
+            'nbr_sffas': interventions_sffa.count(),
+            'nbr_active_sffas': active_interventions_sffa.count(),
         }
 
 
