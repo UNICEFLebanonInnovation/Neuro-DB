@@ -94,37 +94,37 @@
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
     <span class="count_top"><i class="fa fa-info"></i> All Interventions</span>
     <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="">{{ nbr_interventions }}</a>
+      <a href="{% url 'etools:interventions' %}?document_type=all&status=all">{{ nbr_interventions }}</a>
     </div>
   </div>
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
     <span class="count_top"><i class="fa fa-info"></i> Active Interventions</span>
     <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="">{{ nbr_active_interventions }}</a>
+      <a href="{% url 'etools:interventions' %}?document_type=all&status=active">{{ nbr_active_interventions }}</a>
     </div>
   </div>
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
     <span class="count_top"><i class="fa fa-info"></i> All PDs</span>
     <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="">{{ nbr_pds }}</a>
+      <a href="{% url 'etools:interventions' %}?document_type=PD&status=all">{{ nbr_pds }}</a>
     </div>
   </div>
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
     <span class="count_top"><i class="fa fa-info"></i> Active PDs</span>
     <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="">{{ nbr_active_pds }}</a>
+      <a href="{% url 'etools:interventions' %}?document_type=PD&status=active">{{ nbr_active_pds }}</a>
     </div>
   </div>
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
     <span class="count_top"><i class="fa fa-info"></i> All SSFA</span>
     <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="">{{ nbr_sffas }}</a>
+      <a href="{% url 'etools:interventions' %}?document_type=SSFA&status=all">{{ nbr_sffas }}</a>
     </div>
   </div>
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
     <span class="count_top"><i class="fa fa-info"></i> Active SSFA</span>
     <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="">{{ nbr_active_sffas }}</a>
+      <a href="{% url 'etools:interventions' %}?document_type=SSFA&status=active">{{ nbr_active_sffas }}</a>
     </div>
   </div>
 </div>
@@ -222,16 +222,20 @@
 
           $(points).each(function(i, item){
 
-              var travel_url = '<a href="'+item.url+'" target="_blank"><i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i></a>';
+              var url = '<a href="'+item.url+'" target="_blank"><i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;">'+item.number+'</i></a>';
 
               var lineAtt = {
-                Name: item.name,
-                Number: item.travel,
-                Title: travel_url,
-                Traveler: item.traveler_name,
-                Section: item.section,
-                Office: item.office,
-
+                Number: url,
+                Title: item.title,
+                Site: item.name,
+                Type: item.document_type,
+                Partner: item.partner_name,
+                Status: item.status,
+                Start: item.start,
+                End: item.end,
+                Budget: item.total_budget,
+                Sections: item.section_names,
+                Offices: item.offices_names,
               };
 
               var pointGraphic = new Graphic({
@@ -243,22 +247,37 @@
                 symbol: markerSymbol,
                 attributes: lineAtt,
                 popupTemplate: {
-                  title: "{Number} {Title}",
+                  title: "{Type} {Number}",
                   content: [
                     {
                       type: "fields",
                       fieldInfos: [
                         {
-                          fieldName: "Name"
+                          fieldName: "Site"
                         },
                         {
-                          fieldName: "Traveler"
+                          fieldName: "Title"
                         },
                         {
-                          fieldName: "Section"
+                          fieldName: "Partner"
                         },
                         {
-                          fieldName: "Office"
+                          fieldName: "Status"
+                        },
+                        {
+                          fieldName: "Start"
+                        },
+                        {
+                          fieldName: "End"
+                        },
+                        {
+                          fieldName: "Budget"
+                        },
+                        {
+                          fieldName: "Sections"
+                        },
+                        {
+                          fieldName: "Offices"
                         },
                       ]
                     }

@@ -83,8 +83,11 @@ class InterventionsView(TemplateView):
     template_name = 'etools/interventions.html'
 
     def get_context_data(self, **kwargs):
+
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
 
+        document_type = self.request.GET.get('document_type', 'all')
+        status = self.request.GET.get('status', 'all')
         now = datetime.datetime.now()
 
         interventions = PCA.objects.filter(end__year=now.year).exclude(status=PCA.CANCELLED)
@@ -96,7 +99,15 @@ class InterventionsView(TemplateView):
         interventions_sffa = interventions.filter(document_type=PCA.SSFA)
         active_interventions_sffa = interventions_sffa.filter(status=PCA.ACTIVE)
 
-        locations = get_interventions_details(interventions)
+        data_set = PCA.objects.filter(end__year=now.year).exclude(status=PCA.CANCELLED)
+
+        if not document_type == 'all':
+            data_set = data_set.filter(document_type=document_type)
+
+        if status == 'active':
+            data_set = data_set.filter(status=PCA.ACTIVE)
+
+        locations = get_interventions_details(data_set)
 
         return {
             'databases': databases,

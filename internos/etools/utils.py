@@ -505,26 +505,36 @@ def get_trip_details(data_set):
 
 
 def get_interventions_details(data_set):
+    from internos.users.models import Office
+
     details = []
     for intervention in data_set:
         for location in intervention.locations.filter(point__isnull=False).iterator():
+
+            separator = ', '
+            section_names = separator.join(intervention.section_names)
+            offices_names = []
+            for office in intervention.offices:
+                offices_names.append(Office.objects.get(id=int(office)).name)
+            offices_names = separator.join(offices_names)
+
             details.append({
                 'name': location.name,
                 'latitude': location.point.y,
                 'longitude': location.point.x,
+                'title': intervention.title,
                 'document_type': intervention.document_type,
                 'partner_name': intervention.partner_name,
                 'status': intervention.status,
                 'number': intervention.number,
-                # 'start': intervention.start,
-                # 'end_date': intervention.end_date,
+                'start': intervention.start.strftime("%m/%d/%Y") if intervention.start else '',
+                'end_date': intervention.end_date.strftime("%m/%d/%Y") if intervention.end_date else '',
                 'total_budget': '{} {}'.format(intervention.total_budget, intervention.budget_currency),
                 'url': 'https://etools.unicef.org/pmp/interventions/{}'.format(intervention.etl_id),
-                # 'section_names': intervention.section_names,
-                # 'offices_names': intervention.offices_names,
+                'section_names': section_names,
+                'offices_names': offices_names,
             })
 
     details = json.dumps(details)
-    # print(details)
 
     return details
