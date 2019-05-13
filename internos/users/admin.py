@@ -74,6 +74,7 @@ class SectionResource(resources.ModelResource):
         fields = (
             'id',
             'name',
+            'etools',
         )
         export_order = fields
 
@@ -83,6 +84,7 @@ class SectionAdmin(ImportExportModelAdmin):
     list_display = (
         'id',
         'name',
+        'etools',
         'color',
     )
     search_fields = (

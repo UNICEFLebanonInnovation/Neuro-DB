@@ -87,7 +87,7 @@ class TripsMonitoringView(TemplateView):
         travel_status = self.request.GET.get('travel_status', 'all')
 
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
-        sections = Section.objects.all()
+        sections = Section.objects.filter(etools=True)
         offices = Office.objects.all()
 
         visits = TravelActivity.objects.filter(travel_type='programmatic visit')
