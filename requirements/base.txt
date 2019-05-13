@@ -75,5 +75,6 @@ unicodecsv==0.14.1
 django-json-widget==0.1.1
 python-docx==0.8.10
 django-leaflet==0.24.0
+django-ordered-model==3.1.1
 
 # git+https://github.com/UNICEFLebanonInnovation/ActvityInfoPython.git

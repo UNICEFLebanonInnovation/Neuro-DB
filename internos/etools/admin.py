@@ -15,6 +15,8 @@ from .models import (
     TravelActivity,
     ItineraryItem,
     Engagement,
+    ActionPoint,
+    Category
 )
 
 
@@ -316,7 +318,24 @@ class ItineraryItemAdmin(admin.ModelAdmin):
     )
 
 
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('module', 'description')
+    list_filter = ('module', )
+    search_fields = ('description', )
 
+
+# SnapshotModelAdmin
+class ActionPointAdmin(admin.ModelAdmin):
+    list_display = ('author', 'assigned_to', 'status', 'date_of_completion')
+    list_filter = ('status', )
+    search_fields = ('author__email', 'assigned_to__email')
+    readonly_fields = ('status', )
+    raw_id_fields = ('section', 'office', 'location', 'partner', 'intervention',
+                     'travel_activity', 'engagement', 'author', 'assigned_by', 'assigned_to')
+
+
+admin.site.register(ActionPoint, ActionPointAdmin)
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(PartnerOrganization, PartnerOrganizationAdmin)
 admin.site.register(Agreement, AgreementAdmin)
 admin.site.register(PCA, PCAAdmin)
