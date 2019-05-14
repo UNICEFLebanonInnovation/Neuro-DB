@@ -443,7 +443,8 @@
                         {% for point in audit.action_points %}
                         <div class="row">
                           <div class="col-md-6">
-                            <strong><i class="fa fa-flag" style="color: {% if point.high_priority %}red{% else %}orange{% endif %}"></i> {{ point.reference_number }}
+                            <strong><i class="fa fa-flag" style="color: {% if point.high_priority %}red{% else %}orange{% endif %}"></i>
+                              {{ point.category_name }} - {{ point.reference_number }}
                                 <a href="https://etools.unicef.org/apd/action-points/detail/{{ point.id }}" target="_blank">
                                   <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                                 </a>
@@ -451,8 +452,8 @@
                             <p><i>{{ point.description }}</i></p>
                           </div>
                           <div class="col-md-6">
-                            <strong><i class="fa fa-sticky-note"></i> {{ point.status|upper }} on {{ point.status_date }}</strong>
-
+                            <strong><i class="fa fa-sticky-note"></i> {{ point.status|upper }} on {{ point.status_date }}</strong> <br />
+                            <strong><i class="fa fa-calendar"></i> Due on {{ point.due_date }}</strong>
                           </div>
                         </div>
                         {% endfor %}

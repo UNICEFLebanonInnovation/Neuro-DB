@@ -1264,6 +1264,8 @@ class ActionPoint(TimeStampedModel):
 
     category = models.ForeignKey(Category, verbose_name=_('Category'),
                                  blank=True, null=True, on_delete=models.CASCADE)
+    category_name = models.CharField(max_length=1500, blank=True, null=True)
+
     description = models.TextField(verbose_name=_('Description'))
     due_date = models.DateField(verbose_name=_('Due Date'), blank=True, null=True)
     high_priority = models.BooleanField(default=False, verbose_name=_('High Priority'))

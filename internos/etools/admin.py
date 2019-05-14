@@ -318,7 +318,20 @@ class ItineraryItemAdmin(admin.ModelAdmin):
     )
 
 
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryResource(resources.ModelResource):
+
+    class Meta:
+        model = Category
+        fields = (
+            'id',
+            'module',
+            'description',
+        )
+        export_order = fields
+
+
+class CategoryAdmin(ImportExportModelAdmin):
+    resource_class = CategoryResource
     list_display = ('module', 'description')
     list_filter = ('module', )
     search_fields = ('description', )

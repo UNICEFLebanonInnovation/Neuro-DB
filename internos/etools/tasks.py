@@ -393,7 +393,8 @@ def sync_action_points_data():
 
             instance.reference_number = item['reference_number']
             instance.related_module = '{}_{}'.format(item['related_module'], engagement.engagement_type)
-            # instance.category_id = int(item['category']['id'])
+            instance.category_id = int(item['category']['id'])
+            instance.category_name = item['category']['description']
             instance.description = item['description']
             instance.due_date = item['due_date']
             instance.author_name = item['author']['name']

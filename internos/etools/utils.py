@@ -527,6 +527,7 @@ def get_action_points_details(related_module, related_module_id):
             'office_name': point.office.name if point.office else '',
             'status': point.status,
             'status_date': point.status_date,
+            'category_name': point.category_name
         })
 
     return data
