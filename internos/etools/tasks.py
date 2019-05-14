@@ -392,7 +392,7 @@ def sync_action_points_data():
             instance, created = ActionPoint.objects.get_or_create(id=int(item['id']))
 
             instance.reference_number = item['reference_number']
-            instance.related_module = item['related_module']
+            instance.related_module = '{}_{}'.format(item['related_module'], engagement.engagement_type)
             # instance.category_id = int(item['category']['id'])
             instance.description = item['description']
             instance.due_date = item['due_date']

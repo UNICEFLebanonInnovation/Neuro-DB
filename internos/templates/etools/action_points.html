@@ -1,0 +1,26 @@
+{% if action_points %}
+    <div class="row">
+      <span class="label label-primary">{{ action_points|length }}</span> Action Point(s)
+      {% for point in action_points %}
+      <div class="row">
+        <div class="col-md-6">
+          <strong><i class="fa fa-flag" style="color: {% if point.high_priority %}red{% else %}orange{% endif %}"></i> {{ point.reference_number }}
+              <a href="https://etools.unicef.org/apd/action-points/detail/{{ point.id }}" target="_blank">
+                <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+              </a>
+          </strong>
+        </div>
+        <div class="col-md-6">
+          <strong><i class="fa fa-sticky-note"></i>{{ point.status }} {{ point.status_date }}</strong>
+          <p>{{ point.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+{% else %}
+
+    <div class="panel-footer">
+      <h5 class="modal-title"><span class="label label-primary">0</span> Action Points</h5>
+    </div>
+
+{% endif %}

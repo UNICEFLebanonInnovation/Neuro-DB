@@ -326,8 +326,16 @@ class CategoryAdmin(admin.ModelAdmin):
 
 # SnapshotModelAdmin
 class ActionPointAdmin(admin.ModelAdmin):
-    list_display = ('author_name', 'assigned_to_name', 'status', 'date_of_completion')
-    list_filter = ('status', )
+    list_display = (
+        'author_name',
+        'assigned_to_name',
+        'status',
+        'date_of_completion',
+        'related_module',
+        'description',
+        'engagement'
+    )
+    list_filter = ('status', 'related_module', )
     search_fields = ('author_name', 'assigned_to_name')
     readonly_fields = ('status', )
     raw_id_fields = ('section', 'office', 'location', 'partner', 'intervention',

@@ -420,30 +420,55 @@
                     </a>
                   </div>
                 </div>
-                {% if audit.findings %}
-                <div class="row">
-                  <span class="label label-primary">{{ audit.findings|length }}</span> Finding(s) and Recommendation(s)
-                  {% for finding in audit.findings_sets %}
+                  {% if audit.findings %}
                   <div class="row">
-                    <div class="col-md-6">
-                      <strong><i class="fa fa-flag" style="color: {% if finding.priority == 'high' %}red{% else %}orange{% endif %}"></i> Finding and Recommendation ({{ finding.category_of_observation }})</strong>
-                      <p>{{ finding.recommendation }}</p>
+                    <span class="label label-primary">{{ audit.findings|length }}</span> Finding(s) and Recommendation(s)
+                    {% for finding in audit.findings_sets %}
+                    <div class="row">
+                      <div class="col-md-6">
+                        <strong><i class="fa fa-flag" style="color: {% if finding.priority == 'high' %}red{% else %}orange{% endif %}"></i> Finding and Recommendation ({{ finding.category_of_observation }})</strong>
+                        <p>{{ finding.recommendation }}</p>
+                      </div>
+                      <div class="col-md-6">
+                        <strong><i class="fa fa-sticky-note"></i> Agreed Action by IP with a deadline: {{ finding.deadline_of_action }}</strong>
+                        <p>{{ finding.agreed_action_by_ip }}</p>
+                      </div>
                     </div>
-                    <div class="col-md-6">
-                      <strong><i class="fa fa-sticky-note"></i> Agreed Action by IP with a deadline: {{ finding.deadline_of_action }}</strong>
-                      <p>{{ finding.agreed_action_by_ip }}</p>
-                    </div>
+                    {% endfor %}
                   </div>
-                  {% endfor %}
-                </div>
-                {% endif %}
-                {% if audit.internal_controls %}
-                <strong><i class="fa fa-sticky-note"></i> Internal Controls</strong>
-                <div class="row sidebar-box">
-                    <p><i>{{ audit.internal_controls }}</i></p>
-                    <p class="read-more"><button type="button" class="btn btn-info">Read More...</button></p>
-                </div>
-                {% endif %}
+                  {% endif %}
+
+                  {% if audit.action_points %}
+                        <span class="label label-primary">{{ audit.action_points|length }}</span> Action Point(s)
+                        {% for point in audit.action_points %}
+                        <div class="row">
+                          <div class="col-md-6">
+                            <strong><i class="fa fa-flag" style="color: {% if point.high_priority %}red{% else %}orange{% endif %}"></i> {{ point.reference_number }}
+                                <a href="https://etools.unicef.org/apd/action-points/detail/{{ point.id }}" target="_blank">
+                                  <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                                </a>
+                            </strong>
+                            <p><i>{{ point.description }}</i></p>
+                          </div>
+                          <div class="col-md-6">
+                            <strong><i class="fa fa-sticky-note"></i> {{ point.status|upper }} on {{ point.status_date }}</strong>
+
+                          </div>
+                        </div>
+                        {% endfor %}
+                  {% else %}
+                      <div class="panel-footer">
+                        <h5 class="modal-title"><span class="label label-primary">0</span> Action Points</h5>
+                      </div>
+                  {% endif %}
+
+                  {% if audit.internal_controls %}
+                  <strong><i class="fa fa-sticky-note"></i> Internal Controls</strong>
+                  <div class="row sidebar-box">
+                      <p><i>{{ audit.internal_controls }}</i></p>
+                      <p class="read-more"><button type="button" class="btn btn-info">Read More...</button></p>
+                  </div>
+                  {% endif %}
 
                 {% endfor %}
             </div>

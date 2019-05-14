@@ -416,7 +416,8 @@ def get_partner_profile_details():
                 'partner_id': row[1],
                 'findings_sets': row[2],
                 'internal_controls': row[3],
-                'displayed_name': row[4]
+                'displayed_name': row[4],
+                'action_points': get_action_points_details('audit_sc', row[0])
             })
 
     #  audits
@@ -502,6 +503,33 @@ def get_trip_details(data_set):
     details['locations'] = json.dumps(details['locations'])
 
     return details
+
+
+def get_action_points_details(related_module, related_module_id):
+    from internos.etools.models import ActionPoint
+
+    data = []
+    action_points = []
+    if related_module.startswith('audit'):
+        action_points = ActionPoint.objects.filter(related_module=related_module, engagement_id=related_module_id)
+
+    for point in action_points.iterator():
+        data.append({
+            'id': point.id,
+            'reference_number': point.reference_number,
+            'description': point.description,
+            'due_date': point.due_date,
+            'author_name': point.author_name,
+            'assigned_by_name': point.assigned_by_name,
+            'assigned_to_name': point.assigned_to_name,
+            'high_priority': point.high_priority,
+            'section_name': point.section.name if point.section else '',
+            'office_name': point.office.name if point.office else '',
+            'status': point.status,
+            'status_date': point.status_date,
+        })
+
+    return data
 
 
 def get_interventions_details(data_set):
