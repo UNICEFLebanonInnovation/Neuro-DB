@@ -569,135 +569,141 @@
     var href_full_path = '{{ request.build_absolute_uri }}';
     var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
 
-    $('.expanded-all').click(function(){
-        $('.panel-collapse').addClass('in');
-        $('.panel-collapse').attr('aria-expanded', 'true');
-    });
+    $(document).ready(function(){
 
-    $('.collapse-all').click(function(){
-        $('.panel-collapse').removeClass('in');
-        $('.panel-collapse').attr('aria-expanded', 'false');
-    });
+        $('ul.child_menu').hide();
 
-  $('input#search-input').quicksearch('div#partner_profile div.partner-profile', {
-    'delay': 300,
-    'selector': 'span',
-    <!--'stripeRows': ['odd', 'even'],-->
-    'loader': 'span.loading',
-    'bind': 'keyup click input',
-    <!--'show': function () {-->
-      <!--this.style.color = '';-->
-    <!--},-->
-    <!--'hide': function () {-->
-      <!--this.style.color = '#ccc';-->
-    <!--},-->
-    'prepareQuery': function (val) {
-      return new RegExp(val, "i");
-    },
-    'testQuery': function (query, txt, _row) {
-      return query.test(txt);
-    }
-  });
+        $('.expanded-all').click(function(){
+            $('.panel-collapse').addClass('in');
+            $('.panel-collapse').attr('aria-expanded', 'true');
+        });
 
-  $('.save-comments').click(function(){
-      var itemid = $(this).attr('itemid');
-      var comments = $($(this).attr('itemref')).val();
-      update_data_server($(this).attr('itemscope'), {'comments': comments});
-  });
+        $('.collapse-all').click(function(){
+            $('.panel-collapse').removeClass('in');
+            $('.panel-collapse').attr('aria-expanded', 'false');
+        });
 
-  $('.btn-filter-no').click(function(){
-      $('.partner-profile').show();
-      $('.btn-filter').removeClass('on');
-      $('.partner-profile').removeClass('active');
-      $('#total-partners').text($('.partner-profile').length);
-  });
+        $('input#search-input').quicksearch('div#partner_profile div.partner-profile', {
+          'delay': 300,
+          'selector': 'span',
+          <!--'stripeRows': ['odd', 'even'],-->
+          'loader': 'span.loading',
+          'bind': 'keyup click input',
+          <!--'show': function () {-->
+            <!--this.style.color = '';-->
+          <!--},-->
+          <!--'hide': function () {-->
+            <!--this.style.color = '#ccc';-->
+          <!--},-->
+          'prepareQuery': function (val) {
+            return new RegExp(val, "i");
+          },
+          'testQuery': function (query, txt, _row) {
+            return query.test(txt);
+          }
+        });
 
-  $('.btn-filter').click(function(){
-      $('.btn-filter').removeClass('on');
-      $('.partner-profile').removeClass('active');
-      $('#total-partners').text($('.partner-profile').length);
+        $('.save-comments').click(function(){
+            var itemid = $(this).attr('itemid');
+            var comments = $($(this).attr('itemref')).val();
+            update_data_server($(this).attr('itemscope'), {'comments': comments});
+        });
 
-      if($(this).hasClass('on')){
-        $(this).removeClass('on');
-      }else{
-        $(this).addClass('on');
-      }
+        $('.btn-filter-no').click(function(){
+            $('.partner-profile').show();
+            $('.btn-filter').removeClass('on');
+            $('.partner-profile').removeClass('active');
+            $('#total-partners').text($('.partner-profile').length);
+        });
 
-      if($('.btn-filter.on').length){
-        $('.partner-profile').hide();
-      }else{
-        $('.partner-profile').show();
-      }
+        $('.btn-filter').click(function(){
+            $('.btn-filter').removeClass('on');
+            $('.partner-profile').removeClass('active');
+            $('#total-partners').text($('.partner-profile').length);
 
-      $('.btn-filter.on').each(function(i){
-          var itemref = $(this).attr('itemref');
-          $('.partner-profile').filter(function() {
-            return parseInt($(this).attr(itemref)) > 0;
-          }).show(function(){
-              $(this).addClass('active');
-              $('#total-partners').text($('.partner-profile.active').length);
+            if($(this).hasClass('on')){
+              $(this).removeClass('on');
+            }else{
+              $(this).addClass('on');
+            }
+
+            if($('.btn-filter.on').length){
+              $('.partner-profile').hide();
+            }else{
+              $('.partner-profile').show();
+            }
+
+            $('.btn-filter.on').each(function(i){
+                var itemref = $(this).attr('itemref');
+                $('.partner-profile').filter(function() {
+                  return parseInt($(this).attr(itemref)) > 0;
+                }).show(function(){
+                    $(this).addClass('active');
+                    $('#total-partners').text($('.partner-profile.active').length);
+                });
+            });
+        });
+
+        $('.btn-filter').dblclick(function(){
+            $('.partner-profile').removeClass('active');
+            $('#total-partners').text($('.partner-profile').length);
+
+            if($(this).hasClass('on')){
+              $(this).removeClass('on');
+            }else{
+              $(this).addClass('on');
+            }
+
+            if($('.btn-filter.on').length){
+              $('.partner-profile').hide();
+            }else{
+              $('.partner-profile').show();
+            }
+
+            $('.btn-filter.on').each(function(i){
+                var itemref = $(this).attr('itemref');
+                $('.partner-profile').filter(function() {
+                  return parseInt($(this).attr(itemref)) > 0;
+                }).show(function(){
+                    $(this).addClass('active');
+                    $('#total-partners').text($('.partner-profile.active').length);
+                });
+            });
+        });
+
+        var $el, $ps, $up, totalHeight;
+
+        $(".sidebar-box button").click(function() {
+
+          totalHeight = 0
+
+          $el = $(this);
+          $p  = $el.parent();
+          $up = $p.parent();
+          $ps = $up.find("p:not('.read-more')");
+
+          // measure how tall inside should be by adding together heights of all inside paragraphs (except read-more paragraph)
+          $ps.each(function() {
+            totalHeight += $(this).outerHeight();
           });
-      });
-  });
 
-  $('.btn-filter').dblclick(function(){
-      $('.partner-profile').removeClass('active');
-      $('#total-partners').text($('.partner-profile').length);
+          $up
+            .css({
+              // Set height to prevent instant jumpdown when max height is removed
+              "height": $up.height(),
+              "max-height": 9999
+            })
+            .animate({
+              "height": totalHeight
+            });
 
-      if($(this).hasClass('on')){
-        $(this).removeClass('on');
-      }else{
-        $(this).addClass('on');
-      }
+          // fade out read-more
+          $p.fadeOut();
 
-      if($('.btn-filter.on').length){
-        $('.partner-profile').hide();
-      }else{
-        $('.partner-profile').show();
-      }
+          // prevent jump-down
+          return false;
 
-      $('.btn-filter.on').each(function(i){
-          var itemref = $(this).attr('itemref');
-          $('.partner-profile').filter(function() {
-            return parseInt($(this).attr(itemref)) > 0;
-          }).show(function(){
-              $(this).addClass('active');
-              $('#total-partners').text($('.partner-profile.active').length);
-          });
-      });
-  });
-
-var $el, $ps, $up, totalHeight;
-
-$(".sidebar-box button").click(function() {
-
-  totalHeight = 0
-
-  $el = $(this);
-  $p  = $el.parent();
-  $up = $p.parent();
-  $ps = $up.find("p:not('.read-more')");
-
-  // measure how tall inside should be by adding together heights of all inside paragraphs (except read-more paragraph)
-  $ps.each(function() {
-    totalHeight += $(this).outerHeight();
-  });
-
-  $up
-    .css({
-      // Set height to prevent instant jumpdown when max height is removed
-      "height": $up.height(),
-      "max-height": 9999
-    })
-    .animate({
-      "height": totalHeight
-    });
-
-  // fade out read-more
-  $p.fadeOut();
-
-  // prevent jump-down
-  return false;
+        });
 
 });
 

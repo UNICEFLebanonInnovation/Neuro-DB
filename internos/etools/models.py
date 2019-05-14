@@ -1247,52 +1247,49 @@ class ActionPoint(TimeStampedModel):
 
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='created_action_points',
                                verbose_name=_('Author'),
-                               on_delete=models.CASCADE,
-                               )
+                               on_delete=models.CASCADE, blank=True, null=True)
+    author_name = models.CharField(max_length=250, blank=True, null=True)
+
     assigned_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='+', verbose_name=_('Assigned By'),
-                                    on_delete=models.CASCADE,
-                                    )
+                                    on_delete=models.CASCADE, blank=True, null=True)
+    assigned_by_name = models.CharField(max_length=250, blank=True, null=True)
+
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='assigned_action_points',
                                     verbose_name=_('Assigned To'),
-                                    on_delete=models.CASCADE,
-                                    )
+                                    on_delete=models.CASCADE, blank=True, null=True)
+    assigned_to_name = models.CharField(max_length=250, blank=True, null=True)
 
-    status = FSMField(verbose_name=_('Status'), max_length=10, choices=STATUSES, default=STATUSES.open, protected=True)
+    status = models.CharField(verbose_name=_('Status'), max_length=10, choices=STATUSES, default=STATUSES.open)
+    status_date = models.DateTimeField(blank=True, null=True)
 
-    category = models.ForeignKey(Category, verbose_name=_('Category'), blank=True, null=True, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, verbose_name=_('Category'),
+                                 blank=True, null=True, on_delete=models.CASCADE)
     description = models.TextField(verbose_name=_('Description'))
     due_date = models.DateField(verbose_name=_('Due Date'), blank=True, null=True)
     high_priority = models.BooleanField(default=False, verbose_name=_('High Priority'))
 
     section = models.ForeignKey('users.Section', verbose_name=_('Section'), blank=True, null=True,
-                                on_delete=models.CASCADE,
-                                )
+                                on_delete=models.CASCADE)
     office = models.ForeignKey('users.Office', verbose_name=_('Office'), blank=True, null=True,
-                               on_delete=models.CASCADE,
-                               )
+                               on_delete=models.CASCADE)
 
     location = models.ForeignKey('locations.Location', verbose_name=_('Location'), blank=True, null=True,
-                                 on_delete=models.CASCADE,
-                                 )
+                                 on_delete=models.CASCADE)
     partner = models.ForeignKey(PartnerOrganization, verbose_name=_('Partner'), blank=True, null=True,
-                                on_delete=models.CASCADE,
-                                )
+                                on_delete=models.CASCADE)
     # cp_output = models.ForeignKey('reports.Result', verbose_name=_('CP Output'), blank=True, null=True,
-    #                               on_delete=models.CASCADE,
-    #                               )
+    #                               on_delete=models.CASCADE)
     intervention = models.ForeignKey(PCA, verbose_name=_('PD/SSFA'), blank=True, null=True,
-                                     on_delete=models.CASCADE,
-                                     )
+                                     on_delete=models.CASCADE)
     engagement = models.ForeignKey(Engagement, verbose_name=_('Engagement'), blank=True, null=True,
-                                   related_name='action_points', on_delete=models.CASCADE,
-                                   )
+                                   related_name='action_points', on_delete=models.CASCADE)
     # tpm_activity = models.ForeignKey('tpm.TPMActivity', verbose_name=_('TPM Activity'), blank=True, null=True,
-    #                                  related_name='action_points', on_delete=models.CASCADE,
-    #                                  )
+    #                                  related_name='action_points', on_delete=models.CASCADE)
     travel_activity = models.ForeignKey(TravelActivity, verbose_name=_('Travel'), blank=True, null=True,
-                                        on_delete=models.CASCADE,
-                                        )
-    date_of_completion = models.CharField(max_length=250, blank=True, null=True)
+                                        on_delete=models.CASCADE)
+    date_of_completion = models.DateTimeField(blank=True, null=True)
+    related_module = models.CharField(max_length=250, blank=True, null=True)
+    reference_number = models.CharField(max_length=250, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -1303,57 +1300,6 @@ class ActionPoint(TimeStampedModel):
     @property
     def engagement_subclass(self):
         return self.engagement.get_subclass() if self.engagement else None
-
-    @property
-    def related_object(self):
-        return self.engagement_subclass or self.tpm_activity or self.travel_activity
-
-    @property
-    def related_object_str(self):
-        obj = self.related_object
-        if not obj:
-            return
-
-        if self.tpm_activity:
-            return 'Task No {0} for Visit {1}'.format(obj.task_number, obj.tpm_visit.reference_number)
-
-        if self.travel_activity:
-            if self.travel_activity.travel:
-                return 'Task No {0} for Visit {1}'.format(obj.task_number, obj.travel.reference_number)
-            else:
-                return 'Task not assigned to Visit'
-
-        return str(obj)
-
-    @property
-    def related_object_url(self):
-        obj = self.related_object
-        if not obj:
-            return
-
-        return obj.get_object_url()
-
-    @property
-    def related_module(self):
-        if self.engagement:
-            return self.MODULE_CHOICES.audit
-        if self.tpm_activity:
-            return self.MODULE_CHOICES.tpm
-        if self.travel_activity:
-            return self.MODULE_CHOICES.t2f
-        return self.MODULE_CHOICES.apd
-
-    @property
-    def reference_number(self):
-        return '{}/{}/{}/APD'.format(
-            connection.tenant.country_short_code or '',
-            self.created.year,
-            self.id,
-        )
-
-    @property
-    def status_date(self):
-        return getattr(self, self.STATUSES_DATES[self.status])
 
     def __str__(self):
         return self.reference_number

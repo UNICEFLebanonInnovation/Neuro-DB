@@ -4,8 +4,10 @@ import json
 import httplib
 import datetime
 from time import mktime
+from internos.backends.utils import get_data
 
 
+@app.task
 def sync_partner_data():
     from internos.etools.models import PartnerOrganization
     partners = get_data('etools.unicef.org', '/api/v2/partners/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
@@ -43,6 +45,7 @@ def sync_partner_data():
         partner.save()
 
 
+@app.task
 def sync_agreement_data():
     from internos.etools.models import Agreement, PartnerOrganization
     partners = get_data('etools.unicef.org', '/api/v2/agreements/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
@@ -70,6 +73,7 @@ def sync_agreement_data():
         partner.save()
 
 
+@app.task
 def sync_intervention_data():
     from internos.etools.models import PCA
     from internos.locations.models import Location
@@ -122,6 +126,7 @@ def sync_intervention_data():
         partner.save()
 
 
+@app.task
 def sync_individual_intervention_data(partner=None):
     from internos.etools.models import Agreement, PartnerOrganization, PCA
     interventions = PCA.objects.all()
@@ -165,6 +170,7 @@ def sync_individual_intervention_data(partner=None):
             continue
 
 
+@app.task
 def sync_audit_data():
     from internos.etools.models import Engagement, PartnerOrganization
     instances = get_data('etools.unicef.org', '/api/audit/engagements/?page_size=1000', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
@@ -185,6 +191,7 @@ def sync_audit_data():
         sync_audit_individual_data(instance)
 
 
+@app.task
 def sync_audit_individual_data(instance):
     from internos.etools.models import PCA
 
@@ -288,6 +295,7 @@ def sync_audit_individual_data(instance):
     instance.save()
 
 
+@app.task
 def sync_trip_data():
     from internos.etools.models import Engagement, PartnerOrganization, Travel
     for page in range(320, 350):
@@ -312,6 +320,7 @@ def sync_trip_data():
             instance.save()
 
 
+@app.task
 def sync_trip_individual_data(instance):
     from internos.etools.models import TravelActivity, PartnerOrganization, PCA
     from internos.locations.models import Location
@@ -366,33 +375,36 @@ def sync_trip_individual_data(instance):
     instance.save()
 
 
-def get_data(url, apifunc, token, protocol='HTTPS'):
+@app.task
+def sync_action_points_data():
+    from internos.etools.models import Engagement, PartnerOrganization, ActionPoint
 
-    # headers = {"Content-type": "application/json", "Authorization": token}
-    headers = {"Content-type": "application/json",
-               "Authorization": token,
-               "HTTP_REFERER": "etools.unicef.org",
-               # "Cookie": "tfUDK97TJSCkB4Nlm2wuMx67XNOYWpKT18BeV3RNoeq6nO7FXemAZypct369yF9I",
-               # "X-CSRFToken": 'tfUDK97TJSCkB4Nlm2wuMx67XNOYWpKT18BeV3RNoeq6nO7FXemAZypct369yF9I',
-               # "username": "achamseddine@unicef.org", "password": "Alouche21!"
-               }
+    engagements = Engagement.objects.filter(status=Engagement.FINAL)
 
-    if protocol == 'HTTPS':
-        conn = httplib.HTTPSConnection(url)
-    else:
-        conn = httplib.HTTPConnection(url)
-    conn.request('GET', apifunc, "", headers)
-    response = conn.getresponse()
-    result = response.read()
+    for engagement in engagements.iterator():
 
-    if not response.status == 200:
-        if response.status == 400 or response.status == 403:
-            return False
-            # raise Exception(str(response.status) + response.reason + response.read())
-        else:
-            return False
-            # raise Exception(str(response.status) + response.reason)
+        api_func = '/api/action-points/action-points/?engagement={}'.format(engagement.id)
 
-    conn.close()
+        data = get_data('etools.unicef.org', api_func, 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
+        data = json.loads(data)
 
-    return result
+        for item in data['results']:
+            instance, created = ActionPoint.objects.get_or_create(id=int(item['id']))
+
+            instance.reference_number = item['reference_number']
+            instance.related_module = item['related_module']
+            # instance.category_id = int(item['category']['id'])
+            instance.description = item['description']
+            instance.due_date = item['due_date']
+            instance.author_name = item['author']['name']
+            instance.assigned_by_name = item['assigned_by']['name']
+            instance.assigned_to_name = item['assigned_to']['name']
+            instance.high_priority = item['high_priority']
+            instance.section_id = int(item['section']['id'])
+            instance.office_id = int(item['office']['id'])
+            instance.engagement = engagement
+            instance.status = item['status']
+            instance.status_date = item['status_date']
+            instance.partner_id = int(item['partner']['id'])
+
+            instance.save()

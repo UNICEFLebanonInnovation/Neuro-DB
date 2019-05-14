@@ -52,6 +52,9 @@
 
     <!-- Custom Theme Style -->
     <link href="{% static 'css/custom.min.css' %}" rel="stylesheet">
+    <style>
+      .site_title {padding-left: 8px; height: 65px; padding-top: 6px;}
+    </style>
   </head>
 
   <body class="nav-sm">
@@ -61,7 +64,7 @@
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
               <a href="/" class="site_title" data-step="1" data-intro="Go to home page">
-                <img src="{% static 'images/logo.png' %}" height="45" width="45" alt="" style="background: white; border-radius: 15px;"/>
+                <img src="{% static 'images/logo.png' %}" height="55" width="55" alt="Neuro-DB-logo"/>
                 <span>Neuro-DB</span>
               </a>
             </div>
@@ -105,9 +108,9 @@
                   </li>
 
                   <li><a href="{% url 'activityinfo:hpm' %}"><i class="fa fa-bar-chart-o"></i> HPM <span class="fa fa-file-text-o"></span></a></li>
-                  <li><a href="{% url 'etools:partner_profile' %}"><i class="fa fa-slideshare"></i> Partner Profile <span class="fa fa-file-text-o"></span></a></li>
+                  <!--<li><a href="{% url 'etools:partner_profile' %}"><i class="fa fa-slideshare"></i> Partner Profile <span class="fa fa-file-text-o"></span></a></li>-->
                   <!--<li><a href="{% url 'locations:site_profile' %}"><i class="glyphicon glyphicon-map-marker"></i> Site Profile <span class="fa fa-file-text-o"></span></a></li>-->
-                  <li><a href="{% url 'activityinfo:hpm' %}"><i class="fa fa-bar-chart-o"></i> HPM </a></li>
+                  <!--<li><a href="{% url 'activityinfo:hpm' %}"><i class="fa fa-bar-chart-o"></i> HPM </a></li>-->
                   <!--<li><a href="{% url 'etools:partner_profile' %}"><i class="fa fa-slideshare"></i> Partner Profile <span class="fa fa-file-text-o"></span></a></li>-->
 
                   <li><a><i class="fa fa-slideshare"></i>Partnership<span class="fa fa-chevron-down"></span></a>
