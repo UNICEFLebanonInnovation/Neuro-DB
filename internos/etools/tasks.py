@@ -1,8 +1,10 @@
 from internos.taskapp.celery import app
 
 import json
+import pytz
 import httplib
 import datetime
+from django.utils import timezone
 from time import mktime
 from internos.backends.utils import get_data
 
@@ -300,24 +302,30 @@ def sync_trip_data():
     from internos.etools.models import Engagement, PartnerOrganization, Travel
     for page in range(320, 350):
 
-        api_func = '/api/t2f/travels/?page={}&page_size={}'.format(page, 100)
-        instances = get_data('etools.unicef.org', api_func, 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
-        instances = json.loads(instances)
-        for item in instances['data']:
+        try:
+            api_func = '/api/t2f/travels/?page={}&page_size={}'.format(page, 100)
+            instances = get_data('etools.unicef.org', api_func, 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
+            instances = json.loads(instances)
+            for item in instances['data']:
 
-            instance, new_instance = Travel.objects.get_or_create(id=item['id'])
+                instance, new_instance = Travel.objects.get_or_create(id=item['id'])
 
-            instance.reference_number = item['reference_number']
-            instance.traveler_name = item['traveler']
-            instance.purpose = item['purpose']
-            instance.status = item['status']
-            instance.start_date = item['start_date']
-            instance.end_date = item['end_date']
-            instance.supervisor_name = item['supervisor_name']
-            instance.section_id = item['section']
-            instance.office_id = item['office']
+                instance.reference_number = item['reference_number']
+                instance.traveler_name = item['traveler']
+                instance.purpose = item['purpose']
+                instance.status = item['status']
+                start_date = datetime.datetime.strptime(item['start_date'], "%Y-%m-%d")
+                instance.start_date = start_date.utcoffset()
+                end_date = datetime.datetime.strptime(item['end_date'], "%Y-%m-%d")
+                instance.end_date = end_date.utcoffset()
+                instance.supervisor_name = item['supervisor_name']
+                instance.section_id = item['section']
+                instance.office_id = item['office']
 
-            instance.save()
+                instance.save()
+        except Exception as ex:
+            print(ex.message)
+            continue
 
 
 @app.task
@@ -338,10 +346,10 @@ def sync_trip_individual_data(instance):
 
         act_instance.travel_type = activity['travel_type'].lower()
 
-        # if activity['date']:
-        #     act_instance.date = activity['date']
-        # else:
-        #     act_instance.date = instance.start_date
+        if activity['date']:
+            act_instance.date = activity['date']
+        else:
+            act_instance.date = instance.start_date
 
         act_instance.is_primary_traveler = activity['is_primary_traveler']
         act_instance.travel = instance

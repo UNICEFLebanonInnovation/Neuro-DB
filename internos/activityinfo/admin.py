@@ -722,6 +722,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'generate_indicator_tags',
         'calculate_sum_target',
         'update_indicator_list_header',
+        'update_indicator_name',
     ]
 
     fieldsets = [
@@ -787,7 +788,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             "{} objects created.".format(objects)
         )
 
-    update_basic_data.short_description = 'Step 0a: Update Indicators basic data (only once - ask Ali before!!!)'
+    update_basic_data.short_description = 'Step 0a: Update Indicators basic data - ' \
+                                          'Update only (only once - ask Ali before!!!)'
 
     def import_only_new(self, request, queryset):
         objects = 0
@@ -798,7 +800,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             "{} objects created.".format(objects)
         )
 
-    import_only_new.short_description = 'Step 0b: Import only new Indicators basic data (only once - ask Ali before!!!)'
+    import_only_new.short_description = 'Step 0b: Import only new Indicators basic data -' \
+                                        ' Import new indicators only(only once - ask Ali before!!!)'
 
     def update_partner_data(self, request, queryset):
         for db in queryset:
@@ -883,7 +886,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             request,
             "Update the HPM report"
         )
-        update_hpm_report.short_description = 'Update HPM monthly report (3 in 1)'
+    update_hpm_report.short_description = 'Update HPM monthly report (3 in 1)'
 
     def reset_hpm_indicators_values(self, request, queryset):
         reports = reset_hpm_indicators_values()
@@ -947,6 +950,15 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         reports = 0
         for db in queryset:
             reports = calculate_indicators_status(db)
+            self.message_user(
+                request,
+                "{} indicators status calculated for database {}".format(reports, db.name)
+            )
+
+    def update_indicator_name(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = update_indicator_data(ai_db=db, ai_field_name='name', field_name='name')
             self.message_user(
                 request,
                 "{} indicators status calculated for database {}".format(reports, db.name)

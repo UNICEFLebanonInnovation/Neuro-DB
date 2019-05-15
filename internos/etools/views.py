@@ -131,6 +131,7 @@ class TripsMonitoringView(TemplateView):
 
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
         sections = Section.objects.filter(etools=True)
+        # sections = Section.objects.filter()
         offices = Office.objects.all()
 
         visits = TravelActivity.objects.filter(travel_type='programmatic visit')

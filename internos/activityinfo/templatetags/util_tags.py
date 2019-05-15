@@ -328,8 +328,8 @@ def get_indicator_hpm_data(ai_id, month=None):
         previous_month = int(month) - 1
         last_month_value = 0
 
-        if str(previous_month) in values_hpm:
-            last_month_value = values_hpm[str(previous_month)]
+        if str(previous_month) in indicator.cumulative_values_hpm['months']:
+            last_month_value = indicator.cumulative_values_hpm['months'][str(previous_month)]
 
         if 'months' in cumulative_values:
             month = str(month)
@@ -362,7 +362,7 @@ def get_indicator_hpm_data(ai_id, month=None):
 
         return data
     except Exception as ex:
-        # print(ex)
+        print(ex)
         return data
 
 
