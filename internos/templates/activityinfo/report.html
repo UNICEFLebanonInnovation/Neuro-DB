@@ -61,7 +61,7 @@
 <form action="{% url 'activityinfo:report' %}" method="get">
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="4" data-intro="Filter options by partner">
       <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
-      <select class="selectpicker show-tick" data-actions-box="true" multiple title="Choose one or more partner" name="partners" data-style="btn-info" id="filter_partners">
+      <select class="selectpicker show-tick" data-actions-box="true" multiple title="Select one or more partner" name="partners" data-style="btn-info" id="filter_partners">
           {% for partner in partners %}
               <option value="{{ partner.partner_id }}" {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}</option>
           {% endfor %}
@@ -73,7 +73,7 @@
   </div>
 
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">
-      <select class="selectpicker show-tick" title="Choose one of the governorate" name="governorate" data-style="btn-info" id="filter_govs">
+      <select class="selectpicker show-tick" title="Select a governorate" name="governorate" data-style="btn-info" id="filter_govs">
           {% for gov in governorates %}
               <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorate %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
           {% endfor %}

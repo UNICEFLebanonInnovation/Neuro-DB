@@ -34,7 +34,7 @@ def get_partner_profile_details():
     cursor = connection.cursor()
     cursor.execute(
         "SELECT id, etl_id, name, short_name, description, partner_type, rating, vendor_number, comments, "
-        "shared_partner, total_ct_ytd, type_of_assessment " 
+        "shared_partner, total_ct_ytd, type_of_assessment, hact_min_requirements " 
         "FROM public.etools_partnerorganization "
         "WHERE hidden = false AND deleted_flag = false "
         "ORDER BY name ")
@@ -54,6 +54,7 @@ def get_partner_profile_details():
             'shared_partner': row[9],
             'total_ct_ytd': row[10],
             'type_of_assessment': row[11],
+            'hact_min_requirements': row[12],
             'interventions': [],
             'interventions_active': [],
             'pds': [],
