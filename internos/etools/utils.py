@@ -20,7 +20,7 @@ def link_partner_to_partnership():
 
 def get_partner_profile_details():
     from django.db import connection
-    from .models import Engagement, Travel, PCA
+    from .models import Engagement, Travel, TravelType, PCA
 
     partners = {}
     interventions = []
@@ -326,11 +326,12 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets, "
         "tl.reference_number, ta.date " 
-        "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
-        "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type='programmatic visit' AND date_part('year', ta.date) = %s "
+        "FROM public.etools_travelactivity ta "
+        "LEFT JOIN public.etools_pca pc ON ta.partnership_id = pc.id "
+        "LEFT JOIN public.etools_travel tl ON ta.travel_id = tl.id "
+        "WHERE ta.travel_type= %s AND date_part('year', tl.start_date) = %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [now.year, Travel.COMPLETED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.COMPLETED])
 
     rows = cursor.fetchall()
     for row in rows:

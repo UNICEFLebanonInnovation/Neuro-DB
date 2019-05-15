@@ -149,8 +149,8 @@ class PartnerOrganization(models.Model):
     flags = JSONField(blank=True, null=True)
 
     type_of_assessment = models.CharField(max_length=250, blank=True, null=True)
-    last_assessment_date = models.DateTimeField(null=True, blank=True)
-    core_values_assessment_date = models.DateTimeField(null=True, blank=True)
+    last_assessment_date = models.DateField(null=True, blank=True)
+    core_values_assessment_date = models.DateField(null=True, blank=True)
 
     total_ct_cp = models.CharField(max_length=250, blank=True, null=True)
     total_ct_cy = models.CharField(max_length=250, blank=True, null=True)
@@ -675,7 +675,6 @@ class Travel(models.Model):
         (CERTIFICATION_APPROVED, _('Certification approved')),
         (CERTIFICATION_REJECTED, _('Certification rejected')),
         (CERTIFIED, _('Certified')),
-        (COMPLETED, _('Completed')),
     )
 
     created = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=_('Created'))
@@ -693,7 +692,7 @@ class Travel(models.Model):
     report_note = models.TextField(default='', blank=True, verbose_name=_('Report Note'))
     misc_expenses = models.TextField(default='', blank=True, verbose_name=_('Misc Expenses'))
 
-    status = models.CharField(max_length=500, default=PLANNED, choices=CHOICES, verbose_name=_('Status'))
+    status = models.CharField(max_length=500, default=PLANNED, verbose_name=_('Status'))
     traveler = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, related_name='travels',
         verbose_name=_('Travellert'),
@@ -714,8 +713,8 @@ class Travel(models.Model):
         'users.Office', null=True, blank=True, related_name='+',
         on_delete=models.CASCADE,
     )
-    start_date = models.DateTimeField(null=True, blank=True, verbose_name=_('Start Date'))
-    end_date = models.DateTimeField(null=True, blank=True, verbose_name=_('End Date'))
+    start_date = models.DateField(null=True, blank=True, verbose_name=_('Start Date'))
+    end_date = models.DateField(null=True, blank=True, verbose_name=_('End Date'))
     purpose = models.CharField(max_length=500, default='', blank=True, verbose_name=_('Purpose'))
     additional_note = models.TextField(default='', blank=True, verbose_name=_('Additional Note'))
     international_travel = models.NullBooleanField(default=False, null=True, blank=True,
@@ -773,7 +772,7 @@ class TravelActivity(models.Model):
     locations = models.ManyToManyField('locations.Location', related_name='+', verbose_name=_('Locations'))
     primary_traveler = models.ForeignKey(
         settings.AUTH_USER_MODEL, verbose_name=_('Primary Traveler'), on_delete=models.CASCADE, null=True, blank=True)
-    date = models.DateTimeField(null=True, blank=True, verbose_name=_('Date'))
+    date = models.DateField(null=True, blank=True, verbose_name=_('Date'))
     is_primary_traveler = models.BooleanField(default=False)
 
     class Meta:

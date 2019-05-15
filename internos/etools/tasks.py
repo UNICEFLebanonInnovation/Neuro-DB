@@ -95,12 +95,10 @@ def sync_individual_partner_data():
             partner.type_of_assessment = item['type_of_assessment']
 
             if item['last_assessment_date']:
-                last_assessment_date = datetime.datetime.strptime(item['last_assessment_date'], "%Y-%m-%d")
-                partner.last_assessment_date = last_assessment_date.utcoffset()
+                partner.last_assessment_date = datetime.datetime.strptime(item['last_assessment_date'], "%Y-%m-%d")
 
             if item['core_values_assessment_date']:
-                core_values_assessment_date = datetime.datetime.strptime(item['core_values_assessment_date'], "%Y-%m-%d")
-                partner.core_values_assessment_date = core_values_assessment_date.utcoffset()
+                partner.core_values_assessment_date = datetime.datetime.strptime(item['core_values_assessment_date'], "%Y-%m-%d")
 
             partner.total_ct_cp = item['total_ct_cp']
             partner.total_ct_cy = item['total_ct_cy']
@@ -381,11 +379,9 @@ def sync_trip_data():
                 instance.reference_number = item['reference_number']
                 instance.traveler_name = item['traveler']
                 instance.purpose = item['purpose']
-                instance.status = item['status']
-                start_date = datetime.datetime.strptime(item['start_date'], "%Y-%m-%d")
-                instance.start_date = start_date.utcoffset()
-                end_date = datetime.datetime.strptime(item['end_date'], "%Y-%m-%d")
-                instance.end_date = end_date.utcoffset()
+                instance.status = item['status'].lower()
+                instance.start_date = datetime.datetime.strptime(item['start_date'], "%Y-%m-%d")
+                instance.end_date = datetime.datetime.strptime(item['end_date'], "%Y-%m-%d")
                 instance.supervisor_name = item['supervisor_name']
                 instance.section_id = item['section']
                 instance.office_id = item['office']
@@ -409,14 +405,13 @@ def sync_trip_individual_data(instance):
     instance.itinerary_set = item['itinerary']
     instance.activities_set = item['activities']
     for activity in item['activities']:
-        instance.travel_type = activity['travel_type'].lower()
+        instance.travel_type = activity['travel_type'].title()
         act_instance, new_instance = TravelActivity.objects.get_or_create(id=activity['id'])
 
-        act_instance.travel_type = activity['travel_type'].lower()
+        act_instance.travel_type = activity['travel_type'].title()
 
         if activity['date']:
-            date = datetime.datetime.strptime(item['start_date'], "%Y-%m-%d")
-            act_instance.date = date.utcoffset()
+            act_instance.date = datetime.datetime.strptime(item['start_date'], "%Y-%m-%d")
         else:
             act_instance.date = instance.start_date
 
