@@ -171,8 +171,14 @@ class HACTView(TemplateView):
     def get_context_data(self, **kwargs):
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
 
+        partners = PartnerOrganization.objects.exclude(hidden=True).exclude(deleted_flag=True)
+
+        partners_info = get_partner_profile_details()
+
         return {
             'databases': databases,
+            'partners': partners,
+            'partners_info': partners_info
         }
 
 

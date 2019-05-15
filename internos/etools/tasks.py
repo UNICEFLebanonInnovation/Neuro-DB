@@ -48,6 +48,74 @@ def sync_partner_data():
 
 
 @app.task
+def sync_individual_partner_data():
+    from internos.etools.models import PartnerOrganization
+
+    partners = PartnerOrganization.objects.all()
+
+    for partner in partners:
+        item = get_data('etools.unicef.org', '/api/v2/partners/{}/'.format(partner.etl_id),
+                        'Token 36f06547a4b930c6608e503db49f1e45305351c2')
+
+        try:
+            item = json.loads(item)
+
+            partner.rating = item['rating']
+            partner.last_assessment_date = item['last_assessment_date']
+            partner.short_name = item['short_name']
+            partner.postal_code = item['postal_code']
+            partner.basis_for_risk_rating = item['basis_for_risk_rating']
+            partner.city = item['city']
+            partner.reported_cy = item['reported_cy']
+            partner.total_ct_ytd = item['total_ct_ytd']
+            partner.vendor_number = item['vendor_number']
+            partner.hidden = item['hidden']
+            partner.cso_type = item['cso_type']
+            partner.net_ct_cy = item['net_ct_cy']
+            partner.phone_number = item['phone_number']
+            partner.shared_with = item['shared_with']
+            partner.partner_type = item['partner_type']
+            partner.address = item['address']
+            partner.total_ct_cy = item['total_ct_cy']
+            partner.name = item['name']
+            partner.total_ct_cp = item['total_ct_cp']
+            partner.country = item['country']
+            partner.email = item['email']
+            partner.deleted_flag = item['deleted_flag']
+            partner.street_address = item['street_address']
+
+            partner.staff_members = item['staff_members']
+            partner.assessments = item['assessments']
+            partner.planned_engagement = item['planned_engagement']
+            partner.hact_values = item['hact_values']
+            partner.hact_min_requirements = item['hact_min_requirements']
+            partner.planned_visits = item['planned_visits']
+            partner.core_values_assessments = item['core_values_assessments']
+            partner.flags = item['flags']
+            partner.type_of_assessment = item['type_of_assessment']
+
+            if item['last_assessment_date']:
+                last_assessment_date = datetime.datetime.strptime(item['last_assessment_date'], "%Y-%m-%d")
+                partner.last_assessment_date = last_assessment_date.utcoffset()
+
+            if item['core_values_assessment_date']:
+                core_values_assessment_date = datetime.datetime.strptime(item['core_values_assessment_date'], "%Y-%m-%d")
+                partner.core_values_assessment_date = core_values_assessment_date.utcoffset()
+
+            partner.total_ct_cp = item['total_ct_cp']
+            partner.total_ct_cy = item['total_ct_cy']
+            partner.net_ct_cy = item['net_ct_cy']
+            partner.reported_cy = item['reported_cy']
+            partner.total_ct_ytd = item['total_ct_ytd']
+
+            partner.save()
+        except Exception as ex:
+            print(item)
+            print(ex.message)
+            continue
+
+
+@app.task
 def sync_agreement_data():
     from internos.etools.models import Agreement, PartnerOrganization
     partners = get_data('etools.unicef.org', '/api/v2/agreements/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
@@ -347,7 +415,8 @@ def sync_trip_individual_data(instance):
         act_instance.travel_type = activity['travel_type'].lower()
 
         if activity['date']:
-            act_instance.date = activity['date']
+            date = datetime.datetime.strptime(item['start_date'], "%Y-%m-%d")
+            act_instance.date = date.utcoffset()
         else:
             act_instance.date = instance.start_date
 

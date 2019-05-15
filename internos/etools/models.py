@@ -139,6 +139,25 @@ class PartnerOrganization(models.Model):
     hidden = models.BooleanField(default=False)
     comments = models.TextField(blank=True, null=True)
 
+    staff_members = JSONField(blank=True, null=True)
+    assessments = JSONField(blank=True, null=True)
+    planned_engagement = JSONField(blank=True, null=True)
+    hact_values = JSONField(blank=True, null=True)
+    hact_min_requirements = JSONField(blank=True, null=True)
+    planned_visits = JSONField(blank=True, null=True)
+    core_values_assessments = JSONField(blank=True, null=True)
+    flags = JSONField(blank=True, null=True)
+
+    type_of_assessment = models.CharField(max_length=250, blank=True, null=True)
+    last_assessment_date = models.DateTimeField(null=True, blank=True)
+    core_values_assessment_date = models.DateTimeField(null=True, blank=True)
+
+    total_ct_cp = models.CharField(max_length=250, blank=True, null=True)
+    total_ct_cy = models.CharField(max_length=250, blank=True, null=True)
+    net_ct_cy = models.CharField(max_length=250, blank=True, null=True)
+    reported_cy = models.CharField(max_length=250, blank=True, null=True)
+    total_ct_ytd = models.CharField(max_length=250, blank=True, null=True)
+
     @property
     def programmatic_visits(self):
         today = datetime.date.today()

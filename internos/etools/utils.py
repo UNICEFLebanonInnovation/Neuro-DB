@@ -33,9 +33,11 @@ def get_partner_profile_details():
 
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT id, etl_id, name, short_name, description, partner_type, rating, vendor_number, comments " 
+        "SELECT id, etl_id, name, short_name, description, partner_type, rating, vendor_number, comments, "
+        "shared_partner, total_ct_ytd, type_of_assessment " 
         "FROM public.etools_partnerorganization "
-        "WHERE hidden = false AND deleted_flag = false")
+        "WHERE hidden = false AND deleted_flag = false "
+        "ORDER BY name ")
 
     rows = cursor.fetchall()
     for row in rows:
@@ -49,6 +51,9 @@ def get_partner_profile_details():
             'partner_type': row[5],
             'rating': row[6],
             'comments': row[8],
+            'shared_partner': row[9],
+            'total_ct_ytd': row[10],
+            'type_of_assessment': row[11],
             'interventions': [],
             'interventions_active': [],
             'pds': [],
@@ -63,8 +68,10 @@ def get_partner_profile_details():
             'programmatic_visits_canceled': [],
             'programmatic_visits_rejected': [],
             'audits': [],
+            'audits_completed': [],
             'micro_assessments': [],
             'spot_checks': [],
+            'spot_checks_completed': [],
             'special_audits': [],
         }
 
@@ -420,6 +427,24 @@ def get_partner_profile_details():
                 'action_points': get_action_points_details('audit_sc', row[0])
             })
 
+    #  spot_checks
+    cursor.execute(
+        "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
+        "FROM public.etools_engagement "
+        "WHERE engagement_type = %s AND status = %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_SPOT_CHECK, Engagement.FINAL, now.year])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['spot_checks_completed'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'findings_sets': row[2],
+                'internal_controls': row[3],
+                'displayed_name': row[4],
+            })
+
     #  audits
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
@@ -431,6 +456,24 @@ def get_partner_profile_details():
     for row in rows:
         if row[1] in partners:
             partners[row[1]]['audits'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'findings_sets': row[2],
+                'internal_controls': row[3],
+                'displayed_name': row[4]
+            })
+
+    #  audits
+    cursor.execute(
+        "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
+        "FROM public.etools_engagement "
+        "WHERE engagement_type = %s AND status = %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_AUDIT, Engagement.FINAL, now.year])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['audits_completed'].append({
                 'id': row[0],
                 'partner_id': row[1],
                 'findings_sets': row[2],
