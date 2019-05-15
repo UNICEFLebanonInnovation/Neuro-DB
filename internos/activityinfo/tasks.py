@@ -50,7 +50,7 @@ def generate_indicators_number():
 @app.task
 def import_data_and_generate_monthly_report():
     from internos.activityinfo.models import Database
-    from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values
+    from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values, calculate_indicators_tags
 
     databases = Database.objects.filter(reporting_year__current=True)
     for db in databases:
@@ -60,6 +60,7 @@ def import_data_and_generate_monthly_report():
         link_indicators_data(db)
         logger.info('3. Calculate indicator values')
         calculate_indicators_values(db)
+    calculate_indicators_tags()
 
 
 @app.task
