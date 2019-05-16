@@ -129,6 +129,12 @@ def add_rows(ai_id=None, model=None):
             except Exception:
                 indicator_value = 0
 
+            funded_by = row['Funded_by'] if 'Funded_by' in row else ''
+            partner_label = unicode(row['partner.label'], errors='replace') if 'partner.label' in row else ''
+
+            if partner_label == 'UNICEF':
+                funded_by = 'UNICEF'
+
             model.create(
                 month=month,
                 database=row['database'],
@@ -140,7 +146,7 @@ def add_rows(ai_id=None, model=None):
                 indicator_name=unicode(row['indicator.name'], errors='replace'),
                 indicator_awp_code=get_awp_code(unicode(row['indicator.name'], errors='replace')),
                 month_name=month_name,
-                partner_label=unicode(row['partner.label'], errors='replace') if 'partner.label' in row else '',
+                partner_label=partner_label,
                 location_adminlevel_caza_code=row[
                     'location.adminlevel.caza.code'] if 'location.adminlevel.caza.code' in row else '',
                 location_adminlevel_caza=unicode(row['location.adminlevel.caza'],
@@ -163,7 +169,7 @@ def add_rows(ai_id=None, model=None):
                 end_date=row['end_date'] if 'end_date' in row else '',
                 lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
                 indicator_value=indicator_value,
-                funded_by=row['Funded_by'] if 'Funded_by' in row else '',
+                funded_by=partner_label,
                 location_latitude=row['location.latitude'] if 'location.latitude' in row else '',
                 indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
                 location_alternate_name=row[
@@ -1876,74 +1882,6 @@ def calculate_individual_indicators_values_2(ai_db):
             indicator.values_partners_gov_live = rows_partners_govs[indicator.ai_indicator]
 
         indicator.save()
-
-
-#  todo not using it
-def calculate_individual_indicators_values(ai_db, report_type=None):
-    from internos.activityinfo.models import Indicator, ActivityReport, ActivityReportLive
-
-    last_month = int(datetime.datetime.now().strftime("%m"))
-
-    if report_type == 'live':
-        report = ActivityReportLive.objects.filter(database_id=ai_db.ai_id)
-        last_month = last_month + 1
-    else:
-        report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
-    if ai_db.is_funded_by_unicef:
-        report = report.filter(funded_by='UNICEF')
-
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
-    partners = report.values('partner_id').distinct()
-    governorates = report.values('location_adminlevel_governorate_code').distinct()
-    governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    reporting_month = str(last_month - 1)
-
-    for indicator in indicators:
-        for month in range(1, last_month):
-            month = str(month)
-            result = get_individual_indicator_value(ai_db, indicator, month, report_type=report_type)
-            if report_type == 'live':
-                indicator.values_live[str(month)] = result
-            else:
-                # if month == reporting_month:
-                #     indicator.values_hpm[reporting_month] = result
-                indicator.values[str(month)] = result
-
-            for gov1 in governorates1:
-                key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
-                value = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
-                                                       gov=gov1['location_adminlevel_governorate_code'],
-                                                       report_type=report_type)
-
-                if report_type == 'live':
-                    indicator.values_gov_live[str(key)] = value
-                else:
-                    indicator.values_gov[str(key)] = value
-
-            for partner in partners:
-                key1 = "{}-{}".format(month, partner['partner_id'])
-                value1 = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
-                                                        partner=partner['partner_id'], report_type=report_type)
-
-                if report_type == 'live':
-                    indicator.values_partners_live[str(key1)] = value1
-                else:
-                    indicator.values_partners[str(key1)] = value1
-
-                for gov in governorates:
-                    key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
-                    value2 = get_individual_indicator_value(ai_db=ai_db, indicator_id=indicator, month=month,
-                                                            partner=partner['partner_id'], report_type=report_type,
-                                                            gov=gov['location_adminlevel_governorate_code'])
-
-                    if report_type == 'live':
-                        indicator.values_partners_gov_live[str(key2)] = value2
-                    else:
-                        indicator.values_partners_gov[str(key2)] = value2
-
-            indicator.save()
-
-    return indicators.count()
 
 
 def calculate_indicators_status(database):
