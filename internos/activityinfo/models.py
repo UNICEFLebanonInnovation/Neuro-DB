@@ -556,3 +556,34 @@ class LiveActivityReport(TimeStampedModel):
     class Meta:
         ordering = ['id']
         # models.Index(fields=['indicator_id', 'partner_id', 'start_date', 'location_adminlevel_governorate_code', 'funded_by'])
+
+
+class AdminLevels(models.Model):
+
+    name = models.CharField(max_length=650)
+
+
+class LocationTypes(models.Model):
+
+    name = models.CharField(max_length=650)
+    parent = models.ForeignKey('self', blank=True, null=True)
+
+
+class AdminLevelEntities(models.Model):
+
+    code = models.CharField(max_length=250)
+    name = models.CharField(max_length=650)
+    parent = models.ForeignKey('self', blank=True, null=True)
+    level = models.ForeignKey(AdminLevels, blank=True, null=True)
+    bounds = JSONField(blank=True, null=True)
+
+
+class Locations(models.Model):
+
+    code = models.CharField(max_length=250)
+    name = models.CharField(max_length=650)
+    type = models.ForeignKey(LocationTypes, blank=True, null=True)
+    admin_entities = JSONField(blank=True, null=True)
+    longitude = models.CharField(max_length=250)
+    latitude = models.CharField(max_length=250)
+    entities = models.ManyToManyField(AdminLevelEntities, blank=True, related_name='entity_locations')

@@ -994,6 +994,10 @@ class IndicatorTagAdmin(admin.ModelAdmin):
     )
 
 
+admin.site.register(AdminLevels)
+admin.site.register(AdminLevelEntities)
+admin.site.register(LocationTypes)
+admin.site.register(Locations)
 admin.site.register(IndicatorTag, IndicatorTagAdmin)
 admin.site.register(ReportingYear, ReportingYearAdmin)
 admin.site.register(Database, DatabaseAdmin)

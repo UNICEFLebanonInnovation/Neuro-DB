@@ -1,7 +1,7 @@
 __author__ = 'achamseddine'
 
 from django.core.management.base import BaseCommand
-from internos.etools.tasks import sync_audit_data
+from internos.etools.tasks import sync_audit_data, sync_action_points_data
 
 
 class Command(BaseCommand):
@@ -9,3 +9,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         sync_audit_data()
+        sync_action_points_data()

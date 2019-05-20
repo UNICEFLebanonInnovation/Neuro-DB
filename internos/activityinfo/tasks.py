@@ -1,4 +1,5 @@
 
+import json
 import logging
 
 from internos.taskapp.celery import app
@@ -91,3 +92,47 @@ def copy_indicators_values_to_hpm():
     for indicator in indicators:
         indicator.values_hpm = indicator.values
         indicator.save()
+
+
+def import_activityinfo_locations_data():
+    from internos.activityinfo.client import ActivityInfoClient
+    from internos.activityinfo.models import Database, AdminLevels, AdminLevelEntities, LocationTypes, Locations
+
+    ai_db = Database.objects.get(id=14)
+
+    client = ActivityInfoClient(ai_db.username, ai_db.password)
+    country = 370
+
+    result = client.get_admin_levels(country)
+    for item in result:
+        instance, create = AdminLevels.objects.get_or_create(id=int(item['id']))
+        instance.name = item['name']
+        instance.save()
+
+        result1 = client.get_entities(item['id'])
+        for item1 in result1:
+            instance1, create = AdminLevelEntities.objects.get_or_create(id=int(item1['id']))
+            instance1.code = item1['code']
+            instance1.name = item1['name']
+            instance1.parent_id = item1['parentId']
+            instance1.level = instance
+            instance1.bounds = item1['bounds']
+            instance1.save()
+
+    result = client.get_location_types(country)
+    for item in result:
+        instance, create = LocationTypes.objects.get_or_create(id=int(item['id']))
+        instance.name = item['name']
+        instance.save()
+
+        result1 = client.get_locations(item['id'])
+        for item1 in result1:
+            instance1, create = Locations.objects.get_or_create(id=int(item1['id']))
+
+            instance1.code = item1['code'] if 'code' in item1 else ''
+            instance1.name = item1['name']
+            instance1.type = instance
+            instance1.longitude = item1['longitude'] if 'longitude' in item1 else ''
+            instance1.latitude = item1['latitude'] if 'latitude' in item1 else ''
+
+            instance1.save()

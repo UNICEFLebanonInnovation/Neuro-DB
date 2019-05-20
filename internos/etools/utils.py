@@ -237,9 +237,9 @@ def get_partner_profile_details():
         "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type='programmatic visit' AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type = %s AND date_part('year', ta.date) = %s "
         "AND (tl.status = %s OR tl.status = %s OR tl.status = %s OR tl.status = %s)"
-        "ORDER BY ta.date", [now.year, Travel.PLANNED, Travel.SUBMITTED, Travel.APPROVED, Travel.COMPLETED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.PLANNED, Travel.SUBMITTED, Travel.APPROVED, Travel.COMPLETED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -259,9 +259,9 @@ def get_partner_profile_details():
         "tl.reference_number, ta.date " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type='programmatic visit' AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [now.year, Travel.PLANNED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.PLANNED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -282,9 +282,9 @@ def get_partner_profile_details():
         "tl.reference_number, ta.date " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type='programmatic visit' AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [now.year, Travel.SUBMITTED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.SUBMITTED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -305,9 +305,9 @@ def get_partner_profile_details():
         "tl.reference_number, ta.date " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type='programmatic visit' AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [now.year, Travel.APPROVED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.APPROVED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -352,9 +352,9 @@ def get_partner_profile_details():
         "tl.reference_number, ta.date " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type='programmatic visit' AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [now.year, Travel.CANCELLED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.CANCELLED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -375,9 +375,9 @@ def get_partner_profile_details():
         "tl.reference_number, ta.date " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type='programmatic visit' AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [now.year, Travel.REJECTED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.REJECTED])
 
     rows = cursor.fetchall()
     for row in rows:

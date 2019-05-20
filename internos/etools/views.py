@@ -44,7 +44,7 @@ class PartnerProfileView(TemplateView):
         interventions_sffa = interventions.filter(document_type=PCA.SSFA)
         active_interventions_sffa = interventions_sffa.filter(status=PCA.ACTIVE)
 
-        visits = TravelActivity.objects.filter(travel_type='programmatic visit', travel__start_date__year=now.year)
+        visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING, travel__start_date__year=now.year)
         programmatic_visits = visits.exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
         programmatic_visits_planned = visits.filter(travel__status=Travel.PLANNED)
         programmatic_visits_submitted = visits.filter(travel__status=Travel.SUBMITTED)
@@ -130,11 +130,11 @@ class TripsMonitoringView(TemplateView):
         travel_status = self.request.GET.get('travel_status', 'all')
 
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
-        sections = Section.objects.filter(etools=True)
-        # sections = Section.objects.filter()
+        # sections = Section.objects.filter(etools=True)
+        sections = Section.objects.filter()
         offices = Office.objects.all()
 
-        visits = TravelActivity.objects.filter(travel_type='programmatic visit')
+        visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING)
         # visits = TravelActivity.objects.filter(travel_type='programmatic visit', travel__start_date__year=now.year)
 
         if travel_status == 'all':

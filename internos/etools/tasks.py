@@ -478,6 +478,6 @@ def sync_action_points_data():
             instance.engagement = engagement
             instance.status = item['status']
             instance.status_date = item['status_date']
-            instance.partner_id = int(item['partner']['id'])
+            instance.partner_id = PartnerOrganization.objects.get(etl_id=int(item['partner']['id']))
 
             instance.save()
