@@ -307,6 +307,7 @@ class IndicatorTag(models.Model):
     label = models.CharField(max_length=254, blank=True, null=True)
     type = models.CharField(max_length=254, blank=True, null=True)
     tag_field = models.CharField(max_length=254, blank=True, null=True)
+    sequence = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
         return self.name

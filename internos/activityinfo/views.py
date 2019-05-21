@@ -241,7 +241,7 @@ class ReportTagView(TemplateView):
 
         ai_id = int(self.request.GET.get('ai_id', 0))
         databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
-        tags = IndicatorTag.objects.all()
+        tags = IndicatorTag.objects.all().order_by('sequence')
 
         if ai_id:
             database = Database.objects.get(ai_id=ai_id)

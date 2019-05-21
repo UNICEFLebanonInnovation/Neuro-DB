@@ -33,6 +33,18 @@ def read_imported_data():
 
 
 @app.task
+def migrate_tag(tag_name, from_tag, to_tag):
+    from internos.activityinfo.models import Indicator
+
+    indicators = Indicator.objects.filter(tag_nationality_id=int(from_tag))
+    print(indicators.count())
+
+    for indicator in indicators.iterator():
+        setattr(indicator, tag_name, int(to_tag))
+        indicator.save()
+
+
+@app.task
 def link_partners(report_type=None):
     from .utils import link_ai_partners, link_etools_partners
     link_ai_partners(report_type=report_type)

@@ -413,7 +413,8 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
         value = 0
         if partner and gov and not gov == '0':
             for par in partner:
-                key = "{}-{}-{}".format(month, par, gov)
+                # key = "{}-{}-{}".format(month, par, gov)
+                key = "{}-{}-{}".format(month, gov, par)
                 value += indicator['values_partners_gov'][key]
             return get_indicator_unit(indicator, value)
         if partner:

@@ -549,7 +549,7 @@ class ActivityReportAdmin(RelatedFieldAdmin):
         'start_date',
         'database',
         'partner_label',
-        'governorate',
+        'location_adminlevel_governorate',
         'form',
         'form_category',
         'funded_by',
@@ -562,7 +562,7 @@ class ActivityReportAdmin(RelatedFieldAdmin):
         'start_date',
         'database',
         'partner_label',
-        'governorate',
+        'location_adminlevel_governorate',
         'form',
         'form_category',
         'funded_by',
@@ -990,7 +990,11 @@ class IndicatorTagAdmin(admin.ModelAdmin):
         'name',
         'label',
         'type',
-        'tag_field'
+        'tag_field',
+        'sequence',
+    )
+    list_editable = (
+        'sequence',
     )
 
 
