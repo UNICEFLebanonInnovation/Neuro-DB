@@ -994,10 +994,47 @@ class IndicatorTagAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(AdminLevelEntities)
+class AdminLevelEntitiesAdmin(admin.ModelAdmin):
+    list_filter = (
+        'level',
+    )
+    search_fields = (
+        'code',
+        'name',
+    )
+    list_display = (
+        'code',
+        'name',
+        'level',
+        'parent',
+        'bounds',
+    )
+
+
+@admin.register(Locations)
+class LocationsAdmin(admin.ModelAdmin):
+    list_filter = (
+        'type',
+
+    )
+    search_fields = (
+        'code',
+        'name',
+    )
+    list_display = (
+        'code',
+        'name',
+        'type',
+        'longitude',
+        'latitude',
+    )
+
+
 admin.site.register(AdminLevels)
-admin.site.register(AdminLevelEntities)
+# admin.site.register(AdminLevelEntities)
 admin.site.register(LocationTypes)
-admin.site.register(Locations)
+# admin.site.register(Locations)
 admin.site.register(IndicatorTag, IndicatorTagAdmin)
 admin.site.register(ReportingYear, ReportingYearAdmin)
 admin.site.register(Database, DatabaseAdmin)

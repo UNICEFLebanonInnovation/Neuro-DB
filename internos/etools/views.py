@@ -4,7 +4,7 @@ import os
 import datetime
 import calendar
 from django.db.models import Q
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, JsonResponse
 from rest_framework import status

@@ -562,11 +562,17 @@ class AdminLevels(models.Model):
 
     name = models.CharField(max_length=650)
 
+    def __unicode__(self):
+        return self.name
+
 
 class LocationTypes(models.Model):
 
     name = models.CharField(max_length=650)
     parent = models.ForeignKey('self', blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name
 
 
 class AdminLevelEntities(models.Model):
@@ -576,6 +582,9 @@ class AdminLevelEntities(models.Model):
     parent = models.ForeignKey('self', blank=True, null=True)
     level = models.ForeignKey(AdminLevels, blank=True, null=True)
     bounds = JSONField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Locations(models.Model):
@@ -587,3 +596,6 @@ class Locations(models.Model):
     longitude = models.CharField(max_length=250)
     latitude = models.CharField(max_length=250)
     entities = models.ManyToManyField(AdminLevelEntities, blank=True, related_name='entity_locations')
+
+    def __unicode__(self):
+        return self.name

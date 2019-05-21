@@ -54,6 +54,7 @@
     <link href="{% static 'css/custom.min.css' %}" rel="stylesheet">
     <style>
       .site_title {padding-left: 8px; height: 65px; padding-top: 6px;}
+      #toTop{position: fixed;bottom: 10px;right: 10px;cursor: pointer;display: none;}
     </style>
   </head>
 
@@ -203,6 +204,7 @@
           {% block content %}
           {% endblock content %}
 
+          <div id="toTop" class="btn btn-info"><span class="glyphicon glyphicon-chevron-up"></span> Back to Top</div>
         </div>
         <!-- /page content -->
 
@@ -271,6 +273,25 @@
     <!-- Custom Theme Scripts -->
     <script src="{% static 'js/custom.min.js' %}"></script>
     {% block extra_js %}{% endblock %}
-
+    <script>
+        $(document).ready(function(){
+              $(window).scroll(function () {
+              if ($(this).scrollTop() != 0) {
+                $('#toTop').fadeIn();
+              } else {
+                $('#toTop').fadeOut();
+              }
+            });
+            $('#toTop').click(function(){
+                $("html, body").animate({ scrollTop: 0 }, 600);
+                return false;
+            });
+            $('.print-page').click(function(){
+                $('.expanded-all').trigger('click');
+                $('.read-more').hide();
+                window.print();
+            });
+        });
+    </script>
   </body>
 </html>
