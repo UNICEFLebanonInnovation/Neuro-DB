@@ -437,8 +437,8 @@ def get_indicator_tag_value(indicator, tag):
     try:
         value = 0
         values_tags = indicator['values_tags']
-        if tag.name in values_tags:
-            value = values_tags[tag.name]
+        if tag in values_tags:
+            value = values_tags[tag]
         return str(round(value)).replace('.0', '')
     except Exception as ex:
         print(ex)

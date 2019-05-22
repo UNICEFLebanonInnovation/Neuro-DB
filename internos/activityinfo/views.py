@@ -256,6 +256,15 @@ class ReportTagView(TemplateView):
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
+        tags_gender = Indicator.objects.filter(activity__database__id__exact=database.id,
+                                               tag_gender__isnull=False).values('tag_gender__name', 'tag_gender__label').distinct().order_by('tag_gender__sequence')
+        tags_nationality = Indicator.objects.filter(activity__database__id__exact=database.id,
+                                                    tag_nationality__isnull=False).values('tag_nationality__name', 'tag_nationality__label').distinct().order_by('tag_nationality__sequence')
+        tags_age = Indicator.objects.filter(activity__database__id__exact=database.id,
+                                            tag_age__isnull=False).values('tag_age__name', 'tag_age__label').distinct().order_by('tag_age__sequence')
+        tags_disability = Indicator.objects.filter(activity__database__id__exact=database.id,
+                                                   tag_disability__isnull=False).values('tag_disability__name', 'tag_disability__label').distinct().order_by('tag_disability__sequence')
+
         if selected_partner:
             try:
                 partner = Partner.objects.get(number=selected_partner)
@@ -335,7 +344,11 @@ class ReportTagView(TemplateView):
             'partner_info': partner_info,
             'selected_filter': selected_filter,
             'none_ai_indicators': none_ai_indicators,
-            'tags': tags
+            'tags': tags,
+            'tags_gender': tags_gender,
+            'tags_nationality': tags_nationality,
+            'tags_age': tags_age,
+            'tags_disability': tags_disability
         }
 
 

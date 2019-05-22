@@ -100,12 +100,8 @@
                             % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
                           </th>
                           <th content="Status" style="vertical-align: middle; width: 69px; max-width: 69px;">Status</th>
-                          {% for tag in tags %}
-                            {% if tag.label %}
+                          {% for tag in tags_gender %}
                             <th content="{{ tag.label }}" style="vertical-align: middle;">{{ tag.label }}</th>
-                            {% else %}
-                            <th content="{{ tag.name }}" style="vertical-align: middle;">{{ tag.name }}</th>
-                            {% endif %}
                           {% endfor %}
                         </tr>
                       </thead>
@@ -130,13 +126,23 @@
                             % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
                           </th>
                           <th class="w-70" content="Status" style="vertical-align: middle;">Status</th>
-                          {% for tag in tags %}
-                            {% if tag.label %}
-                            <th content="{{ tag.label }}" style="vertical-align: middle;">{{ tag.label }}</th>
-                            {% else %}
-                            <th content="{{ tag.name }}" style="vertical-align: middle;">{{ tag.name }}</th>
-                            {% endif %}
+
+                          {% for tag in tags_gender %}
+                            <th content="{{ tag.tag_gender__label }}" style="vertical-align: middle;">{{ tag.tag_gender__label }}</th>
                           {% endfor %}
+
+                          {% for tag in tags_nationality %}
+                            <th content="{{ tag.tag_nationality__label }}" style="vertical-align: middle;">{{ tag.tag_nationality__label }}</th>
+                          {% endfor %}
+
+                          {% for tag in tags_age %}
+                            <th content="{{ tag.tag_age__label }}" style="vertical-align: middle;">{{ tag.tag_age__label }}</th>
+                          {% endfor %}
+
+                          {% for tag in tags_disability %}
+                            <th content="{{ tag.tag_disability__label }}" style="vertical-align: middle;">{{ tag.tag_disability__label }}</th>
+                          {% endfor %}
+
                         </tr>
                       </thead>
                       <tbody>
@@ -161,12 +167,35 @@
                                 {{ achieved }}%
                               </td>
                               <td class="w-70" style="background-color:{{ item.status_color }}; color: #FFF;">{{ item.status }}</td>
-                                {% for tag in tags %}
+
+                              {% for tag in tags_gender %}
                                 <td>
-                                  {% get_indicator_tag_value item tag as value %}
+                                  {% get_indicator_tag_value item tag.tag_gender__name as value %}
                                   {{ value }}{% if value != "0" %}%{% endif %}
                                 </td>
                               {% endfor %}
+
+                              {% for tag in tags_nationality %}
+                                <td>
+                                  {% get_indicator_tag_value item tag.tag_nationality__name as value %}
+                                  {{ value }}{% if value != "0" %}%{% endif %}
+                                </td>
+                              {% endfor %}
+
+                              {% for tag in tags_age %}
+                                <td>
+                                  {% get_indicator_tag_value item tag.tag_age__name as value %}
+                                  {{ value }}{% if value != "0" %}%{% endif %}
+                                </td>
+                              {% endfor %}
+
+                              {% for tag in tags_disability %}
+                                <td>
+                                  {% get_indicator_tag_value item tag.tag_disability__name as value %}
+                                  {{ value }}{% if value != "0" %}%{% endif %}
+                                </td>
+                              {% endfor %}
+
                           </tr>
                         {% endfor %}
                       </tbody>
