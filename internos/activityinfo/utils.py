@@ -754,9 +754,11 @@ def calculate_indicators_tags():
     tags_disability = IndicatorTag.objects.filter(type='disability').only('id', 'name')
 
     for indicator in indicators.iterator():
-        if not indicator or 'months' not in indicator.cumulative_values:
+        m_value = 0
+        try:
+            m_value = indicator.cumulative_values['months']
+        except Exception:
             continue
-        m_value = indicator.cumulative_values['months']
         if isinstance(m_value, dict):
             m_value = 0
         sub_indicators = indicator.summation_sub_indicators.all().only(
