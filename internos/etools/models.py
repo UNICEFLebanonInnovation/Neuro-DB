@@ -720,8 +720,7 @@ class Travel(models.Model):
     international_travel = models.NullBooleanField(default=False, null=True, blank=True,
                                                    verbose_name=_('International Travel'))
     ta_required = models.NullBooleanField(default=True, null=True, blank=True, verbose_name=_('TA Required'))
-    reference_number = models.CharField(max_length=12, unique=True,
-                                        verbose_name=_('Reference Number'))
+    reference_number = models.CharField(max_length=12, verbose_name=_('Reference Number'))
     hidden = models.BooleanField(default=False, verbose_name=_('Hidden'))
     mode_of_travel = ArrayField(models.CharField(max_length=5, choices=ModeOfTravel.CHOICES), null=True, blank=True,
                                 verbose_name=_('Mode of Travel'))
