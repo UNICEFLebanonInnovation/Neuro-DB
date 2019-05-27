@@ -104,14 +104,14 @@
                     </ul>
                   </li>
 
-                  <li><a><i class="fa fa-list-alt"></i> AI Sector <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      {% get_databases True as databases %}
-                      {% for db in databases %}
-                        <li><a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
-                      {% endfor %}
-                    </ul>
-                  </li>
+                  <!--<li><a><i class="fa fa-list-alt"></i> AI Sector <span class="fa fa-chevron-down"></span></a>-->
+                    <!--<ul class="nav child_menu">-->
+                      <!--{% get_databases True as databases %}-->
+                      <!--{% for db in databases %}-->
+                        <!--<li><a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>-->
+                      <!--{% endfor %}-->
+                    <!--</ul>-->
+                  <!--</li>-->
 
                   <li><a><i class="fa fa-pie-chart"></i> Data Visualisations <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
