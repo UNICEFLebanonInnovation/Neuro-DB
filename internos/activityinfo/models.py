@@ -498,6 +498,10 @@ class ActivityReport(TimeStampedModel):
     order = models.PositiveIntegerField(default=0)
     pending = models.BooleanField(default=False)
 
+    location_cadastral = models.ForeignKey('activityinfo.AdminLevelEntities', blank=True, null=True, related_name='+')
+    location_caza = models.ForeignKey('activityinfo.AdminLevelEntities', blank=True, null=True, related_name='+')
+    location_governorate = models.ForeignKey('activityinfo.AdminLevels', blank=True, null=True, related_name='+')
+
 
 class ActivityReportLive(ActivityReport):
 
@@ -600,3 +604,19 @@ class Locations(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class Sites(models.Model):
+
+    partner = models.ForeignKey(Partner, blank=True, null=True)
+    partner_name = models.CharField(max_length=650, blank=True, null=True)
+    location = models.ForeignKey(Locations, blank=True, null=True)
+    code = models.CharField(max_length=250, blank=True, null=True)
+    name = models.CharField(max_length=650, blank=True, null=True)
+    longitude = models.CharField(max_length=250, blank=True, null=True)
+    latitude = models.CharField(max_length=250, blank=True, null=True)
+    activity = models.ForeignKey(Activity, blank=True, null=True)
+    database = models.ForeignKey(Database, blank=True, null=True)
+
+    def __unicode__(self):
+        return '{}-{}'.format(self.name, self.code)

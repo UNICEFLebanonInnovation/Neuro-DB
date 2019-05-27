@@ -108,12 +108,39 @@ def copy_indicators_values_to_hpm():
 
 def import_activityinfo_locations_data():
     from internos.activityinfo.client import ActivityInfoClient
-    from internos.activityinfo.models import Database, AdminLevels, AdminLevelEntities, LocationTypes, Locations
+    from internos.activityinfo.models import (
+        Database,
+        Activity,
+        AdminLevels,
+        AdminLevelEntities,
+        LocationTypes,
+        Locations,
+        Sites
+    )
 
     ai_db = Database.objects.get(id=14)
+    databases = Database.objects.all()
 
     client = ActivityInfoClient(ai_db.username, ai_db.password)
     country = 370
+
+    for database in databases.iterator():
+        result = client.get_sites(database=database.ai_id)
+        for item in result:
+            instance, create = Sites.objects.get_or_create(id=int(item['id']))
+            # instance.partner_id = item['partner']['id'] if 'partner' in item else ''
+            instance.partner_name = item['partner']['name'] if 'partner' in item else ''
+
+            # instance.location_id = item['location']['id'] if 'location' in item else ''
+            instance.code = item['location']['code'] if 'location' in item else ''
+            instance.name = item['location']['name'] if 'location' in item else ''
+            instance.latitude = item['location']['latitude'] if 'location' in item and 'latitude' in item['location'] else ''
+            instance.longitude = item['location']['longitude'] if 'location' in item and 'longitude' in item['location'] else ''
+
+            # instance.activity = Activity.objects.get(ai_id=item['activity']) if 'activity' in item else ''
+            instance.database_id = database.id
+
+            instance.save()
 
     result = client.get_admin_levels(country)
     for item in result:

@@ -593,6 +593,12 @@ class ActivityReportAdmin(RelatedFieldAdmin):
     fields = (
 
     )
+    exclude = (
+        'location_cadastral',
+        'location_caza',
+        'location_governorate',
+    )
+
     readonly_fields = (
         'ai_indicator',
         'partner_ai',
@@ -1020,7 +1026,39 @@ class AdminLevelEntitiesAdmin(admin.ModelAdmin):
 class LocationsAdmin(admin.ModelAdmin):
     list_filter = (
         'type',
+    )
+    fields = (
+        'code',
+        'name',
+        'type',
+        'longitude',
+        'latitude',
+    )
+    search_fields = (
+        'id',
+        'code',
+        'name',
+    )
+    list_display = (
+        'code',
+        'name',
+        'type',
+        'longitude',
+        'latitude',
+    )
 
+
+@admin.register(Sites)
+class SitesAdmin(admin.ModelAdmin):
+    list_filter = (
+        'partner',
+        'activity',
+    )
+    fields = (
+        'code',
+        'name',
+        'longitude',
+        'latitude',
     )
     search_fields = (
         'code',
@@ -1029,7 +1067,6 @@ class LocationsAdmin(admin.ModelAdmin):
     list_display = (
         'code',
         'name',
-        'type',
         'longitude',
         'latitude',
     )
