@@ -53,6 +53,7 @@ class Database(models.Model):
     mapping_extraction2 = JSONField(blank=True, null=True)
     mapping_extraction3 = JSONField(blank=True, null=True)
     is_funded_by_unicef = models.BooleanField(default=False)
+    is_sector = models.BooleanField(default=False)
     reporting_year = models.ForeignKey(
         ReportingYear,
         blank=True,
@@ -398,6 +399,7 @@ class Indicator(models.Model):
     values_partners_live = JSONField(blank=True, null=True, default={})
     values_partners_gov_live = JSONField(blank=True, null=True, default={})
     cumulative_values_live = JSONField(blank=True, null=True, default={})
+    is_sector = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name

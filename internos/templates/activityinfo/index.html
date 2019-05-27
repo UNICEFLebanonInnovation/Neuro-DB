@@ -1,19 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles i18n %}
 
-
-{% block ai_reports %}
-  {% for db in databases %}
-    <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
-  {% endfor %}
-{% endblock %}
-
-{% block ai_databases %}
-  {% for db in databases %}
-    <li><a href="{% url 'activityinfo:dashboard' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
-  {% endfor %}
-{% endblock %}
-
 {% block project_title %}Neuro-DB{% endblock %}
 
 {% block content %}
@@ -25,7 +12,7 @@
         <div class="clearfix"></div>
       </div>
       <div class="x_content modal-body">
-        {% for db in databases %}
+        {% for db in ai_databases %}
         <div class="col-sm-6 col-md-4" style="width: 250px;">
           <div class="thumbnail" style="height: 160px;">
             <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">

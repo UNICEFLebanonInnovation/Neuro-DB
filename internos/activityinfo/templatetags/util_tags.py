@@ -83,7 +83,10 @@ def array_value(data, key):
 
 @register.filter(name='number_format')
 def number_format(value):
-    return "{:,}".format(value)
+    try:
+        return "{:,}".format(value)
+    except Exception:
+        return value
 
 
 @register.assignment_tag
@@ -386,6 +389,7 @@ def get_sub_indicators_data(ai_id):
             'measurement_type',
             'units',
             'target',
+            'target_sector',
             'status_color',
             'status',
             'cumulative_values',
@@ -484,3 +488,16 @@ def get_array_value(data, key1=None, key2=None):
     except Exception as ex:
         # print(ex)
         return 0
+
+
+@register.assignment_tag
+def get_databases(is_sector=False):
+    from internos.activityinfo.models import Database
+    try:
+        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
+        if is_sector:
+            databases = databases.filter(is_sector=True)
+        return databases
+    except Exception as ex:
+        print(ex)
+        return []

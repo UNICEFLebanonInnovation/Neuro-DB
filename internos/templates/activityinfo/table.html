@@ -2,19 +2,6 @@
 {% load staticfiles i18n %}
 {% load util_tags %}
 
-{% block ai_reports %}
-  {% for db in databases %}
-    <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.name }}</a></li>
-  {% endfor %}
-{% endblock %}
-
-{% block ai_databases %}
-  {% for db in databases %}
-    <li><a href="/?ai_id={{ db.ai_id }}">{{ db.name }}</a></li>
-  {% endfor %}
-{% endblock %}
-
-
 {% block content %}
 <!-- top tiles -->
 <div class="row tile_count" style="clear: both;">

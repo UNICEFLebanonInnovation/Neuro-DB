@@ -1,4 +1,5 @@
 {% load staticfiles i18n %}
+{% load util_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -96,15 +97,28 @@
 
                   <li><a><i class="fa fa-table"></i> AI Dashboards <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      {% block ai_reports %}
-                      {% endblock%}
+                      {% get_databases as databases %}
+                      {% for db in databases %}
+                        <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+                      {% endfor %}
+                    </ul>
+                  </li>
+
+                  <li><a><i class="fa fa-list-alt"></i> AI Sector <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      {% get_databases True as databases %}
+                      {% for db in databases %}
+                        <li><a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+                      {% endfor %}
                     </ul>
                   </li>
 
                   <li><a><i class="fa fa-pie-chart"></i> Data Visualisations <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      {% block ai_databases %}
-                      {% endblock%}
+                      {% get_databases as databases %}
+                      {% for db in databases %}
+                        <li><a href="{% url 'activityinfo:dashboard' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+                      {% endfor %}
                     </ul>
                   </li>
 

@@ -3,7 +3,7 @@
 {% load util_tags %}
 {% load static %}
 
-{% block project_title %}Interactive Dashboards{% endblock %}
+{% block project_title %}Neuro-DB{% endblock %}
 
 {% block content %}
 <style>
@@ -25,6 +25,15 @@
 .w-400 { width: 400px; max-width: 400px;}
 .w-500 { width: 500px; max-width: 500px;}
 
+.collapse-all.active, .expanded-all.active {
+  color: #0089d2;
+}
+
+.bootstrap-select button.dropdown-toggle {
+   background-color: #337ab7;
+   color: white !important;
+}
+
 </style>
 
 <!-- Add IntroJs styles -->
@@ -33,52 +42,37 @@
 <!-- top tiles -->
 <div class="row" style="clear: both;">
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
-    <h3 style="margin-top: 0px;">Filter by:</h3>
+    <h3 style="margin-top: 0px;"><i class="fa fa-filter"></i> Filter by:</h3>
   </div>
 
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="1" data-intro="Filter options by partner">
 
-      <ul class="nav nav-pills" role="tablist">
-        <li role="presentation" class="dropdown">
-          <a id="drop6" href="#" style="font-size: 20px; padding-top: 0px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-            <i class="fa fa-filter"></i> {{ selected_partner_name }}
-            <span class="caret"></span>
-          </a>
-          <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6" style="z-index: 3000;">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner=0&partner_name=All Partners&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">All Partners</a></li>
-            {% for partner in partners %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ partner.partner_id }}&partner_name={{ partner.partner_label }}&governorate={{ selected_governorate }}&governorate_name={{ selected_governorate_name }}">{{ partner.partner_label }}</a></li>
-            {% endfor %}
-          </ul>
-        </li>
-        {% if partner_info %}
-          <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
-             data-toggle="modal" data-target="#partnerModal"></i>
-        {% endif %}
-      </ul>
-
+<form action="{% url 'activityinfo:report_sector' %}" method="get">
+  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="4" data-intro="Filter options by partner">
+      <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
+      <select class="selectpicker show-tick" data-actions-box="true" multiple title="Select one or more partner" name="partners" data-style="btn-info" id="filter_partners">
+          {% for partner in partners %}
+              <option value="{{ partner.partner_id }}" {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}</option>
+          {% endfor %}
+      </select>
+      {% if partner_info %}
+        <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
+           data-toggle="modal" data-target="#partnerModal"></i>
+      {% endif %}
   </div>
 
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="2" data-intro="Filter options by governorate">
-
-      <ul class="nav nav-pills" role="tablist">
-        <li role="presentation" class="dropdown">
-          <a id="drop7" href="#" style="font-size: 20px; padding-top: 0px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-            <i class="fa fa-filter"></i> {{ selected_governorate_name }}
-            <span class="caret"></span>
-          </a>
-          <ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop7" style="z-index: 3000;">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate=0&governorate_name=All Governorates">All Governorates</a></li>
-            {% for gov in governorates %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ gov.location_adminlevel_governorate_code }}&governorate_name={{ gov.location_adminlevel_governorate }}">{{ gov.location_adminlevel_governorate }}</a></li>
-            {% endfor %}
-          </ul>
-        </li>
-      </ul>
-
+  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">
+      <select class="selectpicker show-tick" title="Select a governorate" name="governorate" data-style="btn-info" id="filter_govs">
+          {% for gov in governorates %}
+              <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorate %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
+          {% endfor %}
+      </select>
   </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-success">Search</button>
+      <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ database.ai_id }}" class="btn btn-warning">Cancel</a>
+    </div>
 
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="6" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
 
   <!--<span data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">-->
     <i class="fa fa-user faa-pulse animated-hover" data-toggle="tooltip" data-placement="bottom" data-html="true"
@@ -95,11 +89,32 @@
 
     <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
        title="Show me some tips" style="padding-left: 20px;">
-      <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
+      <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
     </a>
 
   </div>
 
+</form>
+
+
+  <!--<div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">-->
+
+      <!--<ul class="nav nav-pills" role="tablist">-->
+        <!--<li role="presentation" class="dropdown">-->
+          <!--<a id="drop7" href="#" style="font-size: 20px; padding-top: 0px;" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">-->
+            <!--<i class="fa fa-filter"></i> {{ selected_governorate_name }}-->
+            <!--<span class="caret"></span>-->
+          <!--</a>-->
+          <!--<ul id="menu4" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop7" style="z-index: 3000;">-->
+            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate=0&governorate_name=All Governorates">All Governorates</a></li>-->
+            <!--{% for gov in governorates %}-->
+            <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}&partner={{ selected_partner }}&partner_name={{ selected_partner_name }}&governorate={{ gov.location_adminlevel_governorate_code }}&governorate_name={{ gov.location_adminlevel_governorate }}">{{ gov.location_adminlevel_governorate }}</a></li>-->
+            <!--{% endfor %}-->
+          <!--</ul>-->
+        <!--</li>-->
+      <!--</ul>-->
+
+  <!--</div>-->
 </div>
 
 <!-- /top tiles -->
@@ -107,21 +122,29 @@
   <div class="w-1002 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2><strong>Dashboard - {{ database.label }} - 2019</strong>
+                    <h2>
+                      <span data-step="7" data-intro="Collapse / Expand master indicators">
+                        <a href="#" class="collapse-all" style="font-size: 25px;"><i class="fa fa-th-large"></i></a>
+                        <a href="#" class="expanded-all active" style="font-size: 25px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
+                      </span>
+                      <strong>Dashboard - {{ database.label }} - 2019</strong>
                       <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
                              aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
-                             style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="4" data-intro="Search for a specific Indicator">
+                             style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="8" data-intro="Search for a specific Indicator">
                       <!--<a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>-->
                       <!--<a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;">
                         <i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>
                       </a>-->
-                      <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;"
-                          data-step="5" data-intro="Open live ActivityInfo Dashboard">
-                        <i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>
-                      </a>
+                      <!--<a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display indicators data disaggregated" style="padding-left: 20px;">-->
+                        <!--<i class="fa fa-tags animated" style="font-size: 30px; color: #0089d2;"></i>-->
+                      <!--</a>-->
+                      <!--<a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring" style="padding-left: 20px;"-->
+                          <!--data-step="9" data-intro="Open live ActivityInfo Dashboard">-->
+                        <!--<i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>-->
+                      <!--</a>-->
                     </h2>
-                    <ul class="nav navbar-left" style="margin-top: -7px;" data-step="6" data-intro="Download Dashboard report and raw data">
+                    <ul class="nav navbar-left" style="margin-top: -7px;" data-step="10" data-intro="Download Dashboard report and raw data">
                       <li class="dropdown">
                         <a id="drop5" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
                            data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
@@ -132,8 +155,8 @@
                           <li role="presentation" class="divider" style="margin-top: -1px;"></li>
                           <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Current dashboard</a>
                           <li role="presentation" class="divider"></li>
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction1">UNICEF raw data</a>
-                          <li role="presentation" class="divider"></li>
+                          <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction1">UNICEF raw data</a>-->
+                          <!--<li role="presentation" class="divider"></li>-->
                           <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction2">PowerBI</a>-->
                           <!--<li role="presentation" class="divider"></li>-->
                           <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full raw data</a>
@@ -174,7 +197,7 @@
 
                   <div class="x_content" style="height: 600px; overflow: scroll;">
 
-                    <table id="exporttable1" content="{{ month_name }}_{{ month_number }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard.csv"
+                    <table id="exporttable1" content="{{ month_name }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard.csv"
                            data-tableName="Dashboard - {{ database.label }} - 2019"
                            class="table table-striped table-bordered">
                       <thead style="display:none;">
@@ -199,11 +222,11 @@
                       </thead>
                       <tbody>
                         {% for item in master_indicators %}
-                          {% get_indicator_cumulative item month selected_partner selected_governorate as cumulative_value %}
+                          {% get_indicator_cumulative item month selected_partners selected_governorate as cumulative_value %}
                           {% to_display_indicator selected_filter cumulative_value as display_indicator %}
 
                           {% if display_indicator %}
-                          <tr {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;"{% elif item.individual_indicator %}style="background-color:#dadada;"{% endif %}>
+                          <tr class="level1" itemid="{{ item.id }}" {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;"{% elif item.individual_indicator %}style="background-color:#dadada;"{% endif %}>
                               <!--<td>{{ item.id }}</td>-->
                               {% if item.master_indicator %}
                                 <th colspan="2" class="w-500">
@@ -234,20 +257,20 @@
                                 {{ cumulative_value }}
                               </td>
                               <td class="w-130">
-                                {% get_indicator_achieved item month selected_partner selected_governorate as achieved %}
+                                {% get_indicator_achieved item month selected_partners selected_governorate as achieved %}
                                 {{ achieved }}%
                               </td>
                               <td class="w-70" style="background-color:{{ item.status_color }}; color: #FFF;">{{ item.status }}</td>
                               {% for month, month_name in months %}
                                 <td class="w-70">
-                                  {% get_indicator_value item month selected_partner selected_governorate as value %}
+                                  {% get_indicator_value item month selected_partners selected_governorate as value %}
                                   {{ value }}
                                 </td>
                               {% endfor %}
                           </tr>
                           {% get_sub_indicators_data item.id as sub_indicators %}
                           {% for item1 in sub_indicators %}
-                            <tr {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
+                            <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}" {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
                                 <!--<td>{{ item1.id }}</td>-->
                                 {% if item1.master_indicator_sub %}
                                   <th colspan="2" class="w-500">
@@ -269,17 +292,17 @@
                                 <td class="w-100">{{ item1.awp_code }}</td>
                                 <td class="w-100">{{ item1.target|number_format }}</td>
                                 <td class="w-130">
-                                   {% get_indicator_cumulative item1 month selected_partner selected_governorate as cumulative_value %}
+                                   {% get_indicator_cumulative item1 month selected_partners selected_governorate as cumulative_value %}
                                    {{ cumulative_value }}
                                 </td>
                                 <td class="w-130">
-                                  {% get_indicator_achieved item1 month selected_partner selected_governorate as achieved %}
+                                  {% get_indicator_achieved item1 month selected_partners selected_governorate as achieved %}
                                   {{ achieved }}%
                                 </td>
                                 <td class="w-70" style="background-color:{{ item1.status_color }}; color: #FFF;">{{ item1.status }}</td>
                                 {% for month, month_name in months %}
                                   <td class="w-70">
-                                      {% get_indicator_value item1 month selected_partner selected_governorate as value %}
+                                      {% get_indicator_value item1 month selected_partners selected_governorate as value %}
                                       {{ value }}
                                   </td>
                                 {% endfor %}
@@ -287,7 +310,7 @@
                             {% get_sub_indicators_data item1.id as sub_indicators1 %}
                             {% for item2 in sub_indicators1 %}
                               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
-                              <tr>
+                              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}" itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                                   <!--<td>{{ item2.id }}</td>-->
                                   {% if item2.master_indicator_sub_sub %}
                                     <th class="w-500" colspan="2">
@@ -309,17 +332,17 @@
                                   <td class="w-100">{{ item2.awp_code }}</td>
                                   <td class="w-100">{{ item2.target|number_format }}</td>
                                   <td class="w-130">
-                                     {% get_indicator_cumulative item2 month selected_partner selected_governorate as cumulative_value %}
+                                     {% get_indicator_cumulative item2 month selected_partners selected_governorate as cumulative_value %}
                                      {{ cumulative_value }}
                                   </td>
                                   <td class="w-130">
-                                    {% get_indicator_achieved item2 month selected_partner selected_governorate as achieved %}
+                                    {% get_indicator_achieved item2 month selected_partners selected_governorate as achieved %}
                                     {{ achieved }}%
                                   </td>
                                   <td class="w-70" style="background-color:{{ item2.status_color }}; color: #FFF;">{{ item2.status }}</td>
                                   {% for month, month_name in months %}
                                     <td class="w-70">
-                                      {% get_indicator_value item2 month selected_partner selected_governorate as value %}
+                                      {% get_indicator_value item2 month selected_partners selected_governorate as value %}
                                       {{ value }}
                                     </td>
                                   {% endfor %}
@@ -339,56 +362,6 @@
 <br />
 
 
-<!-- Partner Modal -->
-{% if partner_info %}
-<div id="partnerModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Partner Profile</h4>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-md-3">Partner name:</div>
-          <div class="col-md-6">{{ partner_info.name }}</div>
-        </div>
-        <div class="row">
-          <div class="col-md-3">Partner type:</div>
-          <div class="col-md-6">{{ partner_info.type }}</div>
-        </div>
-        <div class="row">
-          <div class="col-md-3">Risk rating:</div>
-          <div class="col-md-6">{{ partner_info.rating }}</div>
-        </div>
-        {% if partner_info.interventions %}
-        <div class="row">
-          <h5 class="modal-title">Partner Interventions</h5>
-        </div>
-        {% endif %}
-        {% for inter in partner_info.interventions %}
-          <div class="row">
-            <div class="col-md-3">Reference</div>
-            <div class="col-md-12">{{ inter.number }} - {{ inter.start }} - {{ inter.end }}</div>
-          </div>
-          <div class="row">
-            <div class="col-md-3">Document type</div>
-            <div class="col-md-6">{{ inter.document_type }}</div>
-          </div>
-        {% endfor %}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-
-  </div>
-</div>
-{% endif %}
-
-
 {% endblock content %}
 
 {% block extra_js %}
@@ -396,19 +369,76 @@
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
   <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
-  <script src="{% static 'vendors/tableexport/xlsx.core.js' %}"></script>
-  <!--<script src="{% static 'vendors/tableexport/Blob.js' %}"></script>-->
-  <script src="{% static 'vendors/tableexport/FileSaver.js' %}"></script>
-  <script src="{% static 'vendors/tableexport/tableexport.js' %}"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
+
+<!-- (Optional) Latest compiled and minified JavaScript translation files -->
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/i18n/defaults-*.min.js"></script>-->
+
 <script>
 
-<!--$("table#exporttable1").tableExport({-->
-    <!--headings: true,                    // (Boolean), display table headings (th/td elements) in the <thead>-->
-    <!--formats: ["xls", "csv", "xlsx"],    // (String[]), filetypes for the export-->
-    <!--fileName: "id",                    // (id, String), filename for the downloaded file-->
-    <!--bootstrap: true,                   // (Boolean), style buttons using bootstrap-->
-    <!--position: "top"                 // (top, bottom), position of the caption element relative to table-->
-<!--});-->
+$(document).ready(function(){
+
+    $('#filter_partners').selectpicker();
+    $('#filter_govs').selectpicker();
+
+    $('.expanded-all').click(function(){
+        $('.expanded-all').addClass('active');
+        $('.collapse-all').removeClass('active');
+
+        $('.level1').removeClass('collapsed');
+        $('.level2').removeClass('collapsed');
+        $('.level3').removeClass('collapsed');
+
+        $('.level1').show();
+        $('.level2').show();
+        $('.level3').show();
+    });
+
+    $('.collapse-all').click(function(){
+        $('.expanded-all').removeClass('active');
+        $('.collapse-all').addClass('active');
+
+        $('.level1').addClass('collapsed');
+        $('.level2').addClass('collapsed');
+        $('.level3').addClass('collapsed');
+
+        $('.level2').hide();
+        $('.level3').hide();
+    });
+
+    $('.level1').dblclick(function(){
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level2-'+itemid;
+      var sub_sub_items = 'tr.level3-'+itemid;
+
+      if($(this).hasClass('collapsed')){
+          $(sub_items).show();
+          $(this).removeClass('collapsed');
+      }else{
+          $(sub_items).hide();
+          $(sub_items).addClass('collapsed');
+          $(sub_sub_items).hide();
+          $(this).addClass('collapsed');
+      }
+    });
+
+    $('.level2').dblclick(function(){
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level3-'+itemid;
+
+      if($(this).hasClass('collapsed')){
+          $(sub_items).show();
+          $(this).removeClass('collapsed');
+      }else{
+          $(sub_items).hide();
+          $(this).addClass('collapsed');
+      }
+    });
+});
 
 function download_csv(csv, filename) {
     var csvFile;
@@ -457,7 +487,7 @@ function export_table_to_csv(html, filename) {
             if($(cols[j]).attr('colspan') == '2') {
               row.push('');
             }
-            row.push(cols[j].innerText);
+            row.push('"'+cols[j].innerText+'"');
         }
 
 		csv.push(row.join(","));

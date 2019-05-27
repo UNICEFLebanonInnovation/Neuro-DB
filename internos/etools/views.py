@@ -24,7 +24,6 @@ class PartnerProfileView(TemplateView):
     template_name = 'etools/partner_profile.html'
 
     def get_context_data(self, **kwargs):
-        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
 
         partners_info = []
         now = datetime.datetime.now()
@@ -56,7 +55,6 @@ class PartnerProfileView(TemplateView):
         partners_info = get_partner_profile_details()
 
         return {
-            'databases': databases,
             'partners': partners,
             'nbr_interventions': interventions.count(),
             'nbr_active_interventions': active_interventions.count(),
@@ -84,8 +82,6 @@ class InterventionsView(TemplateView):
 
     def get_context_data(self, **kwargs):
 
-        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
-
         document_type = self.request.GET.get('document_type', 'all')
         status = self.request.GET.get('status', 'all')
         now = datetime.datetime.now()
@@ -110,7 +106,6 @@ class InterventionsView(TemplateView):
         locations = get_interventions_details(data_set)
 
         return {
-            'databases': databases,
             'locations': locations,
             'nbr_interventions': interventions.count(),
             'nbr_active_interventions': active_interventions.count(),
@@ -129,9 +124,8 @@ class TripsMonitoringView(TemplateView):
         now = datetime.datetime.now()
         travel_status = self.request.GET.get('travel_status', 'all')
 
-        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
-        # sections = Section.objects.filter(etools=True)
-        sections = Section.objects.filter()
+        sections = Section.objects.filter(etools=True)
+        # sections = Section.objects.filter()
         offices = Office.objects.all()
 
         visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING)
@@ -151,7 +145,6 @@ class TripsMonitoringView(TemplateView):
         trip_details = get_trip_details(trips)
 
         return {
-            'databases': databases,
             'sections': sections,
             'offices': offices,
             'trip_details': trip_details,
@@ -169,14 +162,12 @@ class HACTView(TemplateView):
     template_name = 'etools/hact.html'
 
     def get_context_data(self, **kwargs):
-        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
 
         partners = PartnerOrganization.objects.exclude(hidden=True).exclude(deleted_flag=True)
 
         partners_info = get_partner_profile_details()
 
         return {
-            'databases': databases,
             'partners': partners,
             'partners_info': partners_info
         }

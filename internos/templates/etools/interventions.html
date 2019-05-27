@@ -3,18 +3,6 @@
 {% load util_tags %}
 {% load static %}
 
-{% block ai_reports %}
-  {% for db in databases %}
-    <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
-  {% endfor %}
-{% endblock %}
-
-{% block ai_databases %}
-  {% for db in databases %}
-    <li><a href="{% url 'activityinfo:dashboard' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
-  {% endfor %}
-{% endblock %}
-
 {% block project_title %}Neuro-DB{% endblock %}
 
 {% block content %}

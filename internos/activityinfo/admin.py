@@ -317,8 +317,10 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'target_sector',
         'units',
         'activity',
-        'category',
+        # 'category',
         'sequence',
+        'master_indicator',
+        'is_sector',
         # 'values_tags'
     )
     filter_horizontal = (
@@ -330,6 +332,8 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'target',
         'target_sector',
         'sequence',
+        'master_indicator',
+        'is_sector',
         # 'values_tags'
     )
 
@@ -699,6 +703,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'focal_point',
         'mapped_db',
         'is_funded_by_unicef',
+        'is_sector',
     )
     readonly_fields = (
         'description',
@@ -745,6 +750,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'focal_point',
                 'mapped_db',
                 'is_funded_by_unicef',
+                'is_sector',
                 'description',
                 'country_name',
                 'ai_country_id',
