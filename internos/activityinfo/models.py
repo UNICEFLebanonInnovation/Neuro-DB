@@ -420,7 +420,7 @@ class Indicator(models.Model):
 
     @property
     def cumulative_per(self):
-        if 'months' in self.cumulative_values and self.target:
+        if self.cumulative_values and 'months' in self.cumulative_values and self.target:
             if isinstance(self.cumulative_values['months'], dict):
                 return 0
             return round((self.cumulative_values['months'] * 100.0) / self.target, 2)
@@ -428,7 +428,7 @@ class Indicator(models.Model):
 
     @property
     def cumulative_per_sector(self):
-        if 'months' in self.cumulative_values and self.target_sector:
+        if self.cumulative_values and 'months' in self.cumulative_values and self.target_sector:
             if isinstance(self.cumulative_values['months'], dict):
                 return 0
             return round((self.cumulative_values['months'] * 100.0) / self.target_sector, 2)
