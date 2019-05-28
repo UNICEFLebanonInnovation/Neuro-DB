@@ -127,11 +127,11 @@ class ReportView(TemplateView):
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database, is_sector=False).order_by('sequence')
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
-        none_ai_indicators = Indicator.objects.filter(activity__none_ai_database=database, is_sector=False)
+        none_ai_indicators = Indicator.objects.filter(activity__none_ai_database=database).exclude(is_sector=True)
 
         master_indicators = master_indicators.values(
             'id',
@@ -363,14 +363,14 @@ class ReportTagView(TemplateView):
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
-        tags_gender = Indicator.objects.filter(activity__database__id__exact=database.id, is_sector=False,
-                                               tag_gender__isnull=False).values('tag_gender__name', 'tag_gender__label').distinct().order_by('tag_gender__sequence')
-        tags_nationality = Indicator.objects.filter(activity__database__id__exact=database.id, is_sector=False,
-                                                    tag_nationality__isnull=False).values('tag_nationality__name', 'tag_nationality__label').distinct().order_by('tag_nationality__sequence')
-        tags_age = Indicator.objects.filter(activity__database__id__exact=database.id, is_sector=False,
-                                            tag_age__isnull=False).values('tag_age__name', 'tag_age__label').distinct().order_by('tag_age__sequence')
-        tags_disability = Indicator.objects.filter(activity__database__id__exact=database.id, is_sector=False,
-                                                   tag_disability__isnull=False).values('tag_disability__name', 'tag_disability__label').distinct().order_by('tag_disability__sequence')
+        tags_gender = Indicator.objects.filter(activity__database__id__exact=database.id,
+                                               tag_gender__isnull=False).exclude(is_sector=True).values('tag_gender__name', 'tag_gender__label').distinct().order_by('tag_gender__sequence')
+        tags_nationality = Indicator.objects.filter(activity__database__id__exact=database.id,
+                                                    tag_nationality__isnull=False).exclude(is_sector=True).values('tag_nationality__name', 'tag_nationality__label').distinct().order_by('tag_nationality__sequence')
+        tags_age = Indicator.objects.filter(activity__database__id__exact=database.id,
+                                            tag_age__isnull=False).exclude(is_sector=True).values('tag_age__name', 'tag_age__label').distinct().order_by('tag_age__sequence')
+        tags_disability = Indicator.objects.filter(activity__database__id__exact=database.id,
+                                                   tag_disability__isnull=False).exclude(is_sector=True).values('tag_disability__name', 'tag_disability__label').distinct().order_by('tag_disability__sequence')
 
         if selected_partner:
             try:
@@ -392,11 +392,11 @@ class ReportTagView(TemplateView):
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database, is_sector=False).order_by('sequence')
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
-        none_ai_indicators = Indicator.objects.filter(activity__none_ai_database=database, is_sector=False)
+        none_ai_indicators = Indicator.objects.filter(activity__none_ai_database=database).exclude(is_sector=True)
 
         master_indicators = master_indicators.values(
             'id',
@@ -506,7 +506,7 @@ class LiveReportView(TemplateView):
         for gov in report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct():
             governorates[gov['location_adminlevel_governorate_code']] = gov['location_adminlevel_governorate']
 
-        master_indicators = Indicator.objects.filter(activity__database=database, is_sector=False).order_by('sequence')
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
@@ -589,7 +589,7 @@ class HPMView(TemplateView):
 class HPMExportViewSet(ListView):
 
     model = Indicator
-    queryset = Indicator.objects.filter(hpm_indicator=True, is_sector=False)
+    queryset = Indicator.objects.filter(hpm_indicator=True)
 
     def get(self, request, *args, **kwargs):
         from .utils import update_hpm_table_docx
