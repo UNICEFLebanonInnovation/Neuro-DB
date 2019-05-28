@@ -272,8 +272,6 @@ class ReportSectorView(TemplateView):
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
-        print(master_indicators.count())
-
         master_indicators = master_indicators.values(
             'id',
             'ai_id',

@@ -227,12 +227,10 @@ def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None)
         return get_indicator_unit(indicator, 0)
 
 
-@register.assignment_tag
-def get_indicator_achieved(indicator, month=None, partner=None, gov=None):
+def calculate_achievement(indicator, cumulative_values, target, month=None, partner=None, gov=None):
     try:
-        cumulative_values = indicator['cumulative_values']
 
-        if not indicator['target']:
+        if not target:
             return 0
 
         value = 0
@@ -243,27 +241,75 @@ def get_indicator_achieved(indicator, month=None, partner=None, gov=None):
                 key = '{}-{}'.format(gov, par)
                 if key in cumulative_values:
                     value += cumulative_values[key]
-            return round((value * 100.0) / indicator['target'], 2)
+            return round((value * 100.0) / target, 2)
 
         if partner and 'partners' in cumulative_values:
             cumulative_values = cumulative_values.get('partners')
             for par in partner:
                 if par in cumulative_values:
                     value += cumulative_values[par]
-                return round((value * 100.0) / indicator['target'], 2)
+                return round((value * 100.0) / target, 2)
 
         if gov and not gov == '0' and 'govs' in cumulative_values:
             cumulative_values = cumulative_values.get('govs')
             if gov in cumulative_values:
-                return round((cumulative_values[gov] * 100.0) / indicator['target'], 2)
+                return round((cumulative_values[gov] * 100.0) / target, 2)
 
         if 'months' in cumulative_values:
-            return round((cumulative_values['months'] * 100.0) / indicator['target'], 2)
+            return round((cumulative_values['months'] * 100.0) / target, 2)
 
         return 0
     except Exception as ex:
         # print(ex)
         return 0
+
+
+@register.assignment_tag
+def get_indicator_achieved_sector(indicator, month=None, partner=None, gov=None):
+    return calculate_achievement(indicator, indicator['cumulative_values'], indicator['target_sector'], month=month,
+                                 partner=partner, gov=gov)
+
+
+@register.assignment_tag
+def get_indicator_achieved(indicator, month=None, partner=None, gov=None):
+    return calculate_achievement(indicator, indicator['cumulative_values'], indicator['target'], month=month,
+                                 partner=partner, gov=gov)
+    #
+    # try:
+    #     cumulative_values = indicator['cumulative_values']
+    #
+    #     if not indicator['target']:
+    #         return 0
+    #
+    #     value = 0
+    #
+    #     if partner and gov and not gov == '0':
+    #         cumulative_values = cumulative_values.get('partners_govs')
+    #         for par in partner:
+    #             key = '{}-{}'.format(gov, par)
+    #             if key in cumulative_values:
+    #                 value += cumulative_values[key]
+    #         return round((value * 100.0) / indicator['target'], 2)
+    #
+    #     if partner and 'partners' in cumulative_values:
+    #         cumulative_values = cumulative_values.get('partners')
+    #         for par in partner:
+    #             if par in cumulative_values:
+    #                 value += cumulative_values[par]
+    #             return round((value * 100.0) / indicator['target'], 2)
+    #
+    #     if gov and not gov == '0' and 'govs' in cumulative_values:
+    #         cumulative_values = cumulative_values.get('govs')
+    #         if gov in cumulative_values:
+    #             return round((cumulative_values[gov] * 100.0) / indicator['target'], 2)
+    #
+    #     if 'months' in cumulative_values:
+    #         return round((cumulative_values['months'] * 100.0) / indicator['target'], 2)
+    #
+    #     return 0
+    # except Exception as ex:
+    #     # print(ex)
+    #     return 0
 
 
 @register.assignment_tag
@@ -371,7 +417,7 @@ def get_indicator_hpm_data(ai_id, month=None):
 
 
 @register.assignment_tag
-def get_sub_indicators_data(ai_id):
+def get_sub_indicators_data(ai_id, is_sector=False):
     from internos.activityinfo.models import Indicator
 
     indicators = {}
@@ -404,6 +450,9 @@ def get_sub_indicators_data(ai_id):
             'cumulative_values_live',
             'values_tags',
         ).distinct()
+
+        if is_sector:
+            indicators = indicators.exclude(calculated_indicator=True)
 
         return indicators
     except Exception as ex:

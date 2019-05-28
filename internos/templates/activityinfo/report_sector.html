@@ -248,9 +248,9 @@
                               <td class="w-100">{{ item.awp_code }}</td>
                               <td class="w-100">
                                 {% if item.measurement_type == 'percentage' %}
-                                  {{ item.target }}%
+                                  {{ item.target_sector }}%
                                 {% else %}
-                                  {{ item.target|number_format }}
+                                  {{ item.target_sector|number_format }}
                                 {% endif %}
                               </td>
                               <td class="w-130">
@@ -268,7 +268,7 @@
                                 </td>
                               {% endfor %}
                           </tr>
-                          {% get_sub_indicators_data item.id as sub_indicators %}
+                          {% get_sub_indicators_data item.id True as sub_indicators %}
                           {% for item1 in sub_indicators %}
                             <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}" {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
                                 <!--<td>{{ item1.id }}</td>-->
@@ -290,7 +290,7 @@
                                 {% endif %}
                                 <!--<td>Site</td>-->
                                 <td class="w-100">{{ item1.awp_code }}</td>
-                                <td class="w-100">{{ item1.target|number_format }}</td>
+                                <td class="w-100">{{ item1.target_sector|number_format }}</td>
                                 <td class="w-130">
                                    {% get_indicator_cumulative item1 month selected_partners selected_governorate as cumulative_value %}
                                    {{ cumulative_value }}
@@ -307,7 +307,7 @@
                                   </td>
                                 {% endfor %}
                             </tr>
-                            {% get_sub_indicators_data item1.id as sub_indicators1 %}
+                            {% get_sub_indicators_data item1.id True as sub_indicators1 %}
                             {% for item2 in sub_indicators1 %}
                               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
                               <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}" itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
@@ -330,7 +330,7 @@
                                   {% endif %}
                                   <!--<td>Site</td>-->
                                   <td class="w-100">{{ item2.awp_code }}</td>
-                                  <td class="w-100">{{ item2.target|number_format }}</td>
+                                  <td class="w-100">{{ item2.target_sector|number_format }}</td>
                                   <td class="w-130">
                                      {% get_indicator_cumulative item2 month selected_partners selected_governorate as cumulative_value %}
                                      {{ cumulative_value }}
