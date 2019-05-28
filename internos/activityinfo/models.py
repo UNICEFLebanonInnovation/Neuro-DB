@@ -38,6 +38,11 @@ class Database(models.Model):
         blank=True, null=True,
         related_name='+',
     )
+    focal_point_sector = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True, null=True,
+        related_name='+',
+    )
 
     # read only fields
     description = models.CharField(max_length=1500, null=True)
@@ -352,6 +357,8 @@ class Indicator(models.Model):
     category = models.CharField(max_length=254, blank=True, null=True)
     status = models.CharField(max_length=254, blank=True, null=True)
     status_color = models.CharField(max_length=254, blank=True, null=True)
+    status_sector = models.CharField(max_length=254, blank=True, null=True)
+    status_color_sector = models.CharField(max_length=254, blank=True, null=True)
     master_indicator = models.BooleanField(default=False, verbose_name='Master indicator level 1')
     master_indicator_sub = models.BooleanField(default=False, verbose_name='Master indicator level 2')
     master_indicator_sub_sub = models.BooleanField(default=False, verbose_name='Master indicator level 3')
@@ -400,6 +407,7 @@ class Indicator(models.Model):
     values_partners_gov_live = JSONField(blank=True, null=True, default={})
     cumulative_values_live = JSONField(blank=True, null=True, default={})
     is_sector = models.BooleanField(default=False)
+    # is_common = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
@@ -416,6 +424,14 @@ class Indicator(models.Model):
             if isinstance(self.cumulative_values['months'], dict):
                 return 0
             return round((self.cumulative_values['months'] * 100.0) / self.target, 2)
+        return 0
+
+    @property
+    def cumulative_per_sector(self):
+        if 'months' in self.cumulative_values and self.target_sector:
+            if isinstance(self.cumulative_values['months'], dict):
+                return 0
+            return round((self.cumulative_values['months'] * 100.0) / self.target_sector, 2)
         return 0
 
     @property

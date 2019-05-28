@@ -76,13 +76,13 @@
 
   <!--<span data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">-->
     <i class="fa fa-user faa-pulse animated-hover" data-toggle="tooltip" data-placement="bottom" data-html="true"
-       title="Database focal point: {{ database.focal_point }} <br/>
-              email: {{ database.focal_point.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
+       title="Database focal point: {{ database.focal_point_sector }} <br/>
+              email: {{ database.focal_point_sector.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point_sector.first_name }} </i>
     <!--<a href="skype:{{ database.focal_point.skype_account }}?chat" data-toggle="tooltip" data-placement="bottom"-->
        <!--title="Chat with the database focal point via skype" style="padding-left: 20px;">-->
       <!--<i class="fa fa-skype faa-pulse animated-hover" style="font-size: 25px; color: #2dc6ff;"></i>-->
     <!--</a>-->
-    <a href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database" data-toggle="tooltip" data-placement="bottom"
+    <a href="mailto:{{ database.focal_point_sector.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database" data-toggle="tooltip" data-placement="bottom"
        title="Send email to the database focal point" style="padding-left: 20px;">
       <i class="fa fa-envelope-o faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
     </a>
@@ -127,7 +127,7 @@
                         <a href="#" class="collapse-all" style="font-size: 25px;"><i class="fa fa-th-large"></i></a>
                         <a href="#" class="expanded-all active" style="font-size: 25px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
                       </span>
-                      <strong>Dashboard - {{ database.label }} - 2019</strong>
+                      <strong>Dashboard - {{ database.label }} - Sector - 2019</strong>
                       <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
                              aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
@@ -257,10 +257,10 @@
                                 {{ cumulative_value }}
                               </td>
                               <td class="w-130">
-                                {% get_indicator_achieved item month selected_partners selected_governorate as achieved %}
+                                {% get_indicator_achieved_sector item month selected_partners selected_governorate as achieved %}
                                 {{ achieved }}%
                               </td>
-                              <td class="w-70" style="background-color:{{ item.status_color }}; color: #FFF;">{{ item.status }}</td>
+                              <td class="w-70" style="background-color:{{ item.status_color_sector }}; color: #FFF;">{{ item.status_sector }}</td>
                               {% for month, month_name in months %}
                                 <td class="w-70">
                                   {% get_indicator_value item month selected_partners selected_governorate as value %}
@@ -296,10 +296,10 @@
                                    {{ cumulative_value }}
                                 </td>
                                 <td class="w-130">
-                                  {% get_indicator_achieved item1 month selected_partners selected_governorate as achieved %}
+                                  {% get_indicator_achieved_sector item1 month selected_partners selected_governorate as achieved %}
                                   {{ achieved }}%
                                 </td>
-                                <td class="w-70" style="background-color:{{ item1.status_color }}; color: #FFF;">{{ item1.status }}</td>
+                                <td class="w-70" style="background-color:{{ item1.status_color_sector }}; color: #FFF;">{{ item1.status_sector }}</td>
                                 {% for month, month_name in months %}
                                   <td class="w-70">
                                       {% get_indicator_value item1 month selected_partners selected_governorate as value %}
@@ -336,10 +336,10 @@
                                      {{ cumulative_value }}
                                   </td>
                                   <td class="w-130">
-                                    {% get_indicator_achieved item2 month selected_partners selected_governorate as achieved %}
+                                    {% get_indicator_achieved_sector item2 month selected_partners selected_governorate as achieved %}
                                     {{ achieved }}%
                                   </td>
-                                  <td class="w-70" style="background-color:{{ item2.status_color }}; color: #FFF;">{{ item2.status }}</td>
+                                  <td class="w-70" style="background-color:{{ item2.status_color_sector }}; color: #FFF;">{{ item2.status_sector }}</td>
                                   {% for month, month_name in months %}
                                     <td class="w-70">
                                       {% get_indicator_value item2 month selected_partners selected_governorate as value %}

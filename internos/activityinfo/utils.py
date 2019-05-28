@@ -1915,6 +1915,19 @@ def calculate_indicators_status(database):
             indicator.status = 'On Track'
             indicator.status_color = '#008000'
 
+        cumulative_per = indicator.cumulative_per_sector
+        off_track = days_passed_per - 10
+        over_target = days_passed_per + 10
+        if cumulative_per < off_track:
+            indicator.status_sector = 'Off Track'
+            indicator.status_color_sector = '#FF0000'
+        elif cumulative_per > over_target:
+            indicator.status_sector = 'Over Target'
+            indicator.status_color_sector = '#FFA500'
+        else:
+            indicator.status_sector = 'On Track'
+            indicator.status_color_sector = '#008000'
+
         indicator.save()
 
     return indicators.count()
