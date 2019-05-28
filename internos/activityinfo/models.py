@@ -407,7 +407,7 @@ class Indicator(models.Model):
     values_partners_gov_live = JSONField(blank=True, null=True, default={})
     cumulative_values_live = JSONField(blank=True, null=True, default={})
     is_sector = models.BooleanField(default=False)
-    # is_common = models.BooleanField(default=False)
+    is_section = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
