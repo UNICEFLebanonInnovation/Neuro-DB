@@ -748,6 +748,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'section',
                 'reporting_year',
                 'focal_point',
+                'focal_point_sector',
                 'mapped_db',
                 'is_funded_by_unicef',
                 'is_sector',
