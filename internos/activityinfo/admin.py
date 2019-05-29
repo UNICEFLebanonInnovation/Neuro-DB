@@ -179,6 +179,10 @@ class ActivityAdmin(ImportExportModelAdmin):
         'name',
         'database',
         'location_type',
+        'programme_document'
+    )
+    list_editable = (
+        'programme_document',
     )
     readonly_fields = (
         'ai_id',
@@ -1023,6 +1027,7 @@ class AdminLevelEntitiesAdmin(admin.ModelAdmin):
     search_fields = (
         'code',
         'name',
+        'bounds',
     )
     list_display = (
         'code',
@@ -1074,6 +1079,8 @@ class SitesAdmin(admin.ModelAdmin):
     search_fields = (
         'code',
         'name',
+        'longitude',
+        'latitude',
     )
     list_display = (
         'code',

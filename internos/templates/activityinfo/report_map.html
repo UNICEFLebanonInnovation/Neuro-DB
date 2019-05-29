@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}Neuro-DB{% endblock %}
+
+{% block content %}
+<!-- top tiles -->
+<!-- /top tiles -->
+
+<style>
+  div.panel-footer {
+    background-color: #fff !important;
+  }
+  p {
+    background-color: #f7f9fa;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .sidebar-box {
+    max-height: 120px;
+    position: relative;
+    overflow: hidden;
+  }
+  .sidebar-box .read-more {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 15px 0;
+    opacity: 0.9;
+  }
+  .btn-filter.on {
+    background-color: #0089d2;
+    color: white;
+  }
+  .btn-filter-no.on {
+    background-color: #0089d2;
+    color: white;
+  }
+  span.trip-planned {
+    background-color: rgba(250,237,119,.6);
+  }
+  span.trip-submitted {
+    background-color: rgba(206,188,6,.6);
+  }
+  span.trip-approved {
+    background-color: rgba(141,198,63,.45);
+  }
+  span.trip-completed {
+    background-color: rgba(141,198,63,1);
+  }
+  .x_title span.label {
+      color: white;
+  }
+  div.trip-filter {
+    cursor: pointer;
+  }
+  .travel-counts .label {
+    cursor: pointer;
+  }
+  #mapView {
+    height: 500px;
+    width: 70%;
+    border: 1px solid;
+  }
+  #myTabContent {
+    padding-top: 10px;
+  }
+  div.count.active a {
+    color: #0089d2;
+  }
+  .bootstrap-select button.dropdown-toggle {
+     background-color: #337ab7;
+     color: white !important;
+  }
+  #feeds div {
+    border-radius: 5px;
+    box-shadow: -1px 1px 4px;
+    padding: 2px;
+    margin-top: 5px;
+  }
+
+</style>
+
+<link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
+
+<!--<div class="row tile_count" data-step="4" data-intro="Click on the number to view the details. The default view is the All programmatic Visits">-->
+  <!--<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">-->
+    <!--<span class="count_top"><i class="fa fa-info"></i> All Interventions</span>-->
+    <!--<div class="count {% if document_type == 'all' %}active{% endif %}">-->
+      <!--<a href="{% url 'etools:interventions' %}?document_type=all&status=all">{{ nbr_interventions }}</a>-->
+    <!--</div>-->
+  <!--</div>-->
+  <!--<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">-->
+    <!--<span class="count_top"><i class="fa fa-info"></i> Active Interventions</span>-->
+    <!--<div class="count {% if document_type == 'all' %}active{% endif %}">-->
+      <!--<a href="{% url 'etools:interventions' %}?document_type=all&status=active">{{ nbr_active_interventions }}</a>-->
+    <!--</div>-->
+  <!--</div>-->
+  <!--<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">-->
+    <!--<span class="count_top"><i class="fa fa-info"></i> All PDs</span>-->
+    <!--<div class="count {% if document_type == 'all' %}active{% endif %}">-->
+      <!--<a href="{% url 'etools:interventions' %}?document_type=PD&status=all">{{ nbr_pds }}</a>-->
+    <!--</div>-->
+  <!--</div>-->
+  <!--<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">-->
+    <!--<span class="count_top"><i class="fa fa-info"></i> Active PDs</span>-->
+    <!--<div class="count {% if document_type == 'all' %}active{% endif %}">-->
+      <!--<a href="{% url 'etools:interventions' %}?document_type=PD&status=active">{{ nbr_active_pds }}</a>-->
+    <!--</div>-->
+  <!--</div>-->
+  <!--<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">-->
+    <!--<span class="count_top"><i class="fa fa-info"></i> All SSFA</span>-->
+    <!--<div class="count {% if document_type == 'all' %}active{% endif %}">-->
+      <!--<a href="{% url 'etools:interventions' %}?document_type=SSFA&status=all">{{ nbr_sffas }}</a>-->
+    <!--</div>-->
+  <!--</div>-->
+  <!--<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">-->
+    <!--<span class="count_top"><i class="fa fa-info"></i> Active SSFA</span>-->
+    <!--<div class="count {% if document_type == 'all' %}active{% endif %}">-->
+      <!--<a href="{% url 'etools:interventions' %}?document_type=SSFA&status=active">{{ nbr_active_sffas }}</a>-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->
+
+
+<!-- top tiles -->
+<div class="row" style="clear: both;">
+  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+    <h3 style="margin-top: 0px;"><i class="fa fa-filter"></i> Filter by:</h3>
+  </div>
+
+
+<form action="{% url 'activityinfo:report_map' %}" method="get">
+  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="4" data-intro="Filter options by partner">
+      <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
+      <select class="selectpicker show-tick" data-actions-box="true" multiple title="Select one or more partner" name="partners" data-style="btn-info" id="filter_partners">
+          {% for partner in partners %}
+              <option value="{{ partner.partner_id }}" {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}</option>
+          {% endfor %}
+      </select>
+      {% if partner_info %}
+        <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
+           data-toggle="modal" data-target="#partnerModal"></i>
+      {% endif %}
+  </div>
+
+  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">
+      <select class="selectpicker show-tick" title="Select a governorate" name="governorate" data-style="btn-info" id="filter_govs">
+          {% for gov in governorates %}
+              <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorate %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
+          {% endfor %}
+      </select>
+  </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-success">Search</button>
+      <a href="{% url 'activityinfo:report_map' %}?ai_id={{ database.ai_id }}" class="btn btn-warning">Cancel</a>
+    </div>
+
+    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="6" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+
+  <!--<span data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">-->
+    <i class="fa fa-user faa-pulse animated-hover" data-toggle="tooltip" data-placement="bottom" data-html="true"
+       title="Database focal point: {{ database.focal_point }} <br/>
+              email: {{ database.focal_point.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
+    <!--<a href="skype:{{ database.focal_point.skype_account }}?chat" data-toggle="tooltip" data-placement="bottom"-->
+       <!--title="Chat with the database focal point via skype" style="padding-left: 20px;">-->
+      <!--<i class="fa fa-skype faa-pulse animated-hover" style="font-size: 25px; color: #2dc6ff;"></i>-->
+    <!--</a>-->
+    <a href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database" data-toggle="tooltip" data-placement="bottom"
+       title="Send email to the database focal point" style="padding-left: 20px;">
+      <i class="fa fa-envelope-o faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
+    </a>
+
+    <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
+       title="Show me some tips" style="padding-left: 20px;">
+      <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
+    </a>
+
+  </div>
+
+</form>
+</div>
+
+<div class="row" style="">
+  <div class="w-1002 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>
+          <strong>Indicator Reporting Map</strong>
+        </h2>
+        <ul class="nav navbar-right panel_toolbox">
+          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+
+      <div class="x_content">
+        <div class="row" id="">
+          <div id="mapView"></div>
+          {% csrf_token %}
+          <div class="clearfix"></div>
+          <div id="feeds" class="modal-body" style="position: absolute; border-radius: 5px; box-shadow: -5px 5px 10px; top: 0px; right: 50px; width: 400px; height: 500px; overflow: auto;">
+            <h2><strong>{{ locations_count }} Sites</strong></h2>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<br />
+{% endblock content %}
+
+{% block extra_js %}
+  <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>
+  <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
+  <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.11/"></script>
+
+<script>
+    var user_token = '{{ user_token }}';
+    var href_full_path = '{{ request.build_absolute_uri }}';
+    var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
+    var points = '{{ locations|safe }}';
+    points = JSON.parse(points);
+
+    var symbol = {
+      style: "square",
+      color: "blue",
+      size: "8px",  // pixels
+      outline: {  // autocasts as new SimpleLineSymbol()
+        color: [ 255, 255, 0 ],
+        width: 3  // points
+      }
+    };
+
+    var symbol_icon = {
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    var markerSymbol = {
+      type: "picture-marker", // autocasts as new SimpleMarkerSymbol()
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    $(document).ready(function(){
+
+        $('ul.child_menu').hide();
+
+        require([
+          "esri/Map",
+          "esri/views/MapView",
+          "esri/symbols/SimpleMarkerSymbol",
+          "esri/symbols/PictureMarkerSymbol",
+          "esri/geometry/Point",
+          "esri/Graphic",
+        ], function(Map, MapView, SimpleMarkerSymbol, PictureMarkerSymbol, Point, Graphic) {
+
+          var map = new Map({
+              basemap: "topo-vector"
+          });
+
+          var view = new MapView({
+            container: "mapView",
+            map: map,
+            center: [35.82685, 34.3461],
+            zoom: 8
+          });
+
+          setTimeout(function(){
+
+             $(points).each(function(i, item){
+
+                setTimeout(function(){
+
+                    $('#feeds').append('<div class="row">'+item.location_name+'</div>');
+
+                    var lineAtt = {
+                      Name: item.location_name,
+                      Caza: item.caza,
+                      Cadastral: item.cadastral,
+                      Governorate: item.governorate,
+                    };
+
+                    var content = '<p>{Governorate} - {Cadastral} - {Caza}</p>';
+                    content = content + '<ul> <strong>Indicators</strong>';
+                    $(item.indicators).each(function(j, item1){
+                        content = content + '<li>'+item1.indicator_name+' - '+item1.cumulative_value+' '+item1.indicator_units+' ('+item1.partner_label+')</li>';
+                    });
+                    content = content + '</ul>';
+
+                    var pointGraphic = new Graphic({
+                      geometry: {
+                        type: "point",
+                        longitude: item.location_longitude,
+                        latitude: item.location_latitude
+                      },
+                      symbol: markerSymbol,
+                      attributes: lineAtt,
+                      popupTemplate: {
+                        title: "{Name}",
+                        content: content
+                      }
+                    });
+
+                    view.graphics.add(pointGraphic);
+
+                }, 3000);
+
+            });
+
+          }, 9000);
+
+
+        });
+    });
+
+</script>
+
+{% endblock %}

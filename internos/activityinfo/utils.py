@@ -306,6 +306,30 @@ def link_indicators_activity_report(ai_db, report_type=None):
     return ctr
 
 
+def link_ai_locations(report_type=None):
+    from internos.activityinfo.models import AdminLevelEntities, ActivityReport, LiveActivityReport
+
+    ctr = 0
+    if report_type == 'live':
+        indicators = LiveActivityReport.objects.all()
+    else:
+        indicators = ActivityReport.objects.all()
+
+    location_cadastral = indicators.values('location_adminlevel_cadastral_area_code').distinct()
+    location_caza = indicators.values('location_adminlevel_caza_code').distinct()
+    location_governorate = indicators.values('location_adminlevel_governorate_code').distinct()
+
+    for item in location_cadastral:
+        ai_values = indicators.filter(location_adminlevel_cadastral_area_code=item.location_adminlevel_cadastral_area_code)
+
+        if not ai_values.count():
+            continue
+        ctr += ai_values.count()
+        ai_values.update(location_cadastral_id=item.id)
+
+    return ctr
+
+
 def link_ai_partners(report_type=None):
     from internos.activityinfo.models import Partner, ActivityReport, LiveActivityReport
 

@@ -139,13 +139,22 @@ class PCAAdmin(ImportExportModelAdmin):
         'document_type',
         'country_programme',
         'location_p_codes',
+        'section_names',
         'status',
         'start',
         'end',
     )
+    suit_list_filter_horizontal = (
+        'status',
+        'section_names',
+        'partner',
+        'document_type',
+        'country_programme',
+    )
 
     list_filter = (
         'status',
+        'section_names',
         'partner',
         'document_type',
         'country_programme',

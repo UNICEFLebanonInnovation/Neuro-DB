@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+import json
 import datetime
 import calendar
 from django.db.models import Q
@@ -211,6 +212,120 @@ class ReportView(TemplateView):
             'partner_info': partner_info,
             'selected_filter': selected_filter,
             'none_ai_indicators': none_ai_indicators
+        }
+
+
+class ReportMapView(TemplateView):
+
+    template_name = 'activityinfo/report_map.html'
+
+    def get_context_data(self, **kwargs):
+        from django.db import connection
+
+        cursor = connection.cursor()
+        selected_filter = False
+        selected_partner = self.request.GET.get('partner', 0)
+        selected_partners = self.request.GET.getlist('partners', [])
+        selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
+        selected_governorate = self.request.GET.get('governorate', 0)
+        selected_governorates = self.request.GET.get('governorates', 0)
+        selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+
+        partner_info = {}
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month_number = last_month.strftime("%m")
+        month = int(last_month.strftime("%m"))
+        month_name = last_month.strftime("%B")
+
+        ai_id = int(self.request.GET.get('ai_id', 0))
+
+        database = Database.objects.get(ai_id=ai_id)
+
+        report = ActivityReport.objects.filter(database=database)
+        if database.is_funded_by_unicef:
+            report = report.filter(funded_by__contains='UNICEF')
+
+        cursor.execute(
+            "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
+            "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
+            "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
+            "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
+            "ai.cumulative_values ->> 'months'::text AS cumulative_value "
+            "FROM public.activityinfo_indicator ai "
+            "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
+            "WHERE ar.database_id = %s "
+            "LIMIT 500",
+            [str(ai_id)])
+
+        locations = {}
+        ctr = 0
+        rows = cursor.fetchall()
+        for item in rows:
+            if not item[2] or not item[3]:
+                continue
+            if item[0] not in locations:
+                ctr += 1
+                locations[item[0]] = {
+                    'location_name': item[1],
+                    'location_longitude': item[2],
+                    'location_latitude': item[3],
+                    'governorate': item[5],
+                    'caza': '{}-{}'.format(item[6], item[7]),
+                    'cadastral': '{}-{}'.format(item[8], item[9]),
+                    'indicators': []
+                }
+
+            locations[item[0]]['indicators'].append({
+                'indicator_units': item[4],
+                'partner_label': item[10],
+                'indicator_name': item[11],
+                'cumulative_value': item[12],
+            })
+
+        locations = json.dumps(locations.values())
+
+        if selected_partner:
+            try:
+                partner = Partner.objects.get(number=selected_partner)
+                if partner.partner_etools:
+                    partner_info = partner.detailed_info
+            except Exception as ex:
+                print(ex)
+                pass
+
+        # if selected_partner or selected_governorate:
+        if selected_partners or selected_governorate:
+            selected_filter = True
+
+        # if selected_partner == '0' and selected_governorate == '0':
+        if selected_partners == [] and selected_governorate == '0':
+            selected_filter = False
+
+        partners = report.values('partner_label', 'partner_id').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
+
+        return {
+            'selected_partner': selected_partner,
+            'selected_partners': selected_partners,
+            'selected_partner_name': selected_partner_name,
+            'selected_governorate': selected_governorate,
+            'selected_governorates': selected_governorates,
+            'selected_governorate_name': selected_governorate_name,
+            'reports': report.order_by('id'),
+            'month': month,
+            'year': today.year,
+            'month_name': month_name,
+            'month_number': month_number,
+            'database': database,
+            'partners': partners,
+            'governorates': governorates,
+            'partner_info': partner_info,
+            'selected_filter': selected_filter,
+            'locations': locations,
+            'locations_count': ctr
         }
 
 

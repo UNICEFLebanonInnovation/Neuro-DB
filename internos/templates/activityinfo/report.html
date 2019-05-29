@@ -143,6 +143,10 @@
                           data-step="9" data-intro="Open live ActivityInfo Dashboard">
                         <i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>
                       </a>
+                      <a href="{% url 'activityinfo:report_map' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display reported indicators on map" style="padding-left: 20px;"
+                          data-step="15" data-intro="Display reported indicators on map">
+                        <i class="fa fa-map-o" style="font-size: 30px; color: #0089d2;"></i>
+                      </a>
                     </h2>
                     <ul class="nav navbar-left" style="margin-top: -7px;" data-step="10" data-intro="Download Dashboard report and raw data">
                       <li class="dropdown">

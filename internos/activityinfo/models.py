@@ -299,6 +299,7 @@ class Activity(models.Model):
     none_ai_database = models.ForeignKey(Database, blank=True, null=True, related_name='+')
     name = models.CharField(max_length=1500)
     location_type = models.CharField(max_length=254)
+    programme_document = models.ForeignKey('etools.pca', blank=True, null=True, related_name='+')
 
     def __unicode__(self):
         return self.name

@@ -52,6 +52,12 @@ def link_partners(report_type=None):
 
 
 @app.task
+def link_partners(report_type=None):
+    from .utils import link_ai_locations
+    link_ai_locations(report_type=report_type)
+
+
+@app.task
 def generate_indicators_number():
     from internos.activityinfo.models import Indicator
 
