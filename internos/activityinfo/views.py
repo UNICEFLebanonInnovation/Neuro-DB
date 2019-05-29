@@ -224,6 +224,7 @@ class ReportMapView(TemplateView):
 
         cursor = connection.cursor()
         selected_filter = False
+        partner = None
         selected_partner = self.request.GET.get('partner', 0)
         selected_partners = self.request.GET.getlist('partners', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
@@ -247,17 +248,29 @@ class ReportMapView(TemplateView):
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
-        cursor.execute(
-            "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
-            "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
-            "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
-            "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
-            "ai.cumulative_values ->> 'months'::text AS cumulative_value "
-            "FROM public.activityinfo_indicator ai "
-            "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
-            "WHERE ar.database_id = %s "
-            "LIMIT 500",
-            [str(ai_id)])
+        if selected_partner:
+            cursor.execute(
+                "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
+                "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
+                "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
+                "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
+                "ai.cumulative_values ->> 'months'::text AS cumulative_value "
+                "FROM public.activityinfo_indicator ai "
+                "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
+                "WHERE ar.database_id = %s AND partner_id = %s ",
+                [str(ai_id), selected_partner])
+        else:
+            cursor.execute(
+                "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
+                "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
+                "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
+                "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
+                "ai.cumulative_values ->> 'months'::text AS cumulative_value "
+                "FROM public.activityinfo_indicator ai "
+                "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
+                "WHERE ar.database_id = %s "
+                "LIMIT 500",
+                [str(ai_id)])
 
         locations = {}
         ctr = 0
@@ -323,6 +336,7 @@ class ReportMapView(TemplateView):
             'partners': partners,
             'governorates': governorates,
             'partner_info': partner_info,
+            'partner': partner,
             'selected_filter': selected_filter,
             'locations': locations,
             'locations_count': ctr

@@ -138,7 +138,7 @@
 <form action="{% url 'activityinfo:report_map' %}" method="get">
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="4" data-intro="Filter options by partner">
       <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
-      <select class="selectpicker show-tick" data-actions-box="true" multiple title="Select one or more partner" name="partners" data-style="btn-info" id="filter_partners">
+      <select class="selectpicker show-tick" data-actions-box="true" title="Select a Partner" name="partner" data-style="btn-info" id="filter_partners">
           {% for partner in partners %}
               <option value="{{ partner.partner_id }}" {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}</option>
           {% endfor %}
@@ -149,13 +149,13 @@
       {% endif %}
   </div>
 
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">
-      <select class="selectpicker show-tick" title="Select a governorate" name="governorate" data-style="btn-info" id="filter_govs">
-          {% for gov in governorates %}
-              <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorate %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
-          {% endfor %}
-      </select>
-  </div>
+  <!--<div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">-->
+      <!--<select class="selectpicker show-tick" title="Select a governorate" name="governorate" data-style="btn-info" id="filter_govs">-->
+          <!--{% for gov in governorates %}-->
+              <!--<option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorate %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>-->
+          <!--{% endfor %}-->
+      <!--</select>-->
+  <!--</div>-->
     <div class="col-md-2">
       <button type="submit" class="btn btn-success">Search</button>
       <a href="{% url 'activityinfo:report_map' %}?ai_id={{ database.ai_id }}" class="btn btn-warning">Cancel</a>
@@ -205,7 +205,13 @@
           {% csrf_token %}
           <div class="clearfix"></div>
           <div id="feeds" class="modal-body" style="position: absolute; border-radius: 5px; box-shadow: -5px 5px 10px; top: 0px; right: 50px; width: 400px; height: 500px; overflow: auto;">
-            <h2><strong>{{ locations_count }} Sites</strong></h2>
+            <h2><strong>{{ locations_count }} Sites
+                {% if partner %} - {{ partner.name }} {% endif %}
+                {% if partner_info %}
+                  <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
+                     data-toggle="modal" data-target="#partnerModal"></i>
+                {% endif %}
+            </strong></h2>
           </div>
         </div>
       </div>
@@ -215,6 +221,9 @@
 </div>
 
 <br />
+
+{% include 'activityinfo/partner_info.html' %}
+
 {% endblock content %}
 
 {% block extra_js %}
