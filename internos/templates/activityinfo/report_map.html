@@ -77,11 +77,12 @@
      background-color: #337ab7;
      color: white !important;
   }
-  #feeds div {
+  #feeds-content div {
     border-radius: 5px;
     box-shadow: -1px 1px 4px;
     padding: 2px;
     margin-top: 5px;
+    padding-left: 15px;
   }
 
 </style>
@@ -204,14 +205,18 @@
           <div id="mapView"></div>
           {% csrf_token %}
           <div class="clearfix"></div>
-          <div id="feeds" class="modal-body" style="position: absolute; border-radius: 5px; box-shadow: -5px 5px 10px; top: 0px; right: 50px; width: 400px; height: 500px; overflow: auto;">
-            <h2><strong>{{ locations_count }} Sites
+          <div id="feeds" class="" style="position: absolute; border-radius: 5px; box-shadow: -5px 5px 10px; top: 0px; right: 50px; width: 400px; height: 500px; overflow: auto;">
+            <div style="padding: 6px; margin: 0px; background-color: #337ab7; color: white; height: 50px;"><h2><strong>{{ locations_count }} Sites
                 {% if partner %} - {{ partner.name }} {% endif %}
                 {% if partner_info %}
                   <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
                      data-toggle="modal" data-target="#partnerModal"></i>
                 {% endif %}
             </strong></h2>
+            </div>
+            <div id="feeds-content">
+
+            </div>
           </div>
         </div>
       </div>
@@ -300,7 +305,7 @@
 
                 setTimeout(function(){
 
-                    $('#feeds').append('<div class="row">'+item.location_name+'</div>');
+                    $('#feeds-content').append('<div class="row">'+item.location_name+'</div>');
 
                     var lineAtt = {
                       Name: item.location_name,
@@ -310,11 +315,11 @@
                     };
 
                     var content = '<p>{Governorate} - {Cadastral} - {Caza}</p>';
-                    content = content + '<ul> <strong>Indicators</strong>';
+                    content = content + '<div class="list-group"><a href="#" class="list-group-item active"><strong>Indicators</a></strong>';
                     $(item.indicators).each(function(j, item1){
-                        content = content + '<li>'+item1.indicator_name+' - '+item1.cumulative_value+' '+item1.indicator_units+' ('+item1.partner_label+')</li>';
+                        content = content + '<a href="#" class="list-group-item">'+item1.indicator_name+' - '+item1.cumulative_value+' '+item1.indicator_units+' ('+item1.partner_label+')</a>';
                     });
-                    content = content + '</ul>';
+                    content = content + '</div>';
 
                     var pointGraphic = new Graphic({
                       geometry: {

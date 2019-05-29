@@ -320,12 +320,40 @@ def link_ai_locations(report_type=None):
     location_governorate = indicators.values('location_adminlevel_governorate_code').distinct()
 
     for item in location_cadastral:
-        ai_values = indicators.filter(location_adminlevel_cadastral_area_code=item.location_adminlevel_cadastral_area_code)
+        ai_values = indicators.filter(location_adminlevel_cadastral_area_code=item['location_adminlevel_cadastral_area_code'])
 
         if not ai_values.count():
             continue
         ctr += ai_values.count()
-        ai_values.update(location_cadastral_id=item.id)
+        try:
+            ai_values.update(location_cadastral=AdminLevelEntities.objects.get(code=item['location_adminlevel_cadastral_area_code']))
+        except Exception as ex:
+            print(item['location_adminlevel_cadastral_area_code'])
+            pass
+
+    for item in location_caza:
+        ai_values = indicators.filter(location_adminlevel_caza_code=item['location_adminlevel_caza_code'])
+
+        if not ai_values.count():
+            continue
+        ctr += ai_values.count()
+        try:
+            ai_values.update(location_caza=AdminLevelEntities.objects.get(code=item['location_adminlevel_caza_code']))
+        except Exception as ex:
+            print(item['location_adminlevel_caza_code'])
+            pass
+
+    for item in location_governorate:
+        ai_values = indicators.filter(location_adminlevel_governorate_code=item['location_adminlevel_governorate_code'])
+
+        if not ai_values.count():
+            continue
+        ctr += ai_values.count()
+        try:
+            ai_values.update(location_governorate=AdminLevelEntities.objects.get(code=item['location_adminlevel_governorate_code']))
+        except Exception as ex:
+            print(item['location_adminlevel_governorate_code'])
+            pass
 
     return ctr
 
