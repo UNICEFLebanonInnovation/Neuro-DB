@@ -744,6 +744,7 @@ class Travel(models.Model):
     # activities_set
     attachments_set = ArrayField(models.CharField(max_length=10000), blank=True, null=True)
     attachments_sets = JSONField(blank=True, null=True)
+    have_hact = models.IntegerField(blank=True, null=True)
     travel_type = models.CharField(max_length=64, blank=True,
                                    default=TravelType.PROGRAMME_MONITORING,
                                    verbose_name=_('Travel Type'))

@@ -118,35 +118,48 @@ class InterventionsView(TemplateView):
 
 class TripsMonitoringView(TemplateView):
 
-    template_name = 'etools/trips_monitoring.html'
+    template_name = 'etools/trip_monitoring2.html'
 
     def get_context_data(self, **kwargs):
         now = datetime.datetime.now()
-        travel_status = self.request.GET.get('travel_status', 'all')
+        travel_status = self.request.GET.get('travel_status', '')
 
         sections = Section.objects.filter(etools=True)
-        # sections = Section.objects.filter()
         offices = Office.objects.all()
 
-        visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING)
-        # visits = TravelActivity.objects.filter(travel_type='programmatic visit', travel__start_date__year=now.year)
+        # visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING)
+        visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING,
+                                               date__year=now.year,
+                                               partner__isnull=False).exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
+        partners = visits.values('partner_id', 'partner__name').distinct()
 
-        if travel_status == 'all':
-            trips = visits.exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
-        else:
+        trips = visits
+        if travel_status:
             trips = visits.filter(travel__status=travel_status)
+        if travel_status == 'completed':
+            trips = visits.filter(travel__status=travel_status, travel__have_hact__gt=0)
 
-        programmatic_visits = visits.exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
+        programmatic_visits = visits
         programmatic_visits_planned = visits.filter(travel__status=Travel.PLANNED)
         programmatic_visits_submitted = visits.filter(travel__status=Travel.SUBMITTED)
         programmatic_visits_approved = visits.filter(travel__status=Travel.APPROVED)
-        programmatic_visits_completed = visits.filter(travel__status=Travel.COMPLETED)
+        programmatic_visits_completed = visits.filter(travel__status=Travel.COMPLETED,
+                                                      travel__have_hact__gt=0)
 
         trip_details = get_trip_details(trips)
 
+        months = []
+        for i in range(1, 13):
+            months.append({
+                'month': i,
+                'month_name': (datetime.date(2008, i, 1).strftime('%B'))
+            })
+
         return {
+            'months': months,
             'sections': sections,
             'offices': offices,
+            'partners': partners,
             'trip_details': trip_details,
             'travel_status': travel_status,
             'programmatic_visits': programmatic_visits.count(),

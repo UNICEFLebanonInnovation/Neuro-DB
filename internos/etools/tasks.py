@@ -380,8 +380,8 @@ def sync_trip_data():
                 instance.traveler_name = item['traveler']
                 instance.purpose = item['purpose']
                 instance.status = item['status'].lower()
-                instance.start_date = datetime.datetime.strptime(item['start_date'], "%Y-%m-%d")
-                instance.end_date = datetime.datetime.strptime(item['end_date'], "%Y-%m-%d")
+                instance.start_date = datetime.datetime.strptime(item['start_date'], "%Y-%m-%d") if item['start_date'] else ''
+                instance.end_date = datetime.datetime.strptime(item['end_date'], "%Y-%m-%d") if item['end_date'] else ''
                 instance.supervisor_name = item['supervisor_name']
                 instance.section_id = item['section']
                 instance.office_id = item['office']
@@ -438,6 +438,11 @@ def sync_trip_individual_data(instance):
     instance.cancellation_note = item['cancellation_note']
     instance.attachments_set = item['attachments']
     instance.attachments_sets = item['attachments']
+
+    instance.have_hact = 0
+    for attache in instance.attachments_sets:
+        if 'HACT' in attache['name'] and '.docx' in attache['name']:
+            instance.have_hact += 1
     instance.certification_note = item['certification_note']
     instance.report = item['report']
     instance.additional_note = item['additional_note']
