@@ -86,31 +86,37 @@
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
     <span class="count_top"><i class="fa fa-info"></i> All Visits</span>
     <div class="count {% if travel_status == 'all' %}active{% endif %}">
-      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=all">{{ programmatic_visits }}</a>
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=0&month={{ selected_month }}">{{ programmatic_visits }}</a>
     </div>
   </div>
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
     <span class="count_top"><i class="fa fa-info"></i> Planned Visits</span>
     <div class="count {% if travel_status == 'planned' %}active{% endif %}">
-      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=planned">{{ programmatic_visits_planned }}</a>
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=planned&month={{ selected_month }}">{{ programmatic_visits_planned }}</a>
     </div>
   </div>
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
     <span class="count_top"><i class="fa fa-info"></i> Submitted Visits</span>
     <div class="count {% if travel_status == 'submitted' %}active{% endif %}">
-      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=submitted">{{ programmatic_visits_submitted }}</a>
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=submitted&month={{ selected_month }}">{{ programmatic_visits_submitted }}</a>
     </div>
   </div>
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
     <span class="count_top"><i class="fa fa-info"></i> Approved Visits</span>
     <div class="count {% if travel_status == 'approved' %}active{% endif %}">
-      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=approved">{{ programmatic_visits_approved }}</a>
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=approved&month={{ selected_month }}">{{ programmatic_visits_approved }}</a>
     </div>
   </div>
   <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
     <span class="count_top"><i class="fa fa-info"></i> Completed Visits</span>
     <div class="count {% if travel_status == 'completed' %}active{% endif %}">
-      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=completed">{{ programmatic_visits_completed }}</a>
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=completed&month={{ selected_month }}">{{ programmatic_visits_completed }}</a>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Completed Visits with Report</span>
+    <div class="count {% if travel_status == 'completed_report' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=completed_report&month={{ selected_month }}">{{ programmatic_visits_completed_report }}</a>
     </div>
   </div>
 </div>
@@ -155,11 +161,11 @@
     <div class="row" id="trips_monitor">
 
       <ul class="nav nav-tabs" role="tablist" id="myTab">
-        <li class="nav-item active" data-step="5" data-intro="Number of Programmatic Visits per Office per Section">
-          <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-            aria-selected="true">dashboard</a>
-        </li>
-        <li class="nav-item " data-step="6" data-intro="Number of Programmatic Visits per Office per Section">
+        <!--<li class="nav-item active" data-step="5" data-intro="Number of Programmatic Visits per Office per Section">-->
+          <!--<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"-->
+            <!--aria-selected="true">dashboard</a>-->
+        <!--</li>-->
+        <li class="nav-item active" data-step="6" data-intro="Number of Programmatic Visits per Office per Section">
           <a class="nav-link" id="report-tab" data-toggle="tab" href="#report" role="tab" aria-controls="report"
             aria-selected="false">Report</a>
         </li>
@@ -174,9 +180,9 @@
       </ul>
 
       <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">
-        </div>
-        <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
+        <!--<div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">-->
+        <!--</div>-->
+        <div class="tab-pane fade active in" id="report" role="tabpanel" aria-labelledby="report-tab">
 
           <div class="x_content" style="" id="">
             <table content="monitoring visits.csv" style="background-color: white;"

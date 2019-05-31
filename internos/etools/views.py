@@ -123,28 +123,33 @@ class TripsMonitoringView(TemplateView):
     def get_context_data(self, **kwargs):
         now = datetime.datetime.now()
         travel_status = self.request.GET.get('travel_status', '')
+        selected_month = self.request.GET.get('month', 0)
 
         sections = Section.objects.filter(etools=True)
         offices = Office.objects.all()
 
         # visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING)
         visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING,
-                                               date__year=now.year,
+                                               travel__start_date__year=now.year,
                                                partner__isnull=False).exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
+
+        if selected_month:
+            visits = visits.filter(travel__start_date__month=selected_month)
+
         partners = visits.values('partner_id', 'partner__name').distinct()
 
         trips = visits
         if travel_status:
             trips = visits.filter(travel__status=travel_status)
-        if travel_status == 'completed':
-            trips = visits.filter(travel__status=travel_status, travel__have_hact__gt=0)
+        if travel_status == 'completed_report':
+            trips = visits.filter(travel__have_hact__gt=0)
 
         programmatic_visits = visits
         programmatic_visits_planned = visits.filter(travel__status=Travel.PLANNED)
         programmatic_visits_submitted = visits.filter(travel__status=Travel.SUBMITTED)
         programmatic_visits_approved = visits.filter(travel__status=Travel.APPROVED)
-        programmatic_visits_completed = visits.filter(travel__status=Travel.COMPLETED,
-                                                      travel__have_hact__gt=0)
+        programmatic_visits_completed = visits.filter(travel__status=Travel.COMPLETED)
+        programmatic_visits_completed_report = programmatic_visits_completed.filter(travel__have_hact__gt=0)
 
         trip_details = get_trip_details(trips)
 
@@ -162,11 +167,13 @@ class TripsMonitoringView(TemplateView):
             'partners': partners,
             'trip_details': trip_details,
             'travel_status': travel_status,
+            'selected_month': selected_month,
             'programmatic_visits': programmatic_visits.count(),
             'programmatic_visits_planned': programmatic_visits_planned.count(),
             'programmatic_visits_submitted': programmatic_visits_submitted.count(),
             'programmatic_visits_approved': programmatic_visits_approved.count(),
             'programmatic_visits_completed': programmatic_visits_completed.count(),
+            'programmatic_visits_completed_report': programmatic_visits_completed_report.count()
         }
 
 
