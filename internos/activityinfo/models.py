@@ -410,6 +410,13 @@ class Indicator(models.Model):
     is_sector = models.BooleanField(default=False)
     is_section = models.BooleanField(default=False)
 
+    values_sector = JSONField(blank=True, null=True)
+    values_tags_sector = JSONField(blank=True, null=True, default={})
+    values_sites_sector = JSONField(blank=True, null=True)
+    values_partners_sector = JSONField(blank=True, null=True)
+    values_partners_sites_sector = JSONField(blank=True, null=True)
+    cumulative_values_sector = JSONField(blank=True, null=True)
+
     def __unicode__(self):
         return self.name
 

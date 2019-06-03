@@ -601,6 +601,8 @@ class PCA(models.Model):
     result_links = ArrayField(models.CharField(max_length=200), blank=True, null=True)
     location_names = ArrayField(models.CharField(max_length=200), blank=True, null=True)
     planned_visits_list = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    frs_details = JSONField(blank=True, null=True, default={})
+    donors_set = JSONField(blank=True, null=True, default={})
 
     class Meta:
         verbose_name = 'Intervention'

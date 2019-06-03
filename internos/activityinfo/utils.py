@@ -169,7 +169,7 @@ def add_rows(ai_id=None, model=None):
                 end_date=row['end_date'] if 'end_date' in row else '',
                 lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
                 indicator_value=indicator_value,
-                funded_by=partner_label,
+                funded_by=funded_by,
                 location_latitude=row['location.latitude'] if 'location.latitude' in row else '',
                 indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
                 location_alternate_name=row[
@@ -287,8 +287,8 @@ def link_indicators_activity_report(ai_db, report_type=None):
 
     reports = reports.exclude(ai_indicator__isnull=False)
 
-    if ai_db.is_funded_by_unicef:
-        reports = reports.filter(funded_by='UNICEF')
+    # if ai_db.is_funded_by_unicef:
+    #     reports = reports.filter(funded_by='UNICEF')
 
     indicators = Indicator.objects.filter(
         activity__database__ai_id=ai_db.ai_id).exclude(
@@ -2021,30 +2021,33 @@ def assign_main_master_indicator():
         sub_indicators.update(main_master_indicator=indicator.main_master_indicator)
 
 
-#  todo not using it
-def get_individual_indicator_value(ai_db, indicator_id, month=None, partner=None, gov=None, report_type=None):
-    from internos.activityinfo.models import ActivityReport, LiveActivityReport
+def load_reporting_map(ai_id, partner=None, governorate=None, caza=None, donor=None):
+    from django.db import connection
 
-    if report_type == 'live':
-        reports = LiveActivityReport.objects.filter(ai_indicator=indicator_id)
-    else:
-        reports = ActivityReport.objects.filter(ai_indicator=indicator_id)
-    if ai_db.is_funded_by_unicef:
-        reports = reports.filter(funded_by='UNICEF')
+    params = [str(ai_id), ]
 
-    if month:
-        reports = reports.filter(start_date__month=month)
-        # reports = reports.filter(month=month)
+    cursor = connection.cursor()
+    queryset = "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, " \
+               "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, " \
+               "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, " \
+               "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, " \
+               "ai.cumulative_values ->> 'months'::text AS cumulative_value " \
+               "FROM public.activityinfo_indicator ai " \
+               "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id " \
+               "WHERE ar.database_id = %s "
+
     if partner:
-        reports = reports.filter(partner_id=partner)
-    if gov:
-        reports = reports.filter(location_adminlevel_governorate_code=gov)
+        params.append(str(partner))
+        queryset += "AND partner_id = %s "
+    if governorate:
+        params.append(str(governorate))
+        queryset += "AND location_adminlevel_governorate_code = %s "
+    if caza:
+        params.append(str(caza))
+        queryset += "AND location_adminlevel_caza_code = %s "
 
-    reports = reports.values('indicator_value')
-
-    total = reports.aggregate(Sum('indicator_value'))
-
-    return total['indicator_value__sum'] if total['indicator_value__sum'] else 0
+    cursor.execute(queryset, params)
+    return cursor.fetchall()
 
 
 def update_partner_data(ai_db):

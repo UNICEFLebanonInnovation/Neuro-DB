@@ -415,6 +415,17 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'cumulative_values',
             ]
         }),
+        ('Calculated Values sector', {
+            'classes': ('suit-tab', 'suit-tab-report-values-sector',),
+            'fields': [
+                'values_sector',
+                'values_sites_sector',
+                'values_partners_sector',
+                'values_partners_sites_sector',
+                'cumulative_values_sector',
+                'values_tags_sector',
+            ]
+        }),
         ('Calculated HPM Values', {
             'classes': ('suit-tab', 'suit-tab-hpm-values',),
             'fields': [
@@ -438,6 +449,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
     suit_form_tabs = (
                       ('general', 'Indicator'),
                       ('report-values', 'Report values'),
+                      ('report-values-sector', 'Report values sector'),
                       ('hpm-values', 'HPM values'),
                       ('live-values', 'Live values'),
                     )

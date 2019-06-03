@@ -221,16 +221,18 @@ class ReportMapView(TemplateView):
 
     def get_context_data(self, **kwargs):
         from django.db import connection
+        from internos.etools.models import PCA
+        from internos.activityinfo.utils import load_reporting_map
 
+        now = datetime.datetime.now()
         cursor = connection.cursor()
         selected_filter = False
         partner = None
+        rows = []
         selected_partner = self.request.GET.get('partner', 0)
-        selected_partners = self.request.GET.getlist('partners', [])
-        selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorate = self.request.GET.get('governorate', 0)
-        selected_governorates = self.request.GET.get('governorates', 0)
-        selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+        selected_caza = self.request.GET.get('caza', 0)
+        selected_donor = self.request.GET.get('donor', 0)
 
         partner_info = {}
         today = datetime.date.today()
@@ -248,33 +250,65 @@ class ReportMapView(TemplateView):
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
-        if selected_partner:
-            cursor.execute(
-                "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
-                "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
-                "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
-                "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
-                "ai.cumulative_values ->> 'months'::text AS cumulative_value "
-                "FROM public.activityinfo_indicator ai "
-                "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
-                "WHERE ar.database_id = %s AND partner_id = %s ",
-                [str(ai_id), selected_partner])
-        else:
-            cursor.execute(
-                "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
-                "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
-                "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
-                "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
-                "ai.cumulative_values ->> 'months'::text AS cumulative_value "
-                "FROM public.activityinfo_indicator ai "
-                "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
-                "WHERE ar.database_id = %s "
-                "LIMIT 500",
-                [str(ai_id)])
+        rows = load_reporting_map(ai_id, partner=selected_partner, governorate=selected_governorate,
+                                  caza=selected_caza, donor=selected_donor)
+
+        # if selected_partner:
+        #     cursor.execute(
+        #         "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
+        #         "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
+        #         "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
+        #         "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
+        #         "ai.cumulative_values ->> 'months'::text AS cumulative_value "
+        #         "FROM public.activityinfo_indicator ai "
+        #         "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
+        #         "WHERE ar.database_id = %s AND partner_id = %s ",
+        #         [str(ai_id), selected_partner])
+        #     rows = cursor.fetchall()
+        #
+        # if selected_governorate:
+        #     cursor.execute(
+        #         "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
+        #         "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
+        #         "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
+        #         "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
+        #         "ai.cumulative_values ->> 'months'::text AS cumulative_value "
+        #         "FROM public.activityinfo_indicator ai "
+        #         "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
+        #         "WHERE ar.database_id = %s AND location_adminlevel_governorate_code = %s ",
+        #         [str(ai_id), selected_governorate])
+        #     rows = cursor.fetchall()
+        #
+        # if selected_caza:
+        #     cursor.execute(
+        #         "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
+        #         "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
+        #         "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
+        #         "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
+        #         "ai.cumulative_values ->> 'months'::text AS cumulative_value "
+        #         "FROM public.activityinfo_indicator ai "
+        #         "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
+        #         "WHERE ar.database_id = %s AND location_adminlevel_caza_code = %s ",
+        #         [str(ai_id), selected_caza])
+        #     rows = cursor.fetchall()
+        #
+        # if selected_donor:
+        #     cursor.execute(
+        #         "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
+        #         "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
+        #         "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
+        #         "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
+        #         "ai.cumulative_values ->> 'months'::text AS cumulative_value "
+        #         "FROM public.activityinfo_indicator ai "
+        #         "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
+        #         "INNER JOIN public.activityinfo_activity aa ON aa.id = ai.activity_id "
+        #         "INNER JOIN public.etools_pca pmp ON pmp.id = aa.programme_document_id "
+        #         "WHERE ar.database_id = %s AND pmp.donor @> %s ",
+        #         [str(ai_id), selected_donor])
+        #     rows = cursor.fetchall()
 
         locations = {}
         ctr = 0
-        rows = cursor.fetchall()
         for item in rows:
             if not item[2] or not item[3]:
                 continue
@@ -308,25 +342,23 @@ class ReportMapView(TemplateView):
                 print(ex)
                 pass
 
-        # if selected_partner or selected_governorate:
-        if selected_partners or selected_governorate:
-            selected_filter = True
-
-        # if selected_partner == '0' and selected_governorate == '0':
-        if selected_partners == [] and selected_governorate == '0':
-            selected_filter = False
-
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
+        cazas = report.values('location_adminlevel_caza_code',
+                              'location_adminlevel_caza').distinct()
+        donors_set = PCA.objects.filter(end__year=now.year, donors__isnull=False, donors__len__gt=0).values('number', 'donors').distinct()
+
+        donors = {}
+        for item in donors_set:
+            for donor in item['donors']:
+                donors[donor] = donor
 
         return {
             'selected_partner': selected_partner,
-            'selected_partners': selected_partners,
-            'selected_partner_name': selected_partner_name,
             'selected_governorate': selected_governorate,
-            'selected_governorates': selected_governorates,
-            'selected_governorate_name': selected_governorate_name,
+            'selected_caza': selected_caza,
+            'selected_donor': selected_donor,
             'reports': report.order_by('id'),
             'month': month,
             'year': today.year,
@@ -335,6 +367,8 @@ class ReportMapView(TemplateView):
             'database': database,
             'partners': partners,
             'governorates': governorates,
+            'cazas': cazas,
+            'donors': donors,
             'partner_info': partner_info,
             'partner': partner,
             'selected_filter': selected_filter,
@@ -351,10 +385,9 @@ class ReportSectorView(TemplateView):
         selected_filter = False
         selected_partner = self.request.GET.get('partner', 0)
         selected_partners = self.request.GET.getlist('partners', [])
-        selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorate = self.request.GET.get('governorate', 0)
+        selected_cadastral = self.request.GET.get('cadastral', 0)
         selected_governorates = self.request.GET.get('governorates', 0)
-        selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
         partner_info = {}
         today = datetime.date.today()
@@ -376,8 +409,6 @@ class ReportSectorView(TemplateView):
                 database = Database.objects.filter(reporting_year__current=True).first()
 
         report = ActivityReport.objects.filter(database=database)
-        if database.is_funded_by_unicef:
-            report = report.filter(funded_by__contains='UNICEF')
 
         if selected_partner:
             try:
@@ -388,14 +419,15 @@ class ReportSectorView(TemplateView):
                 print(ex)
                 pass
 
-        if selected_partners or selected_governorate:
+        if selected_partners or selected_cadastral:
             selected_filter = True
 
-        if selected_partners == [] and selected_governorate == '0':
+        if selected_partners == [] and selected_cadastral == '0':
             selected_filter = False
 
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+        cadastrals = report.values('location_adminlevel_cadastral_area_code', 'location_adminlevel_cadastral_area').distinct()
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_section=True).order_by('sequence')
         if database.mapped_db:
@@ -438,10 +470,9 @@ class ReportSectorView(TemplateView):
         return {
             'selected_partner': selected_partner,
             'selected_partners': selected_partners,
-            'selected_partner_name': selected_partner_name,
             'selected_governorate': selected_governorate,
+            'selected_cadastral': selected_cadastral,
             'selected_governorates': selected_governorates,
-            'selected_governorate_name': selected_governorate_name,
             'reports': report.order_by('id'),
             'month': month,
             'year': today.year,
@@ -451,6 +482,7 @@ class ReportSectorView(TemplateView):
             'database': database,
             'partners': partners,
             'governorates': governorates,
+            'cadastrals': cadastrals,
             'master_indicators': master_indicators,
             'partner_info': partner_info,
             'selected_filter': selected_filter,
