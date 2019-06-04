@@ -77,6 +77,9 @@
      background-color: #337ab7;
      color: white !important;
   }
+  .bootstrap-select {
+      width: 150px !important;
+  }
 
 </style>
 
@@ -128,14 +131,14 @@
     <div class="x-panel">
       <div class="x_title">
         <h2>
-          <strong>Programmatic Visits Monitoring - {{ travel_status|upper }}</strong>
+          <strong>Programmatic Visits Monitoring {{ travel_status|upper }}</strong>
         </h2>
         <form action="{% url 'etools:programmatic_visits_monitoring' %}" method="get">
           <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="4" data-intro="Filter options by month">
               <input type="hidden" name="travel_status" value="{{ travel_status }}" />
               <select class="selectpicker show-tick" data-actions-box="true" title="Select a Month" name="month" data-style="btn-info" id="filter_month">
                   {% for item in months %}
-                      <option value="{{ item.month }}">{{ item.month_name }}</option>
+                      <option value="{{ item.month }}" {% if item.moth == selected_month %}>{{ item.month_name }}</option>
                   {% endfor %}
               </select>
           </div>
@@ -167,7 +170,11 @@
         <!--</li>-->
         <li class="nav-item active" data-step="6" data-intro="Number of Programmatic Visits per Office per Section">
           <a class="nav-link" id="report-tab" data-toggle="tab" href="#report" role="tab" aria-controls="report"
-            aria-selected="false">Report</a>
+            aria-selected="false">Report Per Partner</a>
+        </li>
+        <li class="nav-item" data-step="6" data-intro="Number of Programmatic Visits per Office per Section">
+          <a class="nav-link" id="report2-tab" data-toggle="tab" href="#report2" role="tab" aria-controls="report2"
+            aria-selected="false">Report Per Section</a>
         </li>
         <li class="nav-item" data-step="7" data-intro="Geo location of the Programmatic Visits">
           <a class="nav-link" id="map-tab" data-toggle="tab" href="#map" role="tab" aria-controls="map"
@@ -241,6 +248,49 @@
           </div>
 
         </div>
+
+        <div class="tab-pane fade" id="report2" role="tabpanel" aria-labelledby="report2-tab">
+
+          <div class="x_content">
+            <table content="monitoring visits.csv"
+                   data-tableName="monitoring visits - 2019"
+                   class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th></th>
+                  {% for office in offices %}
+                    <th class="w-100" content="{{ office.name }}" style="vertical-align: middle;">{{ office.name }}</th>
+                  {% endfor %}
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for section in sections %}
+                  <tr>
+                    <th class="w-100" style="background-color: {{ section.color }}">{{ section.name }}</th>
+                    {% for office in offices %}
+                    <td class="w-100 travel-counts">
+                      {% get_array_value visits section.name office.name as data %}
+                      {% if data %}
+                        <span class="label label-primary">{{ data|length }}</span>
+                      {% endif %}
+                    </td>
+                    {% endfor %}
+                    <td>{% get_array_value visits section.name 0 %}</td>
+                  </tr>
+                {% endfor %}
+                <tr>
+                    <td>Total</td>
+                    {% for office in offices %}
+                    <td class="w-100">{% get_array_value visits 0 office.name %}</td>
+                    {% endfor %}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
         <div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map-tab">
           <div id="mapView"></div>
         </div>

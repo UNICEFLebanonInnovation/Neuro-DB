@@ -128,10 +128,15 @@ class TripsMonitoringView(TemplateView):
         sections = Section.objects.filter(etools=True)
         offices = Office.objects.all()
 
-        # visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING)
+        visits_no_partner = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING,
+                                                          travel__start_date__year=now.year,
+                                                          partner__isnull=True)\
+            .exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
+
         visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING,
                                                travel__start_date__year=now.year,
-                                               partner__isnull=False).exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
+                                               partner__isnull=False)\
+            .exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
 
         if selected_month:
             visits = visits.filter(travel__start_date__month=selected_month)
@@ -149,6 +154,7 @@ class TripsMonitoringView(TemplateView):
         programmatic_visits_submitted = visits.filter(travel__status=Travel.SUBMITTED)
         programmatic_visits_approved = visits.filter(travel__status=Travel.APPROVED)
         programmatic_visits_completed = visits.filter(travel__status=Travel.COMPLETED)
+        programmatic_visits_completed_no_report = programmatic_visits_completed.filter(travel__have_hact=0)
         programmatic_visits_completed_report = programmatic_visits_completed.filter(travel__have_hact__gt=0)
 
         trip_details = get_trip_details(trips)
@@ -173,7 +179,8 @@ class TripsMonitoringView(TemplateView):
             'programmatic_visits_submitted': programmatic_visits_submitted.count(),
             'programmatic_visits_approved': programmatic_visits_approved.count(),
             'programmatic_visits_completed': programmatic_visits_completed.count(),
-            'programmatic_visits_completed_report': programmatic_visits_completed_report.count()
+            'programmatic_visits_completed_report': programmatic_visits_completed_report.count(),
+            'programmatic_visits_completed_no_report': programmatic_visits_completed_no_report.count()
         }
 
 

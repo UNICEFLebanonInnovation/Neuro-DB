@@ -109,7 +109,7 @@
         <select class="selectpicker show-tick" data-actions-box="true" title="Select a Partner" name="partner" data-style="btn-info" id="filter_partners">
             <option value="">All Partners</option>
             {% for partner in partners %}
-                <option value="{{ partner.partner_id }}" {% if partner.partner_id in selected_partner %}selected{% endif %}>{{ partner.partner_label }}</option>
+                <option value="{{ partner.partner_id }}" {% if partner.partner_id == selected_partner %}selected{% endif %}>{{ partner.partner_label }}</option>
             {% endfor %}
         </select>
         {% if partner_info %}
@@ -280,7 +280,7 @@
           var view = new MapView({
             container: "mapView",
             map: map,
-            center: [35.82685, 34.3461],
+            center: [35.8411, 33.6513],
             zoom: 8
           });
 

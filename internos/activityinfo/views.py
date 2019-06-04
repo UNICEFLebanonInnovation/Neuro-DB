@@ -222,6 +222,7 @@ class ReportMapView(TemplateView):
     def get_context_data(self, **kwargs):
         from django.db import connection
         from internos.etools.models import PCA
+        from internos.activityinfo.templatetags.util_tags import number_format
         from internos.activityinfo.utils import load_reporting_map
 
         now = datetime.datetime.now()
@@ -253,45 +254,6 @@ class ReportMapView(TemplateView):
         rows = load_reporting_map(ai_id, partner=selected_partner, governorate=selected_governorate,
                                   caza=selected_caza, donor=selected_donor)
 
-        # if selected_partner:
-        #     cursor.execute(
-        #         "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
-        #         "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
-        #         "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
-        #         "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
-        #         "ai.cumulative_values ->> 'months'::text AS cumulative_value "
-        #         "FROM public.activityinfo_indicator ai "
-        #         "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
-        #         "WHERE ar.database_id = %s AND partner_id = %s ",
-        #         [str(ai_id), selected_partner])
-        #     rows = cursor.fetchall()
-        #
-        # if selected_governorate:
-        #     cursor.execute(
-        #         "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
-        #         "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
-        #         "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
-        #         "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
-        #         "ai.cumulative_values ->> 'months'::text AS cumulative_value "
-        #         "FROM public.activityinfo_indicator ai "
-        #         "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
-        #         "WHERE ar.database_id = %s AND location_adminlevel_governorate_code = %s ",
-        #         [str(ai_id), selected_governorate])
-        #     rows = cursor.fetchall()
-        #
-        # if selected_caza:
-        #     cursor.execute(
-        #         "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
-        #         "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
-        #         "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
-        #         "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
-        #         "ai.cumulative_values ->> 'months'::text AS cumulative_value "
-        #         "FROM public.activityinfo_indicator ai "
-        #         "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
-        #         "WHERE ar.database_id = %s AND location_adminlevel_caza_code = %s ",
-        #         [str(ai_id), selected_caza])
-        #     rows = cursor.fetchall()
-        #
         # if selected_donor:
         #     cursor.execute(
         #         "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
@@ -325,10 +287,10 @@ class ReportMapView(TemplateView):
                 }
 
             locations[item[0]]['indicators'].append({
-                'indicator_units': item[4],
+                'indicator_units': item[4].upper(),
                 'partner_label': item[10],
                 'indicator_name': item[11],
-                'cumulative_value': item[12],
+                'cumulative_value': "{:,}".format(round(float(item[12]), 1)),
             })
 
         locations = json.dumps(locations.values())
