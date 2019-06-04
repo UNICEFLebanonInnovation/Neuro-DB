@@ -179,7 +179,7 @@ class TripsMonitoringView(TemplateView):
                     # 'y': ctr.count(),
                     'y': random.randint(1, 50),
                     'x': m['month_name'],
-                    'type': item
+                    'type': item.upper()
                 })
 
         trips_per_month = json.dumps(trips_per_month.values())
