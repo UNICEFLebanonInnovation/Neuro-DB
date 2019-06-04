@@ -138,7 +138,7 @@
               <input type="hidden" name="travel_status" value="{{ travel_status }}" />
               <select class="selectpicker show-tick" data-actions-box="true" title="Select a Month" name="month" data-style="btn-info" id="filter_month">
                   {% for item in months %}
-                      <option value="{{ item.month }}" {% if item.moth == selected_month %}>{{ item.month_name }}</option>
+                      <option value="{{ item.month }}" {% if item.moth == selected_month %}selected{% endif %}>{{ item.month_name }}</option>
                   {% endfor %}
               </select>
           </div>
@@ -164,11 +164,11 @@
     <div class="row" id="trips_monitor">
 
       <ul class="nav nav-tabs" role="tablist" id="myTab">
-        <!--<li class="nav-item active" data-step="5" data-intro="Number of Programmatic Visits per Office per Section">-->
-          <!--<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"-->
-            <!--aria-selected="true">dashboard</a>-->
-        <!--</li>-->
-        <li class="nav-item active" data-step="6" data-intro="Number of Programmatic Visits per Office per Section">
+        <li class="nav-item active" data-step="5" data-intro="Dashboard">
+          <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+            aria-selected="true">Dashboard</a>
+        </li>
+        <li class="nav-item" data-step="6" data-intro="Number of Programmatic Visits per Office per Section">
           <a class="nav-link" id="report-tab" data-toggle="tab" href="#report" role="tab" aria-controls="report"
             aria-selected="false">Report Per Partner</a>
         </li>
@@ -187,9 +187,10 @@
       </ul>
 
       <div class="tab-content" id="myTabContent">
-        <!--<div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">-->
-        <!--</div>-->
-        <div class="tab-pane fade active in" id="report" role="tabpanel" aria-labelledby="report-tab">
+        <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">
+          {% include 'etools/trip_monitoring_chart.html' %}
+        </div>
+        <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
 
           <div class="x_content" style="" id="">
             <table content="monitoring visits.csv" style="background-color: white;"

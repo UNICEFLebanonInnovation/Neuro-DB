@@ -1,6 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+import json
+import random
 import datetime
 import calendar
 from django.db.models import Q
@@ -166,6 +168,22 @@ class TripsMonitoringView(TemplateView):
                 'month_name': (datetime.date(2008, i, 1).strftime('%B'))
             })
 
+        trips_per_month = {Travel.SUBMITTED: [], Travel.APPROVED: [], Travel.COMPLETED: []}
+
+        for item in [Travel.SUBMITTED, Travel.APPROVED, Travel.COMPLETED]:
+            instances = visits.filter(travel__status=item)
+            for m in months:
+                ctr = instances.filter(travel__start_date__month=m['month'])
+                trips_per_month[item].append({
+                    'time': '{}-{}-{}'.format(now.year, m['month'], now.day),
+                    # 'y': ctr.count(),
+                    'y': random.randint(1, 50),
+                    'x': m['month_name'],
+                    'type': item
+                })
+
+        trips_per_month = json.dumps(trips_per_month.values())
+
         return {
             'months': months,
             'sections': sections,
@@ -174,6 +192,7 @@ class TripsMonitoringView(TemplateView):
             'trip_details': trip_details,
             'travel_status': travel_status,
             'selected_month': selected_month,
+            'trips_per_month': trips_per_month,
             'programmatic_visits': programmatic_visits.count(),
             'programmatic_visits_planned': programmatic_visits_planned.count(),
             'programmatic_visits_submitted': programmatic_visits_submitted.count(),
