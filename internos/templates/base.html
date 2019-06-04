@@ -53,6 +53,7 @@
 
     <!-- Custom Theme Style -->
     <link href="{% static 'css/custom.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
     <style>
       .site_title {padding-left: 8px; height: 65px; padding-top: 6px;}
       #toTop{position: fixed;bottom: 10px;right: 10px;cursor: pointer;display: none;}
@@ -286,6 +287,7 @@
 
     <!-- Custom Theme Scripts -->
     <script src="{% static 'js/custom.min.js' %}"></script>
+    <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>
     {% block extra_js %}{% endblock %}
     <script>
         $(document).ready(function(){

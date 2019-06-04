@@ -76,53 +76,13 @@
 
 </style>
 
-<div class="row tile_count" data-step="4" data-intro="Click on the number to view the details. The default view is the All programmatic Visits">
-  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-    <span class="count_top"><i class="fa fa-info"></i> All Interventions</span>
-    <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="{% url 'etools:interventions' %}?document_type=all&status=all">{{ nbr_interventions }}</a>
-    </div>
-  </div>
-  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-    <span class="count_top"><i class="fa fa-info"></i> Active Interventions</span>
-    <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="{% url 'etools:interventions' %}?document_type=all&status=active">{{ nbr_active_interventions }}</a>
-    </div>
-  </div>
-  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-    <span class="count_top"><i class="fa fa-info"></i> All PDs</span>
-    <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="{% url 'etools:interventions' %}?document_type=PD&status=all">{{ nbr_pds }}</a>
-    </div>
-  </div>
-  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-    <span class="count_top"><i class="fa fa-info"></i> Active PDs</span>
-    <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="{% url 'etools:interventions' %}?document_type=PD&status=active">{{ nbr_active_pds }}</a>
-    </div>
-  </div>
-  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-    <span class="count_top"><i class="fa fa-info"></i> All SSFA</span>
-    <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="{% url 'etools:interventions' %}?document_type=SSFA&status=all">{{ nbr_sffas }}</a>
-    </div>
-  </div>
-  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-    <span class="count_top"><i class="fa fa-info"></i> Active SSFA</span>
-    <div class="count {% if document_type == 'all' %}active{% endif %}">
-      <a href="{% url 'etools:interventions' %}?document_type=SSFA&status=active">{{ nbr_active_sffas }}</a>
-    </div>
-  </div>
-</div>
-
-
 <div class="row">
   <div class="col-md-12 col-sm-12 col-xs-12">
 
     <div class="x-panel">
       <div class="x_title">
         <h2>
-          <strong>Interventions</strong>
+          <strong>{{ partner.name }} Interventions</strong>
         </h2>
         <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
            title="Show me some tips" style="padding-left: 20px;">
@@ -136,11 +96,12 @@
       <div class="clearfix"></div>
 
     </div>
+
     <div class="row" id="">
       <div id="mapView"></div>
-      {% csrf_token %}
       <div class="clearfix"></div>
     </div>
+
   </div>
 
 </div>
@@ -148,13 +109,10 @@
 {% endblock content %}
 
 {% block extra_js %}
-  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
-  <script src="https://js.arcgis.com/4.11/"></script>
+<link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+<script src="https://js.arcgis.com/4.11/"></script>
 
 <script>
-    var user_token = '{{ user_token }}';
-    var href_full_path = '{{ request.build_absolute_uri }}';
-    var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
     var points = '{{ locations|safe }}';
     points = JSON.parse(points);
 
@@ -278,5 +236,5 @@
     });
 
 </script>
-
 {% endblock %}
+

@@ -78,6 +78,73 @@ class PartnerProfileView(TemplateView):
         }
 
 
+class PartnerProfileMapView(TemplateView):
+
+    template_name = 'etools/partner_profile_map.html'
+
+    def get_context_data(self, **kwargs):
+
+        selected_partner = self.request.GET.get('partner_id', 0)
+        partner = PartnerOrganization.objects.get(id=selected_partner)
+
+        now = datetime.datetime.now()
+
+        data_set = PCA.objects.filter(partner_id=partner.etl_id,
+                                      end__year=now.year).exclude(status=PCA.CANCELLED)
+
+        # locations = get_interventions_details(data_set)
+
+        from django.db import connection
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
+            "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
+            "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
+            "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
+            "ai.cumulative_values ->> 'months'::text AS cumulative_value "
+            "FROM public.activityinfo_indicator ai "
+            "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
+            "INNER JOIN public.activityinfo_activity aa ON aa.id = ai.activity_id "
+            "INNER JOIN public.etools_pca pmp ON pmp.id = aa.programme_document_id "
+            "INNER JOIN public.etools_partnerorganization po ON po.id = pmp.partner_id "
+            "WHERE po.id = %s ",
+            [selected_partner])
+        rows = cursor.fetchall()
+
+        locations = {}
+        ctr = 0
+        for item in rows:
+            if not item[2] or not item[3]:
+                continue
+            if item[0] not in locations:
+                ctr += 1
+                locations[item[0]] = {
+                    'location_name': item[1],
+                    'location_longitude': item[2],
+                    'location_latitude': item[3],
+                    'governorate': item[5],
+                    'caza': '{}-{}'.format(item[6], item[7]),
+                    'cadastral': '{}-{}'.format(item[8], item[9]),
+                    'indicators': []
+                }
+
+            locations[item[0]]['indicators'].append({
+                'indicator_units': item[4].upper(),
+                'partner_label': item[10],
+                'indicator_name': item[11],
+                'cumulative_value': "{:,}".format(round(float(item[12]), 1)),
+            })
+
+        locations = json.dumps(locations.values())
+
+        return {
+            'selected_partner': selected_partner,
+            'partner': partner,
+            'locations': locations,
+        }
+
+
 class InterventionsView(TemplateView):
 
     template_name = 'etools/interventions.html'
