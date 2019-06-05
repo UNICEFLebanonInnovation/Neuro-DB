@@ -521,6 +521,12 @@ def get_trip_details(data_set):
             })
         if travel.section and travel.office:
             key = '{}-{}-{}'.format(visit.partner_id, travel.office_id, travel.section_id)
+            key2 = '{}-{}-{}'.format(0, travel.office_id, travel.section_id)
+            if key2 not in details:
+                details[key2] = 1
+            else:
+                details[key2] += 1
+
             if key not in details:
                 details[key] = []
             details[key].append({
@@ -532,22 +538,25 @@ def get_trip_details(data_set):
             })
 
         if travel.section:
-            if travel.section.name not in details:
-                details[travel.section.name] = 1
+            key = '{}-{}-{}'.format(0, 0, travel.section_id)
+            if key not in details:
+                details[key] = 1
             else:
-                details[travel.section.name] += 1
+                details[key] += 1
 
         if travel.office:
-            if travel.office.name not in details:
-                details[travel.office.name] = 1
+            key = '{}-{}-{}'.format(0, travel.office_id, 0)
+            if key not in details:
+                details[key] = 1
             else:
-                details[travel.office.name] += 1
+                details[key] += 1
 
         if visit.partner:
-            if visit.partner.name not in details:
-                details[visit.partner.name] = 1
+            key = '{}-{}-{}'.format(visit.partner_id, 0, 0)
+            if key not in details:
+                details[key] = 1
             else:
-                details[visit.partner.name] += 1
+                details[key] += 1
 
         details['visits'].append(visit)
 

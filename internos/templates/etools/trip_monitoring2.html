@@ -214,7 +214,7 @@
               </thead>
               <tbody>
                 {% for partner in partners %}
-                  {% get_array_value trip_details partner.partner__name as pdata %}
+                  {% get_array_value trip_details partner.partner_id 0 0 as pdata %}
                   {% if pdata %}
                   <tr>
                     <th class="w-100" style="background-color: {{ section.color }}">{{ partner.partner__name }}</th>
@@ -269,19 +269,35 @@
                     <th class="w-100" style="background-color: {{ section.color }}">{{ section.name }}</th>
                     {% for office in offices %}
                     <td class="w-100 travel-counts">
-                      {% get_array_value visits section.name office.name as data %}
+                      {% get_array_value trip_details 0 office.id section.id as data %}
                       {% if data %}
-                        <span class="label label-primary">{{ data|length }}</span>
+                        <span class="label label-primary">{{ data }}</span>
+                      {% else %}
+                          0
                       {% endif %}
                     </td>
                     {% endfor %}
-                    <td>{% get_array_value visits section.name 0 %}</td>
+                    <td>
+                      {% get_array_value trip_details 0 0 section.id as data %}
+                      {% if data %}
+                        <span class="label label-primary">{{ data }}</span>
+                      {% else %}
+                        0
+                      {% endif %}
+                    </td>
                   </tr>
                 {% endfor %}
                 <tr>
-                    <td>Total</td>
+                    <th>Total</th>
                     {% for office in offices %}
-                    <td class="w-100">{% get_array_value visits 0 office.name %}</td>
+                      <td class="w-100">
+                        {% get_array_value trip_details 0 office.id 0 as data %}
+                        {% if data %}
+                          <span class="label label-primary">{{ data }}</span>
+                        {% else %}
+                          0
+                        {% endif %}
+                      </td>
                     {% endfor %}
                 </tr>
               </tbody>

@@ -243,8 +243,8 @@ class TripsMonitoringView(TemplateView):
                 ctr = instances.filter(travel__start_date__month=m['month'])
                 trips_per_month[item].append({
                     'time': '{}-{}-{}'.format(now.year, m['month'], now.day),
-                    # 'y': ctr.count(),
-                    'y': random.randint(1, 50),
+                    'y': ctr.count(),
+                    # 'y': random.randint(1, 50),
                     'x': m['month_name'],
                     'type': item.upper()
                 })
