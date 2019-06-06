@@ -607,12 +607,13 @@ class PCA(models.Model):
     class Meta:
         verbose_name = 'Intervention'
         verbose_name_plural = 'Interventions'
-        ordering = ['-created_at']
+        ordering = ['-partner_name']
 
     def __unicode__(self):
-        return u'{}: {}'.format(
+        return u'{}: {} - {}'.format(
             self.partner_name,
-            self.number
+            self.number,
+            self.status
         )
 
 

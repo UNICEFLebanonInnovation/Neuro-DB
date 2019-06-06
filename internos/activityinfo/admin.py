@@ -181,9 +181,9 @@ class ActivityAdmin(ImportExportModelAdmin):
         'location_type',
         'programme_document'
     )
-    list_editable = (
-        'programme_document',
-    )
+    # list_editable = (
+    #     'programme_document',
+    # )
     readonly_fields = (
         'ai_id',
         'name',
@@ -285,6 +285,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
     list_filter = (
         'activity__database__reporting_year',
         'activity__database',
+        'activity',
         'master_indicator',
         'master_indicator_sub',
         'master_indicator_sub_sub',
@@ -300,6 +301,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
     suit_list_filter_horizontal = (
         'activity__database__reporting_year',
         'activity__database',
+        'activity',
         'master_indicator',
         'master_indicator_sub',
         'master_indicator_sub_sub',

@@ -190,7 +190,7 @@ def sync_intervention_data():
 
 @app.task
 def sync_intervention_individual_data(instance=None):
-    from internos.etools.models import PCA
+    from internos.etools.models import PCA, PartnerOrganization, Agreement
     interventions = PCA.objects.filter(donors__len__gt=0)
 
     for instance in interventions:
@@ -200,6 +200,8 @@ def sync_intervention_individual_data(instance=None):
         try:
             item = json.loads(item)
 
+            instance.partner = PartnerOrganization.objects.get(etl_id=item['partner_id'])
+            instance.agreement = Agreement.objects.get(etl_id=item['agreement'])
             instance.number = item['number']
             instance.document_type = item['document_type']
             instance.status = item['status']

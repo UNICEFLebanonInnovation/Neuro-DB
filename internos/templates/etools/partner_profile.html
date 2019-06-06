@@ -240,7 +240,7 @@
                   <a href="https://etools.unicef.org/pmp/partners/{{ partner.id }}/details" target="_blank">
                     <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                   </a>
-                  <a href="{% url 'etools:partner_profile_map' %}?partner_id={{ partner.id }}" data-toggle="tooltip"
+                  <a href="{% url 'etools:partner_profile_map' %}?partner_id={{ partner.db_id }}" data-toggle="tooltip"
                      data-placement="top" title="Display Partner Interventions on the map" style="padding-left: 20px;">
                     <i class="fa fa-map-o" style="font-size: 16px; color: #0089d2;"></i>
                   </a>

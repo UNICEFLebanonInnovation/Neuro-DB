@@ -108,8 +108,8 @@ class PartnerProfileMapView(TemplateView):
             "INNER JOIN public.activityinfo_activity aa ON aa.id = ai.activity_id "
             "INNER JOIN public.etools_pca pmp ON pmp.id = aa.programme_document_id "
             "INNER JOIN public.etools_partnerorganization po ON po.id = pmp.partner_id "
-            "WHERE po.id = %s ",
-            [selected_partner])
+            "WHERE pmp.partner_id = %s ",
+            [int(selected_partner)])
         rows = cursor.fetchall()
 
         locations = {}
@@ -137,6 +137,7 @@ class PartnerProfileMapView(TemplateView):
             })
 
         locations = json.dumps(locations.values())
+        # print(locations)
 
         return {
             'selected_partner': selected_partner,

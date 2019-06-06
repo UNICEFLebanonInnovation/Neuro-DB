@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from internos.locations.tasks import sync_location_type_data, sync_locations_data
 from internos.etools.tasks import (
     sync_partner_data,
+    sync_individual_partner_data,
     sync_agreement_data,
     sync_intervention_data,
     sync_intervention_individual_data,
@@ -23,6 +24,8 @@ class Command(BaseCommand):
 
         print('sync_partner_data')
         sync_partner_data()
+        print('sync_individual_partner_data')
+        sync_individual_partner_data()
         print('sync_agreement_data')
         sync_agreement_data()
         print('sync_intervention_data')
