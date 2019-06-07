@@ -136,7 +136,7 @@
               <input type="hidden" name="travel_status" value="{{ travel_status }}" />
               <select class="selectpicker show-tick" data-actions-box="true" title="Select a Month" name="month" data-style="btn-info" id="filter_month">
                   {% for item in months %}
-                      <option value="{{ item.month }}" {% if item.moth == selected_month %}selected{% endif %}>{{ item.month_name }}</option>
+                      <option value="{{ item.month }}" {% if item.month == selected_month %}selected{% endif %}>{{ item.month_name }}</option>
                   {% endfor %}
               </select>
           </div>

@@ -208,7 +208,7 @@ class TripsMonitoringView(TemplateView):
                                                partner__isnull=False)\
             .exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
 
-        if selected_month:
+        if selected_month and not selected_month == '0':
             visits = visits.filter(travel__start_date__month=selected_month)
 
         partners = visits.values('partner_id', 'partner__name').distinct()
