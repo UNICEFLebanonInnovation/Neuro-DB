@@ -215,6 +215,102 @@ class ReportView(TemplateView):
         }
 
 
+class ReportPartnerView(TemplateView):
+
+    template_name = 'activityinfo/report_partner.html'
+
+    def get_context_data(self, **kwargs):
+
+        partner_info = {}
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month_number = last_month.strftime("%m")
+        month = int(last_month.strftime("%m"))
+        month_name = last_month.strftime("%B")
+
+        selected_indicator = int(self.request.GET.get('indicator_id', 0))
+        selected_governorate = self.request.GET.get('governorate', 0)
+
+        ai_id = int(self.request.GET.get('ai_id', 0))
+
+        database = Database.objects.get(ai_id=ai_id)
+        indicator = Indicator.objects.get(id=selected_indicator)
+        indicator = {
+            'id': indicator.id,
+            'ai_id': indicator.ai_id,
+            'name': indicator.name,
+            'explication': indicator.explication,
+            'awp_code': indicator.awp_code,
+            'measurement_type': indicator.measurement_type,
+            'units': indicator.units,
+            'target': indicator.target,
+            'status_color': indicator.status_color,
+            'status': indicator.status,
+            'cumulative_values': indicator.cumulative_values,
+            'values_partners_gov': indicator.values_partners_gov,
+            'values_partners': indicator.values_partners,
+            'values_gov': indicator.values_gov,
+            'values': indicator.values,
+        }
+
+        report = ActivityReport.objects.filter(database=database)
+        if database.is_funded_by_unicef:
+            report = report.filter(funded_by__contains='UNICEF')
+
+        partners = report.values('partner_label', 'partner_id').distinct()
+        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+
+        indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
+
+        indicators = indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'explication',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+        ).distinct()
+
+        months = []
+        for i in range(1, 13):
+            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
+        return {
+            'reports': report.order_by('id'),
+            'month': month,
+            'year': today.year,
+            'month_name': month_name,
+            'month_number': month_number,
+            'months': months,
+            'database': database,
+            'partners': partners,
+            'governorates': governorates,
+            'indicators': indicators,
+            'indicator': indicator,
+            'selected_governorate': selected_governorate,
+            'selected_indicator': selected_indicator
+        }
+
+
 class ReportMapView(TemplateView):
 
     template_name = 'activityinfo/report_map.html'

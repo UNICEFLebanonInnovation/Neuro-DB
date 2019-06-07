@@ -465,14 +465,23 @@ def get_sub_indicators_data(ai_id, is_sector=False):
 @register.assignment_tag
 def get_indicator_value(indicator, month=None, partner=None, gov=None):
     try:
+
         value = 0
         if partner and gov and not gov == '0':
+            if type(partner) == unicode:
+                key = "{}-{}-{}".format(month, gov, partner)
+                value += indicator['values_partners_gov'][key]
+                return get_indicator_unit(indicator, value)
             for par in partner:
                 # key = "{}-{}-{}".format(month, par, gov)
                 key = "{}-{}-{}".format(month, gov, par)
                 value += indicator['values_partners_gov'][key]
             return get_indicator_unit(indicator, value)
         if partner:
+            if type(partner) == unicode:
+                key = "{}-{}".format(month, partner)
+                value += indicator['values_partners'][key]
+                return get_indicator_unit(indicator, value)
             for par in partner:
                 key = "{}-{}".format(month, par)
                 value += indicator['values_partners'][key]

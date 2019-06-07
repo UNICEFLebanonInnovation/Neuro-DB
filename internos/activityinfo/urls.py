@@ -32,6 +32,11 @@ urlpatterns = [
         name='report'
     ),
     url(
+        regex=r'^report-partner/$',
+        view=views.ReportPartnerView.as_view(),
+        name='report_partner'
+    ),
+    url(
         regex=r'^report-map/$',
         view=views.ReportMapView.as_view(),
         name='report_map'
