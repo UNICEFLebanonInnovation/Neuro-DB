@@ -1,72 +1,39 @@
-{% load static %}
 
-<style>
-  .axis path, .axis line { fill: none; stroke: black; shape-rendering: crispEdges;}
-  .axis text { font-family: sans-serif; font-size: 11px;}
-  .dot {stroke: #000;}
-  .legend {padding: 5px;font: 10px sans-serif;background: yellow;box-shadow: 2px 2px 1px #888;}
-  div.tooltip {
-    position: absolute;
-    text-align: center;
-    width: 100px;
-    height: 50px;
-    padding: 2px;
-    font: 12px sans-serif;
-    background-color: #337ab7;
-    border: 0px;
-    color: white;
-    font-size: 12px;
-    border-radius: 5px;
-    pointer-events: none;
-  }
-</style>
-<div id="mbars"></div>
-<div id="mbars2"></div>
+function d3Chart(dataset, mbars, chart_domain) {
 
-<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
-<script type="text/javascript" src="{% static 'js/d3.chart.js' %}"></script>
+    var w = 800;                        //width
+    var h = 500;                        //height
+    var padding = {top: 40, right: 40, bottom: 40, left:40};
+    var stack = d3.layout.stack();
+    var color_hash = {
+          0 : ["Completed","#1f77b4"],
+            1 : ["Approved","#ff7f0e"],
+            2 : ["Submitted","#2ca02c"]
 
-<script type="text/javascript">
-
-    var trips_per_month = '{{ trips_per_month|safe }}';
-    var mperday = JSON.parse(trips_per_month);
-    d3Chart(mperday, '#mbars2', 'time');
-
-
-</script>
-
-<script type="text/javascript">
-
-    var trips_per_month = '{{ trips_per_month|safe }}';
-    var mperday = JSON.parse(trips_per_month);
-
-		var w = 800;                        //width
-		var h = 500;                        //height
-		var padding = {top: 40, right: 40, bottom: 40, left:40};
-		var dataset;
-		//Set up stack method
-		var stack = d3.layout.stack();
+    };
 
     var div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
-			dataset = mperday;
-
 			//Data, stacked
 			stack(dataset);
+            var xScale = null
 
-			var color_hash = {
-				  0 : ["Completed","#1f77b4"],
-					1 : ["Approved","#ff7f0e"],
-					2 : ["Submitted","#2ca02c"]
+            if(chart_domain == 'time'){
+                //Set up scales
+                var xScale = d3.time.scale()
+                    .domain([new Date(dataset[0][0].time),d3.time.month.offset(new Date(dataset[0][dataset[0].length-2].time),1)])
+                    .rangeRound([0, w-padding.left-padding.right]);
+            }
+            if(chart_domain == 'band'){
+                //Set up scales
+                var xScale = d3.scaleBand()
+                    .domain(data.map(d => d.name))
+                    .range([margin.left, width - margin.right])
+                    .padding(0.1)
+            }
 
-			};
-
-			//Set up scales
-			var xScale = d3.time.scale()
-				.domain([new Date(dataset[0][0].time),d3.time.month.offset(new Date(dataset[0][dataset[0].length-2].time),1)])
-				.rangeRound([0, w-padding.left-padding.right]);
 
 			var yScale = d3.scale.linear()
 				.domain([0,
@@ -92,7 +59,7 @@
 			var colors = d3.scale.category10();
 
 			//Create SVG element
-			var svg = d3.select("#mbars")
+			var svg = d3.select(mbars)
 						.append("svg")
 						.attr("width", w)
 						.attr("height", h);
@@ -211,4 +178,4 @@
 	        .style("text-decoration", "underline")
 	        .text("# of programmatic visits per month.");
 
-</script>
+}
