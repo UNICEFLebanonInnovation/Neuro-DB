@@ -24,15 +24,20 @@
 <div id="mbars2"></div>
 
 <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+<!--<script src="https://d3js.org/d3.v5.min.js"></script>-->
+<!--<script src="https://d3js.org/d3-selection.v1.js"></script>-->
+
 <script type="text/javascript" src="{% static 'js/d3.chart.js' %}"></script>
 
 <script type="text/javascript">
 
     var trips_per_month = '{{ trips_per_month|safe }}';
     var mperday = JSON.parse(trips_per_month);
-    d3Chart(mperday, '#mbars2', 'time');
-
-
+    var domain_set = [
+    {"name": "Beirut"}, {"name": "Beirut ML"}, {"name": "Tyre"},
+    {"name": "Zahle"}, {"name": "Tripoli"}, {"name": "Qoubayat"}
+    ]
+    d3Chart([], '#mbars2', 'band', domain_set);
 </script>
 
 <script type="text/javascript">

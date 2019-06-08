@@ -1,42 +1,81 @@
+{% load static %}
 
-function d3Chart(dataset, mbars, chart_domain, domain_set) {
+<style>
+  .axis path, .axis line { fill: none; stroke: black; shape-rendering: crispEdges;}
+  .axis text { font-family: sans-serif; font-size: 11px;}
+  .dot {stroke: #000;}
+  .legend {padding: 5px;font: 10px sans-serif;background: yellow;box-shadow: 2px 2px 1px #888;}
+  div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 100px;
+    height: 50px;
+    padding: 2px;
+    font: 12px sans-serif;
+    background-color: #337ab7;
+    border: 0px;
+    color: white;
+    font-size: 12px;
+    border-radius: 5px;
+    pointer-events: none;
+  }
+</style>
+<div id="mbars"></div>
+<div id="mbars2"></div>
 
-    var w = 800;                        //width
-    var h = 500;                        //height
-    var padding = {top: 40, right: 40, bottom: 40, left:40},
-    width = 960 - padding.left - padding.right,
-    height = 500 - padding.top - padding.bottom;
-    var stack = d3.layout.stack();
-    var color_hash = {
-          0 : ["Completed","#1f77b4"],
-            1 : ["Approved","#ff7f0e"],
-            2 : ["Submitted","#2ca02c"]
+<!--<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>-->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://d3js.org/d3-selection.v1.js"></script>
 
-    };
+<script type="text/javascript" src="{% static 'js/d3.chart.js' %}"></script>
+
+<!--<script type="text/javascript">-->
+
+    <!--var trips_per_month = '{{ trips_per_month|safe }}';-->
+    <!--var mperday = JSON.parse(trips_per_month);-->
+    <!--var domain_set = [-->
+    <!--{"name": "Beirut"}, {"name": "Beirut ML"}, {"name": "Tyre"},-->
+    <!--{"name": "Zahle"}, {"name": "Tripoli"}, {"name": "Qoubayat"}-->
+    <!--]-->
+    <!--d3Chart(mperday, '#mbars2', 'band', domain_set);-->
+
+
+<!--</script>-->
+
+<script type="text/javascript">
+
+    var trips_per_month = '{{ trips_per_month|safe }}';
+    var mperday = JSON.parse(trips_per_month);
+
+		var w = 800;                        //width
+		var h = 500;                        //height
+		var padding = {top: 40, right: 40, bottom: 40, left:40};
+		var dataset;
+		//Set up stack method
+		var stack = d3.stack();
 
     var div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
+			dataset = mperday;
+
 			//Data, stacked
 			stack(dataset);
-            var xScale = null
 
-            if(chart_domain == 'time'){
-                //Set up scales
-                var xScale = d3.time.scale()
-                    .domain([new Date(dataset[0][0].time),d3.time.month.offset(new Date(dataset[0][dataset[0].length-2].time),1)])
-                    .rangeRound([0, w-padding.left-padding.right]);
-            }
-            if(chart_domain == 'band'){
-                //Set up scales
-                var xScale = d3.scale.ordinal()
-                    .domain(domain_set.map(d => d.name))
-                    .rangeRoundBands([0, w-padding.left-padding.right   ], .1);
-            }
+			var color_hash = {
+				  0 : ["Completed","#1f77b4"],
+					1 : ["Approved","#ff7f0e"],
+					2 : ["Submitted","#2ca02c"]
 
+			};
 
-			var yScale = d3.scale.linear()
+			//Set up scales
+			var xScale = d3.scaleTime()
+				.domain([new Date(dataset[0][0].time),d3.timeMonth.offset(new Date(dataset[0][dataset[0].length-2].time),1)])
+				.rangeRound([0, w-padding.left-padding.right]);
+
+			var yScale = d3.scaleLinear()
 				.domain([0,
 					d3.max(dataset, function(d) {
 						return d3.max(d, function(d) {
@@ -46,28 +85,21 @@ function d3Chart(dataset, mbars, chart_domain, domain_set) {
 				])
 				.range([h-padding.bottom-padding.top,0]);
 
-            if(chart_domain == 'time'){
-                var xAxis = d3.svg.axis()
-                               .scale(xScale)
-                               .orient("bottom")
-                               .ticks(domain_set,1);
+			console.log(yScale);
 
-            }else{
-                var xAxis = d3.svg.axis()
-                               .scale(xScale)
-                               .orient("bottom");
-            }
+			var xAxis = d3.axisBottom()
+						   .scale(xScale)
+						   .ticks(d3.timeMonth,1);
 
-			var yAxis = d3.svg.axis()
+			var yAxis = d3.axisLeft()
 						   .scale(yScale)
-						   .orient("left")
 						   .ticks(10);
 
 			//Easy colors accessible via a 10-step ordinal scale
-			var colors = d3.scale.category10();
+			var colors = d3.schemeCategory10;
 
 			//Create SVG element
-			var svg = d3.select(mbars)
+			var svg = d3.select("#mbars")
 						.append("svg")
 						.attr("width", w)
 						.attr("height", h);
@@ -83,6 +115,10 @@ function d3Chart(dataset, mbars, chart_domain, domain_set) {
 					return color_hash[dataset.indexOf(d)][1];
 				});
 
+      var t = d3.transition().duration(function(d,i){
+			    	 return 500 * i;
+			     }).ease(d3.easeLinear);
+
 			// Add a rect for each data value
 			var rects = groups.selectAll("rect")
 				.data(function(d) { return d; })
@@ -93,7 +129,7 @@ function d3Chart(dataset, mbars, chart_domain, domain_set) {
             div.transition()
                 .duration(200)
                 .style("opacity", .9);
-            div	.html(d.y+" "+d.type+" - "+d.x)
+            div.html(d.y+" "+d.type+" - "+d.x)
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
             })
@@ -104,20 +140,13 @@ function d3Chart(dataset, mbars, chart_domain, domain_set) {
         })
 				.style("fill-opacity",1e-6);
 
-
-			rects.transition()
-			     .duration(function(d,i){
-			    	 return 500 * i;
-			     })
-			     .ease("linear")
-			    .attr("x", function(d) {
-			        if(chart_domain == 'time'){
-					    return xScale(new Date(d.time));
-			        }else{
-			            return xScale(d.name);
-			        }
+			rects.attr("x", function(d) {
+					return xScale(new Date(d.time));
 				})
 				.attr("y", function(d) {
+				  console.log(yScale(d.y0));
+				  console.log(yScale(d.y));
+				  console.log(h);
 					return -(- yScale(d.y0) - yScale(d.y) + (h - padding.top - padding.bottom)*2);
 				})
 				.attr("height", function(d) {
@@ -130,7 +159,6 @@ function d3Chart(dataset, mbars, chart_domain, domain_set) {
 					.attr("class","x axis")
 					.attr("transform","translate(40," + (h - padding.bottom) + ")")
 					.call(xAxis);
-
 
 				svg.append("g")
 					.attr("class","y axis")
@@ -190,4 +218,4 @@ function d3Chart(dataset, mbars, chart_domain, domain_set) {
 	        .style("text-decoration", "underline")
 	        .text("# of programmatic visits per month.");
 
-}
+</script>
