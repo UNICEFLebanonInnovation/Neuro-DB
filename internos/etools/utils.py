@@ -79,7 +79,8 @@ def get_partner_profile_details():
     #  interventions
     cursor.execute(
         "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
-        "budget_currency, total_budget, offices_names, location_p_codes, status " 
+        "budget_currency, total_budget, offices_names, location_p_codes, status, "
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
         "WHERE date_part('year', end_date) = %s AND status <> %s "
         "ORDER BY start", [now.year, PCA.CANCELLED])
@@ -99,13 +100,16 @@ def get_partner_profile_details():
                 'total_budget': row[8],
                 'offices_names': row[9],
                 'location_p_codes': row[10],
-                'status': row[11]
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
             })
 
     #  Active interventions
     cursor.execute(
         "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
-        "budget_currency, total_budget, offices_names, location_p_codes, status " 
+        "budget_currency, total_budget, offices_names, location_p_codes, status, "
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
         "WHERE date_part('year', end_date) = %s AND status = %s "
         "ORDER BY start", [now.year, PCA.ACTIVE])
@@ -125,13 +129,16 @@ def get_partner_profile_details():
                 'total_budget': row[8],
                 'offices_names': row[9],
                 'location_p_codes': row[10],
-                'status': row[11]
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
             })
 
     #  PDs
     cursor.execute(
         "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
-        "budget_currency, total_budget, offices_names, location_p_codes, status " 
+        "budget_currency, total_budget, offices_names, location_p_codes, status, "
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
         "WHERE date_part('year', end_date) = %s AND status <> %s AND document_type = %s "
         "ORDER BY start", [now.year, PCA.CANCELLED, PCA.PD])
@@ -151,13 +158,16 @@ def get_partner_profile_details():
                 'total_budget': row[8],
                 'offices_names': row[9],
                 'location_p_codes': row[10],
-                'status': row[11]
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
             })
 
     #  Active PDs
     cursor.execute(
         "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
-        "budget_currency, total_budget, offices_names, location_p_codes, status " 
+        "budget_currency, total_budget, offices_names, location_p_codes, status, " 
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
         "WHERE date_part('year', end_date) = %s AND status = %s AND document_type = %s "
         "ORDER BY start", [now.year, PCA.ACTIVE, PCA.PD])
@@ -177,13 +187,16 @@ def get_partner_profile_details():
                 'total_budget': row[8],
                 'offices_names': row[9],
                 'location_p_codes': row[10],
-                'status': row[11]
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
             })
 
     # SFFAs
     cursor.execute(
         "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
-        "budget_currency, total_budget, offices_names, location_p_codes, status " 
+        "budget_currency, total_budget, offices_names, location_p_codes, status, " 
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
         "WHERE date_part('year', end_date) = %s AND status <> %s AND document_type = %s "
         "ORDER BY start", [now.year, PCA.CANCELLED, PCA.SSFA])
@@ -203,13 +216,16 @@ def get_partner_profile_details():
                 'total_budget': row[8],
                 'offices_names': row[9],
                 'location_p_codes': row[10],
-                'status': row[11]
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
             })
 
     #  Active SFFAs
     cursor.execute(
         "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
-        "budget_currency, total_budget, offices_names, location_p_codes, status " 
+        "budget_currency, total_budget, offices_names, location_p_codes, status, "
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
         "WHERE date_part('year', end_date) = %s AND status = %s AND document_type = %s "
         "ORDER BY start", [now.year, PCA.ACTIVE, PCA.SSFA])
@@ -229,7 +245,9 @@ def get_partner_profile_details():
                 'total_budget': row[8],
                 'offices_names': row[9],
                 'location_p_codes': row[10],
-                'status': row[11]
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
             })
 
     #  programmatic_visits

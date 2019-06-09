@@ -28,7 +28,13 @@ class PartnerProfileView(TemplateView):
     def get_context_data(self, **kwargs):
 
         partners_info = []
+        donors = {}
         now = datetime.datetime.now()
+        sections = Section.objects.filter(etools=True)
+        donors_set = PCA.objects.filter(donors__len__gt=0).values('donors')
+        for item in donors_set:
+            for donor in item['donors']:
+                donors[donor] = donor
 
         engagements = Engagement.objects.filter(start_date__year=now.year).exclude(status=Engagement.CANCELLED)
         spot_checks = engagements.filter(engagement_type='sc')
@@ -57,6 +63,8 @@ class PartnerProfileView(TemplateView):
         partners_info = get_partner_profile_details()
 
         return {
+            'donors': donors,
+            'sections': sections,
             'partners': partners,
             'nbr_interventions': interventions.count(),
             'nbr_active_interventions': active_interventions.count(),

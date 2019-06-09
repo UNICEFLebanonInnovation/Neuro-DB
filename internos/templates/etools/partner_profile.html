@@ -33,7 +33,7 @@
     padding: 15px 0;
     opacity: 0.9;
   }
-  .btn-filter.on {
+  .btn-filter.on, .btn-filter-content.on {
     background-color: #0089d2;
     color: white;
   }
@@ -93,6 +93,38 @@
 
       <div class="x_title" style="position: relative;">
         <div class="btn-group" role="group" aria-label="" style="padding-left: 15px; padding-top: 5px;" data-step="6" data-intro="Filter partners">
+
+          <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Sections
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                {% for section in sections %}
+                <li>
+                  <button type="button" itemref="sections" itemscope="section-content" content="{{ section.name }}" class="btn btn-default btn-filter-content">
+                    {{ section.name }}
+                  </button>
+                </li>
+                {% endfor %}
+              </ul>
+          </div>
+
+          <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Donors
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                {% for donor in donors %}
+                <li>
+                  <button type="button" itemref="donors" itemscope="donor-content" content="{{ donor }}" class="btn btn-default btn-filter-content">
+                    {{ donor }}
+                  </button>
+                </li>
+                {% endfor %}
+              </ul>
+          </div>
 
           <button type="button" itemref="micro-assessments" class="btn btn-default btn-filter">
             <span class="label label-primary">{{ nbr_micro_assessments }}</span>
@@ -317,7 +349,7 @@
             <div class="panel-body" style="border-top: 1px solid #ddd;">
                 <h5 class="modal-title"><span class="label label-primary">{{ partner.interventions|length }}</span> Interventions</h5>
               {% for inter in partner.interventions %}
-                <div class="" style="padding-top: 5px; padding-bottom: 5px;">
+                <div class="filter-content" style="padding-top: 5px; padding-bottom: 5px;" section-content="{{ inter.section_names }}" donor-content="{{ inter.donors }}">
                   <div class="col-md-6">
                     <i class="fa fa-file-text-o" style="font-size: 16px; color: #0089d2;"></i>
                     <a href="https://etools.unicef.org/pmp/interventions/{{ inter.etl_id }}/details" target="_blank">
@@ -340,6 +372,14 @@
                   <div class="col-md-4">
                     <i class="fa fa-usd" style="font-size: 16px; color: #0089d2;"></i>
                     {{ inter.total_budget }} {{ inter.budget_currency }}
+                  </div>
+                  <div class="col-md-6">
+                    <i class="fa fa-sitemap" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ inter.section_names }}
+                  </div>
+                  <div class="col-md-4">
+                    <i class="fa fa-users" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ inter.donors }}
                   </div>
                 </div>
               {% endfor %}
@@ -633,6 +673,44 @@
             $('.btn-filter').removeClass('on');
             $('.partner-profile').removeClass('active');
             $('#total-partners').text($('.partner-profile').length);
+        });
+
+        $('.btn-filter-content').click(function(){
+            $('.btn-filter').removeClass('on');
+            $('.btn-filter-content').removeClass('on');
+            $('.partner-profile').removeClass('active');
+            $('#total-partners').text($('.partner-profile').length);
+
+            if($(this).hasClass('on')){
+              $(this).removeClass('on');
+            }else{
+              $(this).addClass('on');
+            }
+
+            if($('.btn-filter-content.on').length){
+              $('.partner-profile').hide();
+            }else{
+              $('.partner-profile').show();
+            }
+
+            $('.btn-filter-content.on').each(function(i){
+                var content = $(this).attr('content');
+                var itemscope = $(this).attr('itemscope');
+                $('.partner-profile').filter(function() {
+                    var result = 0;
+                    var count = parseInt($(this).find('.filter-content').length)
+                    $($(this).find('.filter-content')).each(function(i){
+                        result = result + parseInt($(this).attr(itemscope).indexOf(content));
+                    });
+                    if(count == 0){ return false; }
+                    if(result == 0){ return true; }
+                    if(result > 0) { return true; }
+                    return false;
+                }).show(function(){
+                    $(this).addClass('active');
+                    $('#total-partners').text($('.partner-profile.active').length);
+                });
+            });
         });
 
         $('.btn-filter').click(function(){
