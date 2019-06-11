@@ -336,7 +336,7 @@ def calculate_indicators_values_percentage(ai_db):
     cursor = connection.cursor()
     cursor.execute(
         "SELECT distinct a1.id, a1.calculated_percentage, aa.name, ai.id, ai.values_sector, "
-        "ai.values_sites_sector, ai.values_partners_sector, ai.values_partners_sites_sector, "
+        "ai.values_sites_sector, ai.values_partners_sector, ai.values_partners_sites_sector "
         "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, "
         "public.activityinfo_indicator_sub_indicators ais, public.activityinfo_indicator ai "
         "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id " 
