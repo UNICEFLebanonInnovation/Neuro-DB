@@ -137,11 +137,16 @@ class PartnerProfileMapView(TemplateView):
                     'indicators': []
                 }
 
+            try:
+                cumulative_value = "{:,}".format(round(float(item[12]), 1))
+            except Exception:
+                cumulative_value = 0
+
             locations[item[0]]['indicators'].append({
                 'indicator_units': item[4].upper(),
                 'partner_label': item[10],
                 'indicator_name': item[11],
-                'cumulative_value': "{:,}".format(round(float(item[12]), 1)),
+                'cumulative_value': cumulative_value,
             })
 
         locations = json.dumps(locations.values())
