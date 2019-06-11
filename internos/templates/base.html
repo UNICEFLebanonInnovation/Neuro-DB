@@ -114,14 +114,14 @@
                     </ul>
                   </li>
 
-                  <li><a><i class="fa fa-pie-chart"></i> Data Visualisations <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      {% get_databases as databases %}
-                      {% for db in databases %}
-                        <li><a href="{% url 'activityinfo:dashboard' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
-                      {% endfor %}
-                    </ul>
-                  </li>
+                  <!--<li><a><i class="fa fa-pie-chart"></i> Data Visualisations <span class="fa fa-chevron-down"></span></a>-->
+                    <!--<ul class="nav child_menu">-->
+                      <!--{% get_databases as databases %}-->
+                      <!--{% for db in databases %}-->
+                        <!--<li><a href="{% url 'activityinfo:dashboard' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>-->
+                      <!--{% endfor %}-->
+                    <!--</ul>-->
+                  <!--</li>-->
 
                   <li><a href="{% url 'activityinfo:hpm' %}"><i class="fa fa-bar-chart-o"></i> HPM <span class="fa fa-file-text-o"></span></a></li>
                   <!--<li><a href="{% url 'etools:partner_profile' %}"><i class="fa fa-slideshare"></i> Partner Profile <span class="fa fa-file-text-o"></span></a></li>-->
