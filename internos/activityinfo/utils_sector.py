@@ -13,9 +13,9 @@ def reset_indicators_values(ai_id):
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_id)
     for indicator in indicators:
         indicator.values_sector = {}
-        indicator.values_site_sector = {}
+        indicator.values_sites_sector = {}
         indicator.values_partners_sector = {}
-        indicator.values_partners_site_sector = {}
+        indicator.values_partners_sites_sector = {}
         indicator.cumulative_values_sector = {}
         indicator.save()
 
