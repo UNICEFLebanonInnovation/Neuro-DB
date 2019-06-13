@@ -302,7 +302,7 @@ def calculate_achievement(indicator, cumulative_values, target, month=None, part
 
 @register.assignment_tag
 def get_indicator_achieved_sector(indicator, month=None, partner=None, gov=None):
-    return calculate_achievement(indicator, indicator['cumulative_values'], indicator['target_sector'], month=month,
+    return calculate_achievement(indicator, indicator['cumulative_values_sector'], indicator['target_sector'], month=month,
                                  partner=partner, gov=gov)
 
 
@@ -487,6 +487,11 @@ def get_sub_indicators_data(ai_id, is_sector=False):
             'values_partners_gov_live',
             'cumulative_values_live',
             'values_tags',
+            'cumulative_values_sector',
+            'values_partners_sites_sector',
+            'values_partners_sector',
+            'values_sites_sector',
+            'values_sector',
         ).distinct()
 
         if is_sector:
