@@ -514,16 +514,11 @@ class ReportSectorView(TemplateView):
             'status_color_sector',
             'status',
             'status_sector',
-            'cumulative_values',
-            'values_partners_gov',
-            'values_partners',
-            'values_gov',
-            'values',
-            'values_live',
-            'values_gov_live',
-            'values_partners_live',
-            'values_partners_gov_live',
-            'cumulative_values_live',
+            'cumulative_values_sector',
+            'values_partners_sites_sector',
+            'values_partners_sector',
+            'values_sites_sector',
+            'values_sector',
         ).distinct()
 
         months = []
