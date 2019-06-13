@@ -118,8 +118,24 @@
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
                              aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
                              style="position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="8" data-intro="Search for a specific Indicator">
-                      <a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" data-step="9" data-intro="Download Dashboard report and raw data" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>
+                      <!--<a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" data-step="9" data-intro="Download Dashboard report and raw data" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>-->
                     </h2>
+                    <ul class="nav navbar-left" style="margin-top: -7px;" data-step="10" data-intro="Download Dashboard report and raw data">
+                      <li class="dropdown">
+                        <a id="drop5" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
+                           data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                    <i class="fa fa-download faa-bounce animated-hover" style="font-size: 25px;"></i>
+                          <span class="caret"></span>
+                        </a>
+                        <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
+                          <li role="presentation" class="divider" style="margin-top: -1px;"></li>
+                          <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Current dashboard</a>
+                          <li role="presentation" class="divider"></li>
+                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full raw data</a>
+                          <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
+                        </ul>
+                      </li>
+                    </ul>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                     </ul>
