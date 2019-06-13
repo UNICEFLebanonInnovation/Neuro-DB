@@ -26,6 +26,10 @@
               <h4 style="color: #0089d2;">
                 <i class="fa fa-angle-right" style="padding-left: 10px; padding-right: 5px; font-size: 20px; font-weight: bold;"></i>
                 <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a>
+                <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring" style="padding-left: 20px;"
+                    data-step="9" data-intro="Open live ActivityInfo Dashboard">
+                  <i class="fa fa-rss faa-flash animated" style="font-size: 15px; color: #d23900;"></i>
+                </a>
               </h4>
             </div>
           </div>
