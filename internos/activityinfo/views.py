@@ -440,6 +440,135 @@ class ReportMapView(TemplateView):
         }
 
 
+class ReportDisabilityView(TemplateView):
+
+    template_name = 'activityinfo/report_map.html'
+
+    def get_context_data(self, **kwargs):
+        from django.db import connection
+        from internos.etools.models import PCA
+        from internos.activityinfo.templatetags.util_tags import number_format
+        from internos.activityinfo.utils import load_reporting_map
+
+        now = datetime.datetime.now()
+        cursor = connection.cursor()
+        selected_filter = False
+        partner = None
+        rows = []
+        selected_partner = self.request.GET.get('partner', 0)
+        selected_governorate = self.request.GET.get('governorate', 0)
+        selected_caza = self.request.GET.get('caza', 0)
+        selected_donor = self.request.GET.get('donor', 0)
+
+        partner_info = {}
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month_number = last_month.strftime("%m")
+        month = int(last_month.strftime("%m"))
+        month_name = last_month.strftime("%B")
+
+        ai_id = int(self.request.GET.get('ai_id', 0))
+
+        database = Database.objects.get(ai_id=ai_id)
+
+        report = ActivityReport.objects.filter(database=database)
+        if database.is_funded_by_unicef:
+            report = report.filter(funded_by__contains='UNICEF')
+
+        rows = load_reporting_map(ai_id, partner=selected_partner, governorate=selected_governorate,
+                                  caza=selected_caza, donor=selected_donor)
+
+        # if selected_donor:
+        #     cursor.execute(
+        #         "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
+        #         "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
+        #         "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
+        #         "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
+        #         "ai.cumulative_values ->> 'months'::text AS cumulative_value "
+        #         "FROM public.activityinfo_indicator ai "
+        #         "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
+        #         "INNER JOIN public.activityinfo_activity aa ON aa.id = ai.activity_id "
+        #         "INNER JOIN public.etools_pca pmp ON pmp.id = aa.programme_document_id "
+        #         "WHERE ar.database_id = %s AND pmp.donor @> %s ",
+        #         [str(ai_id), selected_donor])
+        #     rows = cursor.fetchall()
+
+        locations = {}
+        ctr = 0
+        for item in rows:
+            if not item[2] or not item[3]:
+                continue
+            if item[0] not in locations:
+                ctr += 1
+                locations[item[0]] = {
+                    'location_name': item[1],
+                    'location_longitude': item[2],
+                    'location_latitude': item[3],
+                    'governorate': item[5],
+                    'caza': '{}-{}'.format(item[6], item[7]),
+                    'cadastral': '{}-{}'.format(item[8], item[9]),
+                    'indicators': []
+                }
+
+            try:
+                cumulative_value = "{:,}".format(round(float(item[12]), 1))
+            except Exception:
+                cumulative_value = 0
+
+            locations[item[0]]['indicators'].append({
+                'indicator_units': item[4].upper(),
+                'partner_label': item[10],
+                'indicator_name': item[11],
+                'cumulative_value': cumulative_value,
+            })
+
+        locations = json.dumps(locations.values())
+
+        if selected_partner:
+            try:
+                partner = Partner.objects.get(number=selected_partner)
+                if partner.partner_etools:
+                    partner_info = partner.detailed_info
+            except Exception as ex:
+                print(ex)
+                pass
+
+        partners = report.values('partner_label', 'partner_id').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
+        cazas = report.values('location_adminlevel_caza_code',
+                              'location_adminlevel_caza').distinct()
+        donors_set = PCA.objects.filter(end__year=now.year, donors__isnull=False, donors__len__gt=0).values('number', 'donors').distinct()
+
+        donors = {}
+        for item in donors_set:
+            for donor in item['donors']:
+                donors[donor] = donor
+
+        return {
+            'selected_partner': selected_partner,
+            'selected_governorate': selected_governorate,
+            'selected_caza': selected_caza,
+            'selected_donor': selected_donor,
+            'reports': report.order_by('id'),
+            'month': month,
+            'year': today.year,
+            'month_name': month_name,
+            'month_number': month_number,
+            'database': database,
+            'partners': partners,
+            'governorates': governorates,
+            'cazas': cazas,
+            'donors': donors,
+            'partner_info': partner_info,
+            'partner': partner,
+            'selected_filter': selected_filter,
+            'locations': locations,
+            'locations_count': ctr
+        }
+
+
 class ReportSectorView(TemplateView):
 
     template_name = 'activityinfo/report_sector.html'
