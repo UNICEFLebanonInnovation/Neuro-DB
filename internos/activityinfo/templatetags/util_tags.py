@@ -74,6 +74,13 @@ def percentage_int(number, total):
     return 0
 
 
+@register.filter(name='percentage_float')
+def percentage_float(number, total):
+    if number:
+        return float(number) * 100 / float(total)
+    return 0
+
+
 @register.filter(name='array_value')
 def array_value(data, key):
     if key in data:

@@ -156,28 +156,28 @@
                               {% for tag in tags_gender %}
                                 <td>
                                   {% get_indicator_tag_value item tag.tag_gender__name as value %}
-                                  {{ value }}{% if value != "0" %}%{% endif %}
+                                  {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
                                 </td>
                               {% endfor %}
 
                               {% for tag in tags_nationality %}
                                 <td>
                                   {% get_indicator_tag_value item tag.tag_nationality__name as value %}
-                                  {{ value }}{% if value != "0" %}%{% endif %}
+                                  {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
                                 </td>
                               {% endfor %}
 
                               {% for tag in tags_age %}
                                 <td>
                                   {% get_indicator_tag_value item tag.tag_age__name as value %}
-                                  {{ value }}{% if value != "0" %}%{% endif %}
+                                  {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
                                 </td>
                               {% endfor %}
 
                               {% for tag in tags_disability %}
                                 <td>
                                   {% get_indicator_tag_value item tag.tag_disability__name as value %}
-                                  {{ value }}{% if value != "0" %}%{% endif %}
+                                  {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
                                 </td>
                               {% endfor %}
 

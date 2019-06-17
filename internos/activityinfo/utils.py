@@ -832,7 +832,8 @@ def calculate_indicators_tags():
                 value += float(c_value)
 
             try:
-                indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                # indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                indicator.values_tags[tag.name] = value
             except Exception as ex:
                 # print(ex.message)
                 indicator.values_tags[tag.name] = 0
@@ -852,7 +853,8 @@ def calculate_indicators_tags():
                 value += float(c_value)
 
             try:
-                indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                # indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                indicator.values_tags[tag.name] = value
             except Exception as ex:
                 # print(ex.message)
                 indicator.values_tags[tag.name] = 0
@@ -872,7 +874,8 @@ def calculate_indicators_tags():
                 value += float(c_value)
 
             try:
-                indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                # indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                indicator.values_tags[tag.name] = value
             except Exception as ex:
                 # print(ex.message)
                 indicator.values_tags[tag.name] = 0
@@ -892,7 +895,8 @@ def calculate_indicators_tags():
                 value += float(c_value)
 
             try:
-                indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                # indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                indicator.values_tags[tag.name] = value
             except Exception as ex:
                 # print(ex.message)
                 indicator.values_tags[tag.name] = 0
