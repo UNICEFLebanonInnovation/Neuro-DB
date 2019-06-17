@@ -680,7 +680,7 @@ def calculate_indicators_status(database):
             indicator.status_sector = 'Off Track'
             indicator.status_color_sector = '#FF0000'
         elif cumulative_per > over_target:
-            indicator.status_sector = 'Over Target'
+            indicator.status_sector = 'Over Track'
             indicator.status_color_sector = '#FFA500'
         else:
             indicator.status_sector = 'On Track'
