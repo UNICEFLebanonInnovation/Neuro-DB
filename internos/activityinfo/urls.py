@@ -43,7 +43,7 @@ urlpatterns = [
     ),
     url(
         regex=r'^report-disability/$',
-        view=views.ReportMapView.as_view(),
+        view=views.ReportDisabilityView.as_view(),
         name='report_disability'
     ),
     url(

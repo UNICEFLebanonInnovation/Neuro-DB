@@ -442,7 +442,7 @@ class ReportMapView(TemplateView):
 
 class ReportDisabilityView(TemplateView):
 
-    template_name = 'activityinfo/report_map.html'
+    template_name = 'activityinfo/report_disability.html'
 
     def get_context_data(self, **kwargs):
         from django.db import connection
