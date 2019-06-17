@@ -302,8 +302,8 @@ def calculate_achievement(indicator, cumulative_values, target, month=None, part
 
 @register.assignment_tag
 def get_indicator_achieved_sector(indicator, month=None, partner=None, gov=None):
-    return calculate_achievement(indicator, indicator['cumulative_values_sector'], indicator['target_sector'], month=month,
-                                 partner=partner, gov=gov)
+    return calculate_achievement(indicator, indicator['cumulative_values_sector'], indicator['target_sector'],
+                                 month=month, partner=partner, gov=gov)
 
 
 @register.assignment_tag
