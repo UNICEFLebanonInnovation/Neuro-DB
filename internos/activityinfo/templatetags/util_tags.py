@@ -77,7 +77,7 @@ def percentage_int(number, total):
 @register.filter(name='percentage_float')
 def percentage_float(number, total):
     if number:
-        return float(number) * 100 / float(total)
+        return float(round((number * 100.0) / total, 2))
     return 0
 
 
