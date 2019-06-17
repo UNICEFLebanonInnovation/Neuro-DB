@@ -61,13 +61,10 @@
                           <span class="caret"></span>
                         </a>
                         <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
-                          <li role="presentation" class="divider" style="margin-top: -1px;"></li>
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:hpm_report' %}?month=1">January</a>
-                          <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:hpm_report' %}?month=2">February</a>
-                          <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:hpm_report' %}?month=3">March</a>
-                          <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
+                          {% for item in months %}
+                            <li role="presentation" class="divider" style="margin-top: -1px;"></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:hpm_report' %}?month={{ item.month }}">{{ item.month_name }}</a>
+                          {% endfor %}
                         </ul>
                       </li>
                     </ul>
