@@ -681,6 +681,7 @@ class ReportTagView(TemplateView):
     template_name = 'activityinfo/report_tags.html'
 
     def get_context_data(self, **kwargs):
+        from internos.activityinfo.templatetags.util_tags import get_indicator_tag_value
         selected_filter = False
         selected_partner = self.request.GET.get('partner', 0)
         selected_partners = self.request.GET.getlist('partners', [])
@@ -776,6 +777,53 @@ class ReportTagView(TemplateView):
             'values_tags',
         ).distinct()
 
+        gender_calculation = {}
+        nationality_calculation = {}
+        age_calculation = {}
+        disability_calculation = {}
+        for item in master_indicators:
+            for tag in tags_gender:
+                if tag['tag_gender__label'] not in gender_calculation:
+                    gender_calculation[tag['tag_gender__label']] = 0
+                value = get_indicator_tag_value(item, tag['tag_gender__name'])
+                gender_calculation[tag['tag_gender__label']] += float(value)
+
+            for tag in tags_nationality:
+                if tag['tag_nationality__label'] not in nationality_calculation:
+                    nationality_calculation[tag['tag_nationality__label']] = 0
+                value = get_indicator_tag_value(item, tag['tag_nationality__name'])
+                nationality_calculation[tag['tag_nationality__label']] += float(value)
+
+            for tag in tags_disability:
+                if tag['tag_disability__label'] not in disability_calculation:
+                    disability_calculation[tag['tag_disability__label']] = 0
+                value = get_indicator_tag_value(item, tag['tag_disability__name'])
+                disability_calculation[tag['tag_disability__label']] += float(value)
+
+            for tag in tags_age:
+                if tag['tag_age__name'] not in age_calculation:
+                    age_calculation[tag['tag_age__name']] = 0
+                value = get_indicator_tag_value(item, tag['tag_age__name'])
+                age_calculation[tag['tag_age__name']] += float(value)
+
+        print(disability_calculation)
+
+        gender_values = []
+        for key, value in gender_calculation.items():
+            gender_values.append({ "label": key, "value": value})
+
+        nationality_values = []
+        for key, value in nationality_calculation.items():
+            nationality_values.append({ "label": key, "value": value})
+
+        disability_values = []
+        for key, value in disability_calculation.items():
+            disability_values.append({ "label": key, "value": value})
+
+        age_values = []
+        for key, value in age_calculation.items():
+            age_values.append({ "label": key, "value": value})
+
         months = []
         for i in range(1, 13):
             months.append((i, datetime.date(2008, i, 1).strftime('%B')))
@@ -804,7 +852,15 @@ class ReportTagView(TemplateView):
             'tags_gender': tags_gender,
             'tags_nationality': tags_nationality,
             'tags_age': tags_age,
-            'tags_disability': tags_disability
+            'tags_disability': tags_disability,
+            'gender_values': json.dumps(gender_values),
+            'nationality_values': json.dumps(nationality_values),
+            'disability_values': json.dumps(disability_values),
+            'age_values': json.dumps(age_values),
+            'gender_keys': json.dumps(gender_calculation.keys()),
+            'nationality_keys': json.dumps(nationality_calculation.keys()),
+            'disability_keys': json.dumps(disability_calculation.keys()),
+            'age_keys': json.dumps(age_calculation.keys()),
         }
 
 

@@ -76,9 +76,12 @@ def percentage_int(number, total):
 
 @register.filter(name='percentage_float')
 def percentage_float(number, total):
-    if number:
-        return float(round((float(number) * 100.0) / float(total), 2))
-    return 0
+    try:
+        if number and not isinstance(total, dict):
+            return float(round((float(number) * 100.0) / float(total), 2))
+        return 0
+    except Exception:
+        return 0
 
 
 @register.filter(name='array_value')

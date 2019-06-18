@@ -34,10 +34,22 @@
 </style>
 
 <div id="mapView" class="col-lg-8"></div>
+<div id="mapView2" class="col-lg-8"></div>
 
 <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript" src="{% static 'js/d3.chart.js' %}"></script>
 
 <script>
+
+var data = [{label: "Disa 1", value: 20},
+            {label: "Disa 2", value: 10},
+            {label: "Disa 3", value: 10},
+            {label: "Disa 4", value: 20},
+            {label: "Disa 5", value: 30},
+            {label: "Disa 6", value: 40}
+            ]
+
+d3ChartPie(data, '#mapView2', ["Disa 1", "Disa 2", "Disa 3", "Disa 4", "Disa 5", "Disa 6"], ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c"], 600, 250);
 
 var svg = d3.select("#mapView")
 	.append("svg")
