@@ -445,20 +445,14 @@ class ReportDisabilityView(TemplateView):
     template_name = 'activityinfo/report_disability.html'
 
     def get_context_data(self, **kwargs):
-        from django.db import connection
-        from internos.etools.models import PCA
-        from internos.activityinfo.templatetags.util_tags import number_format
-        from internos.activityinfo.utils import load_reporting_map
-
-        now = datetime.datetime.now()
-        cursor = connection.cursor()
+        from internos.activityinfo.templatetags.util_tags import get_indicator_tag_value
         selected_filter = False
-        partner = None
-        rows = []
         selected_partner = self.request.GET.get('partner', 0)
+        selected_partners = self.request.GET.getlist('partners', [])
+        selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorate = self.request.GET.get('governorate', 0)
-        selected_caza = self.request.GET.get('caza', 0)
-        selected_donor = self.request.GET.get('donor', 0)
+        selected_governorates = self.request.GET.get('governorates', 0)
+        selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
         partner_info = {}
         today = datetime.date.today()
@@ -476,96 +470,83 @@ class ReportDisabilityView(TemplateView):
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
-        rows = load_reporting_map(ai_id, partner=selected_partner, governorate=selected_governorate,
-                                  caza=selected_caza, donor=selected_donor)
-
-        # if selected_donor:
-        #     cursor.execute(
-        #         "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
-        #         "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
-        #         "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
-        #         "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
-        #         "ai.cumulative_values ->> 'months'::text AS cumulative_value "
-        #         "FROM public.activityinfo_indicator ai "
-        #         "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
-        #         "INNER JOIN public.activityinfo_activity aa ON aa.id = ai.activity_id "
-        #         "INNER JOIN public.etools_pca pmp ON pmp.id = aa.programme_document_id "
-        #         "WHERE ar.database_id = %s AND pmp.donor @> %s ",
-        #         [str(ai_id), selected_donor])
-        #     rows = cursor.fetchall()
-
-        locations = {}
-        ctr = 0
-        for item in rows:
-            if not item[2] or not item[3]:
-                continue
-            if item[0] not in locations:
-                ctr += 1
-                locations[item[0]] = {
-                    'location_name': item[1],
-                    'location_longitude': item[2],
-                    'location_latitude': item[3],
-                    'governorate': item[5],
-                    'caza': '{}-{}'.format(item[6], item[7]),
-                    'cadastral': '{}-{}'.format(item[8], item[9]),
-                    'indicators': []
-                }
-
-            try:
-                cumulative_value = "{:,}".format(round(float(item[12]), 1))
-            except Exception:
-                cumulative_value = 0
-
-            locations[item[0]]['indicators'].append({
-                'indicator_units': item[4].upper(),
-                'partner_label': item[10],
-                'indicator_name': item[11],
-                'cumulative_value': cumulative_value,
-            })
-
-        locations = json.dumps(locations.values())
-
-        if selected_partner:
-            try:
-                partner = Partner.objects.get(number=selected_partner)
-                if partner.partner_etools:
-                    partner_info = partner.detailed_info
-            except Exception as ex:
-                print(ex)
-                pass
+        tags_disability = Indicator.objects.filter(activity__database__id__exact=database.id,
+                                                   tag_disability__isnull=False).exclude(is_sector=True)\
+            .values('tag_disability__name', 'tag_disability__label').distinct().order_by('tag_disability__sequence')
 
         partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
-        cazas = report.values('location_adminlevel_caza_code',
-                              'location_adminlevel_caza').distinct()
-        donors_set = PCA.objects.filter(end__year=now.year, donors__isnull=False, donors__len__gt=0).values('number', 'donors').distinct()
+        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
 
-        donors = {}
-        for item in donors_set:
-            for donor in item['donors']:
-                donors[donor] = donor
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
+        if database.mapped_db:
+            master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
+
+        master_indicators = master_indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'explication',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+            'values_tags',
+        ).distinct()
+
+        disability_calculation = {}
+        for item in master_indicators:
+            for tag in tags_disability:
+                if tag['tag_disability__label'] not in disability_calculation:
+                    disability_calculation[tag['tag_disability__label']] = 0
+                value = get_indicator_tag_value(item, tag['tag_disability__name'])
+                disability_calculation[tag['tag_disability__label']] += float(value)
+
+        disability_values = []
+        for key, value in disability_calculation.items():
+            disability_values.append({"label": key, "value": value})
+
+        months = []
+        for i in range(1, 13):
+            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         return {
             'selected_partner': selected_partner,
+            'selected_partners': selected_partners,
+            'selected_partner_name': selected_partner_name,
             'selected_governorate': selected_governorate,
-            'selected_caza': selected_caza,
-            'selected_donor': selected_donor,
+            'selected_governorates': selected_governorates,
+            'selected_governorate_name': selected_governorate_name,
             'reports': report.order_by('id'),
             'month': month,
             'year': today.year,
             'month_name': month_name,
             'month_number': month_number,
+            'months': months,
             'database': database,
             'partners': partners,
             'governorates': governorates,
-            'cazas': cazas,
-            'donors': donors,
+            'master_indicators': master_indicators,
             'partner_info': partner_info,
-            'partner': partner,
             'selected_filter': selected_filter,
-            'locations': locations,
-            'locations_count': ctr
+            'tags_disability': tags_disability,
+            'disability_values': json.dumps(disability_values),
+            'disability_keys': json.dumps(disability_calculation.keys()),
         }
 
 
@@ -805,8 +786,6 @@ class ReportTagView(TemplateView):
                     age_calculation[tag['tag_age__name']] = 0
                 value = get_indicator_tag_value(item, tag['tag_age__name'])
                 age_calculation[tag['tag_age__name']] += float(value)
-
-        print(disability_calculation)
 
         gender_values = []
         for key, value in gender_calculation.items():

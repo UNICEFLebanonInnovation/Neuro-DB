@@ -169,7 +169,7 @@ function d3ChartPie(data, mchart, domain, range, width, height){
 
 }
 
-function d3Chart(dataset, mbars, chart_domain, domain_set) {
+function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
 
     var w = 800;                        //width
     var h = 500;                        //height
@@ -201,8 +201,9 @@ function d3Chart(dataset, mbars, chart_domain, domain_set) {
             if(chart_domain == 'band'){
                 //Set up scales
                 var xScale = d3.scale.ordinal()
-                    .domain(domain_set.map(d => d.name))
-                    .rangeRoundBands([0, w-padding.left-padding.right   ], .1);
+                    .domain(domain)
+                    .range(range)
+                    .rangeRoundBands([0, w-padding.left-padding.right], .1);
             }
 
 
@@ -220,7 +221,7 @@ function d3Chart(dataset, mbars, chart_domain, domain_set) {
                 var xAxis = d3.svg.axis()
                                .scale(xScale)
                                .orient("bottom")
-                               .ticks(domain_set,1);
+                               .ticks(domain,1);
 
             }else{
                 var xAxis = d3.svg.axis()

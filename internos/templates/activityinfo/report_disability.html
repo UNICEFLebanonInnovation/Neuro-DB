@@ -6,15 +6,28 @@
 {% block project_title %}Neuro-DB{% endblock %}
 
 {% block content %}
-
 <style>
+.table-fixed {
+  box-shadow: -5px 7px 8px;
+  position: absolute;
+  margin-top: 12px;
+}
+.table thead {
+  background-color: #6ad0f9;
+  color: white;
+}
+.w-70 { width: 70px; max-width: 70px;}
+.w-100 { width: 100px; max-width: 100px;}
+.w-120 { width: 120px; max-width: 120px;}
+.w-130 { width: 130px; max-width: 130px;}
+.w-140 { width: 140px; max-width: 140px;}
+.w-150 { width: 150px; max-width: 150px;}
+.w-400 { width: 400px; max-width: 400px;}
+.w-500 { width: 500px; max-width: 500px;}
 
-  #mapView {
-    height: 500px;
-    width: 80%;
-    border: 1px solid;
-  }
-
+.collapse-all.active, .expanded-all.active {
+  color: #0089d2;
+}
   svg {
     width: 100%;
     height: 100%;
@@ -30,180 +43,69 @@
     stroke-width: 2px;
     fill: none;
   }
+  .chart_top {
+      float: left;
+      width: 375px;
+  }
 
 </style>
 
-<div id="mapView" class="col-lg-8"></div>
-<div id="mapView2" class="col-lg-8"></div>
+<!-- top tiles -->
+<div class="w-1002 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>{{ database.section }} - Disability Report</h2>
+
+        <ul class="nav navbar-right panel_toolbox">
+          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+
+      <div class="x_content">
+
+        <div class="chart_top">
+            <span class="count_top"><i class="fa fa-info"></i> Disability types</span>
+            <div id="chart-1"></div>
+        </div>
+
+        <div class="chart_top">
+            <span class="count_top"><i class="fa fa-info"></i> Disability types by Partner</span>
+            <div id="chart-2"></div>
+        </div>
+
+      </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
 
 <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
 <script type="text/javascript" src="{% static 'js/d3.chart.js' %}"></script>
 
 <script>
 
-var data = [{label: "Disa 1", value: 20},
-            {label: "Disa 2", value: 10},
-            {label: "Disa 3", value: 10},
-            {label: "Disa 4", value: 20},
-            {label: "Disa 5", value: 30},
-            {label: "Disa 6", value: 40}
-            ]
+var range = ["#31B6FD", "#F5C040", "#A5D027", "#5BCF78", "#4584D3"];
 
-d3ChartPie(data, '#mapView2', ["Disa 1", "Disa 2", "Disa 3", "Disa 4", "Disa 5", "Disa 6"], ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c"], 600, 250);
+    // Disabilities
+    var data1 = '{{ disability_values|safe }}';
+    data1 = JSON.parse(data1);
+    var domain1 = '{{ disability_keys|safe }}';
+    domain1 = JSON.parse(domain1)
+    d3ChartPie(data1, '#chart-1', domain1, range, 250, 150);
 
-var svg = d3.select("#mapView")
-	.append("svg")
-	.append("g")
-
-svg.append("g")
-	.attr("class", "slices");
-svg.append("g")
-	.attr("class", "labels");
-svg.append("g")
-	.attr("class", "lines");
-
-var width = 960,
-    height = 450,
-	radius = Math.min(width, height) / 2;
-
-var pie = d3.layout.pie()
-	.sort(null)
-	.value(function(d) {
-		return d.value;
-	});
-
-var arc = d3.svg.arc()
-	.outerRadius(radius * 0.8)
-	.innerRadius(radius * 0.4);
-
-var outerArc = d3.svg.arc()
-	.innerRadius(radius * 0.9)
-	.outerRadius(radius * 0.9);
-
-svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-var key = function(d){ return d.data.label; };
-var data = [{label: "Disa 1", value: 20},
-            {label: "Disa 2", value: 10},
-            {label: "Disa 3", value: 10},
-            {label: "Disa 4", value: 20},
-            {label: "Disa 5", value: 30},
-            {label: "Disa 6", value: 40}
-            ]
-
-var color = d3.scale.ordinal()
-	.domain(["Disa 1", "Disa 2", "Disa 3", "Disa 4", "Disa 5", "Disa 6"])
-	.range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c"]);
-
-function randomData (){
-	var labels = color.domain();
-	return data;
-	<!--return labels.map(function(label){-->
-		<!--return { label: label, value: Math.random() }-->
-	<!--});-->
-}
-
-change(randomData());
-
-d3.select(".randomize")
-	.on("click", function(){
-		change(randomData());
-	});
-
-
-function change(data) {
-
-	/* ------- PIE SLICES -------*/
-	var slice = svg.select(".slices").selectAll("path.slice")
-		.data(pie(data), key);
-
-	slice.enter()
-		.insert("path")
-		.style("fill", function(d) { return color(d.data.label); })
-		.attr("class", "slice");
-
-	slice
-		.transition().duration(1000)
-		.attrTween("d", function(d) {
-			this._current = this._current || d;
-			var interpolate = d3.interpolate(this._current, d);
-			this._current = interpolate(0);
-			return function(t) {
-				return arc(interpolate(t));
-			};
-		})
-
-	slice.exit()
-		.remove();
-
-	/* ------- TEXT LABELS -------*/
-
-	var text = svg.select(".labels").selectAll("text")
-		.data(pie(data), key);
-
-	text.enter()
-		.append("text")
-		.attr("dy", ".35em")
-		.text(function(d) {
-			return d.data.label + " " + d.data.value;
-		});
-
-	function midAngle(d){
-		return d.startAngle + (d.endAngle - d.startAngle)/2;
-	}
-
-	text.transition().duration(1000)
-		.attrTween("transform", function(d) {
-			this._current = this._current || d;
-			var interpolate = d3.interpolate(this._current, d);
-			this._current = interpolate(0);
-			return function(t) {
-				var d2 = interpolate(t);
-				var pos = outerArc.centroid(d2);
-				pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
-				return "translate("+ pos +")";
-			};
-		})
-		.styleTween("text-anchor", function(d){
-			this._current = this._current || d;
-			var interpolate = d3.interpolate(this._current, d);
-			this._current = interpolate(0);
-			return function(t) {
-				var d2 = interpolate(t);
-				return midAngle(d2) < Math.PI ? "start":"end";
-			};
-		});
-
-	text.exit()
-		.remove();
-
-	/* ------- SLICE TO TEXT POLYLINES -------*/
-
-	var polyline = svg.select(".lines").selectAll("polyline")
-		.data(pie(data), key);
-
-	polyline.enter()
-		.append("polyline");
-
-	polyline.transition().duration(1000)
-		.attrTween("points", function(d){
-			this._current = this._current || d;
-			var interpolate = d3.interpolate(this._current, d);
-			this._current = interpolate(0);
-			return function(t) {
-				var d2 = interpolate(t);
-				var pos = outerArc.centroid(d2);
-				pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
-				return [arc.centroid(d2), outerArc.centroid(d2), pos];
-			};
-		});
-
-	polyline.exit()
-		.remove();
-};
-
-
+    var data2 = '{{ disability_values|safe }}';
+    var data2 = JSON.parse(data2);
+    var domain2 = domain1;
+    <!--d3ChartBar(data2, '#chart-2', 'band', domain2, range);-->
 
 </script>
 
-{% endblock content %}
+{% endblock %}
