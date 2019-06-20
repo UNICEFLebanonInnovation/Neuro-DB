@@ -189,8 +189,7 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
             var xScale = d3.scale.ordinal()
                 .domain(domain)
                 .range(range)
-                .rangeRoundBands([0, w-padding.left-padding.right], .1);
-
+                .rangeRoundBands([0, w-padding.left-padding.right], .2);
 
 			var yScale = d3.scale.linear()
 				.domain([0,
@@ -311,19 +310,25 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
 					  	 .text(chart_domain[String(i)]);
 					  });
 
-				svg.append("text")
-				.attr("transform","rotate(-90)")
-				.attr("y", 0 - 5)
-				.attr("x", 0-(h/2))
-				.attr("dy","1em")
-				.text("Number");
+//			    var texts = svg.selectAll("g.tick")
+//			                .each(function(d,i){
+//			                    var g = d3.select(this);
+//			                    g.attr("transform","translate(" + padding.left * (i+1) + ", 0")");
+//			    });
 
-			svg.append("text")
-			   .attr("class","xtext")
-			   .attr("x",w/2 - padding.left)
-			   .attr("y",h - 5)
-			   .attr("text-anchor","middle")
-			   .text("Partners");
+//				svg.append("text")
+//				.attr("transform","rotate(-90)")
+//				.attr("y", 0 - 5)
+//				.attr("x", 0-(h/2))
+//				.attr("dy","1em")
+//				.text("Number");
+
+//			svg.append("text")
+//			   .attr("class","xtext")
+//			   .attr("x",w/2 - padding.left)
+//			   .attr("y",h - 5)
+//			   .attr("text-anchor","middle")
+//			   .text("Partners");
 
 //			svg.append("text")
 //	        .attr("class","title")
