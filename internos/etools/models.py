@@ -603,6 +603,7 @@ class PCA(models.Model):
     planned_visits_list = ArrayField(models.CharField(max_length=200), blank=True, null=True)
     frs_details = JSONField(blank=True, null=True, default={})
     donors_set = JSONField(blank=True, null=True, default={})
+    activities = models.ManyToManyField('activityinfo.activity', blank=True, related_name='interventions')
 
     class Meta:
         verbose_name = 'Intervention'

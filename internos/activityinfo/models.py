@@ -300,6 +300,7 @@ class Activity(models.Model):
     name = models.CharField(max_length=1500)
     location_type = models.CharField(max_length=254)
     programme_document = models.ForeignKey('etools.pca', blank=True, null=True, related_name='+')
+    programme_documents = models.ManyToManyField('etools.pca', blank=True, related_name='+')
 
     def __unicode__(self):
         return self.name
@@ -479,7 +480,7 @@ class ActivityReport(TimeStampedModel):
     end_date = models.CharField(max_length=250, blank=True, null=True)
     form = models.CharField(max_length=1000, blank=True, null=True)
     form_category = models.CharField(max_length=1000, blank=True, null=True)
-    ai_indicator = models.ForeignKey(Indicator, blank=True, null=True)
+    ai_indicator = models.ForeignKey(Indicator, blank=True, null=True, related_name='report_indicators')
     indicator_category = models.CharField(max_length=1000, blank=True, null=True)
     indicator_id = models.CharField(max_length=250, blank=True, null=True)
     indicator_name = models.CharField(max_length=1000, blank=True, null=True)

@@ -192,19 +192,10 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
 			stack(dataset);
             var xScale = null
 
-            if(chart_domain == 'time'){
-                //Set up scales
-                var xScale = d3.time.scale()
-                    .domain([new Date(dataset[0][0].time),d3.time.month.offset(new Date(dataset[0][dataset[0].length-2].time),1)])
-                    .rangeRound([0, w-padding.left-padding.right]);
-            }
-            if(chart_domain == 'band'){
-                //Set up scales
-                var xScale = d3.scale.ordinal()
-                    .domain(domain)
-                    .range(range)
-                    .rangeRoundBands([0, w-padding.left-padding.right], .1);
-            }
+            var xScale = d3.scale.ordinal()
+                .domain(domain)
+                .range(range)
+                .rangeRoundBands([0, w-padding.left-padding.right], .1);
 
 
 			var yScale = d3.scale.linear()
@@ -217,17 +208,9 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
 				])
 				.range([h-padding.bottom-padding.top,0]);
 
-            if(chart_domain == 'time'){
-                var xAxis = d3.svg.axis()
-                               .scale(xScale)
-                               .orient("bottom")
-                               .ticks(domain,1);
-
-            }else{
-                var xAxis = d3.svg.axis()
-                               .scale(xScale)
-                               .orient("bottom");
-            }
+            var xAxis = d3.svg.axis()
+                           .scale(xScale)
+                           .orient("bottom");
 
 			var yAxis = d3.svg.axis()
 						   .scale(yScale)
@@ -251,7 +234,7 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
 				.attr("class","rgroups")
 				.attr("transform","translate("+ padding.left + "," + (h - padding.bottom) +")")
 				.style("fill", function(d, i) {
-					return color_hash[dataset.indexOf(d)][1];
+					return domain[dataset.indexOf(d)][1];
 				});
 
 			// Add a rect for each data value
@@ -282,11 +265,7 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
 			     })
 			     .ease("linear")
 			    .attr("x", function(d) {
-			        if(chart_domain == 'time'){
-					    return xScale(new Date(d.time));
-			        }else{
-			            return xScale(d.name);
-			        }
+                    return xScale(d.name);
 				})
 				.attr("y", function(d) {
 					return -(- yScale(d.y0) - yScale(d.y) + (h - padding.top - padding.bottom)*2);
@@ -327,15 +306,15 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
 					  		.attr("y", i*25 + 10)
 					  		.attr("width", 10)
 					  		.attr("height",10)
-					  		.style("fill",color_hash[String(i)][1]);
+					  		.style("fill",range[String(i)]);
 
 					  	g.append("text")
 					  	 .attr("x", w - padding.right - 50)
 					  	 .attr("y", i*25 + 20)
 					  	 .attr("height",30)
 					  	 .attr("width",100)
-					  	 .style("fill",color_hash[String(i)][1])
-					  	 .text(color_hash[String(i)][0]);
+					  	 .style("fill",range[String(i)])
+					  	 .text(domain[String(i)]);
 					  });
 
 				svg.append("text")
@@ -350,15 +329,15 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
 			   .attr("x",w/2 - padding.left)
 			   .attr("y",h - 5)
 			   .attr("text-anchor","middle")
-			   .text("Months");
+			   .text("Partners");
 
-			svg.append("text")
-	        .attr("class","title")
-	        .attr("x", (w / 2))
-	        .attr("y", 20)
-	        .attr("text-anchor", "middle")
-	        .style("font-size", "16px")
-	        .style("text-decoration", "underline")
-	        .text("# of programmatic visits per month.");
+//			svg.append("text")
+//	        .attr("class","title")
+//	        .attr("x", (w / 2))
+//	        .attr("y", 20)
+//	        .attr("text-anchor", "middle")
+//	        .style("font-size", "16px")
+//	        .style("text-decoration", "underline")
+//	        .text("Disa");
 
 }

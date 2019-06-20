@@ -4,7 +4,7 @@ import os
 import json
 import datetime
 import calendar
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, JsonResponse
@@ -474,6 +474,10 @@ class ReportDisabilityView(TemplateView):
                                                    tag_disability__isnull=False).exclude(is_sector=True)\
             .values('tag_disability__name', 'tag_disability__label').distinct().order_by('tag_disability__sequence')
 
+        tags_gender = Indicator.objects.filter(activity__database__id__exact=database.id,
+                                               tag_gender__isnull=False).exclude(is_sector=True)\
+            .values('tag_gender__name', 'tag_gender__label').distinct().order_by('tag_gender__sequence')
+
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
 
@@ -485,27 +489,6 @@ class ReportDisabilityView(TemplateView):
             'id',
             'ai_id',
             'name',
-            'master_indicator',
-            'master_indicator_sub',
-            'master_indicator_sub_sub',
-            'individual_indicator',
-            'explication',
-            'awp_code',
-            'measurement_type',
-            'units',
-            'target',
-            'status_color',
-            'status',
-            'cumulative_values',
-            'values_partners_gov',
-            'values_partners',
-            'values_gov',
-            'values',
-            'values_live',
-            'values_gov_live',
-            'values_partners_live',
-            'values_partners_gov_live',
-            'cumulative_values_live',
             'values_tags',
         ).distinct()
 
@@ -516,6 +499,41 @@ class ReportDisabilityView(TemplateView):
                     disability_calculation[tag['tag_disability__label']] = 0
                 value = get_indicator_tag_value(item, tag['tag_disability__name'])
                 disability_calculation[tag['tag_disability__label']] += float(value)
+
+        indicators = Indicator.objects.filter(activity__database=database).values(
+            'tag_gender',
+            'tag_age',
+            'tag_disability',
+            'tag_nationality',
+            'values',
+            'values_partners',
+            'values_gov',
+        )
+
+        disability_per_partner = {}
+        disability_partners = {}
+        for partner in partners:
+            if partner['partner_id'] not in disability_partners:
+                disability_partners[partner['partner_id']] = partner['partner_label']
+            indicators = indicators.filter(report_indicators__partner_id=partner['partner_id'])
+            for tag in tags_disability:
+                p_value = 0
+                if tag['tag_disability__label'] not in disability_per_partner:
+                    disability_per_partner[tag['tag_disability__label']] = []
+                indicators = indicators.filter(tag_disability__name=tag['tag_disability__name'])
+                for indicator in indicators:
+                    values_partners = indicator['values_partners']
+                    for key, value in values_partners.items():
+                        keys = key.split('-')
+                        if partner['partner_id'] == keys[1]:
+                            p_value += value
+
+                disability_per_partner[tag['tag_disability__label']].append({
+                        'name': partner['partner_label'],
+                        'y': p_value,
+                        'x': partner['partner_label'],
+                        'type': tag['tag_disability__label']
+                    })
 
         disability_values = []
         for key, value in disability_calculation.items():
@@ -547,6 +565,8 @@ class ReportDisabilityView(TemplateView):
             'tags_disability': tags_disability,
             'disability_values': json.dumps(disability_values),
             'disability_keys': json.dumps(disability_calculation.keys()),
+            'disability_per_partner': json.dumps(disability_per_partner.values()),
+            'disability_partners': json.dumps(disability_partners.values()),
         }
 
 

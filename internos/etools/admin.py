@@ -134,6 +134,7 @@ class PCAAdmin(ImportExportModelAdmin):
 
     list_display = (
         'number',
+        'title',
         'partner',
         'agreement',
         'document_type',
@@ -162,7 +163,13 @@ class PCAAdmin(ImportExportModelAdmin):
 
     search_fields = (
         'number',
-        # 'partner',
+        'partner_name',
+    )
+    filter_horizontal = (
+        'activities',
+    )
+    fields = (
+        'activities',
     )
 
 

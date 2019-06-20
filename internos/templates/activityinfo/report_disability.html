@@ -69,7 +69,7 @@
             <div id="chart-1"></div>
         </div>
 
-        <div class="chart_top">
+        <div class="">
             <span class="count_top"><i class="fa fa-info"></i> Disability types by Partner</span>
             <div id="chart-2"></div>
         </div>
@@ -101,10 +101,11 @@ var range = ["#31B6FD", "#F5C040", "#A5D027", "#5BCF78", "#4584D3"];
     domain1 = JSON.parse(domain1)
     d3ChartPie(data1, '#chart-1', domain1, range, 250, 150);
 
-    var data2 = '{{ disability_values|safe }}';
+    var data2 = '{{ disability_per_partner|safe }}';
     var data2 = JSON.parse(data2);
-    var domain2 = domain1;
-    <!--d3ChartBar(data2, '#chart-2', 'band', domain2, range);-->
+    var domain2 = '{{ disability_partners|safe }}';
+    domain2 = JSON.parse(domain2);
+    d3ChartBar(data2, '#chart-2', 'band', domain2, range);
 
 </script>
 
