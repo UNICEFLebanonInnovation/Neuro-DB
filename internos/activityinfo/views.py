@@ -510,33 +510,25 @@ class ReportDisabilityView(TemplateView):
             'values_gov',
         )
 
-        # for tag in tags_disability:
-        #     tag_indicators = indicators.filter(tag_disability_id=tag['tag_disability_id'])
-        #     print(tag['tag_disability__label'])
-        #     print(tag_indicators.count())
-
         disability_per_partner = {}
         disability_partners = {}
         for partner in partners:
             if partner['partner_id'] not in disability_partners:
                 disability_partners[partner['partner_id']] = partner['partner_label']
             partner_indicators = indicators.filter(report_indicators__partner_id=partner['partner_id'])
-            print(partner['partner_id'])
-            print(indicators.count())
+
             for tag in tags_disability:
                 p_value = 0
                 if tag['tag_disability__label'] not in disability_per_partner:
                     disability_per_partner[tag['tag_disability__label']] = []
                 tag_indicators = partner_indicators.filter(tag_disability_id=tag['tag_disability_id'])
-                print(tag['tag_disability__label'])
-                print(indicators.count())
+
                 for indicator in tag_indicators:
                     values_partners = indicator['values_partners']
                     for key, value in values_partners.items():
                         keys = key.split('-')
                         if partner['partner_id'] == keys[1]:
                             p_value += int(value)
-                            # print(p_value)
 
                 disability_per_partner[tag['tag_disability__label']].append({
                         'name': partner['partner_label'],
@@ -544,8 +536,6 @@ class ReportDisabilityView(TemplateView):
                         'x': partner['partner_label'],
                         'type': tag['tag_disability__label']
                     })
-
-        print(json.dumps(disability_per_partner))
 
         disability_values = []
         for key, value in disability_calculation.items():

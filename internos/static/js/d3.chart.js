@@ -177,12 +177,6 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
     width = 960 - padding.left - padding.right,
     height = 500 - padding.top - padding.bottom;
     var stack = d3.layout.stack();
-    var color_hash = {
-          0 : ["Completed","#1f77b4"],
-            1 : ["Approved","#ff7f0e"],
-            2 : ["Submitted","#2ca02c"]
-
-    };
 
     var div = d3.select("body").append("div")
         .attr("class", "tooltip")
@@ -234,7 +228,7 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
 				.attr("class","rgroups")
 				.attr("transform","translate("+ padding.left + "," + (h - padding.bottom) +")")
 				.style("fill", function(d, i) {
-					return domain[dataset.indexOf(d)][1];
+					return range[String(i)];
 				});
 
 			// Add a rect for each data value
