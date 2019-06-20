@@ -314,7 +314,7 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
 					  	 .attr("height",30)
 					  	 .attr("width",100)
 					  	 .style("fill",range[String(i)])
-					  	 .text(domain[String(i)]);
+					  	 .text(chart_domain[String(i)]);
 					  });
 
 				svg.append("text")

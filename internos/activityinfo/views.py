@@ -526,7 +526,8 @@ class ReportDisabilityView(TemplateView):
                     for key, value in values_partners.items():
                         keys = key.split('-')
                         if partner['partner_id'] == keys[1]:
-                            p_value += value
+                            p_value += int(value)
+                            print(p_value)
 
                 disability_per_partner[tag['tag_disability__label']].append({
                         'name': partner['partner_label'],
@@ -534,6 +535,8 @@ class ReportDisabilityView(TemplateView):
                         'x': partner['partner_label'],
                         'type': tag['tag_disability__label']
                     })
+
+        print(disability_per_partner)
 
         disability_values = []
         for key, value in disability_calculation.items():
