@@ -527,11 +527,12 @@ class ReportDisabilityView(TemplateView):
                 print(indicators.count())
                 for indicator in indicators:
                     values_partners = indicator['values_partners']
+                    print(values_partners)
                     for key, value in values_partners.items():
                         keys = key.split('-')
                         if partner['partner_id'] == keys[1]:
                             p_value += int(value)
-                            print(p_value)
+                            # print(p_value)
 
                 disability_per_partner[tag['tag_disability__label']].append({
                         'name': partner['partner_label'],
@@ -540,7 +541,7 @@ class ReportDisabilityView(TemplateView):
                         'type': tag['tag_disability__label']
                     })
 
-        print(json.dumps(disability_per_partner))
+        # print(json.dumps(disability_per_partner))
 
         disability_values = []
         for key, value in disability_calculation.items():
