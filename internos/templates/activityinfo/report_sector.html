@@ -59,7 +59,7 @@
 
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by cadastral">
       <select class="selectpicker show-tick" title="Select a cadastral" name="cadastral" data-style="btn-info" id="filter_govs">
-          {% for item in cadastral %}
+          {% for item in cadastrals %}
               <option value="{{ item.location_adminlevel_cadastral_area_code }}" {% if item.location_adminlevel_cadastral_area == selected_cadastral %}selected{% endif %}>{{ item.location_adminlevel_cadastral_area }}</option>
           {% endfor %}
       </select>
