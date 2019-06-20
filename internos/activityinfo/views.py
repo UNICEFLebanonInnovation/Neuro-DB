@@ -515,7 +515,7 @@ class ReportDisabilityView(TemplateView):
         for partner in partners:
             if partner['partner_id'] not in disability_partners:
                 disability_partners[partner['partner_id']] = partner['partner_label']
-            indicators = indicators.filter(report_indicators__partner_id=partner['partner_id'])
+            # indicators = indicators.filter(report_indicators__partner_id=partner['partner_id'])
             for tag in tags_disability:
                 p_value = 0
                 if tag['tag_disability__label'] not in disability_per_partner:
