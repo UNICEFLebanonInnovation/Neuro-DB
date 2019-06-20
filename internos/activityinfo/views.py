@@ -472,7 +472,7 @@ class ReportDisabilityView(TemplateView):
 
         tags_disability = Indicator.objects.filter(activity__database__id__exact=database.id,
                                                    tag_disability__isnull=False).exclude(is_sector=True)\
-            .values('tag_disability__name', 'tag_disability__label').distinct().order_by('tag_disability__sequence')
+            .values('tag_disability_id', 'tag_disability__name', 'tag_disability__label').distinct().order_by('tag_disability__sequence')
 
         tags_gender = Indicator.objects.filter(activity__database__id__exact=database.id,
                                                tag_gender__isnull=False).exclude(is_sector=True)\
@@ -522,7 +522,7 @@ class ReportDisabilityView(TemplateView):
                 p_value = 0
                 if tag['tag_disability__label'] not in disability_per_partner:
                     disability_per_partner[tag['tag_disability__label']] = []
-                indicators = indicators.filter(tag_disability__name=tag['tag_disability__name'])
+                indicators = indicators.filter(tag_disability_id=tag['tag_disability_id'])
                 print(tag['tag_disability__label'])
                 print(indicators.count())
                 for indicator in indicators:
