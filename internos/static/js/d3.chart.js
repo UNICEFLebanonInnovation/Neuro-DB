@@ -189,7 +189,8 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
             var xScale = d3.scale.ordinal()
                 .domain(domain)
                 .range(range)
-                .rangeRoundBands([0, w-padding.left-padding.right], .2);
+                .rangeRoundBands([0, domain.length * 100], .2);
+//                .rangeRoundBands([0, w-padding.left-padding.right], .2);
 
 			var yScale = d3.scale.linear()
 				.domain([0,
