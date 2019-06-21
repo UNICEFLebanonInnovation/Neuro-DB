@@ -538,6 +538,35 @@ class ReportDisabilityView(TemplateView):
                         'type': tag['tag_disability__label']
                     })
 
+        disability_per_gov = {}
+        disability_govs = {}
+        govs1 = report.filter(ai_indicator__tag_disability__isnull=False).values('location_adminlevel_governorate_code',
+                                                                                 'location_adminlevel_governorate').distinct()
+        for gov in govs1:
+            if gov['location_adminlevel_governorate_code'] not in disability_govs:
+                disability_govs[gov['location_adminlevel_governorate_code']] = gov['location_adminlevel_governorate']
+            gov_indicators = indicators.filter(report_indicators__location_adminlevel_governorate_code=gov['location_adminlevel_governorate_code'])
+
+            for tag in tags_disability:
+                p_value = 0
+                if tag['tag_disability__label'] not in disability_per_gov:
+                    disability_per_gov[tag['tag_disability__label']] = []
+                tag_indicators = gov_indicators.filter(tag_disability_id=tag['tag_disability_id'])
+
+                for indicator in tag_indicators:
+                    values_gov = indicator['values_gov']
+                    for key, value in values_gov.items():
+                        keys = key.split('-')
+                        if gov['location_adminlevel_governorate_code'] == keys[1]:
+                            p_value += int(value)
+
+                disability_per_gov[tag['tag_disability__label']].append({
+                        'name': gov['location_adminlevel_governorate'],
+                        'y': p_value,
+                        'x': gov['location_adminlevel_governorate'],
+                        'type': tag['tag_disability__label']
+                    })
+
         disability_values = []
         for key, value in disability_calculation.items():
             disability_values.append({"label": key, "value": value})
@@ -570,6 +599,9 @@ class ReportDisabilityView(TemplateView):
             'disability_keys': json.dumps(disability_calculation.keys()),
             'disability_per_partner': json.dumps(disability_per_partner.values()),
             'disability_partners': json.dumps(disability_partners.values()),
+            'disability_per_gov': json.dumps(disability_per_gov.values()),
+            'disability_govs': json.dumps(disability_govs.values()),
+
         }
 
 

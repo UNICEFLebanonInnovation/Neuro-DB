@@ -44,7 +44,7 @@
     fill: none;
   }
   .chart_top {
-      float: left;
+      <!--float: left;-->
       width: 375px;
   }
 
@@ -81,6 +81,11 @@
             <div id="chart-2"></div>
         </div>
 
+        <div class="">
+            <span class="count_top"><i class="fa fa-info"></i> Disability types by Governorate</span>
+            <div id="chart-3"></div>
+        </div>
+
       </div>
     </div>
 </div>
@@ -113,6 +118,12 @@ var range = ["#31B6FD", "#F5C040", "#A5D027", "#5BCF78", "#4584D3"];
     var domain2 = '{{ disability_partners|safe }}';
     domain2 = JSON.parse(domain2);
     d3ChartBar(data2, '#chart-2', domain1, domain2, range);
+
+    var data3 = '{{ disability_per_gov|safe }}';
+    var data3 = JSON.parse(data3);
+    var domain3 = '{{ disability_govs|safe }}';
+    domain3 = JSON.parse(domain3);
+    d3ChartBar(data3, '#chart-3', domain1, domain3, range);
 
 </script>
 
