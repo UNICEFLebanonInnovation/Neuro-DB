@@ -1996,7 +1996,6 @@ def assign_main_master_indicator():
     top_indicators = Indicator.objects.filter(master_indicator=True).only(
         'sub_indicators',
     )
-    print(top_indicators.count())
 
     for indicator in top_indicators.iterator():
         sub_indicators = indicator.sub_indicators.all()
@@ -2018,11 +2017,53 @@ def assign_main_master_indicator():
         'sub_indicators',
         'main_master_indicator',
     )
-    print(top_indicators2.count())
 
     for indicator in top_indicators2.iterator():
         sub_indicators = indicator.sub_indicators.all()
         sub_indicators.update(main_master_indicator=indicator.main_master_indicator)
+
+
+def assign_support_disability_master_indicator():
+    from internos.activityinfo.models import Indicator
+
+    # Level 4
+    sub_indicators = Indicator.objects.filter(tag_disability__isnull=False)
+    sub_indicators.update(support_disability=True)
+
+    # Level 3
+    sub_indicators2 = Indicator.objects.filter(master_indicator_sub_sub=True, sub_indicators__support_disability=True)
+    sub_indicators2.update(support_disability=True)
+
+    # Level 2
+    sub_indicators3 = Indicator.objects.filter(master_indicator_sub=True, sub_indicators__support_disability=True)
+    sub_indicators3.update(support_disability=True)
+
+    # Level 1
+    top_indicators = Indicator.objects.filter(master_indicator=True)
+
+    for indicator in top_indicators.iterator():
+        sub_indicators = indicator.sub_indicators.filter(tag_disability__isnull=False)
+        sub_indicators.update(support_disability=True)
+
+    # Level 2
+    top_indicators1 = Indicator.objects.filter(master_indicator_sub=True).only(
+        'sub_indicators',
+        'support_disability',
+    )
+
+    for indicator in top_indicators1.iterator():
+        sub_indicators = indicator.sub_indicators.all()
+        sub_indicators.update(support_disability=indicator.support_disability)
+
+    # Level 3
+    top_indicators2 = Indicator.objects.filter(master_indicator_sub_sub=True).only(
+        'sub_indicators',
+        'support_disability',
+    )
+
+    for indicator in top_indicators2.iterator():
+        sub_indicators = indicator.sub_indicators.all()
+        sub_indicators.update(support_disability=indicator.support_disability)
 
 
 def load_reporting_map(ai_id, partner=None, governorate=None, caza=None, donor=None):

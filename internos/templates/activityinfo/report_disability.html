@@ -76,6 +76,52 @@
             <div id="chart-1"></div>
         </div>
 
+        <div class="chart_top" style="width: 600px">
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="w-400">ActivityInfo Indicators</th>
+                  <th class="w-100">Target</th>
+                  <th class="w-130">Cumulative Results</th>
+                  <th class="w-130">% achieved</th>
+                  {% for tag in tags_disability %}
+                    <th content="{{ tag.tag_disability__label }}" style="vertical-align: middle;">{{ tag.tag_disability__label }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in master_indicators %}
+                  {% get_indicator_cumulative item as cumulative_value %}
+                  <tr>
+                    <th>{{ item.name }}</th>
+                      <td class="w-100">
+                        {% if item.measurement_type == 'percentage' %}
+                          {{ item.target }}%
+                        {% else %}
+                          {{ item.target|number_format }}
+                        {% endif %}
+                      </td>
+                      <td class="w-130">
+                        {{ cumulative_value }}
+                      </td>
+                      <td class="w-130">
+                        {% get_indicator_achieved item as achieved %}
+                        {{ achieved }}%
+                      </td>
+
+                      {% for tag in tags_disability %}
+                          {% get_indicator_tag_value item tag.tag_disability__name as value %}
+                        <td data-count="{{ value }}">
+                          {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
+                        </td>
+                      {% endfor %}
+
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+
         <div class="">
             <span class="count_top"><i class="fa fa-info"></i> Disability types by Partner</span>
             <div id="chart-2"></div>

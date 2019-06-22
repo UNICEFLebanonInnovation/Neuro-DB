@@ -489,7 +489,10 @@ class ReportDisabilityView(TemplateView):
             'id',
             'ai_id',
             'name',
+            'target',
+            'values',
             'values_tags',
+            'cumulative_values',
         ).distinct()
 
         disability_calculation = {}
