@@ -55,6 +55,10 @@
     <!--writing-mode: vertical-rl;-->
   }
 
+  <!--.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {-->
+      <!--border: 0px !important;-->
+  <!--}-->
+
 </style>
 
 <!-- top tiles -->
@@ -77,13 +81,10 @@
         </div>
 
         <div class="chart_top" style="float: left; min-width: 400px;">
-            <table class="table table-bordered">
+            <table class="table">
               <thead>
                 <tr>
                   <th class="w-400">ActivityInfo Indicators</th>
-                  <th class="w-100">Target</th>
-                  <th class="w-130">Cumulative Results</th>
-                  <!--<th class="w-130">% achieved</th>-->
                   {% for tag in tags_disability %}
                     <th content="{{ tag.tag_disability__label }}" style="vertical-align: middle;">{{ tag.tag_disability__label }}</th>
                   {% endfor %}
@@ -94,21 +95,6 @@
                   {% get_indicator_cumulative item as cumulative_value %}
                   <tr>
                     <th>{{ item.name }}</th>
-                      <td class="w-100">
-                        {% if item.measurement_type == 'percentage' %}
-                          {{ item.target }}%
-                        {% else %}
-                          {{ item.target|number_format }}
-                        {% endif %}
-                      </td>
-                      <td class="w-130">
-                        {{ cumulative_value }}
-                      </td>
-                      <!--<td class="w-130">-->
-                        <!--{% get_indicator_achieved item as achieved %}-->
-                        <!--{{ achieved }}%-->
-                      <!--</td>-->
-
                       {% for tag in tags_disability %}
                           {% get_indicator_tag_value item tag.tag_disability__name as value %}
                         <td>

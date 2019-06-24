@@ -496,7 +496,6 @@ class ReportDisabilityView(TemplateView):
         ).distinct()
 
         support_disabilities = master_indicators.filter(support_disability=True)
-        # support_disabilities = []
 
         disability_calculation = {}
         for item in master_indicators:
