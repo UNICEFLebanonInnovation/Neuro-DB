@@ -410,6 +410,7 @@ class Indicator(models.Model):
     cumulative_values_live = JSONField(blank=True, null=True, default={})
     is_sector = models.BooleanField(default=False)
     is_section = models.BooleanField(default=False)
+    support_disability = models.BooleanField(default=False)
 
     values_sector = JSONField(blank=True, null=True)
     values_tags_sector = JSONField(blank=True, null=True, default={})

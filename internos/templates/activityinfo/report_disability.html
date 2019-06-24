@@ -71,19 +71,19 @@
 
       <div class="x_content">
 
-        <div class="chart_top">
+        <div class="chart_top" style="float: left; width: 410px;">
             <span class="count_top"><i class="fa fa-info"></i> Disability types</span>
             <div id="chart-1"></div>
         </div>
 
-        <div class="chart_top" style="width: 600px">
-            <table class="table table-striped table-bordered">
+        <div class="chart_top" style="float: left; min-width: 400px;">
+            <table class="table table-bordered">
               <thead>
                 <tr>
                   <th class="w-400">ActivityInfo Indicators</th>
                   <th class="w-100">Target</th>
                   <th class="w-130">Cumulative Results</th>
-                  <th class="w-130">% achieved</th>
+                  <!--<th class="w-130">% achieved</th>-->
                   {% for tag in tags_disability %}
                     <th content="{{ tag.tag_disability__label }}" style="vertical-align: middle;">{{ tag.tag_disability__label }}</th>
                   {% endfor %}
@@ -104,15 +104,19 @@
                       <td class="w-130">
                         {{ cumulative_value }}
                       </td>
-                      <td class="w-130">
-                        {% get_indicator_achieved item as achieved %}
-                        {{ achieved }}%
-                      </td>
+                      <!--<td class="w-130">-->
+                        <!--{% get_indicator_achieved item as achieved %}-->
+                        <!--{{ achieved }}%-->
+                      <!--</td>-->
 
                       {% for tag in tags_disability %}
                           {% get_indicator_tag_value item tag.tag_disability__name as value %}
-                        <td data-count="{{ value }}">
-                          {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
+                        <td>
+                          <div class="progress">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="{{ value|percentage_float:item.cumulative_values.months }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ value|percentage_float:item.cumulative_values.months }}%;">
+                              {{ value|percentage_float:item.cumulative_values.months }}%
+                            </div>
+                          </div>
                         </td>
                       {% endfor %}
 
@@ -122,12 +126,12 @@
             </table>
         </div>
 
-        <div class="">
+        <div class="" style="float: left;">
             <span class="count_top"><i class="fa fa-info"></i> Disability types by Partner</span>
             <div id="chart-2"></div>
         </div>
 
-        <div class="">
+        <div class="" style="float: left;">
             <span class="count_top"><i class="fa fa-info"></i> Disability types by Governorate</span>
             <div id="chart-3"></div>
         </div>

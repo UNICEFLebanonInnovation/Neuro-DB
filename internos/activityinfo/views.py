@@ -481,7 +481,8 @@ class ReportDisabilityView(TemplateView):
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
+        master_indicators = Indicator.objects.filter(activity__database=database,
+                                                     support_disability=True).exclude(is_sector=True).order_by('sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 

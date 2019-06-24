@@ -328,6 +328,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'master_indicator',
         'is_sector',
         'is_section',
+        'support_disability',
         # 'values_tags'
     )
     filter_horizontal = (
@@ -342,6 +343,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'master_indicator',
         'is_sector',
         'is_section',
+        'support_disability',
         # 'values_tags'
     )
 
@@ -377,6 +379,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'sequence',
                 'is_sector',
                 'is_section',
+                'support_disability',
             ]
         }),
         ('Tags', {
