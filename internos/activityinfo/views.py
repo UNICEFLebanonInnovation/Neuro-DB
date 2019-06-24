@@ -481,8 +481,7 @@ class ReportDisabilityView(TemplateView):
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database,
-                                                     support_disability=True).exclude(is_sector=True).order_by('sequence')
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
@@ -495,6 +494,9 @@ class ReportDisabilityView(TemplateView):
             'values_tags',
             'cumulative_values',
         ).distinct()
+
+        support_disabilities = master_indicators.filter(support_disability=True)
+        # support_disabilities = []
 
         disability_calculation = {}
         for item in master_indicators:
@@ -595,7 +597,7 @@ class ReportDisabilityView(TemplateView):
             'database': database,
             'partners': partners,
             'governorates': governorates,
-            'master_indicators': master_indicators,
+            'master_indicators': support_disabilities,
             'partner_info': partner_info,
             'selected_filter': selected_filter,
             'tags_disability': tags_disability,
