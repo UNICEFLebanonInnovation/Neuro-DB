@@ -113,8 +113,8 @@
                           {% get_indicator_tag_value item tag.tag_disability__name as value %}
                         <td>
                           <div class="progress">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="{{ value|percentage_float:item.cumulative_values.months }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ value|percentage_float:item.cumulative_values.months }}%;">
-                              {{ value|percentage_float:item.cumulative_values.months }}%
+                            <div class="progress-bar" role="progressbar" aria-valuenow="{{ value|percentage_float:item.cumulative_values.months }}" aria-valuemin="0" aria-valuemax="100" style="{{ value|percentage_float:item.cumulative_values.months }}{% if value != '0' %}width: 50%;{% endif %}">
+                              {{ value|percentage_float:item.cumulative_values.months }}
                             </div>
                           </div>
                         </td>
