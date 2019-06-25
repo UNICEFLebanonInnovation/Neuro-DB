@@ -469,14 +469,14 @@ class ReportPartnerSectorView(TemplateView):
             'awp_code': indicator.awp_code,
             'measurement_type': indicator.measurement_type,
             'units': indicator.units,
-            'target': indicator.target_sector,
-            'status_color': indicator.status_color_sector,
-            'status': indicator.status_sector,
-            'cumulative_values': indicator.cumulative_values_sector,
-            'values_partners_gov': indicator.values_partners_sites_sector,
-            'values_partners': indicator.values_partners_sector,
-            'values_gov': indicator.values_sites_sector,
-            'values': indicator.values_sector,
+            'target_sector': indicator.target_sector,
+            'status_color_sector': indicator.status_color_sector,
+            'status_sector': indicator.status_sector,
+            'cumulative_values_sector': indicator.cumulative_values_sector,
+            'values_partners_sites_sector': indicator.values_partners_sites_sector,
+            'values_partners_sector': indicator.values_partners_sector,
+            'values_sites_sector': indicator.values_sites_sector,
+            'values_sector': indicator.values_sector,
         }
 
         report = ActivityReport.objects.filter(database=database)
