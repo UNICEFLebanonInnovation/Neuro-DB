@@ -71,7 +71,7 @@
 
         <i class="fa fa-user faa-pulse animated-hover" data-toggle="tooltip" data-placement="bottom" data-html="true"
            title="Database focal point: {{ database.focal_point }} <br/>
-                  email: {{ database.focal_point.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
+                  email: {{ database.focal_point.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point_sector.first_name }} </i>
         <a href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database" data-toggle="tooltip" data-placement="bottom"
            title="Send email to the database focal point" style="padding-left: 20px;">
           <i class="fa fa-envelope-o faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
@@ -81,6 +81,23 @@
            title="Show me some tips" style="padding-left: 20px;">
           <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
         </a>
+
+        <ul class="nav navbar-left" style="margin-top: -7px;" data-step="10" data-intro="Download Dashboard report and raw data">
+          <li class="dropdown">
+            <a id="drop5" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
+               data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                        <i class="fa fa-download faa-bounce animated-hover" style="font-size: 25px;"></i>
+              <span class="caret"></span>
+            </a>
+            <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
+              <li role="presentation" class="divider" style="margin-top: -1px;"></li>
+              <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Partner dashboard</a>
+              <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
+              <li role="presentation"><a href="#" id="export2" role="menuitem" tabindex="-1">Cadastral dashboard</a>
+              <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
+            </ul>
+          </li>
+        </ul>
 
       </div>
 
@@ -119,14 +136,14 @@
 
                   <div class="x_content" style="">
 
-                    <table id="exporttable1" content="{{ database.reporting_year.name }}_{{ database.label }}_Dashboard.csv"
+                    <table id="exporttable1" content="{{ database.label }}_partners_Dashboard.csv"
                            data-tableName="Dashboard - {{ database.label }} - 2019"
                            class="table table-striped table-bordered">
                       <thead>
                         <tr>
-                          <th style="vertical-align: middle;">Partner</th>
+                          <th style="vertical-align: middle;" content="Partner">Partner</th>
                           {% for month, month_name in months %}
-                            <th>{{ month_name }}</th>
+                            <th content="{{ month_name }}">{{ month_name }}</th>
                           {% endfor %}
                         </tr>
                       </thead>
@@ -148,14 +165,14 @@
 
                   <div class="x_content" style="">
 
-                    <table id="exporttable2" content="{{ database.reporting_year.name }}_{{ database.label }}_Dashboard.csv"
+                    <table id="exporttable2" content="{{ database.label }}_cadastrals_Dashboard.csv"
                            data-tableName="Dashboard - {{ database.label }} - 2019"
                            class="table table-striped table-bordered">
                       <thead>
                         <tr>
-                          <th style="vertical-align: middle;">Cadastral</th>
+                          <th style="vertical-align: middle;" content="Cadastral">Cadastral</th>
                           {% for month, month_name in months %}
-                            <th>{{ month_name }}</th>
+                            <th content="{{ month_name }}">{{ month_name }}</th>
                           {% endfor %}
                         </tr>
                       </thead>
@@ -198,6 +215,77 @@
 $(document).ready(function(){
 
     $('#filter_indicator').selectpicker();
+
+function download_csv(csv, filename) {
+    var csvFile;
+    var downloadLink;
+
+    // CSV FILE
+    csvFile = new Blob([csv], {type: "text/csv"});
+
+    // Download link
+    downloadLink = document.createElement("a");
+
+    // File name
+    downloadLink.download = filename;
+
+    // We have to create a link to the file
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+
+    // Make sure that the link is not displayed
+    downloadLink.style.display = "none";
+
+    // Add the link to your DOM
+    document.body.appendChild(downloadLink);
+
+    // Lanzamos
+    downloadLink.click();
+}
+
+function export_table_to_csv(html, filename, table_head, table_body) {
+	var csv = [];
+	var rows_header = document.querySelectorAll(table_head);
+	var rows = document.querySelectorAll(table_body);
+
+    for (var i = 0; i < rows_header.length; i++) {
+		var row = [], cols = rows_header[i].querySelectorAll("th");
+
+        for (var j = 0; j < cols.length; j++)
+            row.push($(cols[j]).attr('content'));
+
+    csv.push(row.join(","));
+	}
+
+  for (var i = 0; i < rows.length; i++) {
+		var row = [], cols = rows[i].querySelectorAll("td, th");
+
+        for (var j = 0; j < cols.length; j++) {
+            if($(cols[j]).attr('colspan') == '2') {
+              row.push('');
+            }
+            row.push('"'+cols[j].innerText+'"');
+        }
+
+		csv.push(row.join(","));
+	}
+
+    // Download CSV
+    download_csv(csv.join("\n"), filename);
+}
+
+document.querySelector("#export1").addEventListener("click", function () {
+    var html = document.querySelector("table").outerHTML;
+    var file_name = $("#exporttable1").attr("content");
+	  export_table_to_csv(html, file_name, "table#exporttable1 thead tr", "table#exporttable1 tbody tr");
+});
+
+document.querySelector("#export2").addEventListener("click", function () {
+    var html = document.querySelector("table").outerHTML;
+    var file_name = $("#exporttable2").attr("content");
+	  export_table_to_csv(html, file_name, "table#exporttable2 thead tr", "table#exporttable2 tbody tr");
+});
+
+
 });
 </script>
 
