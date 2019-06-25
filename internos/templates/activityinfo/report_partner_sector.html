@@ -56,11 +56,10 @@
       <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
       <input type="hidden" name="indicator_id" value="{{ indicator.id }}" />
 
-      <div class="col-md-3 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">
-          <select class="selectpicker show-tick" title="Select a governorate" name="governorate" data-style="btn-primary" id="filter_govs">
-              <option value="">All governorates</option>
-              {% for gov in governorates %}
-                  <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorate %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
+      <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by cadastral">
+          <select class="selectpicker show-tick" title="Select a cadastral" name="cadastral" data-style="btn-info" id="filter_govs">
+              {% for item in cadastrals %}
+                  <option value="{{ item.location_adminlevel_cadastral_area_code }}" {% if item.location_adminlevel_cadastral_area == selected_cadastral %}selected{% endif %}>{{ item.location_adminlevel_cadastral_area }}</option>
               {% endfor %}
           </select>
       </div>
@@ -154,19 +153,19 @@
                            class="table table-striped table-bordered">
                       <thead>
                         <tr>
-                          <th style="vertical-align: middle;">Governorate</th>
+                          <th style="vertical-align: middle;">Cadastral</th>
                           {% for month, month_name in months %}
                             <th>{{ month_name }}</th>
                           {% endfor %}
                         </tr>
                       </thead>
                       <tbody>
-                        {% for gov in governorates %}
+                        {% for cada in cadastrals %}
                           <tr>
-                            <th>{{ gov.location_adminlevel_governorate }}</th>
+                            <th>{{ cada.location_adminlevel_cadastral_area }}</th>
                               {% for month, month_name in months %}
                                 <td>
-                                  {% get_indicator_value_sector indicator month selected_partner gov.location_adminlevel_governorate_code as value %}
+                                  {% get_indicator_value_sector indicator month selected_partner cada.location_adminlevel_cadastral_area_code as value %}
                                   {{ value }}
                                 </td>
                               {% endfor %}

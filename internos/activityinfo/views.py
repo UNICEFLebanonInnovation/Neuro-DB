@@ -484,6 +484,7 @@ class ReportPartnerSectorView(TemplateView):
 
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+        cadastrals = report.values('location_adminlevel_cadastral_area_code', 'location_adminlevel_cadastral_area').distinct()
 
         indicators = Indicator.objects.filter(activity__database=database).exclude(is_section=True).order_by('sequence')
 
@@ -523,6 +524,7 @@ class ReportPartnerSectorView(TemplateView):
             'database': database,
             'partners': partners,
             'governorates': governorates,
+            'cadastrals': cadastrals,
             'indicators': indicators,
             'indicator': indicator,
             'selected_governorate': selected_governorate,
