@@ -307,6 +307,7 @@ class ReportPartnerView(TemplateView):
             'indicators': indicators,
             'indicator': indicator,
             'selected_governorate': selected_governorate,
+            'selected_partner': 0,
             'selected_indicator': selected_indicator
         }
 
@@ -525,7 +526,8 @@ class ReportPartnerSectorView(TemplateView):
             'indicators': indicators,
             'indicator': indicator,
             'selected_governorate': selected_governorate,
-            'selected_indicator': selected_indicator
+            'selected_indicator': selected_indicator,
+            'selected_partner': 0,
         }
 
 

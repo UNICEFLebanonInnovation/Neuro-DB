@@ -125,7 +125,7 @@
                            class="table table-striped table-bordered">
                       <thead>
                         <tr>
-                          <th style="vertical-align: middle;"></th>
+                          <th style="vertical-align: middle;">Partner</th>
                           {% for month, month_name in months %}
                             <th>{{ month_name }}</th>
                           {% endfor %}
@@ -138,6 +138,35 @@
                               {% for month, month_name in months %}
                                 <td>
                                   {% get_indicator_value_sector indicator month partner.partner_id selected_governorate as value %}
+                                  {{ value }}
+                                </td>
+                              {% endfor %}
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="x_content" style="">
+
+                    <table id="exporttable2" content="{{ database.reporting_year.name }}_{{ database.label }}_Dashboard.csv"
+                           data-tableName="Dashboard - {{ database.label }} - 2019"
+                           class="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th style="vertical-align: middle;">Governorate</th>
+                          {% for month, month_name in months %}
+                            <th>{{ month_name }}</th>
+                          {% endfor %}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for gov in governorates %}
+                          <tr>
+                            <th>{{ gov.location_adminlevel_governorate }}</th>
+                              {% for month, month_name in months %}
+                                <td>
+                                  {% get_indicator_value_sector indicator month selected_partner gov.location_adminlevel_governorate_code as value %}
                                   {{ value }}
                                 </td>
                               {% endfor %}
