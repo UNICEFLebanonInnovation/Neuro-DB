@@ -37,9 +37,19 @@ urlpatterns = [
         name='report_partner'
     ),
     url(
+        regex=r'^report-partner-sector/$',
+        view=views.ReportPartnerSectorView.as_view(),
+        name='report_partner_sector'
+    ),
+    url(
         regex=r'^report-map/$',
         view=views.ReportMapView.as_view(),
         name='report_map'
+    ),
+    url(
+        regex=r'^report-map-sector/$',
+        view=views.ReportMapSectorView.as_view(),
+        name='report_map_sector'
     ),
     url(
         regex=r'^report-disability/$',

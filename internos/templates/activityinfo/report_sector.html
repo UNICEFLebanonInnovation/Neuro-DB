@@ -110,17 +110,10 @@
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
                              aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
                              style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="8" data-intro="Search for a specific Indicator">
-                      <!--<a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>-->
-                      <!--<a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring (coming soon)" style="padding-left: 20px;">
-                        <i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>
-                      </a>-->
-                      <!--<a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display indicators data disaggregated" style="padding-left: 20px;">-->
-                        <!--<i class="fa fa-tags animated" style="font-size: 30px; color: #0089d2;"></i>-->
-                      <!--</a>-->
-                      <!--<a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring" style="padding-left: 20px;"-->
-                          <!--data-step="9" data-intro="Open live ActivityInfo Dashboard">-->
-                        <!--<i class="fa fa-rss faa-flash animated" style="font-size: 30px; color: #d23900;"></i>-->
-                      <!--</a>-->
+                      <a href="{% url 'activityinfo:report_map_sector' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display reported indicators on map" style="padding-left: 20px;"
+                          data-step="15" data-intro="Display reported indicators on map">
+                        <i class="fa fa-map-o" style="font-size: 30px; color: #0089d2;"></i>
+                      </a>
                     </h2>
                     <ul class="nav navbar-left" style="margin-top: -7px;" data-step="10" data-intro="Download Dashboard report and raw data">
                       <li class="dropdown">
@@ -133,10 +126,6 @@
                           <li role="presentation" class="divider" style="margin-top: -1px;"></li>
                           <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Current dashboard</a>
                           <li role="presentation" class="divider"></li>
-                          <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction1">UNICEF raw data</a>-->
-                          <!--<li role="presentation" class="divider"></li>-->
-                          <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction2">PowerBI</a>-->
-                          <!--<li role="presentation" class="divider"></li>-->
                           <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full raw data</a>
                           <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
                         </ul>
@@ -212,6 +201,10 @@
                                   {% if item.explication %}
                                   <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item.explication }}"></i>
                                   {% endif %}
+
+                                  <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}" target="_blank">
+                                    <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                                  </a>
                                 </th>
                               {% else %}
                                 <td class="w-100">{{ item.ai_id }}</td>
@@ -220,6 +213,10 @@
                                   {% if item.explication %}
                                   <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item.explication }}"></i>
                                   {% endif %}
+
+                                  <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}" target="_blank">
+                                    <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                                  </a>
                                 </th>
                               {% endif %}
                               <!--<td>Site</td>-->
@@ -256,6 +253,10 @@
                                     {% if item1.explication %}
                                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item1.explication }}"></i>
                                     {% endif %}
+
+                                    <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}" target="_blank">
+                                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                                    </a>
                                   </th>
                                 {% else %}
                                   <td class="w-100">{{ item1.ai_id }}</td>
@@ -264,6 +265,10 @@
                                     {% if item1.explication %}
                                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item1.explication }}"></i>
                                     {% endif %}
+
+                                    <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}" target="_blank">
+                                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                                    </a>
                                   </th>
                                 {% endif %}
                                 <!--<td>Site</td>-->
@@ -296,6 +301,10 @@
                                       {% if item2.explication %}
                                       <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
                                       {% endif %}
+
+                                      <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}" target="_blank">
+                                        <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                                      </a>
                                     </th>
                                   {% else %}
                                     <td class="w-100">{{ item2.ai_id }}</td>
@@ -304,6 +313,10 @@
                                       {% if item2.explication %}
                                       <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
                                       {% endif %}
+
+                                      <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}" target="_blank">
+                                        <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                                      </a>
                                     </th>
                                   {% endif %}
                                   <!--<td>Site</td>-->

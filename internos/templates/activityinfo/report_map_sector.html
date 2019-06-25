@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}Neuro-DB{% endblock %}
+
+{% block content %}
+<!-- top tiles -->
+<!-- /top tiles -->
+
+<style>
+  div.panel-footer {
+    background-color: #fff !important;
+  }
+  p {
+    background-color: #f7f9fa;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .sidebar-box {
+    max-height: 120px;
+    position: relative;
+    overflow: hidden;
+  }
+  .sidebar-box .read-more {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 15px 0;
+    opacity: 0.9;
+  }
+  .btn-filter.on {
+    background-color: #0089d2;
+    color: white;
+  }
+  .btn-filter-no.on {
+    background-color: #0089d2;
+    color: white;
+  }
+  span.trip-planned {
+    background-color: rgba(250,237,119,.6);
+  }
+  span.trip-submitted {
+    background-color: rgba(206,188,6,.6);
+  }
+  span.trip-approved {
+    background-color: rgba(141,198,63,.45);
+  }
+  span.trip-completed {
+    background-color: rgba(141,198,63,1);
+  }
+  .x_title span.label {
+      color: white;
+  }
+  div.trip-filter {
+    cursor: pointer;
+  }
+  .travel-counts .label {
+    cursor: pointer;
+  }
+  #mapView {
+    height: 500px;
+
+    border: 1px solid;
+  }
+  #myTabContent {
+    padding-top: 10px;
+  }
+  div.count.active a {
+    color: #0089d2;
+  }
+  .bootstrap-select button.dropdown-toggle {
+     background-color: #337ab7;
+     color: white !important;
+  }
+  #feeds {
+    border-radius: 5px;
+    box-shadow: -5px 5px 10px;
+    top: 0px;
+    margin-left: 30px;
+    height: 500px;
+    overflow: auto;
+    padding: 0;
+  }
+  #feeds-content div {
+    border-radius: 5px;
+    box-shadow: -1px 1px 4px;
+    padding: 2px;
+    margin-top: 5px;
+    padding-left: 15px;
+  }
+  .bootstrap-select {
+      width: 150px !important;
+  }
+</style>
+
+<!-- top tiles -->
+<div class="row" style="clear: both;">
+
+<form action="{% url 'activityinfo:report_map_sector' %}" method="get">
+    <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
+    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="4" data-intro="Filter options by partner">
+        <select class="selectpicker show-tick" data-actions-box="true" title="Select a Partner" name="partner" data-style="btn-info" id="filter_partners">
+            <option value="">All Partners</option>
+            {% for partner in partners %}
+                <option value="{{ partner.partner_id }}" {% if partner.partner_id == selected_partner %}selected{% endif %}>{{ partner.partner_label }}</option>
+            {% endfor %}
+        </select>
+        {% if partner_info %}
+          <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
+             data-toggle="modal" data-target="#partnerModal"></i>
+        {% endif %}
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">
+        <select class="selectpicker show-tick" title="Select a Governorate" name="governorate" data-style="btn-info" id="filter_govs">
+            <option value="">All Governorates</option>
+            {% for gov in governorates %}
+                <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorate %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by Caza">
+        <select class="selectpicker show-tick" title="Select a Caza" name="caza" data-style="btn-info" id="filter_cazas">
+            <option value="">All Caza</option>
+            {% for caza in cazas %}
+                <option value="{{ caza.location_adminlevel_caza_code }}" {% if caza.location_adminlevel_caza_code == selected_caza %}selected{% endif %}>{{ caza.location_adminlevel_caza }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-success">Search</button>
+      <a href="{% url 'activityinfo:report_map_sector' %}?ai_id={{ database.ai_id }}" class="btn btn-warning">Cancel</a>
+    </div>
+
+</form>
+</div>
+
+<div class="row" style="">
+  <div class="w-1002 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>
+          <strong>{{ database.label }} Sector - Indicator Reporting Map</strong>
+        </h2>
+        <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="6" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+
+          <!--<span data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">-->
+            <i class="fa fa-user faa-pulse animated-hover" data-toggle="tooltip" data-placement="bottom" data-html="true"
+               title="Database focal point: {{ database.focal_point }} <br/>
+                      email: {{ database.focal_point.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
+            <!--<a href="skype:{{ database.focal_point.skype_account }}?chat" data-toggle="tooltip" data-placement="bottom"-->
+               <!--title="Chat with the database focal point via skype" style="padding-left: 20px;">-->
+              <!--<i class="fa fa-skype faa-pulse animated-hover" style="font-size: 25px; color: #2dc6ff;"></i>-->
+            <!--</a>-->
+            <a href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database" data-toggle="tooltip" data-placement="bottom"
+               title="Send email to the database focal point" style="padding-left: 20px;">
+              <i class="fa fa-envelope-o faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
+            </a>
+
+            <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
+               title="Show me some tips" style="padding-left: 20px;">
+              <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
+            </a>
+
+        </div>
+
+        <ul class="nav navbar-right panel_toolbox">
+          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+
+      <div class="x_content">
+
+        <div class="row" id="">
+
+          <div id="mapView" class="col-lg-8"></div>
+
+          <div id="feeds" class="col-lg-3">
+            <div style="padding: 6px; margin: 0px; background-color: #337ab7; color: white; height: 50px;"><h2><strong>{{ locations_count }} Sites
+                {% if partner %} - {{ partner.name }} {% endif %}
+                {% if partner_info %}
+                  <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: white; padding-top: 3px;"
+                     data-toggle="modal" data-target="#partnerModal"></i>
+                {% endif %}
+            </strong></h2>
+            </div>
+            <div id="feeds-content"></div>
+          </div>
+
+        </div>
+
+      </div>
+      {% csrf_token %}
+    </div>
+  </div>
+</div>
+
+<br />
+
+{% include 'activityinfo/partner_info.html' %}
+
+{% endblock content %}
+
+{% block extra_js %}
+  <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
+  <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.11/"></script>
+
+<script>
+    var user_token = '{{ user_token }}';
+    var href_full_path = '{{ request.build_absolute_uri }}';
+    var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
+    var points = '{{ locations|safe }}';
+    points = JSON.parse(points);
+
+    var symbol = {
+      style: "square",
+      color: "blue",
+      size: "8px",  // pixels
+      outline: {  // autocasts as new SimpleLineSymbol()
+        color: [ 255, 255, 0 ],
+        width: 3  // points
+      }
+    };
+
+    var symbol_icon = {
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    var markerSymbol = {
+      type: "picture-marker", // autocasts as new SimpleMarkerSymbol()
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    $(document).ready(function(){
+
+        $('ul.child_menu').hide();
+
+        require([
+          "esri/Map",
+          "esri/views/MapView",
+          "esri/symbols/SimpleMarkerSymbol",
+          "esri/symbols/PictureMarkerSymbol",
+          "esri/geometry/Point",
+          "esri/Graphic",
+        ], function(Map, MapView, SimpleMarkerSymbol, PictureMarkerSymbol, Point, Graphic) {
+
+          var map = new Map({
+              basemap: "topo-vector"
+          });
+
+          var view = new MapView({
+            container: "mapView",
+            map: map,
+            center: [35.8411, 33.6513],
+            zoom: 8
+          });
+
+          setTimeout(function(){
+
+             $(points).each(function(i, item){
+
+                setTimeout(function(){
+
+                    $('#feeds-content').append('<div class="row">'+item.location_name+'</div>');
+
+                    var lineAtt = {
+                      Name: item.location_name,
+                      Caza: item.caza,
+                      Cadastral: item.cadastral,
+                      Governorate: item.governorate,
+                    };
+
+                    var content = '<p>{Governorate} - {Cadastral} - {Caza}</p>';
+                    content = content + '<div class="list-group"><a href="#" class="list-group-item active"><strong>Indicators</a></strong>';
+                    $(item.indicators).each(function(j, item1){
+                        content = content + '<a href="#" class="list-group-item">'+item1.indicator_name+' <span class="label label-primary">'+item1.cumulative_value+'</span> <span class="label label-primary">'+item1.indicator_units+'</span> ('+item1.partner_label+')</a>';
+                    });
+                    content = content + '</div>';
+
+                    var pointGraphic = new Graphic({
+                      geometry: {
+                        type: "point",
+                        longitude: item.location_longitude,
+                        latitude: item.location_latitude
+                      },
+                      symbol: markerSymbol,
+                      attributes: lineAtt,
+                      popupTemplate: {
+                        title: "{Name}",
+                        content: content
+                      }
+                    });
+
+                    view.graphics.add(pointGraphic);
+
+                }, 3000);
+
+            });
+
+          }, 9000);
+
+
+        });
+    });
+
+</script>
+
+{% endblock %}

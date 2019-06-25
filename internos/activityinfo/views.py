@@ -440,6 +440,196 @@ class ReportMapView(TemplateView):
         }
 
 
+class ReportPartnerSectorView(TemplateView):
+
+    template_name = 'activityinfo/report_partner_sector.html'
+
+    def get_context_data(self, **kwargs):
+
+        partner_info = {}
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month_number = last_month.strftime("%m")
+        month = int(last_month.strftime("%m"))
+        month_name = last_month.strftime("%B")
+
+        selected_indicator = int(self.request.GET.get('indicator_id', 0))
+        selected_governorate = self.request.GET.get('governorate', 0)
+
+        ai_id = int(self.request.GET.get('ai_id', 0))
+
+        database = Database.objects.get(ai_id=ai_id)
+        indicator = Indicator.objects.get(id=selected_indicator)
+        indicator = {
+            'id': indicator.id,
+            'ai_id': indicator.ai_id,
+            'name': indicator.name,
+            'explication': indicator.explication,
+            'awp_code': indicator.awp_code,
+            'measurement_type': indicator.measurement_type,
+            'units': indicator.units,
+            'target': indicator.target_sector,
+            'status_color': indicator.status_color_sector,
+            'status': indicator.status_sector,
+            'cumulative_values': indicator.cumulative_values_sector,
+            'values_partners_gov': indicator.values_partners_sites_sector,
+            'values_partners': indicator.values_partners_sector,
+            'values_gov': indicator.values_sites_sector,
+            'values': indicator.values_sector,
+        }
+
+        report = ActivityReport.objects.filter(database=database)
+
+        partners = report.values('partner_label', 'partner_id').distinct()
+        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+
+        indicators = Indicator.objects.filter(activity__database=database).exclude(is_section=True).order_by('sequence')
+
+        indicators = indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'explication',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target_sector',
+            'status_color_sector',
+            'status_sector',
+            'cumulative_values_sector',
+            'values_partners_sites_sector',
+            'values_partners_sector',
+            'values_sites_sector',
+            'values_sector',
+        ).distinct()
+
+        months = []
+        for i in range(1, 13):
+            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
+        return {
+            'reports': report.order_by('id'),
+            'month': month,
+            'year': today.year,
+            'month_name': month_name,
+            'month_number': month_number,
+            'months': months,
+            'database': database,
+            'partners': partners,
+            'governorates': governorates,
+            'indicators': indicators,
+            'indicator': indicator,
+            'selected_governorate': selected_governorate,
+            'selected_indicator': selected_indicator
+        }
+
+
+class ReportMapSectorView(TemplateView):
+
+    template_name = 'activityinfo/report_map_sector.html'
+
+    def get_context_data(self, **kwargs):
+        from django.db import connection
+        from internos.activityinfo.utils import load_reporting_map
+
+        now = datetime.datetime.now()
+        cursor = connection.cursor()
+        selected_filter = False
+        partner = None
+        rows = []
+        selected_partner = self.request.GET.get('partner', 0)
+        selected_governorate = self.request.GET.get('governorate', 0)
+        selected_caza = self.request.GET.get('caza', 0)
+
+        partner_info = {}
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month_number = last_month.strftime("%m")
+        month = int(last_month.strftime("%m"))
+        month_name = last_month.strftime("%B")
+
+        ai_id = int(self.request.GET.get('ai_id', 0))
+
+        database = Database.objects.get(ai_id=ai_id)
+
+        report = ActivityReport.objects.filter(database=database)
+
+        rows = load_reporting_map(ai_id, partner=selected_partner, governorate=selected_governorate,
+                                  caza=selected_caza)
+
+        locations = {}
+        ctr = 0
+        for item in rows:
+            if not item[2] or not item[3]:
+                continue
+            if item[0] not in locations:
+                ctr += 1
+                locations[item[0]] = {
+                    'location_name': item[1],
+                    'location_longitude': item[2],
+                    'location_latitude': item[3],
+                    'governorate': item[5],
+                    'caza': '{}-{}'.format(item[6], item[7]),
+                    'cadastral': '{}-{}'.format(item[8], item[9]),
+                    'indicators': []
+                }
+
+            try:
+                cumulative_value = "{:,}".format(round(float(item[12]), 1))
+            except Exception:
+                cumulative_value = 0
+
+            locations[item[0]]['indicators'].append({
+                'indicator_units': item[4].upper(),
+                'partner_label': item[10],
+                'indicator_name': item[11],
+                'cumulative_value': cumulative_value,
+            })
+
+        locations = json.dumps(locations.values())
+
+        if selected_partner:
+            try:
+                partner = Partner.objects.get(number=selected_partner)
+                if partner.partner_etools:
+                    partner_info = partner.detailed_info
+            except Exception as ex:
+                print(ex)
+                pass
+
+        partners = report.values('partner_label', 'partner_id').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
+        cazas = report.values('location_adminlevel_caza_code',
+                              'location_adminlevel_caza').distinct()
+
+        return {
+            'selected_partner': selected_partner,
+            'selected_governorate': selected_governorate,
+            'selected_caza': selected_caza,
+            'reports': report.order_by('id'),
+            'month': month,
+            'year': today.year,
+            'month_name': month_name,
+            'month_number': month_number,
+            'database': database,
+            'partners': partners,
+            'governorates': governorates,
+            'cazas': cazas,
+            'partner_info': partner_info,
+            'partner': partner,
+            'selected_filter': selected_filter,
+            'locations': locations,
+            'locations_count': ctr
+        }
+
+
 class ReportDisabilityView(TemplateView):
 
     template_name = 'activityinfo/report_disability.html'
