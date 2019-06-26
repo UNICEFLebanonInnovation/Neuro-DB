@@ -221,6 +221,8 @@ class ReportPartnerView(TemplateView):
 
     def get_context_data(self, **kwargs):
 
+        from internos.activityinfo.utils import load_reporting_map
+
         partner_info = {}
         today = datetime.date.today()
         first = today.replace(day=1)
@@ -294,6 +296,44 @@ class ReportPartnerView(TemplateView):
         for i in range(1, 13):
             months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
+        report = ActivityReport.objects.filter(database=database)
+        if database.is_funded_by_unicef:
+            report = report.filter(funded_by__contains='UNICEF')
+
+        rows = load_reporting_map(ai_id, indicator=selected_indicator)
+
+        locations = {}
+        ctr = 0
+        for item in rows:
+            if not item[2] or not item[3]:
+                continue
+            if item[0] not in locations:
+                ctr += 1
+                locations[item[0]] = {
+                    'location_name': item[1],
+                    'location_longitude': item[2],
+                    'location_latitude': item[3],
+                    'governorate': item[5],
+                    'caza': '{}-{}'.format(item[6], item[7]),
+                    'cadastral': '{}-{}'.format(item[8], item[9]),
+                    'indicators': []
+                }
+
+            try:
+                cumulative_value = "{:,}".format(round(float(item[12]), 1))
+            except Exception:
+                cumulative_value = 0
+
+            locations[item[0]]['indicators'].append({
+                'indicator_units': item[4].upper(),
+                'partner_label': item[10],
+                'indicator_name': item[11],
+                'cumulative_value': cumulative_value,
+            })
+
+        locations = json.dumps(locations.values())
+        print(locations)
+
         return {
             'reports': report.order_by('id'),
             'month': month,
@@ -308,7 +348,8 @@ class ReportPartnerView(TemplateView):
             'indicator': indicator,
             'selected_governorate': selected_governorate,
             'selected_partner': 0,
-            'selected_indicator': selected_indicator
+            'selected_indicator': selected_indicator,
+            'locations': locations,
         }
 
 

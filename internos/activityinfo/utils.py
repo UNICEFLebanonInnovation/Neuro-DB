@@ -2066,7 +2066,7 @@ def assign_support_disability_master_indicator():
         sub_indicators.update(support_disability=indicator.support_disability)
 
 
-def load_reporting_map(ai_id, partner=None, governorate=None, caza=None, donor=None):
+def load_reporting_map(ai_id, partner=None, governorate=None, caza=None, donor=None, indicator=None):
     from django.db import connection
 
     params = [str(ai_id), ]
@@ -2090,6 +2090,10 @@ def load_reporting_map(ai_id, partner=None, governorate=None, caza=None, donor=N
     if caza:
         params.append(str(caza))
         queryset += "AND location_adminlevel_caza_code = %s "
+    if indicator:
+        params.append(str(indicator))
+        params.append(str(indicator))
+        queryset += "AND (ai.main_master_indicator_id = %s OR ai.id = %s) "
 
     cursor.execute(queryset, params)
     return cursor.fetchall()
