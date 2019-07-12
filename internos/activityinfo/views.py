@@ -332,7 +332,6 @@ class ReportPartnerView(TemplateView):
             })
 
         locations = json.dumps(locations.values())
-        print(locations)
 
         return {
             'reports': report.order_by('id'),
