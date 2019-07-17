@@ -421,7 +421,7 @@ class Indicator(models.Model):
 
     def __unicode__(self):
         if self.ai_indicator:
-            return '{} {}'.format(self.name, self.ai_indicator)
+            return u'{} {}'.format(self.name, self.ai_indicator)
         return self.name
 
     @property
