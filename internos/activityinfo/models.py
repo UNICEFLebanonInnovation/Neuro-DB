@@ -420,8 +420,8 @@ class Indicator(models.Model):
     cumulative_values_sector = JSONField(blank=True, null=True)
 
     def __unicode__(self):
-        if self.ai_id:
-            return '{} - {}'.format(self.name, str(self.ai_id))
+        if self.ai_indicator:
+            return '{} - {}'.format(self.name, self.ai_indicator)
         return self.name
 
     @property
