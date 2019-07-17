@@ -268,7 +268,16 @@ def calculate_sum_target(ai_id):
     return top_indicators.count() + sub_indicators.count()
 
 
+def generate_indicators_number(ai_db):
+    from internos.activityinfo.models import Indicator
+
+    for indicator in Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id):
+        indicator.ai_indicator = indicator.get_ai_indicator
+        indicator.save()
+
+
 def link_indicators_data(ai_db, report_type=None):
+    generate_indicators_number(ai_db)
     result = link_indicators_activity_report(ai_db, report_type)
     # link_ai_partners(report_type)
     # link_etools_partners()
@@ -2214,7 +2223,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename):
     path2file = path+'/AIReports/HPM Table template 2019.docx'
 
     document = Document(path2file)
-
+    month = month - 1
     document.paragraphs[0].runs[1].text = month_name
 
     # Education 1
