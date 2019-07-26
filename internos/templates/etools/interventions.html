@@ -128,6 +128,21 @@
            title="Show me some tips" style="padding-left: 20px;">
           <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
         </a>
+
+        <ul class="nav navbar-left" style="margin-top: -7px;" data-step="10" data-intro="Download Dashboard report and raw data">
+          <li class="dropdown">
+            <a id="drop5" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
+               data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                        <i class="fa fa-download faa-bounce animated-hover" style="font-size: 25px;"></i>
+              <span class="caret"></span>
+            </a>
+            <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'etools:interventions_export' %}">Export</a>
+              <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
+            </ul>
+          </li>
+        </ul>
+
         <ul class="nav navbar-right panel_toolbox">
           <li><a class="collapse-link"></a></li>
         </ul>

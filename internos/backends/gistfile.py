@@ -58,7 +58,10 @@ class ExportModel(object):
             writer = UnicodeWriter(f, encoding='utf-8')
             writer.writerow(meta['header'])
             for obj in meta['queryset']:
-                row = [unicode(getattr(obj, field)) for field in meta['fields']]
+                if isinstance(obj, dict):
+                    row = [unicode(obj[field]) for field in meta['fields']]
+                else:
+                    row = [unicode(getattr(obj, field)) for field in meta['fields']]
                 writer.writerow(row)
             path = f.name
         return path

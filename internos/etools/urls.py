@@ -31,4 +31,9 @@ urlpatterns = [
         view=views.HACTView.as_view(),
         name='hact'
     ),
+    url(
+        regex=r'^interventions-export/$',
+        view=views.InterventionExportViewSet.as_view(),
+        name='interventions_export'
+    ),
 ]

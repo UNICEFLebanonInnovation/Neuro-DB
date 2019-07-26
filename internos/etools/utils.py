@@ -611,12 +611,15 @@ def get_action_points_details(related_module, related_module_id):
     return data
 
 
-def get_interventions_details(data_set):
+def get_interventions_details(data_set, all_locations=False, json_dumps=True):
     from internos.users.models import Office
 
     details = []
     for intervention in data_set:
-        for location in intervention.locations.filter(point__isnull=False).iterator():
+        locations = intervention.locations
+        if not all_locations:
+            locations = locations.filter(point__isnull=False)
+        for location in locations.iterator():
 
             separator = ', '
             section_names = separator.join(intervention.section_names)
@@ -627,8 +630,8 @@ def get_interventions_details(data_set):
 
             details.append({
                 'name': location.name,
-                'latitude': location.point.y,
-                'longitude': location.point.x,
+                'latitude': location.point.y if location.point else 0,
+                'longitude': location.point.x if location.point else 0,
                 'title': intervention.title,
                 'document_type': intervention.document_type,
                 'partner_name': intervention.partner_name,
@@ -642,6 +645,7 @@ def get_interventions_details(data_set):
                 'offices_names': offices_names,
             })
 
-    details = json.dumps(details)
+    if json_dumps:
+        details = json.dumps(details)
 
     return details

@@ -199,6 +199,34 @@ class InterventionsView(TemplateView):
         }
 
 
+class InterventionExportViewSet(ListView):
+
+    model = PCA
+    queryset = PCA.objects.all()
+
+    def get(self, request, *args, **kwargs):
+
+        now = datetime.datetime.now()
+
+        interventions = PCA.objects.filter(end__year=now.year).exclude(status=PCA.CANCELLED)
+        locations = get_interventions_details(interventions, all_locations=True, json_dumps=False)
+        # print(locations)
+
+        filename = "extraction.csv"
+
+        fields = locations[0].keys()
+        header = locations[0].values()
+        meta = {
+            'file': filename,
+            # 'file': '/{}/{}'.format('tmp', filename),
+            'queryset': locations,
+            'fields': fields,
+            'header': fields
+        }
+        from internos.backends.gistfile import get_model_as_csv_file_response
+        return get_model_as_csv_file_response(meta, content_type='text/csv', filename=filename)
+
+
 class TripsMonitoringView(TemplateView):
 
     template_name = 'etools/trip_monitoring2.html'
