@@ -82,7 +82,7 @@ class ReportView(TemplateView):
         selected_partners = self.request.GET.getlist('partners', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorate = self.request.GET.get('governorate', 0)
-        selected_governorates = self.request.GET.get('governorates', 0)
+        selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
         partner_info = {}
