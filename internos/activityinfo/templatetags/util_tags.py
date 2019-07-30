@@ -558,7 +558,8 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
                 return get_indicator_unit(indicator, value)
             for gv in gov:
                 key = "{}-{}".format(month, gv)
-                value += indicator['values_gov'][key]
+                if key in indicator['values_gov']:
+                    value += indicator['values_gov'][key]
             return get_indicator_unit(indicator, value)
         if gov and not gov == '0':
             key = "{}-{}".format(month, gov)
