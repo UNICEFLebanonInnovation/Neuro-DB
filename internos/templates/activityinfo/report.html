@@ -57,6 +57,18 @@
       {% endif %}
   </div>
 
+  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+      <select class="selectpicker show-tick" data-actions-box="true" multiple title="Select one or more governorate" name="governorates" data-style="btn-info" id="filter_governorates">
+          {% for gov in governorates %}
+              <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
+          {% endfor %}
+      </select>
+      {% if partner_info %}
+        <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
+           data-toggle="modal" data-target="#partnerModal"></i>
+      {% endif %}
+  </div>
+
   <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">
       <select class="selectpicker show-tick" title="Select a governorate" name="governorate" data-style="btn-info" id="filter_govs">
           {% for gov in governorates %}
@@ -227,7 +239,7 @@
                       </thead>
                       <tbody>
                         {% for item in master_indicators %}
-                          {% get_indicator_cumulative item month selected_partners selected_governorate as cumulative_value %}
+                          {% get_indicator_cumulative item month selected_partners selected_governorates as cumulative_value %}
                           {% to_display_indicator selected_filter cumulative_value as display_indicator %}
 
                           {% if display_indicator %}
@@ -268,13 +280,13 @@
                                 {{ cumulative_value }}
                               </td>
                               <td class="w-130">
-                                {% get_indicator_achieved item month selected_partners selected_governorate as achieved %}
+                                {% get_indicator_achieved item month selected_partners selected_governorates as achieved %}
                                 {{ achieved }}%
                               </td>
                               <td class="w-70" style="background-color:{{ item.status_color }}; color: #FFF;">{{ item.status }}</td>
                               {% for month, month_name in months %}
                                 <td class="w-70">
-                                  {% get_indicator_value item month selected_partners selected_governorate as value %}
+                                  {% get_indicator_value item month selected_partners selected_governorates as value %}
                                   {{ value }}
                                 </td>
                               {% endfor %}
@@ -309,17 +321,17 @@
                                 <td class="w-100">{{ item1.awp_code }}</td>
                                 <td class="w-100">{{ item1.target|number_format }}</td>
                                 <td class="w-130">
-                                   {% get_indicator_cumulative item1 month selected_partners selected_governorate as cumulative_value %}
+                                   {% get_indicator_cumulative item1 month selected_partners selected_governorates as cumulative_value %}
                                    {{ cumulative_value }}
                                 </td>
                                 <td class="w-130">
-                                  {% get_indicator_achieved item1 month selected_partners selected_governorate as achieved %}
+                                  {% get_indicator_achieved item1 month selected_partners selected_governorates as achieved %}
                                   {{ achieved }}%
                                 </td>
                                 <td class="w-70" style="background-color:{{ item1.status_color }}; color: #FFF;">{{ item1.status }}</td>
                                 {% for month, month_name in months %}
                                   <td class="w-70">
-                                      {% get_indicator_value item1 month selected_partners selected_governorate as value %}
+                                      {% get_indicator_value item1 month selected_partners selected_governorates as value %}
                                       {{ value }}
                                   </td>
                                 {% endfor %}
@@ -355,17 +367,17 @@
                                   <td class="w-100">{{ item2.awp_code }}</td>
                                   <td class="w-100">{{ item2.target|number_format }}</td>
                                   <td class="w-130">
-                                     {% get_indicator_cumulative item2 month selected_partners selected_governorate as cumulative_value %}
+                                     {% get_indicator_cumulative item2 month selected_partners selected_governorates as cumulative_value %}
                                      {{ cumulative_value }}
                                   </td>
                                   <td class="w-130">
-                                    {% get_indicator_achieved item2 month selected_partners selected_governorate as achieved %}
+                                    {% get_indicator_achieved item2 month selected_partners selected_governorates as achieved %}
                                     {{ achieved }}%
                                   </td>
                                   <td class="w-70" style="background-color:{{ item2.status_color }}; color: #FFF;">{{ item2.status }}</td>
                                   {% for month, month_name in months %}
                                     <td class="w-70">
-                                      {% get_indicator_value item2 month selected_partners selected_governorate as value %}
+                                      {% get_indicator_value item2 month selected_partners selected_governorates as value %}
                                       {{ value }}
                                     </td>
                                   {% endfor %}
@@ -393,17 +405,17 @@
                               <td class="w-100">{{ no_item.awp_code }}</td>
                               <td class="w-100">{{ no_item.target|number_format }}</td>
                               <td class="w-130">
-                                 {% get_indicator_cumulative no_item month selected_partners selected_governorate as cumulative_value %}
+                                 {% get_indicator_cumulative no_item month selected_partners selected_governorates as cumulative_value %}
                                  {{ cumulative_value }}
                               </td>
                               <td class="w-130">
-                                {% get_indicator_achieved no_item month selected_partners selected_governorate as achieved %}
+                                {% get_indicator_achieved no_item month selected_partners selected_governorates as achieved %}
                                 {{ achieved }}%
                               </td>
                               <td class="w-70" style="background-color:{{ no_item.status_color }}; color: #FFF;">{{ no_item.status }}</td>
                               {% for month, month_name in months %}
                                 <td class="w-70">
-                                  {% get_indicator_value no_item month selected_partners selected_governorate as value %}
+                                  {% get_indicator_value no_item month selected_partners selected_governorates as value %}
                                   {{ value }}
                                 </td>
                               {% endfor %}

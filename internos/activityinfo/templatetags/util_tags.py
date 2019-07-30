@@ -102,12 +102,12 @@ def number_format(value):
 @register.assignment_tag
 def to_display_indicator(selected_filters, cumulative_result):
 
-    if not selected_filters:
-        return True
-
-    if selected_filters and cumulative_result == '0':
-        return False
-
+    # if not selected_filters:
+    #     return True
+    #
+    # if selected_filters and cumulative_result == '0':
+    #     return False
+    #
     return True
 
 
@@ -180,6 +180,13 @@ def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
                     value += cumulative_values[par]
             return get_indicator_unit(indicator, value)
 
+        if gov and 'govs' in cumulative_values:
+            cumulative_values = cumulative_values.get('govs')
+            for gv in gov:
+                if gv in cumulative_values:
+                    value += cumulative_values[gv]
+            return get_indicator_unit(indicator, value)
+
         if gov and not gov == '0' and 'govs' in cumulative_values:
             cumulative_values = cumulative_values.get('govs')
             if gov in cumulative_values:
@@ -196,7 +203,7 @@ def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
 
         return get_indicator_unit(indicator, 0)
     except Exception as ex:
-        # print(ex)
+        print(ex)
         return get_indicator_unit(indicator, 0)
 
 
@@ -296,6 +303,13 @@ def calculate_achievement(indicator, cumulative_values, target, month=None, part
                     value += cumulative_values[par]
                 return round((value * 100.0) / target, 2)
 
+        if gov and 'govs' in cumulative_values:
+            cumulative_values = cumulative_values.get('govs')
+            for gv in gov:
+                if gv in cumulative_values:
+                    value += cumulative_values[gv]
+                return round((value * 100.0) / target, 2)
+
         if gov and not gov == '0' and 'govs' in cumulative_values:
             cumulative_values = cumulative_values.get('govs')
             if gov in cumulative_values:
@@ -306,7 +320,7 @@ def calculate_achievement(indicator, cumulative_values, target, month=None, part
 
         return 0
     except Exception as ex:
-        # print(ex)
+        print(ex)
         return 0
 
 
@@ -537,13 +551,22 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
                 key = "{}-{}".format(month, par)
                 value += indicator['values_partners'][key]
             return get_indicator_unit(indicator, value)
+        if gov:
+            if type(gov) == unicode:
+                key = "{}-{}".format(month, gov)
+                value += indicator['values_gov'][key]
+                return get_indicator_unit(indicator, value)
+            for gv in gov:
+                key = "{}-{}".format(month, gv)
+                value += indicator['values_gov'][key]
+            return get_indicator_unit(indicator, value)
         if gov and not gov == '0':
             key = "{}-{}".format(month, gov)
             return get_indicator_unit(indicator, indicator['values_gov'][key])
 
         return get_indicator_unit(indicator, indicator['values'][str(month)])
     except Exception as ex:
-        # print(ex)
+        print(ex)
         return get_indicator_unit(indicator, 0)
 
 
