@@ -374,14 +374,18 @@ LOGGING = {
     },
     'handlers': {
         'db': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'django_db_logger.db_log_handler.DatabaseLogHandler'
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
         },
     },
     'loggers': {
         'django': {
             'level': 'INFO',
-            'handlers': ['db'],
+            'handlers': ['db', 'console'],
             'propagate': True,
         },
     }

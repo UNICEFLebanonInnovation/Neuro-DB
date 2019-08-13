@@ -421,6 +421,7 @@ def get_indicator_hpm_data(ai_id, month=None):
         'bln': 0,
         'cbece': 0,
         'alp': 0,
+        'tag_programme_total': 0,
     }
 
     try:
@@ -474,6 +475,7 @@ def get_indicator_hpm_data(ai_id, month=None):
             'bln': str(round(indicator.values_tags['BLN'])).replace('.0', '') if 'BLN' in indicator.values_tags else 0,
             'cbece': str(round(indicator.values_tags['cbece'])).replace('.0', '') if 'cbece' in indicator.values_tags else 0,
             'alp': str(round(indicator.values_tags['alp'])).replace('.0', '') if 'alp' in indicator.values_tags else 0,
+            'tag_programme_total': int(data['bln']) + int(data['cbece']) + int(data['alp']),
         }
 
         return data
