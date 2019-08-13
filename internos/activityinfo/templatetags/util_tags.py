@@ -477,8 +477,8 @@ def get_indicator_hpm_data(ai_id, month=None):
             'male': str(round(indicator.values_tags['male'])).replace('.0', '') if 'male' in indicator.values_tags else 0,
             'female': str(round(indicator.values_tags['female'])).replace('.0', '') if 'female' in indicator.values_tags else 0,
             'bln': str(round(indicator.values_tags['BLN'])).replace('.0', '') if 'BLN' in indicator.values_tags else 0,
-            'cbece': str(round(indicator.values_tags['cbece'])).replace('.0', '') if 'cbece' in indicator.values_tags else 0,
-            'alp': str(round(indicator.values_tags['alp'])).replace('.0', '') if 'alp' in indicator.values_tags else 0,
+            'cbece': str(round(indicator.values_tags['CBECE'])).replace('.0', '') if 'CBECE' in indicator.values_tags else 0,
+            'alp': str(round(indicator.values_tags['ALP'])).replace('.0', '') if 'ALP' in indicator.values_tags else 0,
             'tag_programme_total': int(tag_prog_bln) + int(tag_prog_cbece) + int(tag_prog_alp),
         }
 
