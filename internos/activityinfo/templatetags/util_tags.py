@@ -463,9 +463,9 @@ def get_indicator_hpm_data(ai_id, month=None):
             # last_report_changes = "{:,}".format(round(abs(int(cumulative) - int(last_month_value)), 1))
             last_report_changes = last_report_changes.replace('.0', '')
 
-        tag_prog_bln = indicator.values_tags['BLN'] if 'BLN' in indicator.values_tags else 0,
-        tag_prog_cbece = indicator.values_tags['cbece'] if 'cbece' in indicator.values_tags else 0,
-        tg_prog_alp = indicator.values_tags['alp'] if 'alp' in indicator.values_tags else 0,
+        tag_prog_bln = indicator.values_tags['BLN'] if 'BLN' in indicator.values_tags else 0
+        tag_prog_cbece = indicator.values_tags['CBECE'] if 'CBECE' in indicator.values_tags else 0
+        tag_prog_alp = indicator.values_tags['ALP'] if 'ALP' in indicator.values_tags else 0
 
         data = {
             'id': ai_id,
@@ -479,7 +479,7 @@ def get_indicator_hpm_data(ai_id, month=None):
             'bln': str(round(indicator.values_tags['BLN'])).replace('.0', '') if 'BLN' in indicator.values_tags else 0,
             'cbece': str(round(indicator.values_tags['cbece'])).replace('.0', '') if 'cbece' in indicator.values_tags else 0,
             'alp': str(round(indicator.values_tags['alp'])).replace('.0', '') if 'alp' in indicator.values_tags else 0,
-            'tag_programme_total': int(tag_prog_bln) + int(tag_prog_cbece) + int(tg_prog_alp),
+            'tag_programme_total': int(tag_prog_bln) + int(tag_prog_cbece) + int(tag_prog_alp),
         }
 
         return data
