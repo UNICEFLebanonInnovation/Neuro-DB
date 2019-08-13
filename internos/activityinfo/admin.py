@@ -297,6 +297,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'tag_age',
         'tag_nationality',
         'tag_disability',
+        'tag_programme',
     )
     suit_list_filter_horizontal = (
         'activity__database__reporting_year',
@@ -389,6 +390,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'tag_gender',
                 'tag_nationality',
                 'tag_disability',
+                'tag_programme',
                 'hpm_indicator',
             ]
         }),
