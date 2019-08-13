@@ -422,6 +422,9 @@ def get_indicator_hpm_data(ai_id, month=None):
         'cbece': 0,
         'alp': 0,
         'tag_programme_total': 0,
+        'last_report_changes_bln': 0,
+        'last_report_changes_cbece': 0,
+        'last_report_changes_alp': 0,
     }
 
     try:
@@ -453,6 +456,22 @@ def get_indicator_hpm_data(ai_id, month=None):
             else:
                 cumulative = cumulative_values
 
+        last_report_changes_bln = 0
+        last_report_changes_cbece = 0
+        last_report_changes_alp = 0
+
+        if 'tags' in indicator.cumulative_values_hpm:
+            last_month_value_tag = indicator.cumulative_values_hpm['tags']
+            key1 = '{}-{}'.format(month, 'BLN')
+            key2 = '{}-{}'.format(month, 'CBECE')
+            key3 = '{}-{}'.format(month, 'ALP')
+            if key1 in last_month_value_tag:
+                last_report_changes_bln = last_month_value_tag[key1]
+            if key2 in last_month_value_tag:
+                last_report_changes_cbece = last_month_value_tag[key2]
+            if key3 in last_month_value_tag:
+                last_report_changes_alp = last_month_value_tag[key3]
+
         cumulative_result = "{:,}".format(round(cumulative), 1)
         cumulative_result = cumulative_result.replace('.0', '')
 
@@ -480,6 +499,9 @@ def get_indicator_hpm_data(ai_id, month=None):
             'cbece': str(round(indicator.values_tags['CBECE'])).replace('.0', '') if 'CBECE' in indicator.values_tags else 0,
             'alp': str(round(indicator.values_tags['ALP'])).replace('.0', '') if 'ALP' in indicator.values_tags else 0,
             'tag_programme_total': int(tag_prog_bln) + int(tag_prog_cbece) + int(tag_prog_alp),
+            'last_report_changes_bln': last_report_changes_bln,
+            'last_report_changes_cbece': last_report_changes_cbece,
+            'last_report_changes_alp': last_report_changes_alp,
         }
 
         return data
