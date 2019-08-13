@@ -959,12 +959,10 @@ def calculate_indicators_monthly_tags():
             'cumulative_values_hpm',
             'values',
         )
-        try:
-            if 'tags' not in indicator.cumulative_values_hpm:
-                indicator.cumulative_values_hpm['tags'] = {}
-        except Exception as ex:
-            # print(ex.message)
+
+        if not indicator.cumulative_values_hpm:
             indicator.cumulative_values_hpm = {}
+        if 'tags' not in indicator.cumulative_values_hpm:
             indicator.cumulative_values_hpm['tags'] = {}
 
         for tag in tags_gender.iterator():
@@ -978,11 +976,11 @@ def calculate_indicators_monthly_tags():
 
                 value += float(c_value)
 
-            key = '{}-{}'.format(month, tag.name)
+            key = '{}-{}'.format(int(month), tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
-                print(ex.message)
+                # print(ex.message)
                 indicator.cumulative_values_hpm['tags'][key] = 0
 
         for tag in tags_age.iterator():
@@ -996,11 +994,11 @@ def calculate_indicators_monthly_tags():
 
                 value += float(c_value)
 
-            key = '{}-{}'.format(month, tag.name)
+            key = '{}-{}'.format(int(month), tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
-                print(ex.message)
+                # print(ex.message)
                 indicator.cumulative_values_hpm['tags'][key] = 0
 
         for tag in tags_nationality.iterator():
@@ -1014,7 +1012,7 @@ def calculate_indicators_monthly_tags():
 
                 value += float(c_value)
 
-            key = '{}-{}'.format(month, tag.name)
+            key = '{}-{}'.format(int(month), tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
@@ -1032,7 +1030,7 @@ def calculate_indicators_monthly_tags():
 
                 value += float(c_value)
 
-            key = '{}-{}'.format(month, tag.name)
+            key = '{}-{}'.format(int(month), tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
@@ -1050,7 +1048,7 @@ def calculate_indicators_monthly_tags():
 
                 value += float(c_value)
 
-            key = '{}-{}'.format(month, tag.name)
+            key = '{}-{}'.format(int(month), tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
