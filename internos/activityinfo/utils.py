@@ -938,6 +938,126 @@ def calculate_indicators_tags():
     return indicators.count()
 
 
+def calculate_indicators_monthly_tags():
+    from internos.activityinfo.models import Indicator, IndicatorTag
+
+    # indicators = Indicator.objects.filter(hpm_indicator=True)
+    indicators = Indicator.objects.filter(Q(master_indicator=True) | Q(hpm_indicator=True))
+    tags_gender = IndicatorTag.objects.filter(type='gender').only('id', 'name')
+    tags_age = IndicatorTag.objects.filter(type='age').only('id', 'name')
+    tags_nationality = IndicatorTag.objects.filter(type='nationality').only('id', 'name')
+    tags_disability = IndicatorTag.objects.filter(type='disability').only('id', 'name')
+    tags_programme = IndicatorTag.objects.filter(type='programme').only('id', 'name')
+
+    today = datetime.date.today()
+    first = today.replace(day=1)
+    last_month = first - datetime.timedelta(days=1)
+    month = last_month.strftime("%m")
+
+    for indicator in indicators.iterator():
+        sub_indicators = indicator.summation_sub_indicators.all().only(
+            'cumulative_values_hpm',
+            'values',
+        )
+
+        if 'tags' not in indicator.cumulative_values_hpm:
+            indicator.cumulative_values_hpm['tags'] = {}
+
+        for tag in tags_gender.iterator():
+            tag_sub_indicators = sub_indicators.filter(tag_gender_id=tag.id)
+
+            value = 0
+            for ind_tag in tag_sub_indicators:
+                c_value = 0
+                if month in ind_tag.values:
+                    c_value = ind_tag.values[month]
+
+                value += float(c_value)
+
+            key = '{}-{}'.format(month, tag.name)
+            try:
+                indicator.cumulative_values_hpm['tags'][key] = value
+            except Exception as ex:
+                print(ex.message)
+                indicator.cumulative_values_hpm['tags'][key] = 0
+
+        for tag in tags_age.iterator():
+            tag_sub_indicators = sub_indicators.filter(tag_age_id=tag.id)
+
+            value = 0
+            for ind_tag in tag_sub_indicators:
+                c_value = 0
+                if month in ind_tag.values:
+                    c_value = ind_tag.values[month]
+
+                value += float(c_value)
+
+            key = '{}-{}'.format(month, tag.name)
+            try:
+                indicator.cumulative_values_hpm['tags'][key] = value
+            except Exception as ex:
+                print(ex.message)
+                indicator.cumulative_values_hpm['tags'][key] = 0
+
+        for tag in tags_nationality.iterator():
+            tag_sub_indicators = sub_indicators.filter(tag_nationality_id=tag.id)
+
+            value = 0
+            for ind_tag in tag_sub_indicators:
+                c_value = 0
+                if month in ind_tag.values:
+                    c_value = ind_tag.values[month]
+
+                value += float(c_value)
+
+            key = '{}-{}'.format(month, tag.name)
+            try:
+                indicator.cumulative_values_hpm['tags'][key] = value
+            except Exception as ex:
+                # print(ex.message)
+                indicator.cumulative_values_hpm['tags'][key] = 0
+
+        for tag in tags_programme.iterator():
+            tag_sub_indicators = sub_indicators.filter(tag_programme_id=tag.id)
+
+            value = 0
+            for ind_tag in tag_sub_indicators:
+                c_value = 0
+                if month in ind_tag.values:
+                    c_value = ind_tag.values[month]
+
+                value += float(c_value)
+
+            key = '{}-{}'.format(month, tag.name)
+            try:
+                indicator.cumulative_values_hpm['tags'][key] = value
+            except Exception as ex:
+                # print(ex.message)
+                indicator.cumulative_values_hpm['tags'][key] = 0
+
+        for tag in tags_disability.iterator():
+            tag_sub_indicators = sub_indicators.filter(tag_disability_id=tag.id)
+
+            value = 0
+            for ind_tag in tag_sub_indicators:
+                c_value = 0
+                if month in ind_tag.values:
+                    c_value = ind_tag.values[month]
+
+                value += float(c_value)
+
+            key = '{}-{}'.format(month, tag.name)
+            try:
+                indicator.cumulative_values_hpm['tags'][key] = value
+            except Exception as ex:
+                # print(ex.message)
+                indicator.cumulative_values_hpm['tags'][key] = 0
+
+        indicator.save()
+
+    return indicators.count()
+
+
 def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators=False):
     from django.db import connection
     from internos.activityinfo.models import Indicator
