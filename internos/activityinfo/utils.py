@@ -959,8 +959,12 @@ def calculate_indicators_monthly_tags():
             'cumulative_values_hpm',
             'values',
         )
-
-        if 'tags' not in indicator.cumulative_values_hpm:
+        try:
+            if 'tags' not in indicator.cumulative_values_hpm:
+                indicator.cumulative_values_hpm['tags'] = {}
+        except Exception as ex:
+            # print(ex.message)
+            indicator.cumulative_values_hpm = {}
             indicator.cumulative_values_hpm['tags'] = {}
 
         for tag in tags_gender.iterator():
