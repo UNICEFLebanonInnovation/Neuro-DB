@@ -76,5 +76,10 @@ django-json-widget==0.1.1
 python-docx==0.8.10
 django-leaflet==0.24.0
 django-ordered-model==3.1.1
+django-db-logger==0.1.7
+django-newsletter==0.7
+django-jet==1.0.8
+django-watson==1.5.2
+django-tellme==0.6.5
 
 # git+https://github.com/UNICEFLebanonInnovation/ActvityInfoPython.git

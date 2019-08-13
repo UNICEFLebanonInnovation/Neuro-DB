@@ -64,7 +64,6 @@
   }
   #mapView {
     height: 500px;
-
     border: 1px solid;
   }
   #myTabContent {
@@ -77,24 +76,22 @@
      background-color: #337ab7;
      color: white !important;
   }
-  #feeds {
-    border-radius: 5px;
-    box-shadow: -5px 5px 10px;
-    top: 0px;
-    margin-left: 30px;
-    height: 500px;
-    overflow: auto;
-    padding: 0;
+  #filters {
+    height: 250px;
+    border: 1px solid;
   }
-  #feeds-content div {
-    border-radius: 5px;
-    box-shadow: -1px 1px 4px;
-    padding: 2px;
-    margin-top: 5px;
-    padding-left: 15px;
+  .filter-content {
+    <!--border-left: 1px solid;-->
+    <!--padding: 2px;-->
+    <!--margin-top: 5px;-->
+    <!--padding-left: 15px;-->
   }
   .bootstrap-select {
       width: 150px !important;
+  }
+  #chart1, #chart2, #chart3, #chart4, #chart5, #chart6 {
+      border: 1px solid;
+      height: 250px;
   }
 </style>
 
@@ -104,41 +101,55 @@
 <form action="{% url 'activityinfo:report_map' %}" method="get">
     <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
     <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="4" data-intro="Filter options by partner">
-        <select class="selectpicker show-tick" data-actions-box="true" title="Select a Partner" name="partner" data-style="btn-info" id="filter_partners">
-            <option value="">All Partners</option>
+        <select class="selectpicker show-tick" data-actions-box="true" multiple title="Partner" name="partner" data-style="btn-info" id="filter_partners">
             {% for partner in partners %}
                 <option value="{{ partner.partner_id }}" {% if partner.partner_id == selected_partner %}selected{% endif %}>{{ partner.partner_label }}</option>
             {% endfor %}
         </select>
-        {% if partner_info %}
-          <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
-             data-toggle="modal" data-target="#partnerModal"></i>
-        {% endif %}
     </div>
-    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">
-        <select class="selectpicker show-tick" title="Select a Governorate" name="governorate" data-style="btn-info" id="filter_govs">
-            <option value="">All Governorates</option>
+    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+        <select class="selectpicker show-tick" data-actions-box="true" multiple title="Governorate" name="governorate" data-style="btn-info" id="filter_govs">
             {% for gov in governorates %}
                 <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorate %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
             {% endfor %}
         </select>
     </div>
-    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by Caza">
-        <select class="selectpicker show-tick" title="Select a Caza" name="caza" data-style="btn-info" id="filter_cazas">
-            <option value="">All Caza</option>
+    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+        <select class="selectpicker show-tick" data-actions-box="true" multiple title="Caza" name="caza" data-style="btn-info" id="filter_cazas">
             {% for caza in cazas %}
                 <option value="{{ caza.location_adminlevel_caza_code }}" {% if caza.location_adminlevel_caza_code == selected_caza %}selected{% endif %}>{{ caza.location_adminlevel_caza }}</option>
             {% endfor %}
         </select>
     </div>
-    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by Caza">
-        <select class="selectpicker show-tick" title="Select a Donor" name="donor" data-style="btn-info" id="filter_donors">
-            <option value="">All Donors</option>
-            {% for donor in donors %}
-                <option value="{{ donor }}" {% if donor == selected_donor %}selected{% endif %}>{{ donor }}</option>
+    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+        <select class="selectpicker show-tick" data-actions-box="true" multiple title="Indicator Category" name="indicator_category" data-style="btn-info" id="filter_icategories">
+            {% for icategory in indicator_categories %}
+                <option value="{{ icategory.indicator_category }}">{{ icategory.indicator_category }}</option>
             {% endfor %}
         </select>
     </div>
+    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+        <select class="selectpicker show-tick" data-actions-box="true" multiple title="Form Category" name="form_category" data-style="btn-info" id="filter_fcategories">
+            {% for fcategory in form_categories %}
+                <option value="{{ fcategory.form_category }}">{{ fcategory.form_category }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+        <select class="selectpicker show-tick" data-actions-box="true" multiple title="Month" name="month" data-style="btn-info" id="filter_month">
+            {% for month in months %}
+                <option value="{{ month.month }}">{{ month.month_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <!--<div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by Caza">-->
+        <!--<select class="selectpicker show-tick" title="Select a Donor" name="donor" data-style="btn-info" id="filter_donors">-->
+            <!--<option value="">All Donors</option>-->
+            <!--{% for donor in donors %}-->
+                <!--<option value="{{ donor }}" {% if donor == selected_donor %}selected{% endif %}>{{ donor }}</option>-->
+            <!--{% endfor %}-->
+        <!--</select>-->
+    <!--</div>-->
     <div class="col-md-2">
       <button type="submit" class="btn btn-success">Search</button>
       <a href="{% url 'activityinfo:report_map' %}?ai_id={{ database.ai_id }}" class="btn btn-warning">Cancel</a>
@@ -150,54 +161,32 @@
 <div class="row" style="">
   <div class="w-1002 col-sm-12 col-xs-12">
     <div class="x_panel">
-      <div class="x_title">
-        <h2>
-          <strong>{{ database.label }} - Indicator Reporting Map</strong>
-        </h2>
-        <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="6" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
-
-          <!--<span data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">-->
-            <i class="fa fa-user faa-pulse animated-hover" data-toggle="tooltip" data-placement="bottom" data-html="true"
-               title="Database focal point: {{ database.focal_point }} <br/>
-                      email: {{ database.focal_point.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
-            <!--<a href="skype:{{ database.focal_point.skype_account }}?chat" data-toggle="tooltip" data-placement="bottom"-->
-               <!--title="Chat with the database focal point via skype" style="padding-left: 20px;">-->
-              <!--<i class="fa fa-skype faa-pulse animated-hover" style="font-size: 25px; color: #2dc6ff;"></i>-->
-            <!--</a>-->
-            <a href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database" data-toggle="tooltip" data-placement="bottom"
-               title="Send email to the database focal point" style="padding-left: 20px;">
-              <i class="fa fa-envelope-o faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
-            </a>
-
-            <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
-               title="Show me some tips" style="padding-left: 20px;">
-              <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
-            </a>
-
-        </div>
-
-        <ul class="nav navbar-right panel_toolbox">
-          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-        </ul>
-        <div class="clearfix"></div>
-      </div>
-
       <div class="x_content">
 
         <div class="row" id="">
 
-          <div id="mapView" class="col-lg-8"></div>
+          <div id="mapView" class="col-lg-3"></div>
 
-          <div id="feeds" class="col-lg-3">
-            <div style="padding: 6px; margin: 0px; background-color: #337ab7; color: white; height: 50px;"><h2><strong>{{ locations_count }} Sites
-                {% if partner %} - {{ partner.name }} {% endif %}
-                {% if partner_info %}
-                  <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: white; padding-top: 3px;"
-                     data-toggle="modal" data-target="#partnerModal"></i>
-                {% endif %}
-            </strong></h2>
-            </div>
-            <div id="feeds-content"></div>
+          <div id="chart1" class="col-lg-3">
+            test
+          </div>
+          <div id="chart2" class="col-lg-3">
+            test
+          </div>
+
+          <div id="chart3" class="col-lg-3">
+            test
+          </div>
+
+          <div id="chart4" class="col-lg-3">
+            test
+          </div>
+          <div id="chart5" class="col-lg-3">
+            test
+          </div>
+
+          <div id="chart6" class="col-lg-3">
+            test
           </div>
 
         </div>
@@ -209,8 +198,6 @@
 </div>
 
 <br />
-
-{% include 'activityinfo/partner_info.html' %}
 
 {% endblock content %}
 
@@ -226,6 +213,7 @@
 
   <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
   <script src="https://js.arcgis.com/4.11/"></script>
+  <script type="text/javascript" src="{% static 'js/indexedDB.js' %}"></script>
 
 <script>
     var user_token = '{{ user_token }}';
@@ -257,7 +245,15 @@
       width:24,
     };
 
+    var view = null;
+    var pointGraphic = null;
+
+    var oTable = null;
+    var db = null;
+
     $(document).ready(function(){
+
+        createStores();
 
         $('ul.child_menu').hide();
 
@@ -274,20 +270,35 @@
               basemap: "topo-vector"
           });
 
-          var view = new MapView({
+          view = new MapView({
             container: "mapView",
             map: map,
             center: [35.8411, 33.6513],
             zoom: 8
           });
 
+          <!--pointGraphic = new Graphic({-->
+            <!--geometry: {-->
+              <!--type: "point",-->
+              <!--longitude: 0,-->
+              <!--latitude: 0-->
+            <!--},-->
+            <!--symbol: markerSymbol,-->
+            <!--attributes: {},-->
+            <!--popupTemplate: {-->
+              <!--title: "",-->
+              <!--content: ""-->
+            <!--}-->
+          <!--});-->
+
+          return true;
+          view.graphics.removeAll();
+
           setTimeout(function(){
 
              $(points).each(function(i, item){
 
                 setTimeout(function(){
-
-                    $('#feeds-content').append('<div class="row">'+item.location_name+'</div>');
 
                     var lineAtt = {
                       Name: item.location_name,
@@ -328,6 +339,95 @@
 
         });
     });
+
+function createStores()
+{
+    var request = indexedDB.open("mapping", 1);
+    request.onupgradeneeded = function() {
+        // The database did not previously exist, so create object stores and indexes.
+        db = request.result;
+        var flag = false;
+        try {
+            if(!db.objectStoreNames().contains('mapping')) {
+                flag = true;
+            }
+        }catch(err) {
+            flag = true;
+        }
+        if(flag){
+            var store = db.createObjectStore("mapping", {keyPath: "id", autoIncrement:true});
+            store.createIndex('cadastral', 'cadastral');
+            store.createIndex('caza', 'caza');
+            store.createIndex('governorate', 'governorate');
+            <!--store.createIndex('classroomAndSection', ['classroom', 'section']);-->
+        }
+    };
+    request.onsuccess = function() {
+        db = request.result;
+        $(".loader").show();
+        load_map();
+        setTimeout(function(){
+            $(".loader").hide();
+        }, 5000);
+    };
+}
+
+function load_map()
+{
+    $(points).each(function(i, item){
+        var store = getStoreByName('mapping');
+        store.add(item);
+    });
+    <!--draw_map();-->
+}
+
+function draw_map()
+{
+          <!--view.graphics.removeAll();-->
+
+          setTimeout(function(){
+
+             $(points).each(function(i, item){
+
+                setTimeout(function(){
+
+                    var lineAtt = {
+                      Name: item.location_name,
+                      Caza: item.caza,
+                      Cadastral: item.cadastral,
+                      Governorate: item.governorate,
+                    };
+
+                    var content = '<p>{Governorate} - {Cadastral} - {Caza}</p>';
+                    content = content + '<div class="list-group"><a href="#" class="list-group-item active"><strong>Indicators</a></strong>';
+                    $(item.indicators).each(function(j, item1){
+                        content = content + '<a href="#" class="list-group-item">'+item1.indicator_name+' <span class="label label-primary">'+item1.cumulative_value+'</span> <span class="label label-primary">'+item1.indicator_units+'</span> ('+item1.partner_label+')</a>';
+                    });
+                    content = content + '</div>';
+
+                    var pointGraphic = new Graphic({
+                      geometry: {
+                        type: "point",
+                        longitude: item.location_longitude,
+                        latitude: item.location_latitude
+                      },
+                      symbol: markerSymbol,
+                      attributes: lineAtt,
+                      popupTemplate: {
+                        title: "{Name}",
+                        content: content
+                      }
+                    });
+
+                    view.graphics.add(pointGraphic);
+
+                }, 3000);
+
+            });
+
+          }, 9000);
+}
+
 
 </script>
 

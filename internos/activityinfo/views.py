@@ -363,10 +363,6 @@ class ReportMapView(TemplateView):
         from internos.activityinfo.utils import load_reporting_map
 
         now = datetime.datetime.now()
-        cursor = connection.cursor()
-        selected_filter = False
-        partner = None
-        rows = []
         selected_partner = self.request.GET.get('partner', 0)
         selected_governorate = self.request.GET.get('governorate', 0)
         selected_caza = self.request.GET.get('caza', 0)
@@ -391,21 +387,7 @@ class ReportMapView(TemplateView):
         rows = load_reporting_map(ai_id, partner=selected_partner, governorate=selected_governorate,
                                   caza=selected_caza, donor=selected_donor)
 
-        # if selected_donor:
-        #     cursor.execute(
-        #         "SELECT DISTINCT ar.site_id, ar.location_name, ar.location_longitude, ar.location_latitude, "
-        #         "ar.indicator_units, ar.location_adminlevel_governorate, ar.location_adminlevel_caza, "
-        #         "ar.location_adminlevel_caza_code, ar.location_adminlevel_cadastral_area, "
-        #         "ar.location_adminlevel_cadastral_area_code, ar.partner_label, ai.name AS indicator_name, "
-        #         "ai.cumulative_values ->> 'months'::text AS cumulative_value "
-        #         "FROM public.activityinfo_indicator ai "
-        #         "INNER JOIN public.activityinfo_activityreport ar ON ai.id = ar.ai_indicator_id "
-        #         "INNER JOIN public.activityinfo_activity aa ON aa.id = ai.activity_id "
-        #         "INNER JOIN public.etools_pca pmp ON pmp.id = aa.programme_document_id "
-        #         "WHERE ar.database_id = %s AND pmp.donor @> %s ",
-        #         [str(ai_id), selected_donor])
-        #     rows = cursor.fetchall()
-
+        rows = []
         locations = {}
         ctr = 0
         for item in rows:
@@ -437,20 +419,15 @@ class ReportMapView(TemplateView):
 
         locations = json.dumps(locations.values())
 
-        if selected_partner:
-            try:
-                partner = Partner.objects.get(number=selected_partner)
-                if partner.partner_etools:
-                    partner_info = partner.detailed_info
-            except Exception as ex:
-                print(ex)
-                pass
-
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
         cazas = report.values('location_adminlevel_caza_code',
                               'location_adminlevel_caza').distinct()
+        indicator_categories = report.values('indicator_category').distinct()
+        form_categories = report.values('form_category').distinct()
+        months = report.values('month', 'month_name').distinct()
+
         donors_set = PCA.objects.filter(end__year=now.year, donors__isnull=False, donors__len__gt=0).values('number', 'donors').distinct()
 
         donors = {}
@@ -473,10 +450,10 @@ class ReportMapView(TemplateView):
             'governorates': governorates,
             'cazas': cazas,
             'donors': donors,
-            'partner_info': partner_info,
-            'partner': partner,
-            'selected_filter': selected_filter,
             'locations': locations,
+            'indicator_categories': indicator_categories,
+            'form_categories': form_categories,
+            'months': months,
             'locations_count': ctr
         }
 
@@ -1189,6 +1166,10 @@ class LiveReportView(TemplateView):
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
+        months = []
+        for i in range(1, 13):
+            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
         master_indicators = master_indicators.values(
             'id',
             'ai_id',
@@ -1231,7 +1212,8 @@ class LiveReportView(TemplateView):
             'master_indicators': master_indicators,
             'selected_filter': selected_filter,
             'partner_info': partner_info,
-            'day_number': day_number
+            'day_number': day_number,
+            'months': months,
         }
 
 
@@ -1276,7 +1258,7 @@ class HPMExportViewSet(ListView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        month = int(self.request.GET.get('month', last_month.strftime("%m"))) - 1
+        month = int(self.request.GET.get('month', last_month.strftime("%m")))
 
         months = []
         for i in range(1, 13):

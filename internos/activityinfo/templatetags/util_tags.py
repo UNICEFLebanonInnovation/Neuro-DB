@@ -320,7 +320,7 @@ def calculate_achievement(indicator, cumulative_values, target, month=None, part
 
         return 0
     except Exception as ex:
-        print(ex)
+        # print(ex)
         return 0
 
 
@@ -472,7 +472,7 @@ def get_indicator_hpm_data(ai_id, month=None):
 
         return data
     except Exception as ex:
-        print(ex)
+        # print(ex)
         return data
 
 
@@ -567,7 +567,7 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
 
         return get_indicator_unit(indicator, indicator['values'][str(month)])
     except Exception as ex:
-        print(ex)
+        # print(ex)
         return get_indicator_unit(indicator, 0)
 
 
@@ -614,7 +614,7 @@ def get_indicator_tag_value(indicator, tag):
             value = values_tags[tag]
         return str(round(value)).replace('.0', '')
     except Exception as ex:
-        print(ex)
+        # print(ex)
         return 0
 
 
@@ -659,7 +659,7 @@ def get_array_value(data, key1=None, key2=None, key3=None):
 
         return 0
     except Exception as ex:
-        print(ex)
+        # print(ex)
         return 0
 
 
@@ -672,5 +672,5 @@ def get_databases(is_sector=False):
             databases = databases.filter(is_sector=True)
         return databases
     except Exception as ex:
-        print(ex)
+        # print(ex)
         return []

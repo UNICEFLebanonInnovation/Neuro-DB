@@ -54,13 +54,20 @@
     <!-- Custom Theme Style -->
     <link href="{% static 'css/custom.min.css' %}" rel="stylesheet">
     <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
+    <link href="{% static 'tellme/feedback.min.css' %}" rel="stylesheet">
     <style>
       .site_title {padding-left: 8px; height: 65px; padding-top: 6px;}
       #toTop{position: fixed;bottom: 10px;right: 10px;cursor: pointer;display: none;}
+      .vertical-right-aligned {transform: rotate(-90deg);transform-origin: 100% 100%;position: fixed;right: 0;top: 50%;z-index: 100;}
     </style>
   </head>
 
   <body class="nav-sm">
+
+    <button type="button" id="feedback-btn" class="btn btn-info vertical-right-aligned">
+        Feedback <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
+    </button>
+
     <div class="container body container-narrow">
       <div class="main_container">
         <div class="col-md-3 left_col">
@@ -288,6 +295,7 @@
     <!-- Custom Theme Scripts -->
     <script src="{% static 'js/custom.min.js' %}"></script>
     <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>
+    {% include 'tellme/js_inc.html' %}
     {% block extra_js %}{% endblock %}
     <script>
         $(document).ready(function(){

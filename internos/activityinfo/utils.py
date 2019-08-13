@@ -813,6 +813,7 @@ def calculate_indicators_tags():
     tags_age = IndicatorTag.objects.filter(type='age').only('id', 'name')
     tags_nationality = IndicatorTag.objects.filter(type='nationality').only('id', 'name')
     tags_disability = IndicatorTag.objects.filter(type='disability').only('id', 'name')
+    tags_programme = IndicatorTag.objects.filter(type='programme').only('id', 'name')
 
     for indicator in indicators.iterator():
         m_value = 0
@@ -826,6 +827,7 @@ def calculate_indicators_tags():
             'values_tags',
             'cumulative_values',
         )
+
         for tag in tags_gender.iterator():
             tag_sub_indicators = sub_indicators.filter(tag_gender_id=tag.id)
 
@@ -870,6 +872,27 @@ def calculate_indicators_tags():
 
         for tag in tags_nationality.iterator():
             tag_sub_indicators = sub_indicators.filter(tag_nationality_id=tag.id)
+
+            value = 0
+            for ind_tag in tag_sub_indicators:
+                c_value = 0
+                if 'months' in ind_tag.cumulative_values:
+                    c_value = ind_tag.cumulative_values['months']
+
+                if isinstance(c_value, dict):
+                    c_value = 0
+
+                value += float(c_value)
+
+            try:
+                # indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                indicator.values_tags[tag.name] = value
+            except Exception as ex:
+                # print(ex.message)
+                indicator.values_tags[tag.name] = 0
+
+        for tag in tags_programme.iterator():
+            tag_sub_indicators = sub_indicators.filter(tag_programme_id=tag.id)
 
             value = 0
             for ind_tag in tag_sub_indicators:

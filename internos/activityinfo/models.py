@@ -386,6 +386,7 @@ class Indicator(models.Model):
     tag_gender = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_nationality = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_disability = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
+    tag_programme = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     hpm_indicator = models.BooleanField(default=False)
     separator_indicator = models.BooleanField(default=False)
     none_ai_indicator = models.BooleanField(default=False)
