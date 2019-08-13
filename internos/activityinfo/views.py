@@ -1224,10 +1224,11 @@ class HPMView(TemplateView):
     def get_context_data(self, **kwargs):
 
         today = datetime.date.today()
-        first = today.replace(day=1)
-        last_month = first - datetime.timedelta(days=1)
+        # first = today.replace(day=1)
+        # last_month = first - datetime.timedelta(days=1)
         day_number = int(today.strftime("%d"))
-        month = int(self.request.GET.get('month', last_month.strftime("%m")))
+        # month = int(self.request.GET.get('month', last_month.strftime("%m")))
+        month = int(self.request.GET.get('month', int(today.strftime("%m"))))
         if day_number < 15:
             month = month - 1
 
@@ -1256,9 +1257,13 @@ class HPMExportViewSet(ListView):
         from .utils import update_hpm_table_docx
 
         today = datetime.date.today()
-        first = today.replace(day=1)
-        last_month = first - datetime.timedelta(days=1)
-        month = int(self.request.GET.get('month', last_month.strftime("%m")))
+        # first = today.replace(day=1)
+        # last_month = first - datetime.timedelta(days=1)
+        day_number = int(today.strftime("%d"))
+        # month = int(self.request.GET.get('month', last_month.strftime("%m")))
+        month = int(self.request.GET.get('month', int(today.strftime("%m"))))
+        if day_number < 15:
+            month = month - 1
 
         months = []
         for i in range(1, 13):
