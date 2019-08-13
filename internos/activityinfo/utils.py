@@ -2246,7 +2246,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename):
     path2file = path+'/AIReports/HPM Table template 2019.docx'
 
     document = Document(path2file)
-    month = month - 1
+    # month = month - 1
     document.paragraphs[0].runs[1].text = month_name
 
     # Education 1
