@@ -428,13 +428,17 @@ def get_indicator_hpm_data(ai_id, month=None):
     }
 
     try:
+        indicator = Indicator.objects.get(id=int(ai_id))
+    except Exception as ex:
+        return data
+
+    try:
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
         last_month_number = int(last_month.strftime("%m"))
 
         cumulative = 0
-        indicator = Indicator.objects.get(id=int(ai_id))
         if str(month) == str(last_month_number):
             cumulative_values = indicator.cumulative_values
         else:
@@ -463,9 +467,9 @@ def get_indicator_hpm_data(ai_id, month=None):
         last_report_changes_cbece = 0
         last_report_changes_alp = 0
 
-        tag_prog_bln = float(indicator.values_tags['BLN']) if 'BLN' in indicator.values_tags else 0.0,
-        tag_prog_cbece = float(indicator.values_tags['CBECE']) if 'CBECE' in indicator.values_tags else 0.0,
-        tg_prog_alp = float(indicator.values_tags['ALP']) if 'ALP' in indicator.values_tags else 0.0,
+        tag_prog_bln = float(indicator.values_tags['BLN']) if 'BLN' in indicator.values_tags else 0.0
+        tag_prog_cbece = float(indicator.values_tags['CBECE']) if 'CBECE' in indicator.values_tags else 0.0
+        tag_prog_alp = float(indicator.values_tags['ALP']) if 'ALP' in indicator.values_tags else 0.0
 
         if 'tags' in indicator.cumulative_values_hpm:
             last_month_value_tag = indicator.cumulative_values_hpm['tags']
@@ -483,7 +487,7 @@ def get_indicator_hpm_data(ai_id, month=None):
                 last_report_changes_cbece = tag_prog_cbece - float(last_month_value_tag[key2a])
             if key3 in last_month_value_tag:
                 # tag_prog_alp = last_month_value_tag[key3]
-                last_report_changes_alp = tg_prog_alp - float(last_month_value_tag[key3a])
+                last_report_changes_alp = tag_prog_alp - float(last_month_value_tag[key3a])
 
         cumulative_result = "{:,}".format(round(cumulative), 1)
         cumulative_result = cumulative_result.replace('.0', '')
@@ -515,7 +519,7 @@ def get_indicator_hpm_data(ai_id, month=None):
 
         return data
     except Exception as ex:
-        print(ex)
+        print(ex.message)
         return data
 
 
