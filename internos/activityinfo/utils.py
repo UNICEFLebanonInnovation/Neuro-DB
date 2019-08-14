@@ -942,7 +942,8 @@ def calculate_indicators_monthly_tags():
     from internos.activityinfo.models import Indicator, IndicatorTag
 
     # indicators = Indicator.objects.filter(hpm_indicator=True)
-    indicators = Indicator.objects.filter(Q(master_indicator=True) | Q(hpm_indicator=True))
+    # indicators = Indicator.objects.filter(Q(master_indicator=True) | Q(hpm_indicator=True))
+    indicators = Indicator.objects.filter(id=3985)
     tags_gender = IndicatorTag.objects.filter(type='gender').only('id', 'name')
     tags_age = IndicatorTag.objects.filter(type='age').only('id', 'name')
     tags_nationality = IndicatorTag.objects.filter(type='nationality').only('id', 'name')
@@ -959,6 +960,7 @@ def calculate_indicators_monthly_tags():
             'cumulative_values_hpm',
             'values',
         )
+        print(sub_indicators)
 
         if not indicator.cumulative_values_hpm:
             indicator.cumulative_values_hpm = {}
@@ -970,6 +972,7 @@ def calculate_indicators_monthly_tags():
 
             value = 0
             for ind_tag in tag_sub_indicators:
+                print(ind_tag.values)
                 c_value = 0
                 if month in ind_tag.values:
                     c_value = ind_tag.values[month]
