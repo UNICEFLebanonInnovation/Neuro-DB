@@ -978,8 +978,6 @@ def calculate_indicators_monthly_tags():
 
                 value += float(c_value)
 
-            print(value)
-
             key = '{}-{}'.format(month, tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
