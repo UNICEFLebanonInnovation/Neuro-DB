@@ -955,6 +955,7 @@ def calculate_indicators_monthly_tags():
     last_month = first - datetime.timedelta(days=1)
     month = int(last_month.strftime("%m")) - 1
     month_str = str(month)
+    print(month_str)
 
     for indicator in indicators.iterator():
         sub_indicators = indicator.summation_sub_indicators.all().only(
@@ -976,6 +977,7 @@ def calculate_indicators_monthly_tags():
                 print(ind_tag.values)
                 c_value = 0
                 if month_str in ind_tag.values:
+                    print('ok')
                     c_value = ind_tag.values[month_str]
 
                 value += float(c_value)
