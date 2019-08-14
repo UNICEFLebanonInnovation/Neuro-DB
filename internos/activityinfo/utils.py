@@ -982,11 +982,13 @@ def calculate_indicators_monthly_tags():
 
                 value += float(c_value)
 
+            print(value)
+
             key = '{}-{}'.format(month, tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
-                # print(ex.message)
+                print(ex.message)
                 indicator.cumulative_values_hpm['tags'][key] = 0
 
         for tag in tags_age.iterator():
@@ -1062,6 +1064,7 @@ def calculate_indicators_monthly_tags():
                 indicator.cumulative_values_hpm['tags'][key] = 0
 
         indicator.save()
+        print(indicator.cumulative_values_hpm)
 
     return indicators.count()
 
