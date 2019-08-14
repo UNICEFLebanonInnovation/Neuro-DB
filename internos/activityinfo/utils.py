@@ -953,7 +953,8 @@ def calculate_indicators_monthly_tags():
     today = datetime.date.today()
     first = today.replace(day=1)
     last_month = first - datetime.timedelta(days=1)
-    month = last_month.strftime("%m")
+    month = int(last_month.strftime("%m")) - 1
+    month_str = str(month)
 
     for indicator in indicators.iterator():
         sub_indicators = indicator.summation_sub_indicators.all().only(
@@ -974,12 +975,12 @@ def calculate_indicators_monthly_tags():
             for ind_tag in tag_sub_indicators:
                 print(ind_tag.values)
                 c_value = 0
-                if month in ind_tag.values:
-                    c_value = ind_tag.values[month]
+                if month_str in ind_tag.values:
+                    c_value = ind_tag.values[month_str]
 
                 value += float(c_value)
 
-            key = '{}-{}'.format(int(month), tag.name)
+            key = '{}-{}'.format(month, tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
@@ -992,12 +993,12 @@ def calculate_indicators_monthly_tags():
             value = 0
             for ind_tag in tag_sub_indicators:
                 c_value = 0
-                if month in ind_tag.values:
-                    c_value = ind_tag.values[month]
+                if month_str in ind_tag.values:
+                    c_value = ind_tag.values[month_str]
 
                 value += float(c_value)
 
-            key = '{}-{}'.format(int(month), tag.name)
+            key = '{}-{}'.format(month_str, tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
@@ -1010,12 +1011,12 @@ def calculate_indicators_monthly_tags():
             value = 0
             for ind_tag in tag_sub_indicators:
                 c_value = 0
-                if month in ind_tag.values:
-                    c_value = ind_tag.values[month]
+                if month_str in ind_tag.values:
+                    c_value = ind_tag.values[month_str]
 
                 value += float(c_value)
 
-            key = '{}-{}'.format(int(month), tag.name)
+            key = '{}-{}'.format(month, tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
@@ -1028,12 +1029,12 @@ def calculate_indicators_monthly_tags():
             value = 0
             for ind_tag in tag_sub_indicators:
                 c_value = 0
-                if month in ind_tag.values:
-                    c_value = ind_tag.values[month]
+                if month_str in ind_tag.values:
+                    c_value = ind_tag.values[month_str]
 
                 value += float(c_value)
 
-            key = '{}-{}'.format(int(month), tag.name)
+            key = '{}-{}'.format(month, tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
@@ -1046,12 +1047,12 @@ def calculate_indicators_monthly_tags():
             value = 0
             for ind_tag in tag_sub_indicators:
                 c_value = 0
-                if month in ind_tag.values:
-                    c_value = ind_tag.values[month]
+                if month_str in ind_tag.values:
+                    c_value = ind_tag.values[month_str]
 
                 value += float(c_value)
 
-            key = '{}-{}'.format(int(month), tag.name)
+            key = '{}-{}'.format(month, tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
