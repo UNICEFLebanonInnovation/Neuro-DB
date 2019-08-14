@@ -982,7 +982,7 @@ def calculate_indicators_monthly_tags():
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
-                print(ex.message)
+                # print(ex.message)
                 indicator.cumulative_values_hpm['tags'][key] = 0
 
         for tag in tags_age.iterator():
@@ -1023,25 +1023,20 @@ def calculate_indicators_monthly_tags():
 
         for tag in tags_programme.iterator():
             tag_sub_indicators = sub_indicators.filter(tag_programme_id=tag.id)
-            print(tag_sub_indicators)
 
             value = 0
             for ind_tag in tag_sub_indicators:
                 c_value = 0
-                print(ind_tag.values)
                 if month_str in ind_tag.values:
-                    print('ok')
                     c_value = ind_tag.values[month_str]
 
                 value += float(c_value)
-
-            print(value)
 
             key = '{}-{}'.format(month, tag.name)
             try:
                 indicator.cumulative_values_hpm['tags'][key] = value
             except Exception as ex:
-                print(ex.message)
+                # print(ex.message)
                 indicator.cumulative_values_hpm['tags'][key] = 0
 
         for tag in tags_disability.iterator():
@@ -1063,7 +1058,6 @@ def calculate_indicators_monthly_tags():
                 indicator.cumulative_values_hpm['tags'][key] = 0
 
         indicator.save()
-        print(indicator.cumulative_values_hpm)
 
     return indicators.count()
 

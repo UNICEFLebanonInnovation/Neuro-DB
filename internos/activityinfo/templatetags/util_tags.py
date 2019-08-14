@@ -463,6 +463,10 @@ def get_indicator_hpm_data(ai_id, month=None):
         last_report_changes_cbece = 0
         last_report_changes_alp = 0
 
+        tag_prog_bln = indicator.values_tags['BLN'] if 'BLN' in indicator.values_tags else 0,
+        tag_prog_cbece = indicator.values_tags['CBECE'] if 'CBECE' in indicator.values_tags else 0,
+        tg_prog_alp = indicator.values_tags['ALP'] if 'ALP' in indicator.values_tags else 0,
+
         if 'tags' in indicator.cumulative_values_hpm:
             last_month_value_tag = indicator.cumulative_values_hpm['tags']
             key1 = '{}-{}'.format(month, 'BLN')
@@ -472,14 +476,14 @@ def get_indicator_hpm_data(ai_id, month=None):
             key3 = '{}-{}'.format(month, 'ALP')
             key3a = '{}-{}'.format(previous_month, 'ALP')
             if key1 in last_month_value_tag:
-                tag_prog_bln = last_month_value_tag[key1]
-                last_report_changes_bln = last_month_value_tag[key1a]
+                # tag_prog_bln = last_month_value_tag[key1]
+                last_report_changes_bln = tag_prog_bln - int(last_month_value_tag[key1a])
             if key2 in last_month_value_tag:
-                tag_prog_cbece = last_month_value_tag[key2]
-                last_report_changes_cbece = last_month_value_tag[key2a]
+                # tag_prog_cbece = last_month_value_tag[key2]
+                last_report_changes_cbece = tag_prog_cbece - int(last_month_value_tag[key2a])
             if key3 in last_month_value_tag:
-                tag_prog_alp = last_month_value_tag[key3]
-                last_report_changes_alp = last_month_value_tag[key3a]
+                # tag_prog_alp = last_month_value_tag[key3]
+                last_report_changes_alp = tg_prog_alp - int(last_month_value_tag[key3a])
 
         cumulative_result = "{:,}".format(round(cumulative), 1)
         cumulative_result = cumulative_result.replace('.0', '')
