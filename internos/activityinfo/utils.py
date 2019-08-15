@@ -942,8 +942,8 @@ def calculate_indicators_monthly_tags():
     from internos.activityinfo.models import Indicator, IndicatorTag
 
     # indicators = Indicator.objects.filter(hpm_indicator=True)
-    # indicators = Indicator.objects.filter(Q(master_indicator=True) | Q(hpm_indicator=True))
-    indicators = Indicator.objects.filter(id=3985)
+    indicators = Indicator.objects.filter(Q(master_indicator=True) | Q(hpm_indicator=True))
+    # indicators = Indicator.objects.filter(id=3985)
     tags_gender = IndicatorTag.objects.filter(type='gender').only('id', 'name')
     tags_age = IndicatorTag.objects.filter(type='age').only('id', 'name')
     tags_nationality = IndicatorTag.objects.filter(type='nationality').only('id', 'name')
