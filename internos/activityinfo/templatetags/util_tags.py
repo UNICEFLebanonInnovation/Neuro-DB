@@ -472,6 +472,8 @@ def get_indicator_hpm_data(ai_id, month=None):
         tag_prog_cbece = float(indicator.values_tags['CBECE']) if 'CBECE' in indicator.values_tags else 0.0
         tag_prog_alp = float(indicator.values_tags['ALP']) if 'ALP' in indicator.values_tags else 0.0
 
+        print(indicator.cumulative_values_hpm)
+
         if 'tags' in indicator.cumulative_values_hpm:
             last_month_value_tag = indicator.cumulative_values_hpm['tags']
             key1 = '{}-{}'.format(month, 'BLN')
@@ -481,14 +483,14 @@ def get_indicator_hpm_data(ai_id, month=None):
             key2a = '{}-{}'.format(previous_month, 'CBECE')
             key3 = '{}-{}'.format(month, 'ALP')
             key3a = '{}-{}'.format(previous_month, 'ALP')
-            if key1 in last_month_value_tag:
+            if key1a in last_month_value_tag:
                 # tag_prog_bln = last_month_value_tag[key1]
                 last_report_changes_bln = tag_prog_bln - float(last_month_value_tag[key1a])
                 print(last_report_changes_bln)
-            if key2 in last_month_value_tag:
+            if key2a in last_month_value_tag:
                 # tag_prog_cbece = last_month_value_tag[key2]
                 last_report_changes_cbece = tag_prog_cbece - float(last_month_value_tag[key2a])
-            if key3 in last_month_value_tag:
+            if key3a in last_month_value_tag:
                 # tag_prog_alp = last_month_value_tag[key3]
                 last_report_changes_alp = tag_prog_alp - float(last_month_value_tag[key3a])
 
@@ -522,7 +524,7 @@ def get_indicator_hpm_data(ai_id, month=None):
 
         return data
     except Exception as ex:
-        print(ex.message)
+        # print(ex.message)
         return data
 
 
