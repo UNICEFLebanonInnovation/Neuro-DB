@@ -418,10 +418,24 @@ def get_indicator_hpm_data(ai_id, month=None):
         'girls': 0,
         'male': 0,
         'female': 0,
+        'leb': 0,
+        'syr': 0,
+        'prs': 0,
+        'prl': 0,
+        'oth': 0,
+        'lebanese': 0,
+        'non_lebanese': 0,
+        'last_report_changes_leb': 0,
+        'last_report_changes_syr': 0,
+        'last_report_changes_prs': 0,
+        'last_report_changes_prl': 0,
+        'last_report_changes_oth': 0,
+        'last_report_changes_lebanese': 0,
+        'last_report_changes_non_lebanese': 0,
         'bln': 0,
         'cbece': 0,
         'alp': 0,
-        'tag_programme_total': 0,
+        # 'tag_programme_total': 0,
         'last_report_changes_bln': 0,
         'last_report_changes_cbece': 0,
         'last_report_changes_alp': 0,
@@ -460,9 +474,6 @@ def get_indicator_hpm_data(ai_id, month=None):
             else:
                 cumulative = cumulative_values
 
-        tag_prog_bln = 0
-        tag_prog_cbece = 0
-        tag_prog_alp = 0
         last_report_changes_bln = 0
         last_report_changes_cbece = 0
         last_report_changes_alp = 0
@@ -471,23 +482,45 @@ def get_indicator_hpm_data(ai_id, month=None):
         tag_prog_cbece = float(indicator.values_tags['CBECE']) if 'CBECE' in indicator.values_tags else 0.0
         tag_prog_alp = float(indicator.values_tags['ALP']) if 'ALP' in indicator.values_tags else 0.0
 
+        last_report_changes_leb = 0
+        last_report_changes_syr = 0
+        last_report_changes_prs = 0
+        last_report_changes_prl = 0
+        last_report_changes_oth = 0
+
+        tag_nath_leb = float(indicator.values_tags['LEB']) if 'LEB' in indicator.values_tags else 0.0
+        tag_nath_syr = float(indicator.values_tags['SYR']) if 'SYR' in indicator.values_tags else 0.0
+        tag_nath_prs = float(indicator.values_tags['PRS']) if 'PRS' in indicator.values_tags else 0.0
+        tag_nath_prl = float(indicator.values_tags['PRL']) if 'PRL' in indicator.values_tags else 0.0
+        tag_nath_oth = float(indicator.values_tags['OTH']) if 'OTH' in indicator.values_tags else 0.0
+
         if 'tags' in indicator.cumulative_values_hpm:
             last_month_value_tag = indicator.cumulative_values_hpm['tags']
-            key1 = '{}-{}'.format(month, 'BLN')
-            key1a = '{}-{}'.format(previous_month, 'BLN')
-            key2 = '{}-{}'.format(month, 'CBECE')
-            key2a = '{}-{}'.format(previous_month, 'CBECE')
-            key3 = '{}-{}'.format(month, 'ALP')
-            key3a = '{}-{}'.format(previous_month, 'ALP')
-            if key1a in last_month_value_tag:
-                # tag_prog_bln = last_month_value_tag[key1]
-                last_report_changes_bln = tag_prog_bln - float(last_month_value_tag[key1a])
-            if key2a in last_month_value_tag:
-                # tag_prog_cbece = last_month_value_tag[key2]
-                last_report_changes_cbece = tag_prog_cbece - float(last_month_value_tag[key2a])
-            if key3a in last_month_value_tag:
-                # tag_prog_alp = last_month_value_tag[key3]
-                last_report_changes_alp = tag_prog_alp - float(last_month_value_tag[key3a])
+            key1 = '{}-{}'.format(previous_month, 'BLN')
+            key2 = '{}-{}'.format(previous_month, 'CBECE')
+            key3 = '{}-{}'.format(previous_month, 'ALP')
+            if key1 in last_month_value_tag:
+                last_report_changes_bln = tag_prog_bln - float(last_month_value_tag[key1])
+            if key2 in last_month_value_tag:
+                last_report_changes_cbece = tag_prog_cbece - float(last_month_value_tag[key2])
+            if key3 in last_month_value_tag:
+                last_report_changes_alp = tag_prog_alp - float(last_month_value_tag[key3])
+
+            key1 = '{}-{}'.format(previous_month, 'LEB')
+            key2 = '{}-{}'.format(previous_month, 'SYR')
+            key3 = '{}-{}'.format(previous_month, 'PRS')
+            key4 = '{}-{}'.format(previous_month, 'PRL')
+            key5 = '{}-{}'.format(previous_month, 'OTH')
+            if key1 in last_month_value_tag:
+                last_report_changes_leb = tag_nath_leb - float(last_month_value_tag[key1])
+            if key2 in last_month_value_tag:
+                last_report_changes_syr = tag_nath_syr - float(last_month_value_tag[key2])
+            if key3 in last_month_value_tag:
+                last_report_changes_prs = tag_nath_prs - float(last_month_value_tag[key3])
+            if key4 in last_month_value_tag:
+                last_report_changes_prl = tag_nath_prl - float(last_month_value_tag[key4])
+            if key5 in last_month_value_tag:
+                last_report_changes_oth = tag_nath_oth - float(last_month_value_tag[key5])
 
         cumulative_result = "{:,}".format(round(cumulative), 1)
         cumulative_result = cumulative_result.replace('.0', '')
@@ -511,15 +544,19 @@ def get_indicator_hpm_data(ai_id, month=None):
             'bln': str(round(tag_prog_bln)).replace('.0', ''),
             'cbece': str(round(tag_prog_cbece)).replace('.0', ''),
             'alp': str(round(tag_prog_alp)).replace('.0', ''),
-            'tag_programme_total': tag_prog_bln + tag_prog_cbece + tag_prog_alp,
+            # 'tag_programme_total': tag_prog_bln + tag_prog_cbece + tag_prog_alp,
             'last_report_changes_bln': last_report_changes_bln,
             'last_report_changes_cbece': last_report_changes_cbece,
             'last_report_changes_alp': last_report_changes_alp,
+            'lebanese': tag_nath_leb,
+            'non_lebanese': tag_nath_syr + tag_nath_prs + tag_nath_prl + tag_nath_oth,
+            'last_report_changes_lebanese': last_report_changes_leb,
+            'last_report_changes_non_lebanese': last_report_changes_syr + last_report_changes_prs + last_report_changes_prl + last_report_changes_oth,
         }
 
         return data
     except Exception as ex:
-        # print(ex.message)
+        print(ex.message)
         return data
 
 
