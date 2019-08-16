@@ -1228,7 +1228,7 @@ class HPMView(TemplateView):
         # last_month = first - datetime.timedelta(days=1)
         day_number = int(today.strftime("%d"))
         # month = int(self.request.GET.get('month', last_month.strftime("%m")))
-        month = int(self.request.GET.get('month', int(today.strftime("%m")))) - 1
+        month = int(self.request.GET.get('month', int(today.strftime("%m")) - 1))
         # if day_number < 15:
         #     month = month - 1
 
@@ -1261,7 +1261,7 @@ class HPMExportViewSet(ListView):
         # last_month = first - datetime.timedelta(days=1)
         day_number = int(today.strftime("%d"))
         # month = int(self.request.GET.get('month', last_month.strftime("%m")))
-        month = int(self.request.GET.get('month', int(today.strftime("%m")))) - 1
+        month = int(self.request.GET.get('month', int(today.strftime("%m")) - 1))
         # if day_number < 15:
         #     month = month - 1
 
