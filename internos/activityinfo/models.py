@@ -137,7 +137,7 @@ class Database(models.Model):
                     ai_partner = Partner.objects.get(ai_id=partner['id'])
                 except Partner.DoesNotExist:
                     ai_partner = Partner(ai_id=partner['id'])
-                    objects += 1
+                    # objects += 1
                 ai_partner.name = partner['name']
                 ai_partner.full_name = partner['fullName']
                 ai_partner.database = self
@@ -148,7 +148,7 @@ class Database(models.Model):
                     ai_activity = Activity.objects.get(ai_id=activity['id'])
                 except Activity.DoesNotExist:
                     ai_activity = Activity(ai_id=activity['id'])
-                    objects += 1
+                    # objects += 1
                 ai_activity.name = activity['name']
                 ai_activity.location_type = activity['locationType']['name']
                 ai_activity.database = self
@@ -191,7 +191,7 @@ class Database(models.Model):
                         ai_attribute_group = AttributeGroup.objects.get(ai_id=attribute_group['id'])
                     except AttributeGroup.DoesNotExist:
                         ai_attribute_group = AttributeGroup(ai_id=attribute_group['id'])
-                        objects += 1
+                        # objects += 1
                     ai_attribute_group.name = attribute_group['name']
                     ai_attribute_group.multiple_allowed = attribute_group['multipleAllowed']
                     ai_attribute_group.mandatory = attribute_group['mandatory']
@@ -203,7 +203,7 @@ class Database(models.Model):
                             ai_attribute = Attribute.objects.get(ai_id=attribute['id'])
                         except Attribute.DoesNotExist:
                             ai_attribute = Attribute(ai_id=attribute['id'])
-                            objects += 1
+                            # objects += 1
                         ai_attribute.name = attribute['name']
                         ai_attribute.attribute_group = ai_attribute_group
                         ai_attribute.save()
