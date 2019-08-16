@@ -548,10 +548,12 @@ def get_indicator_hpm_data(ai_id, month=None):
             'last_report_changes_bln': str("{:,}".format(last_report_changes_bln)).replace('.0', ''),
             'last_report_changes_cbece': str("{:,}".format(last_report_changes_cbece)).replace('.0', ''),
             'last_report_changes_alp': str("{:,}".format(last_report_changes_alp)).replace('.0', ''),
-            'lebanese': tag_nath_leb,
-            'non_lebanese': tag_nath_syr + tag_nath_prs + tag_nath_prl + tag_nath_oth,
-            'last_report_changes_lebanese': last_report_changes_leb,
-            'last_report_changes_non_lebanese': last_report_changes_syr + last_report_changes_prs + last_report_changes_prl + last_report_changes_oth,
+            'lebanese': str("{:,}".format(tag_nath_leb)).replace('.0', ''),
+            'non_lebanese': str("{:,}".format(tag_nath_syr + tag_nath_prs + tag_nath_prl + tag_nath_oth)).replace('.0', ''),
+            'last_report_changes_lebanese': str("{:,}".format(last_report_changes_leb)).replace('.0', ''),
+            'last_report_changes_non_lebanese': str("{:,}".format(last_report_changes_syr
+                                                                  + last_report_changes_prs + last_report_changes_prl
+                                                                  + last_report_changes_oth)).replace('.0', ''),
         }
 
         return data
