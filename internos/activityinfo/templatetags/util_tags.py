@@ -750,6 +750,24 @@ def get_array_value(data, key1=None, key2=None, key3=None):
 
 
 @register.assignment_tag
+def get_trip_values(data, partner=None, offices=None, section=None):
+    try:
+        result = 0
+        offices = offices.split(',')
+
+        for office in offices:
+            key = '{}-{}-{}'.format(partner, office, section)
+
+            if key in data:
+                result += len(data[key])
+
+        return result
+    except Exception as ex:
+        # print(ex)
+        return 0
+
+
+@register.assignment_tag
 def get_databases(is_sector=False):
     from internos.activityinfo.models import Database
     try:

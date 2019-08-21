@@ -233,7 +233,7 @@ class TripsMonitoringView(TemplateView):
 
     def get_context_data(self, **kwargs):
         now = datetime.datetime.now()
-        travel_status = self.request.GET.get('travel_status', '')
+        travel_status = self.request.GET.get('travel_status', 0)
         selected_month = self.request.GET.get('month', 0)
 
         sections = Section.objects.filter(etools=True)
@@ -255,7 +255,7 @@ class TripsMonitoringView(TemplateView):
         partners = visits.values('partner_id', 'partner__name').distinct()
 
         trips = visits
-        if travel_status:
+        if travel_status and not travel_status == '0':
             trips = visits.filter(travel__status=travel_status)
         if travel_status == 'completed_report':
             trips = visits.filter(travel__have_hact__gt=0)
