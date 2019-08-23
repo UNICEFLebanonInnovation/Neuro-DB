@@ -235,9 +235,21 @@ class TripsMonitoringView(TemplateView):
         now = datetime.datetime.now()
         travel_status = self.request.GET.get('travel_status', 0)
         selected_month = self.request.GET.get('month', 0)
+        selected_section = self.request.GET.get('section', 0)
+        selected_year = self.request.GET.get('year', 0)
+        selected_partner = self.request.GET.get('partner', 0)
+        selected_donor = self.request.GET.get('donor', 0)
 
         sections = Section.objects.filter(etools=True)
         offices = Office.objects.all()
+        donors_set = PCA.objects.filter(end__year=now.year,
+                                        donors__isnull=False,
+                                        donors__len__gt=0).values('number', 'donors').distinct()
+
+        donors = {}
+        for item in donors_set:
+            for donor in item['donors']:
+                donors[donor] = donor
 
         visits_no_partner = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING,
                                                           travel__start_date__year=now.year,
@@ -251,6 +263,13 @@ class TripsMonitoringView(TemplateView):
 
         if selected_month and not selected_month == '0':
             visits = visits.filter(travel__start_date__month=selected_month)
+        if selected_year and not selected_year == '0':
+            visits = visits.filter(travel__start_date__year=selected_year)
+        if selected_section and not selected_section == '0':
+            visits = visits.filter(travel__section=selected_section)
+        if selected_donor and not selected_donor == '0':
+            pass
+            # visits = visits.filter(partnership__donors__values__contains=selected_donor)
 
         partners = visits.values('partner_id', 'partner__name').distinct()
 
@@ -301,7 +320,12 @@ class TripsMonitoringView(TemplateView):
             'trip_details': trip_details,
             'travel_status': travel_status,
             'selected_month': selected_month,
+            'selected_year': selected_year,
+            'selected_section': selected_section,
+            'selected_partner': selected_partner,
+            'selected_donor': selected_donor,
             'trips_per_month': trips_per_month,
+            'donors': donors,
             'programmatic_visits': programmatic_visits.count(),
             'programmatic_visits_planned': programmatic_visits_planned.count(),
             'programmatic_visits_submitted': programmatic_visits_submitted.count(),
