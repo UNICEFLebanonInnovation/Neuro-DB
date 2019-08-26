@@ -259,14 +259,14 @@
                    class="table table-striped table-bordered">
               <thead>
                 <tr>
-                  <th></th>
+                    <th rowspan="2" style="vertical-align: middle;"></th>
                     <th colspan="{{ sections|length }}" content="Beirut/Mount Lebanon" style="vertical-align: middle;">Central Beirut and South</th>
                     <th colspan="{{ sections|length }}" content="Beirut/Mount Lebanon" style="vertical-align: middle;">North</th>
                     <th colspan="{{ sections|length }}" content="Beirut/Mount Lebanon" style="vertical-align: middle;">Bekaa as East</th>
-                  <th>Total</th>
+                    <th rowspan="2" style="vertical-align: middle;">Total</th>
                 </tr>
                 <tr>
-                  <th></th>
+                    <th rowspan="2" style="vertical-align: middle;"></th>
                     {% for section in sections %}
                       <th class="w-100" style="vertical-align: middle;">{{ section.code }}</th>
                     {% endfor %}
@@ -276,7 +276,6 @@
                     {% for section in sections %}
                       <th class="w-100" style="vertical-align: middle;">{{ section.code }}</th>
                     {% endfor %}
-                  <th>Total</th>
                 </tr>
               </thead>
               <tbody>
