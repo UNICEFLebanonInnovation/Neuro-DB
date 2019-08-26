@@ -759,7 +759,10 @@ def get_trip_values(data, partner=None, offices=None, section=None):
             key = '{}-{}-{}'.format(partner, office, section)
 
             if key in data:
-                result += len(data[key])
+                if type(data[key]) == list:
+                    result += len(data[key])
+                else:
+                    result += data[key]
 
         return result
     except Exception as ex:

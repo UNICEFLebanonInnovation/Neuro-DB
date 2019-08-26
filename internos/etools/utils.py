@@ -555,6 +555,13 @@ def get_trip_details(data_set):
                 'date': travel.start_date,
             })
 
+        if travel.office_id and visit.partner_id:
+            key = '{}-{}-{}'.format(visit.partner_id, travel.office_id, 0)
+            if key not in details:
+                details[key] = 1
+            else:
+                details[key] += 1
+
         if travel.section:
             key = '{}-{}-{}'.format(0, 0, travel.section_id)
             if key not in details:

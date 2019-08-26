@@ -314,8 +314,9 @@
                           </td>
                       {% endfor %}
                     <td>
-                        {% if pdata %}
-                            <span class="label label-primary">{{ pdata }}</span>
+                      {% get_trip_values trip_details partner.partner_id "1,40,39,37,38,36" 0 as data %}
+                        {% if data %}
+                            <span class="label label-primary">{{ data }}</span>
                         {% else %}
                             0
                         {% endif %}
