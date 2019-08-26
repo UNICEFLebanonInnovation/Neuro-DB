@@ -313,17 +313,48 @@
                             {% endif %}
                           </td>
                       {% endfor %}
-                    <td>{{ pdata }}</td>
+                    <td>
+                        {% if pdata %}
+                            <span class="label label-primary">{{ pdata }}</span>
+                        {% else %}
+                            0
+                        {% endif %}
+                    </td>
                   </tr>
                   {% endif %}
                 {% endfor %}
                 <tr>
                   <td>Total</td>
-                  {% for office in offices %}
-                    {% for section in sections %}
-                    <td class="w-100">{% get_array_value trip_details 0 office.id section.id %}</td>
-                    {% endfor %}
-                  {% endfor %}
+                      {% for section in sections %}
+                          <td class="w-100 travel-counts">
+                            {% get_trip_values trip_details 0 "1,40,39" section.id as data %}
+                            {% if data %}
+                                <span class="label label-primary">{{ data }}</span>
+                            {% else %}
+                                0
+                            {% endif %}
+                          </td>
+                      {% endfor %}
+                      {% for section in sections %}
+                          <td class="w-100 travel-counts">
+                            {% get_trip_values trip_details 0 "37,38" section.id as data %}
+                            {% if data %}
+                                <span class="label label-primary">{{ data }}</span>
+                            {% else %}
+                                0
+                            {% endif %}
+                          </td>
+                      {% endfor %}
+                      {% for section in sections %}
+                          <td class="w-100 travel-counts">
+                            {% get_trip_values trip_details 0 "36" section.id as data %}
+                            {% if data %}
+                                <span class="label label-primary">{{ data }}</span>
+                            {% else %}
+                                0
+                            {% endif %}
+                          </td>
+                      {% endfor %}
                 </tr>
               </tbody>
             </table>
