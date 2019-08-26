@@ -178,7 +178,7 @@
 
       <div class="tab-content" id="myTabContent">
 
-        # chart
+        <!--chart-->
         <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">
           <form action="{% url 'etools:programmatic_visits_monitoring' %}" method="get">
             <input type="hidden" name="travel_status" value="{{ travel_status }}" />
@@ -224,7 +224,7 @@
           {% include 'etools/trip_monitoring_chart.html' %}
         </div>
 
-        # Report per partner
+        <!--Report per partner-->
         <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
           <form action="{% url 'etools:programmatic_visits_monitoring' %}" method="get">
             <input type="hidden" name="travel_status" value="{{ travel_status }}" />
@@ -333,7 +333,7 @@
 
         </div>
 
-        # Report per section
+        <!--Report per section-->
         <div class="tab-pane fade" id="report2" role="tabpanel" aria-labelledby="report2-tab">
           <form action="{% url 'etools:programmatic_visits_monitoring' %}" method="get">
             <input type="hidden" name="travel_status" value="{{ travel_status }}" />
@@ -457,7 +457,7 @@
 
         </div>
 
-        # map
+        <!--map-->
         <div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map-tab">
           <form action="{% url 'etools:programmatic_visits_monitoring' %}" method="get">
             <input type="hidden" name="travel_status" value="{{ travel_status }}" />
