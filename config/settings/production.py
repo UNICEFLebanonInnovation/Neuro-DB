@@ -116,8 +116,8 @@ SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
 # Anymail with Mailgun
 INSTALLED_APPS += ['anymail', ]
 ANYMAIL = {
-    'MAILGUN_API_KEY': env('DJANGO_MAILGUN_API_KEY', 'dgfjdfgj'),
-    'MAILGUN_SENDER_DOMAIN': env('MAILGUN_SENDER_DOMAIN', 'djfhsdhfg')
+    'MAILGUN_API_KEY': env('DJANGO_MAILGUN_API_KEY', default='dgfjdfgj'),
+    'MAILGUN_SENDER_DOMAIN': env('MAILGUN_SENDER_DOMAIN', default='djfhsdhfg')
 }
 EMAIL_BACKEND = 'anymail.backends.mailgun.MailgunBackend'
 
@@ -135,7 +135,7 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [
 
 # Use the Heroku-style specification
 # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
-DATABASES['default'] = env.db('DATABASE_URL')
+#DATABASES['default'] = env.db('DATABASE_URL')
 
 # CACHING
 # ------------------------------------------------------------------------------
@@ -205,9 +205,9 @@ LOGGING = {
         },
     },
 }
-SENTRY_CELERY_LOGLEVEL = env.int('DJANGO_SENTRY_LOG_LEVEL', logging.INFO)
+SENTRY_CELERY_LOGLEVEL = env.int('DJANGO_SENTRY_LOG_LEVEL', default=logging.INFO)
 RAVEN_CONFIG = {
-    'CELERY_LOGLEVEL': env.int('DJANGO_SENTRY_LOG_LEVEL', logging.INFO),
+    'CELERY_LOGLEVEL': env.int('DJANGO_SENTRY_LOG_LEVEL', default=logging.INFO),
     'DSN': SENTRY_DSN
 }
 
