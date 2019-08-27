@@ -24,7 +24,7 @@ from .base import *  # noqa
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # Raises ImproperlyConfigured exception if DJANGO_SECRET_KEY not in os.environ
-SECRET_KEY = env('DJANGO_SECRET_KEY')
+SECRET_KEY = env('DJANGO_SECRET_KEY', default='gb^lmn4]},)4{rGsM0vs4zj*fpBr?{f+V/FpA_dF2=f$^kIq~%')
 
 
 # This ensures that Django will be able to detect a secure connection
@@ -156,7 +156,7 @@ CACHES = {
 
 
 # Sentry Configuration
-SENTRY_DSN = env('DJANGO_SENTRY_DSN')
+SENTRY_DSN = env('DJANGO_SENTRY_DSN', default='https://248df6128c454dab91945363e72e7d84:09fd627b47f546c4ba2b4f922c8ea09c@sentry.io/203987')
 SENTRY_CLIENT = env('DJANGO_SENTRY_CLIENT', default='raven.contrib.django.raven_compat.DjangoClient')
 LOGGING = {
     'version': 1,
@@ -212,7 +212,7 @@ RAVEN_CONFIG = {
 }
 
 # Custom Admin URL, use {% url 'admin:index' %}
-ADMIN_URL = env('DJANGO_ADMIN_URL')
+ADMIN_URL = env('DJANGO_ADMIN_URL', default=r'^admin/')
 
 # Your production stuff: Below this line define 3rd party library settings
 # ------------------------------------------------------------------------------
