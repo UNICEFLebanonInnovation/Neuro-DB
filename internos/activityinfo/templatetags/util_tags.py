@@ -751,8 +751,26 @@ def get_array_value(data, key1=None, key2=None, key3=None):
 
 @register.assignment_tag
 def get_trip_values(data, partner=None, offices=None, section=None):
+
+    result = 0
+
+    if not type(section) == int:
+        try:
+            for sect in section:
+                key = '{}-{}-{}'.format(partner, offices, sect.id)
+
+                if key in data:
+                    if type(data[key]) == list:
+                        result += len(data[key])
+                    else:
+                        result += data[key]
+
+            return result
+        except Exception as ex:
+            # print(ex)
+            return 0
+
     try:
-        result = 0
         offices = offices.split(',')
 
         for office in offices:
