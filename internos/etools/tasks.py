@@ -183,7 +183,10 @@ def sync_intervention_data():
         instance.grants = item['grants']
 
         for p_code in item['location_p_codes']:
-            instance.locations.add(Location.objects.filter(p_code=p_code).first())
+            try:
+                instance.locations.add(Location.objects.filter(p_code=p_code).first())
+            except Exception:
+                continue
 
         instance.save()
 
