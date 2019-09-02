@@ -412,7 +412,10 @@ def sync_trip_individual_data(instance):
 
         locations = activity['locations']
         for location in locations:
-            act_instance.locations.add(Location.objects.filter(id=location).first())
+            try:
+                act_instance.locations.add(Location.objects.filter(id=location).first())
+            except Exception:
+                continue
 
         act_instance.save()
 
