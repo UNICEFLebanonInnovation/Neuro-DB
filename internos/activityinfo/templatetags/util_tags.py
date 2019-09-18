@@ -537,8 +537,6 @@ def get_indicator_hpm_data(ai_id, month=None):
         cumulative_result = "{:,}".format(round(cumulative), 1)
         cumulative_result = cumulative_result.replace('.0', '')
 
-        print(month)
-        print(cumulative)
         if int(month) > 1 and cumulative:
             last_month_value = cumulative
             print(cumulative)
