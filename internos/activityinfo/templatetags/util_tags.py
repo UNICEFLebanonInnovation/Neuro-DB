@@ -496,7 +496,6 @@ def get_indicator_hpm_data(ai_id, month=None):
 
         if 'tags' in indicator.cumulative_values_hpm:
             month_value_tag = indicator.cumulative_values_hpm['tags']
-            month = previous_month
             key1 = '{}-{}'.format(month, 'BLN')
             key2 = '{}-{}'.format(month, 'CBECE')
             key3 = '{}-{}'.format(month, 'ALP')
