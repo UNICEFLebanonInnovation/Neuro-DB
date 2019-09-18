@@ -271,6 +271,9 @@ class IndicatorResource(resources.ModelResource):
             'values_partners_live',
             'values_partners_gov_live',
             'cumulative_values_live',
+            'values_hpm',
+            'values_tags',
+            'cumulative_values_hpm',
         )
 
 
