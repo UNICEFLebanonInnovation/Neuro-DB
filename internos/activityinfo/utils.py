@@ -670,11 +670,11 @@ def reset_hpm_indicators_values():
     from internos.activityinfo.models import Indicator
 
     indicators = Indicator.objects.filter(hpm_indicator=True)
-    for indicator in indicators:
-        indicator.values_hpm = {}
+    # for indicator in indicators:
+        # indicator.values_hpm = {}
         # indicator.values_tags = {}
-        indicator.cumulative_values_hpm = {}
-        indicator.save()
+        # indicator.cumulative_values_hpm = {}
+        # indicator.save()
 
     return indicators.count()
 
@@ -953,7 +953,8 @@ def calculate_indicators_monthly_tags():
     today = datetime.date.today()
     first = today.replace(day=1)
     last_month = first - datetime.timedelta(days=1)
-    month = int(last_month.strftime("%m")) - 1
+    month = int(last_month.strftime("%m"))
+    # month = int(last_month.strftime("%m")) - 1
     month_str = str(month)
 
     for indicator in indicators.iterator():
@@ -2333,30 +2334,30 @@ def update_indicator_data(ai_db, ai_field_name, field_name):
 
 def update_hpm_report():
     update_indicators_hpm_data()
-    calculate_indicators_cumulative_hpm()
-    calculate_indicators_tags_hpm()
+    # calculate_indicators_cumulative_hpm()
+    # calculate_indicators_tags_hpm()
 
 
 def update_indicators_hpm_data():
     from internos.activityinfo.models import Indicator
 
-    last_month = int(datetime.datetime.now().strftime("%m"))
+    month = datetime.datetime.now().strftime("%m")
+    previous_month = str(int(month) - 1)
+
     indicators = Indicator.objects.filter(hpm_indicator=True).only(
         'values',
         'values_hpm',
+        'cumulative_values',
+        'cumulative_values_hpm',
     )
 
     for indicator in indicators.iterator():
-        for month in range(1, last_month):
-            value = 0
-            month = str(month)
-            values = indicator.values
-            values_hpm = indicator.values_hpm
-            if month in values:
-                value = values[month]
+        value = 0
+        if 'months' in indicator.cumulative_values:
+            value = indicator.cumulative_values['months']
 
-            if month not in values_hpm:
-                indicator.values_hpm[month] = value
+        if previous_month not in indicator.cumulative_values_hpm or not indicator.cumulative_values_hpm[previous_month]:
+            indicator.cumulative_values_hpm[previous_month] = value
 
         indicator.save()
 

@@ -971,7 +971,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             "{} indicators values cumulative HPM for database".format(reports)
         )
 
-    update_indicators_hpm.short_description = 'Step 2: Calculate HPM cumulative values'
+    calculate_indicators_cumulative_hpm.short_description = 'Step 2: Calculate HPM cumulative values'
 
     def calculate_indicators_tags_hpm(self, request, queryset):
         reports = calculate_indicators_tags_hpm()
@@ -980,7 +980,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             "{} indicators values Tag HPM for database".format(reports)
         )
 
-    update_indicators_hpm.short_description = 'Step 3: Calculate HPM indicators percentages'
+    calculate_indicators_tags_hpm.short_description = 'Step 3: Calculate HPM indicators percentages'
 
     def calculate_indicators_tags(self, request, queryset):
         reports = calculate_indicators_tags()
