@@ -496,6 +496,7 @@ def get_indicator_hpm_data(ai_id, month=None):
 
         if 'tags' in indicator.cumulative_values_hpm:
             month_value_tag = indicator.cumulative_values_hpm['tags']
+            month = previous_month
             key1 = '{}-{}'.format(month, 'BLN')
             key2 = '{}-{}'.format(month, 'CBECE')
             key3 = '{}-{}'.format(month, 'ALP')
@@ -504,7 +505,7 @@ def get_indicator_hpm_data(ai_id, month=None):
             if key2 in month_value_tag:
                 tag_prog_cbece = month_value_tag[key2]
             if key3 in month_value_tag:
-                tag_prog_bln = month_value_tag[key3]
+                tag_prog_alp = month_value_tag[key3]
 
         if 'tags' in indicator.cumulative_values_hpm:
             last_month_value_tag = indicator.cumulative_values_hpm['tags']
