@@ -539,6 +539,8 @@ def get_indicator_hpm_data(ai_id, month=None):
 
         if int(month) > 1 and cumulative:
             last_month_value = cumulative
+            print(cumulative)
+            print(last_month_value)
 
         if last_month_value == 0:
             last_report_changes = 0
