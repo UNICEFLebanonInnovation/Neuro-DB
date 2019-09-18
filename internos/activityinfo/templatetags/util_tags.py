@@ -500,6 +500,7 @@ def get_indicator_hpm_data(ai_id, month=None):
             key1 = '{}-{}'.format(month, 'BLN')
             key2 = '{}-{}'.format(month, 'CBECE')
             key3 = '{}-{}'.format(month, 'ALP')
+            print(key1)
             if key1 in month_value_tag:
                 tag_prog_bln = month_value_tag[key1]
             if key2 in month_value_tag:
