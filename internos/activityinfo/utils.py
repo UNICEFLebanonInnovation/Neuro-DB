@@ -2458,8 +2458,14 @@ def update_hpm_table_docx(indicators, month, month_name, filename):
     document.tables[0].rows[33].cells[14].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1121, month)['cumulative'])
     document.tables[0].rows[33].cells[15].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1121, month)['last_report_changes'])
 
+    document.tables[0].rows[33].cells[14].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(4507, month)['cumulative'])
+    document.tables[0].rows[33].cells[15].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(4507, month)['last_report_changes'])
+
     document.tables[0].rows[34].cells[14].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1149, month)['cumulative'])
     document.tables[0].rows[34].cells[15].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1149, month)['last_report_changes'])
+
+    document.tables[0].rows[34].cells[14].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(4525, month)['cumulative'])
+    document.tables[0].rows[34].cells[15].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(4525, month)['last_report_changes'])
 
     document.tables[0].rows[35].cells[14].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1178, month)['cumulative'])
     document.tables[0].rows[35].cells[15].paragraphs[0].runs[0].text = str(get_indicator_hpm_data(1178, month)['last_report_changes'])

@@ -449,6 +449,21 @@
                         </tr>
                         <tr>
                           <td colspan="2">
+                            {% get_indicator_hpm_data 4507 month as value_4507 %}
+<span style="display: none;">{{ value_4507.id }}</span>
+# of boys and girls (3-5), including CWDs, provided with access to and enrolment in ECE schools schoolyear 2019/2020
+                          </td>
+                          <td>n/a</td>
+                          <td>n/a</td>
+                          <td>n/a</td>
+                          <td>3,400</td>
+                          <td>{{ value_4507.cumulative }}<sup>1</sup>
+                            <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="Boys: {{ value_4507.male }}%; Girls: {{ value_4507.female }}%"></i>
+                          </td>
+                          <td>{{ value_4507.last_report_changes }}</td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">
                             {% get_indicator_hpm_data 1149 month as value_1149 %}
 <span style="display: none;">{{ value_1149.id }}</span>
 # of boys and girls including CWDs provided with learning retention and homework support for school year 2018/2019
@@ -461,6 +476,21 @@
                             <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="Boys: {{ value_1149.male }}%; Girls: {{ value_1149.female }}%"></i>
                           </td>
                           <td>{{ value_1149.last_report_changes }}</td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">
+                            {% get_indicator_hpm_data 4525 month as value_4525 %}
+<span style="display: none;">{{ value_4525.id }}</span>
+# of boys and girls including CWDs provided with learning retention and homework support for school year 2019/2020
+                          </td>
+                          <td>n/a</td>
+                          <td>n/a</td>
+                          <td>n/a</td>
+                          <td>3,200</td>
+                          <td>{{ value_4525.cumulative }}<sup>2</sup>
+                            <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="Boys: {{ value_4525.male }}%; Girls: {{ value_4525.female }}%"></i>
+                          </td>
+                          <td>{{ value_4525.last_report_changes }}</td>
                         </tr>
                         <tr>
                           <td colspan="2">
