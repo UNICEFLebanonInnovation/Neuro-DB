@@ -12,33 +12,69 @@ urlpatterns = [
         name='index'
     ),
     url(
-        regex=r'^activityinfo/dashboard/$',
+        regex=r'^dashboard/$',
         view=views.DashboardView.as_view(),
         name='dashboard'
     ),
     url(
-        regex=r'^activityinfo/HPM/$',
+        regex=r'^HPM/$',
         view=views.HPMView.as_view(),
         name='hpm'
     ),
     url(
-        regex=r'^activityinfo-export/$',
+        regex=r'^export/$',
         view=views.ExportViewSet.as_view(),
         name='export'
     ),
     url(
-        regex=r'^activityinfo/report/$',
+        regex=r'^report/$',
         view=views.ReportView.as_view(),
         name='report'
     ),
     url(
-        regex=r'^activityinfo/live-report/$',
+        regex=r'^report-partner/$',
+        view=views.ReportPartnerView.as_view(),
+        name='report_partner'
+    ),
+    url(
+        regex=r'^report-partner-sector/$',
+        view=views.ReportPartnerSectorView.as_view(),
+        name='report_partner_sector'
+    ),
+    url(
+        regex=r'^report-map/$',
+        view=views.ReportMapView.as_view(),
+        name='report_map'
+    ),
+    url(
+        regex=r'^report-map-sector/$',
+        view=views.ReportMapSectorView.as_view(),
+        name='report_map_sector'
+    ),
+    url(
+        regex=r'^report-disability/$',
+        view=views.ReportDisabilityView.as_view(),
+        name='report_disability'
+    ),
+    url(
+        regex=r'^report-sector/$',
+        view=views.ReportSectorView.as_view(),
+        name='report_sector'
+    ),
+    url(
+        regex=r'^report-tags/$',
+        view=views.ReportTagView.as_view(),
+        name='report_tags'
+    ),
+    url(
+        regex=r'^live-report/$',
         view=views.LiveReportView.as_view(),
         name='live_report'
     ),
     url(
-        regex=r'^activityinfo/HPM-report/$',
+        regex=r'^HPM-report/$',
         view=views.HPMExportViewSet.as_view(),
         name='hpm_report'
     ),
+
 ]

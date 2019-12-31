@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}Neuro-DB{% endblock %}
+
+{% block content %}
+<!-- top tiles -->
+<!-- /top tiles -->
+
+<style>
+  div.panel-footer {
+    background-color: #fff !important;
+  }
+  p {
+    background-color: #f7f9fa;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .sidebar-box {
+    max-height: 120px;
+    position: relative;
+    overflow: hidden;
+  }
+  .sidebar-box .read-more {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 15px 0;
+    opacity: 0.9;
+  }
+  .btn-filter.on {
+    background-color: #0089d2;
+    color: white;
+  }
+  .btn-filter-no.on {
+    background-color: #0089d2;
+    color: white;
+  }
+  span.trip-planned {
+    background-color: rgba(250,237,119,.6);
+  }
+  span.trip-submitted {
+    background-color: rgba(206,188,6,.6);
+  }
+  span.trip-approved {
+    background-color: rgba(141,198,63,.45);
+  }
+  span.trip-completed {
+    background-color: rgba(141,198,63,1);
+  }
+  .x_title span.label {
+      color: white;
+  }
+  div.trip-filter {
+    cursor: pointer;
+  }
+  .travel-counts .label {
+    cursor: pointer;
+  }
+  #mapView {
+    height: 500px;
+    width: 80%;
+    border: 1px solid;
+  }
+  #myTabContent {
+    padding-top: 10px;
+  }
+  div.count.active a {
+    color: #0089d2;
+  }
+
+</style>
+
+<div class="row tile_count" data-step="4" data-intro="Click on the number to view the details. The default view is the All programmatic Visits">
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> All Visits</span>
+    <div class="count {% if travel_status == 'all' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=all">{{ programmatic_visits }}</a>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Planned Visits</span>
+    <div class="count {% if travel_status == 'planned' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=planned">{{ programmatic_visits_planned }}</a>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Submitted Visits</span>
+    <div class="count {% if travel_status == 'submitted' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=submitted">{{ programmatic_visits_submitted }}</a>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Approved Visits</span>
+    <div class="count {% if travel_status == 'approved' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=approved">{{ programmatic_visits_approved }}</a>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Completed Visits</span>
+    <div class="count {% if travel_status == 'completed' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=completed">{{ programmatic_visits_completed }}</a>
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+
+    <div class="x-panel">
+      <div class="x_title">
+        <h2>
+          <strong>Programmatic Visits Monitoring - {{ travel_status|upper }}</strong>
+        </h2>
+        <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
+           title="Show me some tips" style="padding-left: 20px;">
+          <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
+        </a>
+        <ul class="nav navbar-right panel_toolbox">
+          <li><a class="collapse-link"></a></li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="clearfix"></div>
+
+    </div>
+    <div class="row" id="trips_monitor">
+
+      <ul class="nav nav-tabs" role="tablist" id="myTab">
+        <li class="nav-item active" data-step="5" data-intro="Number of Programmatic Visits per Office per Section">
+          <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+            aria-selected="true">Report</a>
+        </li>
+        <li class="nav-item" data-step="6" data-intro="Geo location of the Programmatic Visits">
+          <a class="nav-link" id="map-tab" data-toggle="tab" href="#map" role="tab" aria-controls="map"
+            aria-selected="false">Map</a>
+        </li>
+        <!--<li class="nav-item">-->
+          <!--<a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"-->
+            <!--aria-selected="false">Warnings</a>-->
+        <!--</li>-->
+      </ul>
+
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">
+          {% include "etools/trip_details.html" with visits=trip_details table="all_trips" %}
+        </div>
+        <div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map-tab">
+          <div id="mapView"></div>
+        </div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+          warnings
+        </div>
+      </div>
+
+      {% csrf_token %}
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+</div>
+<br />
+{% endblock content %}
+
+{% block extra_js %}
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.11/"></script>
+
+<script>
+    var user_token = '{{ user_token }}';
+    var href_full_path = '{{ request.build_absolute_uri }}';
+    var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
+    var points = '{{ trip_details.locations|safe }}';
+    points = JSON.parse(points);
+
+    var symbol = {
+      style: "square",
+      color: "blue",
+      size: "8px",  // pixels
+      outline: {  // autocasts as new SimpleLineSymbol()
+        color: [ 255, 255, 0 ],
+        width: 3  // points
+      }
+    };
+
+    var symbol_icon = {
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    var markerSymbol = {
+      type: "picture-marker", // autocasts as new SimpleMarkerSymbol()
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    $(document).ready(function(){
+
+        $('.travel-counts').dblclick(function(){
+            $('.travel-details').hide();
+            $(this).find('.travel-details').show();
+        });
+
+        $('ul.child_menu').hide();
+
+        require([
+          "esri/Map",
+          "esri/views/MapView",
+          "esri/symbols/SimpleMarkerSymbol",
+          "esri/symbols/PictureMarkerSymbol",
+          "esri/geometry/Point",
+          "esri/Graphic",
+        ], function(Map, MapView, SimpleMarkerSymbol, PictureMarkerSymbol, Point, Graphic) {
+
+          var map = new Map({
+              basemap: "topo-vector"
+          });
+
+          var view = new MapView({
+            container: "mapView",
+            map: map,
+            center: [35.82685, 34.3461],
+            zoom: 8
+          });
+
+          $(points).each(function(i, item){
+
+              var travel_url = '<a href="'+item.travel_url+'" target="_blank"><i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i></a>';
+
+              var lineAtt = {
+                Name: item.name,
+                Number: item.travel,
+                Title: travel_url,
+                Traveler: item.traveler_name,
+                Section: item.section,
+                Office: item.office,
+
+              };
+
+              var pointGraphic = new Graphic({
+                geometry: {
+                  type: "point",
+                  longitude: item.longitude,
+                  latitude: item.latitude
+                },
+                symbol: markerSymbol,
+                attributes: lineAtt,
+                popupTemplate: {
+                  title: "{Number} {Title}",
+                  content: [
+                    {
+                      type: "fields",
+                      fieldInfos: [
+                        {
+                          fieldName: "Name"
+                        },
+                        {
+                          fieldName: "Traveler"
+                        },
+                        {
+                          fieldName: "Section"
+                        },
+                        {
+                          fieldName: "Office"
+                        },
+                      ]
+                    }
+                  ]
+                }
+              });
+
+              view.graphics.add(pointGraphic);
+
+          });
+
+        });
+    });
+
+</script>
+
+{% endblock %}

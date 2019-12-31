@@ -3,19 +3,7 @@
 {% load util_tags %}
 {% load static %}
 
-{% block ai_reports %}
-  {% for db in databases %}
-    <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
-  {% endfor %}
-{% endblock %}
-
-{% block ai_databases %}
-  {% for db in databases %}
-    <li><a href="{% url 'activityinfo:dashboard' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
-  {% endfor %}
-{% endblock %}
-
-{% block project_title %}Interactive Dashboards{% endblock %}
+{% block project_title %}Neuro-DB{% endblock %}
 
 {% block content %}
 <style>
@@ -25,7 +13,7 @@
   margin-top: 12px;
 }
 .table thead {
-  background-color: #6ad0f9;
+  background-color: #00AEEE;
   color: white;
 }
 .w-70 { width: 70px; max-width: 70px;}
@@ -38,9 +26,6 @@
 .w-500 { width: 500px; max-width: 500px;}
 
 </style>
-
-<!-- Add IntroJs styles -->
-<link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
 
 <!-- top tiles -->
 <div class="row" style="clear: both;">
@@ -107,7 +92,7 @@
 
     <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
        title="Show me some tips" style="padding-left: 20px;">
-      <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
+      <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
     </a>
 
   </div>
@@ -133,8 +118,24 @@
                              autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
                              aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
                              style="position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="8" data-intro="Search for a specific Indicator">
-                      <a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" data-step="9" data-intro="Download Dashboard report and raw data" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>
+                      <!--<a href="#" id="export1" data-toggle="tooltip" data-placement="top" title="Download report" data-step="9" data-intro="Download Dashboard report and raw data" style="padding-left: 10px;"><i class="fa fa-download faa-bounce animated-hover" style="font-size: 30px;"></i></a>-->
                     </h2>
+                    <ul class="nav navbar-left" style="margin-top: -7px;" data-step="10" data-intro="Download Dashboard report and raw data">
+                      <li class="dropdown">
+                        <a id="drop5" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
+                           data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                    <i class="fa fa-download faa-bounce animated-hover" style="font-size: 25px;"></i>
+                          <span class="caret"></span>
+                        </a>
+                        <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
+                          <li role="presentation" class="divider" style="margin-top: -1px;"></li>
+                          <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Current dashboard</a>
+                          <li role="presentation" class="divider"></li>
+                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full raw data</a>
+                          <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
+                        </ul>
+                      </li>
+                    </ul>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                     </ul>
@@ -408,7 +409,6 @@
 {% endblock content %}
 
 {% block extra_js %}
-  <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
   <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 

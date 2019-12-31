@@ -1,12 +1,19 @@
+# from django.apps import AppConfig
+# from watson import search as watson
+#
+#
+# class InternosConfig(AppConfig):
+#     name = "internos"
+#     def ready(self):
+#         watson.register(self.get_model("internos.activityinfo.indicator"))
+
+
 from suit.apps import DjangoSuitConfig
 from suit.menu import ParentItem, ChildItem
 
 
-#  https://github.com/darklow/django-suit/blob/v2/suit/apps.py
+#https://github.com/darklow/django-suit/blob/v2/suit/apps.py
 class SuitConfig(DjangoSuitConfig):
-    # layout = 'vertical'
-    # verbose_name = 'Neuro-DB'
-    # form_inlines_hide_original = True
     menu = (
         ParentItem('Dashboard', url='/', icon='fa fa-list'),
         ParentItem('Winterization', children=[
@@ -23,17 +30,19 @@ class SuitConfig(DjangoSuitConfig):
             ChildItem(model='activityinfo.attributegroup'),
             ChildItem(model='activityinfo.attribute'),
             ChildItem(model='activityinfo.activityreport'),
-            ChildItem(model='activityinfo.activityreportlive'),
+            ChildItem(model='activityinfo.liveactivityreport'),
         ], icon='fa fa-list'),
         ParentItem('eTools', children=[
             ChildItem(model='etools.partnerorganization'),
             ChildItem(model='etools.agreement'),
             ChildItem(model='etools.pca'),
             ChildItem(model='etools.travel'),
+            ChildItem(model='etools.engagement'),
         ], icon='fa fa-list'),
         ParentItem('Users', children=[
             ChildItem('Users', model='users.user'),
             ChildItem('Sections', model='users.section'),
+            ChildItem('Offices', model='users.office'),
             ChildItem('Groups', 'auth.group'),
         ], icon='fa fa-users'),
         ParentItem('Right Side Menu', children=[
@@ -41,18 +50,3 @@ class SuitConfig(DjangoSuitConfig):
 
         ], align_right=True, icon='fa fa-cog'),
     )
-
-    # def ready(self):
-    #     super(SuitConfig, self).ready()
-    #
-    #     # DO NOT COPY FOLLOWING LINE
-    #     # It is only to prevent updating last_login in DB for demo app
-    #     self.prevent_user_last_login()
-
-    # def prevent_user_last_login(self):
-    #     """
-    #     Disconnect last login signal
-    #     """
-    #     from django.contrib.auth import user_logged_in
-    #     from django.contrib.auth.models import update_last_login
-    #     user_logged_in.disconnect(update_last_login)

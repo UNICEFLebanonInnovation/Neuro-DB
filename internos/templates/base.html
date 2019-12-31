@@ -1,4 +1,5 @@
 {% load staticfiles i18n %}
+{% load util_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -52,15 +53,28 @@
 
     <!-- Custom Theme Style -->
     <link href="{% static 'css/custom.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
+    <link href="{% static 'tellme/feedback.min.css' %}" rel="stylesheet">
+    <style>
+      .site_title {padding-left: 8px; height: 65px; padding-top: 6px;}
+      #toTop{position: fixed;bottom: 10px;right: 10px;cursor: pointer;display: none;}
+      .vertical-right-aligned {transform: rotate(-90deg);transform-origin: 100% 100%;position: fixed;right: 0;top: 50%;z-index: 100;}
+    </style>
   </head>
 
   <body class="nav-sm">
+
+    <button type="button" id="feedback-btn" class="btn btn-info vertical-right-aligned">
+        Feedback <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
+    </button>
+
     <div class="container body container-narrow">
       <div class="main_container">
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="/" class="site_title" data-step="1" data-intro="Go to home page"><img src="{% static 'images/logo.png' %}" height="50" width="50" alt=""/>
+              <a href="/" class="site_title" data-step="1" data-intro="Go to home page">
+                <img src="{% static 'images/logo.png' %}" height="55" width="55" alt="Neuro-DB-logo"/>
                 <span>Neuro-DB</span>
               </a>
             </div>
@@ -88,21 +102,49 @@
               <div class="menu_section" data-step="2" data-intro="Navigation menu for other sections">
                 <h3>General</h3>
                 <ul class="nav side-menu">
+
                   <li><a><i class="fa fa-table"></i> AI Dashboards <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      {% block ai_reports %}
-                      {% endblock%}
+                      {% get_databases as databases %}
+                      {% for db in databases %}
+                        <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+                      {% endfor %}
                     </ul>
                   </li>
 
-                  <li><a><i class="fa fa-bar-chart-o"></i> Data Visualisations <span class="fa fa-chevron-down"></span></a>
+                  <li><a><i class="fa fa-list-alt"></i> AI Sector <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      {% block ai_databases %}
-                      {% endblock%}
+                      {% get_databases True as databases %}
+                      {% for db in databases %}
+                        <li><a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+                      {% endfor %}
                     </ul>
                   </li>
+
+                  <!--<li><a><i class="fa fa-pie-chart"></i> Data Visualisations <span class="fa fa-chevron-down"></span></a>-->
+                    <!--<ul class="nav child_menu">-->
+                      <!--{% get_databases as databases %}-->
+                      <!--{% for db in databases %}-->
+                        <!--<li><a href="{% url 'activityinfo:dashboard' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>-->
+                      <!--{% endfor %}-->
+                    <!--</ul>-->
+                  <!--</li>-->
 
                   <li><a href="{% url 'activityinfo:hpm' %}"><i class="fa fa-bar-chart-o"></i> HPM <span class="fa fa-file-text-o"></span></a></li>
+                  <!--<li><a href="{% url 'etools:partner_profile' %}"><i class="fa fa-slideshare"></i> Partner Profile <span class="fa fa-file-text-o"></span></a></li>-->
+                  <!--<li><a href="{% url 'locations:site_profile' %}"><i class="glyphicon glyphicon-map-marker"></i> Site Profile <span class="fa fa-file-text-o"></span></a></li>-->
+                  <!--<li><a href="{% url 'activityinfo:hpm' %}"><i class="fa fa-bar-chart-o"></i> HPM </a></li>-->
+                  <!--<li><a href="{% url 'etools:partner_profile' %}"><i class="fa fa-slideshare"></i> Partner Profile <span class="fa fa-file-text-o"></span></a></li>-->
+
+                  <li><a><i class="fa fa-slideshare"></i>Partnership<span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="{% url 'etools:partner_profile' %}">Partner Profile</a></li>
+                      <li><a href="{% url 'etools:interventions' %}">Interventions</a></li>
+                      <li><a href="{% url 'etools:programmatic_visits_monitoring' %}">Programmatic Visits Monitoring</a></li>
+                      <!--<li><a href="{% url 'etools:hact' %}">HACT (beta)</a></li>-->
+                    </ul>
+                  </li>
+
                 </ul>
 
                 <!--<i class="fa fa-phone"></i>-->
@@ -184,6 +226,7 @@
           {% block content %}
           {% endblock content %}
 
+          <div id="toTop" class="btn btn-info"><span class="glyphicon glyphicon-chevron-up"></span> Back to Top</div>
         </div>
         <!-- /page content -->
 
@@ -251,7 +294,28 @@
 
     <!-- Custom Theme Scripts -->
     <script src="{% static 'js/custom.min.js' %}"></script>
+    <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>
+    {% include 'tellme/js_inc.html' %}
     {% block extra_js %}{% endblock %}
-
+    <script>
+        $(document).ready(function(){
+              $(window).scroll(function () {
+              if ($(this).scrollTop() != 0) {
+                $('#toTop').fadeIn();
+              } else {
+                $('#toTop').fadeOut();
+              }
+            });
+            $('#toTop').click(function(){
+                $("html, body").animate({ scrollTop: 0 }, 600);
+                return false;
+            });
+            $('.print-page').click(function(){
+                $('.expanded-all').trigger('click');
+                $('.read-more').hide();
+                window.print();
+            });
+        });
+    </script>
   </body>
 </html>

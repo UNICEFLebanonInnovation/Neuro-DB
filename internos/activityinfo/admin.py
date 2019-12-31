@@ -179,13 +179,31 @@ class ActivityAdmin(ImportExportModelAdmin):
         'name',
         'database',
         'location_type',
+        'programme_document'
     )
+    # list_editable = (
+    #     'programme_document',
+    # )
     readonly_fields = (
         'ai_id',
         'name',
         'database',
         'location_type',
     )
+
+
+class TagAgeFilter(admin.SimpleListFilter):
+    title = 'Tag Age'
+
+    parameter_name = 'tag_age'
+
+    def lookups(self, request, model_admin):
+        return ((l.id, l.name) for l in IndicatorTag.objects.filter(type='age'))
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(tag_age_id__exact=self.value())
+        return queryset
 
 
 class IndicatorResource(resources.ModelResource):
@@ -253,6 +271,9 @@ class IndicatorResource(resources.ModelResource):
             'values_partners_live',
             'values_partners_gov_live',
             'cumulative_values_live',
+            'values_hpm',
+            'values_tags',
+            'cumulative_values_hpm',
         )
 
 
@@ -267,6 +288,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
     list_filter = (
         'activity__database__reporting_year',
         'activity__database',
+        'activity',
         'master_indicator',
         'master_indicator_sub',
         'master_indicator_sub_sub',
@@ -274,10 +296,16 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'calculated_indicator',
         'hpm_indicator',
         'separator_indicator',
+        'tag_gender',
+        'tag_age',
+        'tag_nationality',
+        'tag_disability',
+        'tag_programme',
     )
     suit_list_filter_horizontal = (
         'activity__database__reporting_year',
         'activity__database',
+        'activity',
         'master_indicator',
         'master_indicator_sub',
         'master_indicator_sub_sub',
@@ -285,6 +313,10 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'calculated_indicator',
         'hpm_indicator',
         'separator_indicator',
+        'tag_gender',
+        'tag_age',
+        'tag_nationality',
+        'tag_disability',
     )
     list_display = (
         'id',
@@ -295,20 +327,28 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'target_sector',
         'units',
         'activity',
-        'category',
+        # 'category',
         'sequence',
+        'master_indicator',
+        'is_sector',
+        'is_section',
+        'support_disability',
+        # 'values_tags'
     )
     filter_horizontal = (
         'sub_indicators',
         'summation_sub_indicators',
-        'denominator_summation',
-        'numerator_summation',
     )
     list_editable = (
         'awp_code',
         'target',
         'target_sector',
         'sequence',
+        'master_indicator',
+        'is_sector',
+        'is_section',
+        'support_disability',
+        # 'values_tags'
     )
 
     formfield_overrides = {
@@ -341,6 +381,9 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'none_ai_indicator',
                 'funded_by',
                 'sequence',
+                'is_sector',
+                'is_section',
+                'support_disability',
             ]
         }),
         ('Tags', {
@@ -350,6 +393,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'tag_gender',
                 'tag_nationality',
                 'tag_disability',
+                'tag_programme',
                 'hpm_indicator',
             ]
         }),
@@ -381,10 +425,22 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'cumulative_values',
             ]
         }),
+        ('Calculated Values sector', {
+            'classes': ('suit-tab', 'suit-tab-report-values-sector',),
+            'fields': [
+                'values_sector',
+                'values_sites_sector',
+                'values_partners_sector',
+                'values_partners_sites_sector',
+                'cumulative_values_sector',
+                'values_tags_sector',
+            ]
+        }),
         ('Calculated HPM Values', {
             'classes': ('suit-tab', 'suit-tab-hpm-values',),
             'fields': [
                 'values_hpm',
+                'values_tags',
                 'cumulative_values_hpm',
             ]
         }),
@@ -403,6 +459,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
     suit_form_tabs = (
                       ('general', 'Indicator'),
                       ('report-values', 'Report values'),
+                      ('report-values-sector', 'Report values sector'),
                       ('hpm-values', 'HPM values'),
                       ('live-values', 'Live values'),
                     )
@@ -526,7 +583,7 @@ class ActivityReportAdmin(RelatedFieldAdmin):
         'start_date',
         'database',
         'partner_label',
-        'governorate',
+        'location_adminlevel_governorate',
         'form',
         'form_category',
         'funded_by',
@@ -539,7 +596,7 @@ class ActivityReportAdmin(RelatedFieldAdmin):
         'start_date',
         'database',
         'partner_label',
-        'governorate',
+        'location_adminlevel_governorate',
         'form',
         'form_category',
         'funded_by',
@@ -567,10 +624,23 @@ class ActivityReportAdmin(RelatedFieldAdmin):
         'indicator_awp_code',
         'partner_id'
     )
+    fields = (
+
+    )
+    exclude = (
+        'location_cadastral',
+        'location_caza',
+        'location_governorate',
+    )
+
+    readonly_fields = (
+        'ai_indicator',
+        'partner_ai',
+    )
     date_hierarchy = 'start_date'
 
 
-class ActivityReportLiveAdmin(RelatedFieldAdmin):
+class LiveActivityReportAdmin(RelatedFieldAdmin):
     # resources = ActivityReportResource
     list_filter = (
         'start_date',
@@ -663,6 +733,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'focal_point',
         'mapped_db',
         'is_funded_by_unicef',
+        'is_sector',
     )
     readonly_fields = (
         'description',
@@ -679,13 +750,20 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'link_indicators_data',
         'calculate_indicators_values',
         'calculate_indicators_cumulative_results',
-        'calculate_indicators_cumulative_hpm',
         'calculate_indicators_status',
         'reset_indicators_values',
+        'update_indicators_report',
+        'update_hpm_report',
         'reset_hpm_indicators_values',
+        'update_indicators_hpm',
+        'calculate_indicators_cumulative_hpm',
+        'calculate_indicators_tags_hpm',
+        'calculate_indicators_tags',
         'update_partner_data',
         'generate_indicator_tags',
         'calculate_sum_target',
+        'update_indicator_list_header',
+        'update_indicator_name',
     ]
 
     fieldsets = [
@@ -700,8 +778,10 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'section',
                 'reporting_year',
                 'focal_point',
+                'focal_point_sector',
                 'mapped_db',
                 'is_funded_by_unicef',
+                'is_sector',
                 'description',
                 'country_name',
                 'ai_country_id',
@@ -751,7 +831,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             "{} objects created.".format(objects)
         )
 
-    update_basic_data.short_description = 'Step 0a: Update Indicators basic data (only once - ask Ali before!!!)'
+    update_basic_data.short_description = 'Step 0a: Update Indicators basic data - ' \
+                                          'Update only (only once - ask Ali before!!!)'
 
     def import_only_new(self, request, queryset):
         objects = 0
@@ -762,7 +843,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             "{} objects created.".format(objects)
         )
 
-    import_only_new.short_description = 'Step 0b: Import only new Indicators basic data (only once - ask Ali before!!!)'
+    import_only_new.short_description = 'Step 0b: Import only new Indicators basic data -' \
+                                        ' Import new indicators only(only once - ask Ali before!!!)'
 
     def update_partner_data(self, request, queryset):
         for db in queryset:
@@ -841,13 +923,29 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 "{} indicators pre-calculated values removed and for database {} ".format(reports, db.name)
             )
 
+    def update_hpm_report(self, request, queryset):
+        reports = update_hpm_report()
+        self.message_user(
+            request,
+            "Update the HPM report"
+        )
+    update_hpm_report.short_description = 'Update HPM monthly report (3 in 1)'
+
     def reset_hpm_indicators_values(self, request, queryset):
-        for db in queryset:
-            reports = reset_hpm_indicators_values(db.ai_id)
-            self.message_user(
-                request,
-                "{} indicators pre-calculated HPM values removed and for database {} ".format(reports, db.name)
-            )
+        reports = reset_hpm_indicators_values()
+        self.message_user(
+            request,
+            "{} indicators pre-calculated HPM values removed and for database ".format(reports)
+        )
+    reset_hpm_indicators_values.short_description = 'Step 0: Reset HPM indicators values'
+
+    def update_indicators_hpm(self, request, queryset):
+        reports = update_indicators_hpm_data()
+        self.message_user(
+            request,
+            "{} indicators pre-calculated HPM values removed and for database ".format(reports)
+        )
+    update_indicators_hpm.short_description = 'Step 1: Update HPM indicators values'
 
     def calculate_indicators_values(self, request, queryset):
         for db in queryset:
@@ -860,24 +958,60 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
     def calculate_indicators_cumulative_results(self, request, queryset):
         for db in queryset:
-            reports = calculate_indicators_cumulative_results(db)
+            reports = calculate_indicators_cumulative_results_1(db)
             self.message_user(
                 request,
                 "{} indicators values cumulative calculated for database {}".format(reports, db.name)
             )
 
     def calculate_indicators_cumulative_hpm(self, request, queryset):
-        for db in queryset:
-            reports = calculate_indicators_cumulative_hpm(db)
-            self.message_user(
-                request,
-                "{} indicators values cumulative HPM for database {}".format(reports, db.name)
-            )
+        reports = calculate_indicators_cumulative_hpm()
+        self.message_user(
+            request,
+            "{} indicators values cumulative HPM for database".format(reports)
+        )
+
+    calculate_indicators_cumulative_hpm.short_description = 'Step 2: Calculate HPM cumulative values'
+
+    def calculate_indicators_tags_hpm(self, request, queryset):
+        reports = calculate_indicators_tags_hpm()
+        self.message_user(
+            request,
+            "{} indicators values Tag HPM for database".format(reports)
+        )
+
+    calculate_indicators_tags_hpm.short_description = 'Step 3: Calculate HPM indicators percentages'
+
+    def calculate_indicators_tags(self, request, queryset):
+        reports = calculate_indicators_tags()
+        reports = calculate_indicators_monthly_tags()
+        self.message_user(
+            request,
+            "{} indicators values Tag".format(reports)
+        )
 
     def calculate_indicators_status(self, request, queryset):
         reports = 0
         for db in queryset:
             reports = calculate_indicators_status(db)
+            self.message_user(
+                request,
+                "{} indicators status calculated for database {}".format(reports, db.name)
+            )
+
+    def update_indicator_name(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = update_indicator_data(ai_db=db, ai_field_name='name', field_name='name')
+            self.message_user(
+                request,
+                "{} indicators status calculated for database {}".format(reports, db.name)
+            )
+
+    def update_indicator_list_header(self, request, queryset):
+        reports = 0
+        for db in queryset:
+            reports = update_indicator_data(ai_db=db, ai_field_name='list_header', field_name='listHeader')
             self.message_user(
                 request,
                 "{} indicators status calculated for database {}".format(reports, db.name)
@@ -898,11 +1032,91 @@ class ReportingYearAdmin(admin.ModelAdmin):
 class IndicatorTagAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+        'label',
         'type',
-        'tag_field'
+        'tag_field',
+        'sequence',
+    )
+    list_editable = (
+        'sequence',
     )
 
 
+@admin.register(AdminLevelEntities)
+class AdminLevelEntitiesAdmin(admin.ModelAdmin):
+    list_filter = (
+        'level',
+    )
+    search_fields = (
+        'code',
+        'name',
+        'bounds',
+    )
+    list_display = (
+        'code',
+        'name',
+        'level',
+        'parent',
+        'bounds',
+    )
+
+
+@admin.register(Locations)
+class LocationsAdmin(admin.ModelAdmin):
+    list_filter = (
+        'type',
+    )
+    fields = (
+        'code',
+        'name',
+        'type',
+        'longitude',
+        'latitude',
+    )
+    search_fields = (
+        'id',
+        'code',
+        'name',
+    )
+    list_display = (
+        'code',
+        'name',
+        'type',
+        'longitude',
+        'latitude',
+    )
+
+
+@admin.register(Sites)
+class SitesAdmin(admin.ModelAdmin):
+    list_filter = (
+        'partner',
+        'activity',
+    )
+    fields = (
+        'code',
+        'name',
+        'longitude',
+        'latitude',
+    )
+    search_fields = (
+        'code',
+        'name',
+        'longitude',
+        'latitude',
+    )
+    list_display = (
+        'code',
+        'name',
+        'longitude',
+        'latitude',
+    )
+
+
+admin.site.register(AdminLevels)
+# admin.site.register(AdminLevelEntities)
+admin.site.register(LocationTypes)
+# admin.site.register(Locations)
 admin.site.register(IndicatorTag, IndicatorTagAdmin)
 admin.site.register(ReportingYear, ReportingYearAdmin)
 admin.site.register(Database, DatabaseAdmin)
@@ -912,5 +1126,5 @@ admin.site.register(Indicator, IndicatorAdmin)
 admin.site.register(AttributeGroup, AttributeGroupAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(ActivityReport, ActivityReportAdmin)
-admin.site.register(ActivityReportLive, ActivityReportLiveAdmin)
+admin.site.register(LiveActivityReport, LiveActivityReportAdmin)
 

@@ -46,9 +46,16 @@ DJANGO_APPS = [
 
     # Admin
     'internos.apps.SuitConfig',
+    # 'jet',
+    # 'jet.dashboard',
     'django.contrib.admin',
+    'django.contrib.gis',
     'django_json_widget',
     'prettyjson',
+    'leaflet',
+    'mptt',
+    'newsletter',
+    'watson',
 ]
 THIRD_PARTY_APPS = [
     # 'django_mysql',
@@ -59,6 +66,11 @@ THIRD_PARTY_APPS = [
     'import_export',
     'nested_admin',
     'smart_selects',
+    'rest_framework',
+    'rest_framework_swagger',
+    'rest_framework.authtoken',
+    'django_db_logger',
+    'tellme',
 ]
 
 # Apps specific for this project go here.
@@ -327,4 +339,115 @@ ADMIN_URL = r'^admin/'
 # ------------------------------------------------------------------------------
 
 
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['example.com', 'lebaaodb.unicef.org', '127.0.0.1', '158.113.238.10'])
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['example.com', 'lebanondb.unicef.org', '127.0.0.1', '158.113.238.10', '10.16.160.44'])
+
+REST_FRAMEWORK = {
+    # this setting fixes the bug where user can be logged in as AnonymousUser
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
+SWAGGER_SETTINGS = {
+    'is_authenticated': True,
+    'is_superuser': True,
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'db': {
+            'level': 'INFO',
+            'class': 'django_db_logger.db_log_handler.DatabaseLogHandler'
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'level': 'INFO',
+            'handlers': ['db', 'console'],
+            'propagate': True,
+        },
+    }
+}
+
+
+# JET_THEMES = [
+#     {
+#         'theme': 'default', # theme folder name
+#         'color': '#47bac1', # color of the theme's button in user menu
+#         'title': 'Default' # theme title
+#     },
+#     {
+#         'theme': 'green',
+#         'color': '#44b78b',
+#         'title': 'Green'
+#     },
+#     {
+#         'theme': 'light-green',
+#         'color': '#2faa60',
+#         'title': 'Light Green'
+#     },
+#     {
+#         'theme': 'light-violet',
+#         'color': '#a464c4',
+#         'title': 'Light Violet'
+#     },
+#     {
+#         'theme': 'light-blue',
+#         'color': '#5EADDE',
+#         'title': 'Light Blue'
+#     },
+#     {
+#         'theme': 'light-gray',
+#         'color': '#222',
+#         'title': 'Light Gray'
+#     }
+# ]
+#
+# JET_DEFAULT_THEME = 'default'
+# JET_SIDE_MENU_COMPACT = False
+# JET_CHANGE_FORM_SIBLING_LINKS = True
+# JET_INDEX_DASHBOARD = 'jet.dashboard.dashboard.DefaultIndexDashboard'
+# JET_APP_INDEX_DASHBOARD = 'jet.dashboard.dashboard.DefaultAppIndexDashboard'
+# JET_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
+
+# JET_SIDE_MENU_ITEMS = [
+#     {'label': 'General', 'app_label': 'core', 'items': [
+#         {'name': 'help.question'},
+#         {'name': 'pages.page', 'label': _('Static page')},
+#         {'name': 'city'},
+#         {'name': 'validationcode'},
+#         {'label': 'Analytics', 'url': 'http://example.com', 'url_blank': True},
+#     ]},
+#     {'label': 'Users', 'items': [
+#         {'name': 'core.user'},
+#         {'name': 'auth.group'},
+#         {'name': 'core.userprofile', 'permissions': ['core.user']},
+#     ]},
+#     {'app_label': 'banners', 'items': [
+#         {'name': 'banner'},
+#         {'name': 'bannertype'},
+#     ]},
+# ]
+

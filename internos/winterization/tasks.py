@@ -65,8 +65,10 @@ def import_docs(programme=None, **kwargs):
     """
     Imports docs from couch base
     """
-    from .models import Assessment
+    from .models import Assessment, Programme
     from .serializers import AssessmentSerializer
+
+    programme = Programme.objects.get(year='2018')
 
     data = requests.get(
         os.path.join(programme.db_url, '_all_docs?include_docs=true'),

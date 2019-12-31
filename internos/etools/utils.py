@@ -1,192 +1,7 @@
-from internos.taskapp.celery import app
-
 import json
 import httplib
 import datetime
 from time import mktime
-
-
-def sync_partner_data():
-    from internos.etools.models import PartnerOrganization
-    partners = get_data('etools.unicef.org', '/api/v2/partners/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
-    partners = json.loads(partners)
-    for item in partners:
-        partner, new_instance = PartnerOrganization.objects.get_or_create(etl_id=item['id'])
-
-        # for key in item:
-        #     setattr(partner, key, item[key])
-
-        partner.rating = item['rating']
-        partner.last_assessment_date = item['last_assessment_date']
-        partner.short_name = item['short_name']
-        partner.postal_code = item['postal_code']
-        partner.basis_for_risk_rating = item['basis_for_risk_rating']
-        partner.city = item['city']
-        partner.reported_cy = item['reported_cy']
-        partner.total_ct_ytd = item['total_ct_ytd']
-        partner.vendor_number = item['vendor_number']
-        partner.hidden = item['hidden']
-        partner.cso_type = item['cso_type']
-        partner.net_ct_cy = item['net_ct_cy']
-        partner.phone_number = item['phone_number']
-        partner.shared_with = item['shared_with']
-        partner.partner_type = item['partner_type']
-        partner.address = item['address']
-        partner.total_ct_cy = item['total_ct_cy']
-        partner.name = item['name']
-        partner.total_ct_cp = item['total_ct_cp']
-        partner.country = item['country']
-        partner.email = item['email']
-        partner.deleted_flag = item['deleted_flag']
-        partner.street_address = item['street_address']
-
-        partner.save()
-
-
-def sync_agreement_data():
-    from internos.etools.models import Agreement, PartnerOrganization
-    partners = get_data('etools.unicef.org', '/api/v2/agreements/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
-
-    partners = json.loads(partners)
-    for item in partners:
-        partner, new_instance = Agreement.objects.get_or_create(etl_id=item['id'])
-
-        # for key in item:
-        #     setattr(partner, key, item[key])
-
-        partner.partner = PartnerOrganization.objects.get(etl_id=item['partner'])
-        partner.country_programme = item['country_programme']
-        partner.agreement_number = item['agreement_number']
-        partner.partner_name = item['partner_name']
-        partner.agreement_type = item['agreement_type']
-        partner.end = item['end']
-        partner.start = item['start']
-        partner.signed_by_unicef_date = item['signed_by_unicef_date']
-        partner.signed_by_partner_date = item['signed_by_partner_date']
-        partner.status = item['status']
-        partner.agreement_number_status = item['agreement_number_status']
-        partner.special_conditions_pca = item['special_conditions_pca']
-
-        partner.save()
-
-
-def sync_intervention_data():
-    from internos.etools.models import Agreement, PartnerOrganization, PCA
-    partners = get_data('etools.unicef.org', '/api/v2/interventions/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
-
-    partners = json.loads(partners)
-    for item in partners:
-        partner, new_instance = PCA.objects.get_or_create(etl_id=item['id'])
-
-        partner.number = item['number']
-        partner.document_type = item['document_type']
-        partner.partner_name = item['partner_name']
-        partner.status = item['status']
-        partner.title = item['title']
-        partner.start = item['start']
-        partner.end = item['end']
-        partner.frs_total_frs_amt = item['frs_total_frs_amt']
-        partner.unicef_cash = item['unicef_cash']
-        partner.cso_contribution = item['cso_contribution']
-        partner.country_programme = item['country_programme']
-        partner.frs_earliest_start_date = item['frs_earliest_start_date']
-        partner.frs_latest_end_date = item['frs_latest_end_date']
-        partner.sections = item['sections']
-        partner.section_names = item['section_names']
-        partner.cp_outputs = item['cp_outputs']
-        partner.unicef_focal_points = item['unicef_focal_points']
-        partner.frs_total_intervention_amt = item['frs_total_intervention_amt']
-        partner.frs_total_outstanding_amt = item['frs_total_outstanding_amt']
-        partner.offices = item['offices']
-        partner.actual_amount = item['actual_amount']
-        partner.offices_names = item['offices_names']
-        partner.total_unicef_budget = item['total_unicef_budget']
-        partner.total_budget = item['total_budget']
-        partner.metadata = item['metadata']
-        partner.flagged_sections = item['flagged_sections']
-        partner.budget_currency = item['budget_currency']
-        partner.fr_currencies_are_consistent = item['fr_currencies_are_consistent']
-        partner.all_currencies_are_consistent = item['all_currencies_are_consistent']
-        partner.fr_currency = item['fr_currency']
-        partner.multi_curr_flag = item['multi_curr_flag']
-        partner.location_p_codes = item['location_p_codes']
-        partner.donors = item['donors']
-        partner.donor_codes = item['donor_codes']
-        partner.grants = item['grants']
-
-        partner.save()
-        # update_individual_intervention_data(partner)
-
-
-def update_individual_intervention_data(partner=None):
-    from internos.etools.models import Agreement, PartnerOrganization, PCA
-    interventions = PCA.objects.all()
-
-    for partner in interventions:
-        item = get_data('etools.unicef.org', '/api/v2/interventions/'+partner.etl_id+'/',
-                        'Token 36f06547a4b930c6608e503db49f1e45305351c2')
-
-        item = json.loads(item)
-        try:
-            partner.partner = PartnerOrganization.objects.get(etl_id=item['partner_id'])
-            partner.agreement = Agreement.objects.get(etl_id=item['agreement'])
-            partner.number = item['number']
-            partner.document_type = item['document_type']
-            partner.status = item['status']
-            partner.title = item['title']
-            partner.start = item['start']
-            partner.end = item['end']
-            # partner.planned_budget = item['planned_budget']
-            # partner.amendments = item['amendments']
-            # partner.result_links = item['result_links']
-            # partner.planned_visits_list = item['planned_visits']
-            # partner.locations = item['locations']
-            # partner.location_names = item['location_names']
-            # partner.location_p_codes = item['location_p_codes']
-            # partner.country_programme = item['country_programme']
-            # partner.sections = item['sections']
-            # partner.section_names = item['section_names']
-            # partner.unicef_focal_points = item['unicef_focal_points']
-            # partner.offices = item['offices']
-            # partner.flagged_sections = item['flagged_sections']
-            # partner.donors = item['donors']
-            # partner.donor_codes = item['donor_codes']
-            # partner.grants = item['grants']
-            partner.save()
-        except Exception as ex:
-            print(item)
-            print(ex.message)
-            continue
-
-
-def get_data(url, apifunc, token, protocol='HTTPS'):
-
-    # headers = {"Content-type": "application/json", "Authorization": token}
-    headers = {"Content-type": "application/json",
-               "Authorization": token,
-               "HTTP_REFERER": "etools.unicef.org",
-               # "Cookie": "tfUDK97TJSCkB4Nlm2wuMx67XNOYWpKT18BeV3RNoeq6nO7FXemAZypct369yF9I",
-               # "X-CSRFToken": 'tfUDK97TJSCkB4Nlm2wuMx67XNOYWpKT18BeV3RNoeq6nO7FXemAZypct369yF9I',
-               # "username": "achamseddine@unicef.org", "password": "Alouche21!"
-               }
-
-    if protocol == 'HTTPS':
-        conn = httplib.HTTPSConnection(url)
-    else:
-        conn = httplib.HTTPConnection(url)
-    conn.request('GET', apifunc, "", headers)
-    response = conn.getresponse()
-    result = response.read()
-
-    if not response.status == 200:
-        if response.status == 400 or response.status == 403:
-            raise Exception(str(response.status) + response.reason + response.read())
-        else:
-            raise Exception(str(response.status) + response.reason)
-
-    conn.close()
-
-    return result
 
 
 def link_partner_to_partnership():
@@ -201,3 +16,650 @@ def link_partner_to_partnership():
             pca.save()
         except Exception as ex:
             continue
+
+
+def get_partner_profile_details():
+    from django.db import connection
+    from .models import Engagement, Travel, TravelType, PCA
+
+    partners = {}
+    interventions = []
+    programmatic_visits = []
+    audits = []
+    micro_assessments = []
+    spot_checks = []
+    special_audits = []
+    now = datetime.datetime.now()
+
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT id, etl_id, name, short_name, description, partner_type, rating, vendor_number, comments, "
+        "shared_partner, total_ct_ytd, type_of_assessment, hact_min_requirements " 
+        "FROM public.etools_partnerorganization "
+        "WHERE hidden = false AND deleted_flag = false "
+        "ORDER BY name ")
+
+    rows = cursor.fetchall()
+    for row in rows:
+        partners[row[0]] = {
+            'db_id': row[0],
+            'id': row[1],
+            'name': row[2],
+            'vendor_number': row[7],
+            'short_name': row[3],
+            'description': row[4],
+            'partner_type': row[5],
+            'rating': row[6],
+            'comments': row[8],
+            'shared_partner': row[9],
+            'total_ct_ytd': row[10],
+            'type_of_assessment': row[11],
+            'hact_min_requirements': row[12],
+            'interventions': [],
+            'interventions_active': [],
+            'pds': [],
+            'pds_active': [],
+            'sffas': [],
+            'sffas_active': [],
+            'programmatic_visits': [],
+            'programmatic_visits_planned': [],
+            'programmatic_visits_submitted': [],
+            'programmatic_visits_approved': [],
+            'programmatic_visits_completed': [],
+            'programmatic_visits_canceled': [],
+            'programmatic_visits_rejected': [],
+            'audits': [],
+            'audits_completed': [],
+            'micro_assessments': [],
+            'spot_checks': [],
+            'spot_checks_completed': [],
+            'special_audits': [],
+        }
+
+    #  interventions
+    cursor.execute(
+        "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
+        "budget_currency, total_budget, offices_names, location_p_codes, status, "
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
+        "FROM public.etools_pca "
+        "WHERE date_part('year', end_date) = %s AND status <> %s "
+        "ORDER BY start", [now.year, PCA.CANCELLED])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['interventions'].append({
+                'etl_id': row[0],
+                'partner_id': row[1],
+                'number': row[2],
+                'start': row[3],
+                'end_date': row[4],
+                'document_type': row[5],
+                'total_unicef_budget': row[6],
+                'budget_currency': row[7],
+                'total_budget': row[8],
+                'offices_names': row[9],
+                'location_p_codes': row[10],
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
+            })
+
+    #  Active interventions
+    cursor.execute(
+        "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
+        "budget_currency, total_budget, offices_names, location_p_codes, status, "
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
+        "FROM public.etools_pca "
+        "WHERE date_part('year', end_date) = %s AND status = %s "
+        "ORDER BY start", [now.year, PCA.ACTIVE])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['interventions_active'].append({
+                'etl_id': row[0],
+                'partner_id': row[1],
+                'number': row[2],
+                'start': row[3],
+                'end_date': row[4],
+                'document_type': row[5],
+                'total_unicef_budget': row[6],
+                'budget_currency': row[7],
+                'total_budget': row[8],
+                'offices_names': row[9],
+                'location_p_codes': row[10],
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
+            })
+
+    #  PDs
+    cursor.execute(
+        "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
+        "budget_currency, total_budget, offices_names, location_p_codes, status, "
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
+        "FROM public.etools_pca "
+        "WHERE date_part('year', end_date) = %s AND status <> %s AND document_type = %s "
+        "ORDER BY start", [now.year, PCA.CANCELLED, PCA.PD])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['pds'].append({
+                'etl_id': row[0],
+                'partner_id': row[1],
+                'number': row[2],
+                'start': row[3],
+                'end_date': row[4],
+                'document_type': row[5],
+                'total_unicef_budget': row[6],
+                'budget_currency': row[7],
+                'total_budget': row[8],
+                'offices_names': row[9],
+                'location_p_codes': row[10],
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
+            })
+
+    #  Active PDs
+    cursor.execute(
+        "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
+        "budget_currency, total_budget, offices_names, location_p_codes, status, " 
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
+        "FROM public.etools_pca "
+        "WHERE date_part('year', end_date) = %s AND status = %s AND document_type = %s "
+        "ORDER BY start", [now.year, PCA.ACTIVE, PCA.PD])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['pds_active'].append({
+                'etl_id': row[0],
+                'partner_id': row[1],
+                'number': row[2],
+                'start': row[3],
+                'end_date': row[4],
+                'document_type': row[5],
+                'total_unicef_budget': row[6],
+                'budget_currency': row[7],
+                'total_budget': row[8],
+                'offices_names': row[9],
+                'location_p_codes': row[10],
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
+            })
+
+    # SFFAs
+    cursor.execute(
+        "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
+        "budget_currency, total_budget, offices_names, location_p_codes, status, " 
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
+        "FROM public.etools_pca "
+        "WHERE date_part('year', end_date) = %s AND status <> %s AND document_type = %s "
+        "ORDER BY start", [now.year, PCA.CANCELLED, PCA.SSFA])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['sffas'].append({
+                'etl_id': row[0],
+                'partner_id': row[1],
+                'number': row[2],
+                'start': row[3],
+                'end_date': row[4],
+                'document_type': row[5],
+                'total_unicef_budget': row[6],
+                'budget_currency': row[7],
+                'total_budget': row[8],
+                'offices_names': row[9],
+                'location_p_codes': row[10],
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
+            })
+
+    #  Active SFFAs
+    cursor.execute(
+        "SELECT etl_id, partner_id, number, start, end_date, document_type, total_unicef_budget, "
+        "budget_currency, total_budget, offices_names, location_p_codes, status, "
+        "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
+        "FROM public.etools_pca "
+        "WHERE date_part('year', end_date) = %s AND status = %s AND document_type = %s "
+        "ORDER BY start", [now.year, PCA.ACTIVE, PCA.SSFA])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['sffas_active'].append({
+                'etl_id': row[0],
+                'partner_id': row[1],
+                'number': row[2],
+                'start': row[3],
+                'end_date': row[4],
+                'document_type': row[5],
+                'total_unicef_budget': row[6],
+                'budget_currency': row[7],
+                'total_budget': row[8],
+                'offices_names': row[9],
+                'location_p_codes': row[10],
+                'status': row[11],
+                'section_names': row[12],
+                'donors': row[13],
+            })
+
+    #  programmatic_visits
+    cursor.execute(
+        "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets " 
+        "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
+        "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
+        "AND ta.travel_type = %s AND date_part('year', ta.date) = %s "
+        "AND (tl.status = %s OR tl.status = %s OR tl.status = %s OR tl.status = %s)"
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.PLANNED, Travel.SUBMITTED, Travel.APPROVED, Travel.COMPLETED])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['programmatic_visits'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'partnership_id': row[2],
+                'number': row[3],
+                'status': row[4],
+                'attachments_sets': row[5],
+            })
+
+    #  programmatic_visits_planned
+    cursor.execute(
+        "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets, "
+        "tl.reference_number, ta.date " 
+        "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
+        "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
+        "AND tl.status = %s "
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.PLANNED])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['programmatic_visits_planned'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'partnership_id': row[2],
+                'number': row[3],
+                'status': row[4],
+                'attachments_sets': row[5],
+                'reference_number': '{} - {}'.format(row[6], row[7]),
+            })
+
+    #  programmatic_visits_submitted
+    cursor.execute(
+        "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets, "
+        "tl.reference_number, ta.date " 
+        "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
+        "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
+        "AND tl.status = %s "
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.SUBMITTED])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['programmatic_visits_submitted'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'partnership_id': row[2],
+                'number': row[3],
+                'status': row[4],
+                'attachments_sets': row[5],
+                'reference_number': '{} - {}'.format(row[6], row[7]),
+            })
+
+    #  programmatic_visits_approved
+    cursor.execute(
+        "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets, "
+        "tl.reference_number, ta.date " 
+        "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
+        "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
+        "AND tl.status = %s "
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.APPROVED])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['programmatic_visits_approved'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'partnership_id': row[2],
+                'number': row[3],
+                'status': row[4],
+                'attachments_sets': row[5],
+                'reference_number': '{} - {}'.format(row[6], row[7]),
+            })
+
+    #  programmatic_visits_completed
+    cursor.execute(
+        "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets, "
+        "tl.reference_number, ta.date " 
+        "FROM public.etools_travelactivity ta "
+        "LEFT JOIN public.etools_pca pc ON ta.partnership_id = pc.id "
+        "LEFT JOIN public.etools_travel tl ON ta.travel_id = tl.id "
+        "WHERE ta.travel_type= %s AND date_part('year', tl.start_date) = %s "
+        "AND tl.status = %s "
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.COMPLETED])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['programmatic_visits_completed'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'partnership_id': row[2],
+                'number': row[3],
+                'status': row[4],
+                'attachments_sets': row[5],
+                'reference_number': '{} - {}'.format(row[6], row[7]),
+            })
+
+    #  programmatic_visits_canceled
+    cursor.execute(
+        "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets, "
+        "tl.reference_number, ta.date " 
+        "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
+        "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
+        "AND tl.status = %s "
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.CANCELLED])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['programmatic_visits_canceled'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'partnership_id': row[2],
+                'number': row[3],
+                'status': row[4],
+                'attachments_sets': row[5],
+                'reference_number': '{} - {}'.format(row[6], row[7]),
+            })
+
+    #  programmatic_visits_rejected
+    cursor.execute(
+        "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets, "
+        "tl.reference_number, ta.date " 
+        "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
+        "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
+        "AND tl.status = %s "
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.REJECTED])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['programmatic_visits_rejected'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'partnership_id': row[2],
+                'number': row[3],
+                'status': row[4],
+                'attachments_sets': row[5],
+                'reference_number': '{} - {}'.format(row[6], row[7]),
+            })
+
+    #  micro_assessments
+    cursor.execute(
+        "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
+        "FROM public.etools_engagement "
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_MICRO_ASSESSMENT, Engagement.CANCELLED, now.year])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['micro_assessments'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'findings_sets': row[2],
+                'internal_controls': row[3],
+                'displayed_name': row[4]
+            })
+
+    #  spot_checks
+    cursor.execute(
+        "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
+        "FROM public.etools_engagement "
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_SPOT_CHECK, Engagement.CANCELLED, now.year])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['spot_checks'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'findings_sets': row[2],
+                'internal_controls': row[3],
+                'displayed_name': row[4],
+                'action_points': get_action_points_details('audit_sc', row[0])
+            })
+
+    #  spot_checks
+    cursor.execute(
+        "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
+        "FROM public.etools_engagement "
+        "WHERE engagement_type = %s AND status = %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_SPOT_CHECK, Engagement.FINAL, now.year])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['spot_checks_completed'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'findings_sets': row[2],
+                'internal_controls': row[3],
+                'displayed_name': row[4],
+            })
+
+    #  audits
+    cursor.execute(
+        "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
+        "FROM public.etools_engagement "
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_AUDIT, Engagement.CANCELLED, now.year])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['audits'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'findings_sets': row[2],
+                'internal_controls': row[3],
+                'displayed_name': row[4]
+            })
+
+    #  audits
+    cursor.execute(
+        "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
+        "FROM public.etools_engagement "
+        "WHERE engagement_type = %s AND status = %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_AUDIT, Engagement.FINAL, now.year])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['audits_completed'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'findings_sets': row[2],
+                'internal_controls': row[3],
+                'displayed_name': row[4]
+            })
+
+    #  special_audits
+    cursor.execute(
+        "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
+        "FROM public.etools_engagement "
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
+        "ORDER BY start_date", [Engagement.TYPE_SPECIAL_AUDIT, Engagement.CANCELLED, now.year])
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] in partners:
+            partners[row[1]]['special_audits'].append({
+                'id': row[0],
+                'partner_id': row[1],
+                'findings_sets': row[2],
+                'internal_controls': row[3],
+                'displayed_name': row[4]
+            })
+
+    return partners
+
+
+def get_trip_details(data_set):
+    details = {'visits': [], 'locations': []}
+    for visit in data_set:
+        travel = visit.travel
+        for location in visit.locations.filter(point__isnull=False).iterator():
+            details['locations'].append({
+                'name': location.name,
+                'travel': travel.reference_number,
+                'travel_url': 'https://etools.unicef.org/t2f/edit-travel/{}'.format(travel.id),
+                'section': travel.section.name if travel.section else '',
+                'office': travel.office.name if travel.office else '',
+                'traveler_name': travel.traveler_name,
+                'latitude': location.point.y,
+                'longitude': location.point.x,
+            })
+        if travel.section and travel.office:
+            key = '{}-{}-{}'.format(visit.partner_id, travel.office_id, travel.section_id)
+            key2 = '{}-{}-{}'.format(0, travel.office_id, travel.section_id)
+            if key2 not in details:
+                details[key2] = 1
+            else:
+                details[key2] += 1
+
+            if key not in details:
+                details[key] = []
+            details[key].append({
+                'reference_number': travel.reference_number,
+                'purpose': travel.purpose,
+                'id': travel.id,
+                'traveler_name': travel.traveler_name,
+                'date': travel.start_date,
+            })
+
+        if travel.office_id and visit.partner_id:
+            key = '{}-{}-{}'.format(visit.partner_id, travel.office_id, 0)
+            if key not in details:
+                details[key] = 1
+            else:
+                details[key] += 1
+
+        if travel.section_id and visit.partner_id:
+            key = '{}-{}-{}'.format(visit.partner_id, 0, travel.section_id)
+            if key not in details:
+                details[key] = 1
+            else:
+                details[key] += 1
+
+        if travel.section:
+            key = '{}-{}-{}'.format(0, 0, travel.section_id)
+            if key not in details:
+                details[key] = 1
+            else:
+                details[key] += 1
+
+        if travel.office:
+            key = '{}-{}-{}'.format(0, travel.office_id, 0)
+            if key not in details:
+                details[key] = 1
+            else:
+                details[key] += 1
+
+        if visit.partner:
+            key = '{}-{}-{}'.format(visit.partner_id, 0, 0)
+            if key not in details:
+                details[key] = 1
+            else:
+                details[key] += 1
+
+        details['visits'].append(visit)
+
+    details['locations'] = json.dumps(details['locations'])
+
+    return details
+
+
+def get_action_points_details(related_module, related_module_id):
+    from internos.etools.models import ActionPoint
+
+    data = []
+    action_points = []
+    if related_module.startswith('audit'):
+        action_points = ActionPoint.objects.filter(related_module=related_module, engagement_id=related_module_id)
+
+    for point in action_points.iterator():
+        data.append({
+            'id': point.id,
+            'reference_number': point.reference_number,
+            'description': point.description,
+            'due_date': point.due_date,
+            'author_name': point.author_name,
+            'assigned_by_name': point.assigned_by_name,
+            'assigned_to_name': point.assigned_to_name,
+            'high_priority': point.high_priority,
+            'section_name': point.section.name if point.section else '',
+            'office_name': point.office.name if point.office else '',
+            'status': point.status,
+            'status_date': point.status_date,
+            'category_name': point.category_name
+        })
+
+    return data
+
+
+def get_interventions_details(data_set, all_locations=False, json_dumps=True):
+    from internos.users.models import Office
+
+    details = []
+    for intervention in data_set:
+        locations = intervention.locations
+        if not all_locations:
+            locations = locations.filter(point__isnull=False)
+        for location in locations.iterator():
+
+            separator = ', '
+            section_names = separator.join(intervention.section_names)
+            offices_names = []
+            for office in intervention.offices:
+                offices_names.append(Office.objects.get(id=int(office)).name)
+            offices_names = separator.join(offices_names)
+
+            details.append({
+                'name': location.name,
+                'latitude': location.point.y if location.point else 0,
+                'longitude': location.point.x if location.point else 0,
+                'title': intervention.title,
+                'document_type': intervention.document_type,
+                'partner_name': intervention.partner_name,
+                'status': intervention.status,
+                'number': intervention.number,
+                'start': intervention.start.strftime("%m/%d/%Y") if intervention.start else '',
+                'end_date': intervention.end_date.strftime("%m/%d/%Y") if intervention.end_date else '',
+                'total_budget': '{} {}'.format(intervention.total_budget, intervention.budget_currency),
+                'url': 'https://etools.unicef.org/pmp/interventions/{}'.format(intervention.etl_id),
+                'section_names': section_names,
+                'offices_names': offices_names,
+            })
+
+    if json_dumps:
+        details = json.dumps(details)
+
+    return details
