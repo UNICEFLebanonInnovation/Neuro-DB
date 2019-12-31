@@ -48,7 +48,7 @@ celery==4.0.2
 django-datatables-view==1.13.0
 django-mptt==0.8.7
 django-makemessages-xgettext==0.1.1
-djangorestframework==3.6.3
+djangorestframework==3.9.1
 markdown==2.6.6
 django-filter==0.13.0
 django-rest-swagger==2.1.2
