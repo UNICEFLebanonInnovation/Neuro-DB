@@ -89,6 +89,7 @@ class ReportView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
+        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
@@ -227,6 +228,7 @@ class ReportPartnerView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
+        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
@@ -372,6 +374,7 @@ class ReportMapView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
+        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
@@ -468,6 +471,7 @@ class ReportPartnerSectorView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
+        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
@@ -571,6 +575,7 @@ class ReportMapSectorView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
+        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
@@ -669,6 +674,7 @@ class ReportDisabilityView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
+        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
@@ -837,6 +843,7 @@ class ReportSectorView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
+        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
@@ -946,6 +953,7 @@ class ReportTagView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
+        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
@@ -1333,6 +1341,7 @@ class ExportViewSet(ListView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
+        last_month = 12
         month_name = last_month.strftime("%B")
 
         path = os.path.dirname(os.path.abspath(__file__))

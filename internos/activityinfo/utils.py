@@ -477,7 +477,7 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
     )
 
     last_month = int(datetime.datetime.now().strftime("%m"))
-    reporting_month = str(last_month - 1)
+    last_month = 12
 
     rows_data = {}
     cursor = connection.cursor()
@@ -953,6 +953,7 @@ def calculate_indicators_monthly_tags():
     today = datetime.date.today()
     first = today.replace(day=1)
     last_month = first - datetime.timedelta(days=1)
+    last_month = 12
     month = int(last_month.strftime("%m"))
     # month = int(last_month.strftime("%m")) - 1
     month_str = str(month)
@@ -1088,7 +1089,7 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
     )
 
     last_month = int(datetime.datetime.now().strftime("%m"))
-    reporting_month = str(last_month - 1)
+    last_month = 12
 
     rows_data = {}
     cursor = connection.cursor()
@@ -1194,6 +1195,7 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
     )
 
     last_month = int(datetime.datetime.now().strftime("%m"))
+    last_month = 12
 
     if report_type == 'live':
         report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
@@ -1209,7 +1211,6 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    reporting_month = str(last_month - 1)
 
     for indicator in indicators.iterator():
         for month in range(1, last_month):
@@ -1296,7 +1297,7 @@ def calculate_indicators_values_percentage_1(ai_db, report_type=None):
     )
 
     last_month = int(datetime.datetime.now().strftime("%m"))
-    reporting_month = str(last_month - 1)
+    last_month = 12
 
     rows_data = {}
     cursor = connection.cursor()
@@ -1424,7 +1425,7 @@ def calculate_indicators_values_percentage(ai_db, report_type=None):
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    reporting_month = str(last_month - 1)
+    last_month = 12
 
     for indicator in indicators.iterator():
         top_indicator = indicator.sub_indicators.all().first()
@@ -1543,7 +1544,7 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    reporting_month = str(last_month - 1)
+    last_month = 12
 
     for indicator in indicators.iterator():
         for month in range(1, last_month):
@@ -1657,7 +1658,7 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    reporting_month = str(last_month - 1)
+    last_month = 12
 
     for indicator in indicators.iterator():
         for month in range(1, last_month):
@@ -1760,7 +1761,7 @@ def calculate_individual_indicators_values_11(ai_db):
     partners = reports.values('partner_id').distinct().order_by('partner_id')
     governorates = reports.values('location_adminlevel_governorate_code').distinct()
     governorates1 = reports.values('location_adminlevel_governorate_code').distinct()
-    reporting_month = str(last_month - 1)
+    last_month = 12
 
     for indicator in indicators.iterator():
         qs_raw = ActivityReport.objects.raw(
@@ -1849,7 +1850,7 @@ def calculate_individual_indicators_values_1(ai_db):
     from internos.activityinfo.models import Indicator
 
     last_month = int(datetime.datetime.now().strftime("%m"))
-    reporting_month = str(last_month - 1)
+    last_month = 12
     ai_id = str(ai_db.ai_id)
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(ai_id__isnull=True).only(
         'ai_indicator',
@@ -1983,6 +1984,7 @@ def calculate_individual_indicators_values_2(ai_db):
     from internos.activityinfo.models import Indicator
 
     last_month = int(datetime.datetime.now().strftime("%m"))
+    last_month = 12
     ai_id = str(ai_db.ai_id)
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(ai_id__isnull=True).only(
         'ai_indicator',
