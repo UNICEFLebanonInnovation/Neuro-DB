@@ -89,10 +89,13 @@ class ReportView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -228,10 +231,13 @@ class ReportPartnerView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         selected_indicator = int(self.request.GET.get('indicator_id', 0))
         selected_governorate = self.request.GET.get('governorate', 0)
@@ -374,10 +380,13 @@ class ReportMapView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -471,10 +480,13 @@ class ReportPartnerSectorView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         selected_indicator = int(self.request.GET.get('indicator_id', 0))
         selected_governorate = self.request.GET.get('governorate', 0)
@@ -575,10 +587,13 @@ class ReportMapSectorView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -674,10 +689,13 @@ class ReportDisabilityView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -843,10 +861,13 @@ class ReportSectorView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -953,10 +974,13 @@ class ReportTagView(TemplateView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        last_month = 12
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
         tags = IndicatorTag.objects.all().order_by('sequence')
@@ -1341,8 +1365,10 @@ class ExportViewSet(ListView):
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        last_month = 12
         month_name = last_month.strftime("%B")
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         path = os.path.dirname(os.path.abspath(__file__))
         path2file = path+'/AIReports/'+str(ai_id)+'_ai_data.csv'
