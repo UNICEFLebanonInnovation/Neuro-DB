@@ -476,9 +476,6 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
         'cumulative_values_live',
     )
 
-    last_month = int(datetime.datetime.now().strftime("%m"))
-    last_month = 12
-
     rows_data = {}
     cursor = connection.cursor()
     cursor.execute(
@@ -953,10 +950,12 @@ def calculate_indicators_monthly_tags():
     today = datetime.date.today()
     first = today.replace(day=1)
     last_month = first - datetime.timedelta(days=1)
-    last_month = 12
     month = int(last_month.strftime("%m"))
     # month = int(last_month.strftime("%m")) - 1
     month_str = str(month)
+
+    month = 13
+    month_str = 'December'
 
     for indicator in indicators.iterator():
         sub_indicators = indicator.summation_sub_indicators.all().only(
@@ -1088,9 +1087,6 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
         'values_hpm',
     )
 
-    last_month = int(datetime.datetime.now().strftime("%m"))
-    last_month = 12
-
     rows_data = {}
     cursor = connection.cursor()
     cursor.execute(
@@ -1195,7 +1191,7 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
     )
 
     last_month = int(datetime.datetime.now().strftime("%m"))
-    last_month = 12
+    last_month = 13
 
     if report_type == 'live':
         report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
@@ -1296,9 +1292,6 @@ def calculate_indicators_values_percentage_1(ai_db, report_type=None):
         'values_partners_gov_live',
     )
 
-    last_month = int(datetime.datetime.now().strftime("%m"))
-    last_month = 12
-
     rows_data = {}
     cursor = connection.cursor()
     cursor.execute(
@@ -1390,126 +1383,6 @@ def calculate_indicators_values_percentage_1(ai_db, report_type=None):
             indicator.save()
 
 
-#  todo to remove
-def calculate_indicators_values_percentage(ai_db, report_type=None):
-    from internos.activityinfo.models import Indicator, ActivityReport,LiveActivityReport
-
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
-                                          calculated_indicator=True).only(
-        'denominator_indicator',
-        'numerator_indicator',
-        'denominator_multiplication',
-        'values',
-        'values_gov',
-        'values_partners',
-        'values_partners_gov',
-        'values_live',
-        'values_gov_live',
-        'values_partners_live',
-        'values_partners_gov_live',
-        'values_hpm',
-    )
-
-    last_month = int(datetime.datetime.now().strftime("%m"))
-
-    if report_type == 'live':
-        report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
-        last_month = last_month + 1
-    else:
-        report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
-    if ai_db.is_funded_by_unicef:
-        report = report.filter(funded_by='UNICEF')
-
-    report = report.only('partner_id', 'location_adminlevel_governorate_code')
-
-    partners = report.values('partner_id').distinct()
-    governorates = report.values('location_adminlevel_governorate_code').distinct()
-    governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    last_month = 12
-
-    for indicator in indicators.iterator():
-        top_indicator = indicator.sub_indicators.all().first()
-        reporting_level = top_indicator.activity.name
-        percentage = indicator.calculated_percentage
-
-        for month in range(1, last_month):
-            month = str(month)
-            values_month = 0
-            values_gov = {}
-            values_partners = {}
-            values_partners_gov = {}
-
-            try:
-                if report_type == 'live':
-                    denominator = top_indicator.values_live[month] if month in top_indicator.values_live else 0
-                else:
-                    denominator = top_indicator.values[month] if month in top_indicator.values else 0
-                if reporting_level == 'Municipality level':
-                    values_month = denominator * percentage / 100
-                elif reporting_level == 'Site level':
-                    values_month = denominator * percentage / 100
-            except Exception:
-                values_month = 0
-
-            for gov1 in governorates1:
-                key = "{}-{}".format(month, gov1['location_adminlevel_governorate_code'])
-                try:
-                    if report_type == 'live':
-                        denominator = top_indicator.values_gov_live[key] if key in top_indicator.values_gov_live else 0
-                    else:
-                        denominator = top_indicator.values_gov[key] if key in top_indicator.values_gov else 0
-                    if reporting_level == 'Municipality level':
-                        values_gov[key] = denominator * percentage / 100
-                    elif reporting_level == 'Site level':
-                        values_gov[key] = denominator * percentage / 100
-                except Exception:
-                    values_gov[key] = 0
-
-            for partner in partners:
-                key1 = "{}-{}".format(month, partner['partner_id'])
-
-                try:
-                    if report_type == 'live':
-                        denominator = top_indicator.values_partners_live[key1] if key1 in top_indicator.values_partners_live else 0
-                    else:
-                        denominator = top_indicator.values_partners[key1] if key1 in top_indicator.values_partners else 0
-                    if reporting_level == 'Municipality level':
-                        values_partners[key1] = denominator * percentage / 100
-                    elif reporting_level == 'Site level':
-                        values_partners[key1] = denominator * percentage / 100
-                except Exception:
-                    values_partners[key1] = 0
-
-                for gov in governorates:
-                    key2 = "{}-{}-{}".format(month, partner['partner_id'], gov['location_adminlevel_governorate_code'])
-                    try:
-                        if report_type == 'live':
-                            denominator = top_indicator.values_partners_gov_live[key2] if key2 in top_indicator.values_partners_gov_live else 0
-                        else:
-                            denominator = top_indicator.values_partners_gov[key2] if key2 in top_indicator.values_partners_gov else 0
-                        if reporting_level == 'Municipality level':
-                            values_partners_gov[key2] = denominator * percentage / 100
-                        elif reporting_level == 'Site level':
-                            values_partners_gov[key2] = denominator * percentage / 100
-                    except Exception:
-                        values_partners_gov[key2] = 0
-
-            if report_type == 'live':
-                indicator.values_live[month] = values_month
-                indicator.values_gov_live.update(values_gov)
-                indicator.values_partners_live.update(values_partners)
-                indicator.values_partners_gov_live.update(values_partners_gov)
-            else:
-                # if month == reporting_month:
-                #     indicator.values_hpm[reporting_month] = values_month
-                indicator.values[month] = values_month
-                indicator.values_gov.update(values_gov)
-                indicator.values_partners.update(values_partners)
-                indicator.values_partners_gov.update(values_partners_gov)
-
-        indicator.save()
-
-
 def calculate_master_indicators_values_percentage(ai_db, report_type=None):
     from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
 
@@ -1544,7 +1417,7 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    last_month = 12
+    last_month = 13
 
     for indicator in indicators.iterator():
         for month in range(1, last_month):
@@ -1658,7 +1531,7 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    last_month = 12
+    last_month = 13
 
     for indicator in indicators.iterator():
         for month in range(1, last_month):
@@ -1761,7 +1634,6 @@ def calculate_individual_indicators_values_11(ai_db):
     partners = reports.values('partner_id').distinct().order_by('partner_id')
     governorates = reports.values('location_adminlevel_governorate_code').distinct()
     governorates1 = reports.values('location_adminlevel_governorate_code').distinct()
-    last_month = 12
 
     for indicator in indicators.iterator():
         qs_raw = ActivityReport.objects.raw(
@@ -1850,7 +1722,8 @@ def calculate_individual_indicators_values_1(ai_db):
     from internos.activityinfo.models import Indicator
 
     last_month = int(datetime.datetime.now().strftime("%m"))
-    last_month = 12
+    last_month = 13
+
     ai_id = str(ai_db.ai_id)
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(ai_id__isnull=True).only(
         'ai_indicator',
@@ -1984,7 +1857,8 @@ def calculate_individual_indicators_values_2(ai_db):
     from internos.activityinfo.models import Indicator
 
     last_month = int(datetime.datetime.now().strftime("%m"))
-    last_month = 12
+    last_month = 13
+
     ai_id = str(ai_db.ai_id)
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(ai_id__isnull=True).only(
         'ai_indicator',
