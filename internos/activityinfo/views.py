@@ -1305,7 +1305,7 @@ class HPMExportViewSet(ListView):
             months.append((datetime.date(2008, i, 1).strftime('%B')))
 
         # filename = "HPM Table {} 2019.docx".format(months[month])
-        filename = "HPM Table December 2019.docx".format(months[month])
+        filename = "HPM Table December 2019.docx"
 
         # new_file = update_hpm_table_docx(self.queryset, month, months[month], filename)
         new_file = update_hpm_table_docx(self.queryset, month, 'December', filename)
