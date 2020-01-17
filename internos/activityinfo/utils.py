@@ -954,7 +954,7 @@ def calculate_indicators_monthly_tags():
     # month = int(last_month.strftime("%m")) - 1
     month_str = str(month)
 
-    month = 13
+    month = 12
     month_str = 'December'
 
     for indicator in indicators.iterator():
@@ -2219,6 +2219,7 @@ def update_indicators_hpm_data():
 
     month = datetime.datetime.now().strftime("%m")
     previous_month = str(int(month) - 1)
+    previous_month = 12
 
     indicators = Indicator.objects.filter(hpm_indicator=True).only(
         'values',
