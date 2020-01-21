@@ -57,16 +57,12 @@ DJANGO_APPS = [
 
     # Admin
     'internos.apps.SuitConfig',
-    #'jet',
-    #'jet.dashboard',
     'django.contrib.admin',
     'django.contrib.gis',
     'django_json_widget',
     'prettyjson',
     'leaflet',
     'mptt',
-    'newsletter',
-    'watson',
 ]
 THIRD_PARTY_APPS = [
     # 'django_mysql',
@@ -80,8 +76,6 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'rest_framework.authtoken',
-    'django_db_logger',
-    'tellme',
 ]
 
 # Apps specific for this project go here.
@@ -371,36 +365,3 @@ SWAGGER_SETTINGS = {
     'is_authenticated': True,
     'is_superuser': True,
 }
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(asctime)s %(message)s'
-        },
-    },
-    'handlers': {
-        'db': {
-            'level': 'INFO',
-            'class': 'django_db_logger.db_log_handler.DatabaseLogHandler'
-        },
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'level': 'INFO',
-            'handlers': ['db', 'console'],
-            'propagate': True,
-        },
-    }
-}
-
-
-
