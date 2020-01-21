@@ -93,6 +93,10 @@ class ReportView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
+        month_number = '12'
+        month = 12
+        month_name = 'December'
+
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         if ai_id:
@@ -230,6 +234,10 @@ class ReportPartnerView(TemplateView):
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         selected_indicator = int(self.request.GET.get('indicator_id', 0))
         selected_governorate = self.request.GET.get('governorate', 0)
@@ -376,6 +384,10 @@ class ReportMapView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
+        month_number = '12'
+        month = 12
+        month_name = 'December'
+
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
@@ -471,6 +483,10 @@ class ReportPartnerSectorView(TemplateView):
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         selected_indicator = int(self.request.GET.get('indicator_id', 0))
         selected_governorate = self.request.GET.get('governorate', 0)
@@ -575,6 +591,10 @@ class ReportMapSectorView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
+        month_number = '12'
+        month = 12
+        month_name = 'December'
+
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
@@ -672,6 +692,10 @@ class ReportDisabilityView(TemplateView):
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -841,6 +865,10 @@ class ReportSectorView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
+        month_number = '12'
+        month = 12
+        month_name = 'December'
+
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         if ai_id:
@@ -949,6 +977,10 @@ class ReportTagView(TemplateView):
         month_number = last_month.strftime("%m")
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
+
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
         tags = IndicatorTag.objects.all().order_by('sequence')
@@ -1226,13 +1258,15 @@ class HPMView(TemplateView):
         today = datetime.date.today()
         # first = today.replace(day=1)
         # last_month = first - datetime.timedelta(days=1)
-        day_number = int(today.strftime("%d"))
+        # day_number = int(today.strftime("%d"))
         # month = int(self.request.GET.get('month', last_month.strftime("%m")))
         month = int(self.request.GET.get('month', int(today.strftime("%m")) - 1))
+        month = 12
         # if day_number < 15:
         #     month = month - 1
 
         month_name = calendar.month_name[month]
+        month_name = 'December'
 
         months = []
         for i in range(1, 13):
@@ -1262,6 +1296,7 @@ class HPMExportViewSet(ListView):
         day_number = int(today.strftime("%d"))
         # month = int(self.request.GET.get('month', last_month.strftime("%m")))
         month = int(self.request.GET.get('month', int(today.strftime("%m")) - 1))
+        month = 12
         # if day_number < 15:
         #     month = month - 1
 
@@ -1269,9 +1304,11 @@ class HPMExportViewSet(ListView):
         for i in range(1, 13):
             months.append((datetime.date(2008, i, 1).strftime('%B')))
 
-        filename = "HPM Table {} 2019.docx".format(months[month])
+        # filename = "HPM Table {} 2019.docx".format(months[month])
+        filename = "HPM Table December 2019.docx"
 
-        new_file = update_hpm_table_docx(self.queryset, month, months[month], filename)
+        # new_file = update_hpm_table_docx(self.queryset, month, months[month], filename)
+        new_file = update_hpm_table_docx(self.queryset, month, 'December', filename)
 
         with open(new_file, 'rb') as fh:
             response = HttpResponse(
@@ -1334,6 +1371,9 @@ class ExportViewSet(ListView):
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
         month_name = last_month.strftime("%B")
+        month_number = '12'
+        month = 12
+        month_name = 'December'
 
         path = os.path.dirname(os.path.abspath(__file__))
         path2file = path+'/AIReports/'+str(ai_id)+'_ai_data.csv'

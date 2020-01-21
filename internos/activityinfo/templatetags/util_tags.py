@@ -451,6 +451,7 @@ def get_indicator_hpm_data(ai_id, month=None):
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
         last_month_number = int(last_month.strftime("%m"))
+        last_month_number = 12
 
         cumulative = 0
         if str(month) == str(last_month_number):
