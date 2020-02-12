@@ -29,6 +29,12 @@ class Database(models.Model):
         unique=True,
         verbose_name='ActivityInfo ID'
     )
+    db_id = models.CharField(max_length=254,
+                             null=True,
+                             blank=True,
+                             unique=True,
+                             verbose_name='ActivityInfo ID'
+                             )
     name = models.CharField(max_length=254)
     label = models.CharField(max_length=254, null=True, blank=True)
     username = models.CharField(max_length=254)
@@ -294,13 +300,16 @@ class Partner(models.Model):
 
 class Activity(models.Model):
 
-    ai_id = models.PositiveIntegerField(unique=True)
+    ai_id = models.PositiveIntegerField(null=True, blank=True)
+    ai_form_id = models.CharField(max_length=254, unique=True, null=True)
     database = models.ForeignKey(Database)
     none_ai_database = models.ForeignKey(Database, blank=True, null=True, related_name='+')
     name = models.CharField(max_length=1500)
-    location_type = models.CharField(max_length=254)
+    location_type = models.CharField(max_length=254,null=True)
     programme_document = models.ForeignKey('etools.pca', blank=True, null=True, related_name='+')
     programme_documents = models.ManyToManyField('etools.pca', blank=True, related_name='+')
+    category = models.CharField(max_length=254, blank=True, null=True)
+    ai_category_id = models.CharField(max_length=254,null=True,blank=True)
 
     def __unicode__(self):
         return self.name
