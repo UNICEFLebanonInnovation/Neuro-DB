@@ -10,6 +10,8 @@ from import_export.admin import ImportExportModelAdmin
 from django.contrib.postgres.fields import JSONField
 from django_json_widget.widgets import JSONEditorWidget
 from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.forms import widgets
+from django import forms
 from prettyjson import PrettyJSONWidget
 from import_export.widgets import *
 from .models import *
@@ -178,6 +180,7 @@ class ActivityAdmin(ImportExportModelAdmin):
     list_display = (
         'name',
         'database',
+        'category',
         'location_type',
         'programme_document'
     )
@@ -188,6 +191,7 @@ class ActivityAdmin(ImportExportModelAdmin):
         'ai_id',
         'name',
         'database',
+        'category',
         'location_type',
     )
 
@@ -279,10 +283,10 @@ class IndicatorResource(resources.ModelResource):
 
 class IndicatorAdmin(ImportExportModelAdmin):
     form = IndicatorForm
-    formset = IndicatorFormSet
+    # formset = IndicatorFormSet
     resource_class = IndicatorResource
     search_fields = (
-        'ai_id',
+        'ai_indicator',
         'name',
     )
     list_filter = (
@@ -320,15 +324,15 @@ class IndicatorAdmin(ImportExportModelAdmin):
     )
     list_display = (
         'id',
-        'ai_id',
+        'ai_indicator',
         'awp_code',
-        'name',
+        'label',
         'target',
         'target_sector',
         'units',
         'activity',
-        # 'category',
-        'sequence',
+        'category',
+        #'sequence',
         'master_indicator',
         'is_sector',
         'is_section',
@@ -343,7 +347,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'awp_code',
         'target',
         'target_sector',
-        'sequence',
+        #'sequence',
         'master_indicator',
         'is_sector',
         'is_section',
@@ -360,7 +364,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         ('Basic infos', {
             'classes': ('suit-tab', 'suit-tab-general',),
             'fields': [
-                'ai_id',
+                'ai_indicator',
                 'awp_code',
                 'name',
                 'label',
@@ -741,6 +745,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'ai_country_id'
     )
     actions = [
+        're_formatting_json',
         'import_basic_data',
         'update_basic_data',
         'import_only_new',
@@ -771,6 +776,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             'classes': ('suit-tab', 'suit-tab-general',),
             'fields': [
                 'ai_id',
+                'db_id',
                 'name',
                 'label',
                 'username',
@@ -805,11 +811,20 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             ]
         }),
     ]
-
     suit_form_tabs = (
                       ('general', 'Database'),
                       ('activities', 'Activities'),
                     )
+
+    def re_formatting_json(self, request, queryset):
+        from .utilities import import_data_v4
+        objects = 0
+        for db in queryset:
+            objects += import_data_v4(db)
+        self.message_user(
+            request,
+            "{} objects created.".format(objects)
+        )
 
     def import_basic_data(self, request, queryset):
         objects = 0
