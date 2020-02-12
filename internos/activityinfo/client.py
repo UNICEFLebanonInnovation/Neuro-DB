@@ -32,7 +32,7 @@ class ActivityInfoClient(object):
     def __init__(self,
                  username='',
                  password='',
-                 base_url='https://www.activityinfo.org/'):
+                 base_url='https://v4.activityinfo.org/'):
         self.base_url = base_url
         if username and password:
             self.auth = HTTPBasicAuth(username, password)
@@ -86,6 +86,12 @@ class ActivityInfoClient(object):
 
     def get_databases(self):
         return self.make_request('resources/databases').json()
+
+    def get_databases_v4(self):
+        return self.make_request('resources/databases/ck2yrizmo2').json()
+
+    def get_database_indicators_v4(self,form_id):
+        return self.make_request('/resources/form/{}/schema'.format(form_id)).json()
 
     def get_database(self, db_id):
         return self.make_request('resources/database/{}/schema'.format(db_id)).json()
@@ -200,7 +206,7 @@ def main():
         else:
             response = client.get_sites()
 
-        print response
+        print (response)
 
     except Exception as exp:
-        print str(exp)
+        print (str(exp))
