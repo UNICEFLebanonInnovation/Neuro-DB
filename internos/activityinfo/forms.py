@@ -1,9 +1,8 @@
 from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.contrib.admin.widgets import FilteredSelectMultiple, RelatedFieldWidgetWrapper
-from .models import Database, Indicator, IndicatorTag
-
-
+from .models import Database, Indicator, IndicatorTag, Activity
+from django.forms import widgets
 class DatabaseForm(forms.ModelForm):
 
     class Meta:
@@ -19,6 +18,7 @@ class IndicatorFormSet(BaseInlineFormSet):
 
 
 class IndicatorForm(forms.ModelForm):
+
     tag_gender = forms.ModelChoiceField(
         required=False,
         queryset=IndicatorTag.objects.filter(type='gender')
@@ -55,6 +55,11 @@ class IndicatorForm(forms.ModelForm):
         required=False,
         queryset=Indicator.objects.none(),
         widget=FilteredSelectMultiple('indicator', is_stacked=False)
+    )
+    activity = forms.ModelMultipleChoiceField(
+        required=False,
+        queryset=Activity.objects.filter(database__reporting_year__current=True)
+
     )
     # denominator_summation = forms.ModelMultipleChoiceField(
     #     required=False,
