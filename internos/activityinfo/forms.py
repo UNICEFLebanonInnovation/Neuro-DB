@@ -3,6 +3,8 @@ from django.forms.models import BaseInlineFormSet
 from django.contrib.admin.widgets import FilteredSelectMultiple, RelatedFieldWidgetWrapper
 from .models import Database, Indicator, IndicatorTag, Activity
 from django.forms import widgets
+
+
 class DatabaseForm(forms.ModelForm):
 
     class Meta:
@@ -58,8 +60,8 @@ class IndicatorForm(forms.ModelForm):
     )
     activity = forms.ModelMultipleChoiceField(
         required=False,
-        queryset=Activity.objects.filter(database__reporting_year__current=True)
-
+        queryset=Activity.objects.filter(database__reporting_year__current=True),
+        widget=widgets.Select(attrs={'style': 'height:200px;', 'size': '100px;'})
     )
     # denominator_summation = forms.ModelMultipleChoiceField(
     #     required=False,
