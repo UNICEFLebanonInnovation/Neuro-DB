@@ -97,7 +97,7 @@ class IndicatorForm(forms.ModelForm):
         self.fields['numerator_indicator'].queryset = queryset
         self.fields['sub_indicators'].queryset = queryset
         self.fields['summation_sub_indicators'].queryset = queryset
-        self.fields['activity'].queryset = Activity.objects.filter(database_id=self.instance.activity.database_id)
+        self.fields['activity'].queryset = Activity.objects.filter(database__reporting_year__current=True)
         # self.fields['denominator_summation'].queryset = queryset
         # self.fields['numerator_summation'].queryset = queryset
 
