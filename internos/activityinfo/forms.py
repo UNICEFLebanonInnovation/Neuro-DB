@@ -58,7 +58,7 @@ class IndicatorForm(forms.ModelForm):
         queryset=Indicator.objects.none(),
         widget=FilteredSelectMultiple('indicator', is_stacked=False)
     )
-    activity = forms.ChoiceField(
+    activity = forms.ModelChoiceField(
         required=False,
         queryset=Activity.objects.filter(database__reporting_year__current=True),
         # queryset=Activity.objects.none(),
