@@ -12,9 +12,8 @@
                                         <i class="pe-7s-keypad icon-gradient bg-mean-fruit">
                                         </i>
                                     </div>
-                                    <div> UNICEF Programmes
-                                        <div class="page-title-subheading">Select the ActivityInfo database section
-                                        </div>
+                                    <div><b>UNICEF Programmes</b>
+                                        <div class="page-title-subheading">Select one of the below dashboards to view results reported on ActivityInfo</div>
                                     </div>
                                 </div>
                                 <div class="page-title-actions">
@@ -29,7 +28,7 @@
               <div class="widget-content-wrapper">
                   <div class="widget-content-left">
                       <div class="widget-heading">
-                        <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a>
+                        <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="app-sidebar__heading">{{ db.label }}</a>
                       </div>
                       <div class="widget-subheading">
 <!--                        <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring">-->
