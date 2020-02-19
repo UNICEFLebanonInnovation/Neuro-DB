@@ -9,12 +9,11 @@ from django.conf import settings
 
 def r_script_command_line(script_name, ai_db):
     command = 'Rscript'
-    # path = os.path.dirname(os.path.abspath(__file__))
+   # path = os.path.dirname(os.path.abspath(__file__))
     path = os.path.dirname(__file__)
     path2script = os.path.join(path, 'RScripts')
     path2script = os.path.join(path2script, script_name)
     print(path2script)
-
     cmd = [command, path2script, ai_db.username, ai_db.password, str(ai_db.ai_id)]
 
     try:
@@ -60,8 +59,8 @@ def read_data_from_file(ai_id, forced=False, report_type=None):
 
 def import_data_via_r_script(ai_db, report_type=None):
     r_script_command_line('ai_generate_excel.R', ai_db)
-    total = read_data_from_file(ai_db.ai_id, True, report_type)
-    return total
+    # total = read_data_from_file(ai_db.ai_id, True, report_type)
+    # return total
 
 
 def get_awp_code(name):
@@ -121,64 +120,62 @@ def add_rows(ai_id=None, model=None):
         for row in reader:
             ctr += 1
             indicator_value = 0
-            if 'indicator.value' in row:
-                indicator_value = row['indicator.value']
+            if 'Value' in row:
+                indicator_value = row['Value']
 
             try:
                 indicator_value = float(indicator_value)
             except Exception:
                 indicator_value = 0
 
-            funded_by = row['Funded_by'] if 'Funded_by' in row else ''
-            partner_label = unicode(row['partner.label'], errors='replace') if 'partner.label' in row else ''
+            funded_by = row['funded_by.funded_by'] if 'funded_by.funded_by' in row else ''
+            partner_label = unicode(row['partner.name'], errors='replace') if 'partner.name' in row else ''
 
             if partner_label == 'UNICEF':
                 funded_by = 'UNICEF'
 
             model.create(
                 month=month,
-                database=row['database'],
+                database=row['Folder'],
+                database_id=ai_id,
                 site_id=row['site.id'],
-                report_id=row['report.id'],
-                database_id=row['database.id'],
-                partner_id=row['partner.id'],
-                indicator_id=clean_string(row['indicator.id'], 'i'),
-                indicator_name=unicode(row['indicator.name'], errors='replace'),
-                indicator_awp_code=get_awp_code(unicode(row['indicator.name'], errors='replace')),
-                month_name=month_name,
+                report_id=row['FormId'],
+                indicator_id=clean_string(row['Quantity.Field.ID'], 'i'),
+                indicator_name=unicode(row['Quantity.Field'], errors='replace'),
+                indicator_awp_code=get_awp_code(unicode(row['Quantity.Field'], errors='replace')),
+                month_name=row['month'] if 'month' in row else '',
                 partner_label=partner_label,
-                location_adminlevel_caza_code=row[
-                    'location.adminlevel.caza.code'] if 'location.adminlevel.caza.code' in row else '',
-                location_adminlevel_caza=unicode(row['location.adminlevel.caza'],
-                                                 errors='replace') if 'location.adminlevel.caza' in row else '',
-                partner_description=unicode(row['partner.description'],
-                                            errors='replace') if 'partner.description' in row else '',
-                form=unicode(row['form'], errors='replace') if 'form' in row else '',
-                governorate=row['Governorate'] if 'Governorate' in row else '',
-                location_longitude=row['location.longitude'] if 'location.longitude' in row else '',
-                form_category=row['form.category'] if 'form.category' in row else '',
-                indicator_units=row['indicator.units'] if 'indicator.units' in row else '',
-                project_description=unicode(row['project.description'],
-                                            errors='replace') if 'project.description' in row else '',
-                location_adminlevel_cadastral_area_code=row[
-                    'location.adminlevel.cadastral_area.code'] if 'location.adminlevel.cadastral_area.code' in row else '',
-                location_name=unicode(row['location.name'], errors='replace') if 'location.name' in row else '',
-                project_label=unicode(row['project.label'], errors='replace') if 'project.label' in row else '',
-                location_adminlevel_governorate_code=row[
-                    'location.adminlevel.governorate.code'] if 'location.adminlevel.governorate.code' in row else '',
-                end_date=row['end_date'] if 'end_date' in row else '',
-                lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
-                indicator_value=indicator_value,
+                location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
+                location_adminlevel_caza=unicode(row['caza.name'], errors='replace') if 'caza.name' in row else '',
+                form=unicode(row['Form'], errors='replace') if 'Form' in row else '',
+                location_adminlevel_cadastral_area_code=row['cadastral_area.code'] if 'cadastral_area.code' in row else'',
+                location_adminlevel_cadastral_area=unicode(row['cadastral_area.name'],  errors='replace') if 'cadastral_area.name' in row else '',
+                governorate=row['governorate'] if 'governorate' in row else '',
+                location_adminlevel_governorate_code=row['governorate.code'] if 'governorate.code' in row else '',
+                partner_description=unicode(row['partner.partner_full_name'],
+                                            errors='replace') if 'partner.partner_full_name' in row else '',
+                project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['start_date'] == 'NA' else None,
+                project_end_date=row['projects.end_date'] if 'projects.end_date' in row else '',
+                project_label=unicode(row['projects.project_code'], errors='replace') if 'projects.project_code' in row else '',
+                project_description=unicode(row['projects.project_name'], errors='replace') if 'projects.project_name' in row else '',
                 funded_by=funded_by,
-                location_latitude=row['location.latitude'] if 'location.latitude' in row else '',
-                indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
+                indicator_value=indicator_value,
+                site_type=row['site_type'] if 'site_type' in row else '',
+                location_longitude=row[
+                    'ai_allsites.geographic_location.longitude'] if 'ai_allsites.geographic_location.longitude' in row else '',
+                location_latitude=row[
+                    'ai_allsites.geographic_location.latitude'] if 'ai_allsites.geographic_location.latitude' in row else '',
                 location_alternate_name=row[
-                    'location.alternate_name'] if 'location.alternate_name' in row else '',
-                start_date=row['start_date'] if 'start_date' in row and not row['start_date'] == 'NA' else None,
-                location_adminlevel_cadastral_area=unicode(row['location.adminlevel.cadastral_area'],
-                                                           errors='replace') if 'location.adminlevel.cadastral_area' in row else '',
-                location_adminlevel_governorate=unicode(row[
-                    'location.adminlevel.governorate'], errors='replace') if 'location.adminlevel.governorate' in row else '',
+                    'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
+
+                location_name=unicode(row['ai_allsites.name'], errors='replace') if 'ai_allsites.name' in row else '',
+                partner_id=row['partner.id'] if 'partner_id' in row else '',
+                location_adminlevel_governorate=unicode(row['governorate.name'],
+                                                        errors='replace') if 'governorate.name' in row else '',
+                # form_category=row['form.category'] if 'form.category' in row else '',
+                # indicator_units=row['indicator.units'] if 'indicator.units' in row else '',
+                # lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
+                # indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
             )
     return ctr
 
@@ -479,8 +476,8 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
     rows_data = {}
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT distinct ai.id, ai.ai_indicator, aa.id, aa.name, ai.values, ai.values_live, " 
-        "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, " 
+        "SELECT distinct ai.id, ai.ai_indicator, aa.id, aa.name, ai.values, ai.values_live, "
+        "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, "
         "ai.values_partners_gov, ai.values_partners_gov_live "
         "FROM public.activityinfo_indicator ai, public.activityinfo_activity aa "
         "WHERE ai.activity_id = aa.id AND aa.database_id = %s",
@@ -1091,11 +1088,11 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
     cursor = connection.cursor()
     cursor.execute(
         "SELECT distinct a1.id, a1.ai_indicator, ai.ai_indicator, ai.id, ai.values, ai.values_live, "
-        "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, ai.values_partners_gov, " 
+        "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, ai.values_partners_gov, "
         "ai.values_partners_gov_live, a1.master_indicator, a1.master_indicator_sub "
-        "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, " 
-        "public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator ai " 
-        "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id " 
+        "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, "
+        "public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator ai "
+        "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id "
         "AND aa.database_id = %s AND (a1.master_indicator = true or a1.master_indicator_sub = true)",
         [ai_db.id])
 
@@ -1300,7 +1297,7 @@ def calculate_indicators_values_percentage_1(ai_db, report_type=None):
         "ai.values_partners_gov_live "
         "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, "
         "public.activityinfo_indicator_sub_indicators ais, public.activityinfo_indicator ai "
-        "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id " 
+        "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id "
         "AND aa.database_id = %s AND a1.calculated_indicator = true",
         [ai_db.id])
 
@@ -1996,26 +1993,26 @@ def calculate_indicators_status(database):
         over_target = days_passed_per + 10
         if cumulative_per < off_track:
             indicator.status = 'Off Track'
-            indicator.status_color = '#FF0000'
+            indicator.status_color = 'badge-danger'
         elif cumulative_per > over_target:
             indicator.status = 'Over Track'
-            indicator.status_color = '#FFA500'
+            indicator.status_color = 'badge-warning'
         else:
             indicator.status = 'On Track'
-            indicator.status_color = '#008000'
+            indicator.status_color = 'badge-success'
 
         cumulative_per = indicator.cumulative_per_sector
         off_track = days_passed_per - 10
         over_target = days_passed_per + 10
         if cumulative_per < off_track:
             indicator.status_sector = 'Off Track'
-            indicator.status_color_sector = '#FF0000'
+            indicator.status_color_sector = 'badge-danger'
         elif cumulative_per > over_target:
             indicator.status_sector = 'Over Track'
-            indicator.status_color_sector = '#FFA500'
+            indicator.status_color_sector = 'badge-warning'
         else:
             indicator.status_sector = 'On Track'
-            indicator.status_color_sector = '#008000'
+            indicator.status_color_sector = 'badge-success'
 
         indicator.save()
 

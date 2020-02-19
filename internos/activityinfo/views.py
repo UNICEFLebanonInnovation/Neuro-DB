@@ -193,9 +193,11 @@ class ReportView(TemplateView):
         ).distinct()
 
         months = []
-        for i in range(1, 13):
+        for i in range(1, 4):
             months.append((i, datetime.date(2008, i, 1).strftime('%B')))
-
+        range_months = []
+        for i in range(1, 4):
+            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         return {
             'selected_partner': selected_partner,
             'selected_partners': selected_partners,
@@ -209,6 +211,7 @@ class ReportView(TemplateView):
             'month_name': month_name,
             'month_number': month_number,
             'months': months,
+            'range_months': range_months,
             'database': database,
             'partners': partners,
             'governorates': governorates,
@@ -934,6 +937,7 @@ class ReportSectorView(TemplateView):
         for i in range(1, 13):
             months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
+
         return {
             'selected_partner': selected_partner,
             'selected_partners': selected_partners,
@@ -953,6 +957,7 @@ class ReportSectorView(TemplateView):
             'master_indicators': master_indicators,
             'partner_info': partner_info,
             'selected_filter': selected_filter,
+
         }
 
 

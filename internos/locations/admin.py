@@ -1,7 +1,8 @@
 from celery import chain
 from django import forms
 from django.contrib import admin as basic_admin
-from django.contrib.gis import admin
+from django.contrib import admin
+#from django.contrib.gis import admin
 from django.forms import Textarea
 from leaflet.admin import LeafletGeoAdmin
 from mptt.admin import MPTTModelAdmin
@@ -60,15 +61,15 @@ class LocationAdmin(LeafletGeoAdmin, MPTTModelAdmin):
         'name',
         'type',
         'p_code',
-        'geom',
-        'point',
+        # 'geom',
+        # 'point',
     ]
     list_display = (
         'name',
         'type',
         'p_code',
-        'point',
-        'point_lat_long'
+        # 'point',
+        # 'point_lat_long'
         # 'is_active',
     )
     list_filter = (
