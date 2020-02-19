@@ -1,75 +1,56 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load staticfiles i18n %}
 
-{% block project_title %}Neuro-DB{% endblock %}
+{% block project_title %}{% endblock %}
 
 {% block content %}
+<div class="app-main__inner">
+   <div class="app-page-title">
+                            <div class="page-title-wrapper">
+                                <div class="page-title-heading">
+                                    <div class="page-title-icon">
+                                        <i class="pe-7s-keypad icon-gradient bg-mean-fruit">
+                                        </i>
+                                    </div>
+                                    <div> UNICEF Programmes
+                                        <div class="page-title-subheading">Select the ActivityInfo database section
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="page-title-actions">
 
-<div class="row">
-    <div class="x_panel">
-      <div class="x_title">
-        <h2 class="modal-title"><strong>Select the ActivityInfo database section</strong></h2>
-        <div class="clearfix"></div>
-      </div>
-      <div class="x_content modal-body">
-        {% for db in ai_databases %}
-        <div class="col-sm-6 col-md-4" style="width: 250px;">
-          <div class="thumbnail" style="height: 160px;">
-            <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">
-            {% if db.section.logo %}
-            <img alt="100%x200" src="{% static db.section.logo %}" data-holder-rendered="true" style="height: 120px; width: 120px; display: block;" />
-            {% else %}
-            <img alt="100%x200" src="{% static 'images/unicef-logo.png' %}" data-holder-rendered="true" style="height: 120px; width: 180px; display: block;" />
-            {% endif %}
-            </a>
-            <div class="caption" style="padding: 0px;">
-              <h4 style="color: #0089d2;">
-                <i class="fa fa-angle-right" style="padding-left: 10px; padding-right: 5px; font-size: 20px; font-weight: bold;"></i>
-                <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a>
-                <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring">
-                  <i class="fa fa-rss faa-flash animated" style="font-size: 15px; color: #d23900;"></i>
-                </a>
-              </h4>
-            </div>
+                                </div>
+                            </div>
+                        </div>
+  <div class="row">
+    {% for db in ai_databases %}
+      <div class="col-md-6 col-xl-4">
+          <div class="card mb-3 widget-content">
+              <div class="widget-content-wrapper">
+                  <div class="widget-content-left">
+                      <div class="widget-heading">
+                        <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a>
+                      </div>
+                      <div class="widget-subheading">
+<!--                        <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring">-->
+<!--                         <i class="fa fa-rss faa-flash animated" style="font-size: 15px; color: #d23900;"></i>-->
+                       <!--</a>-->
+                      </div>
+                  </div>
+                  <div class="widget-content-right">
+                       <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">
+                        {% if db.section.logo %}
+                        <img alt="100%x200" src="{% static db.section.logo %}" data-holder-rendered="true" style="height: 120px; width: 120px; display: block;" />
+                        {% else %}
+                        <img alt="100%x200" src="{% static 'images/unicef-logo.png' %}" data-holder-rendered="true" style="height: 120px; width: 180px; display: block;" />
+                        {% endif %}
+                        </a>
+                  </div>
+              </div>
           </div>
-        </div>
-        {% endfor %}
       </div>
-    </div>
+     {% endfor %}
+  </div>
 </div>
 
-<!-- Modal -->
-<!--<div class="modal fade in" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="display: block;">-->
-  <!--<div class="modal-dialog modal-dialog-centered" role="document" style="width: 1100px;">-->
-    <!--<div class="modal-content">-->
-      <!--<div class="modal-header">-->
-        <!--<h3 class="modal-title" id="exampleModalCenterTitle">Select the ActivityInfo database section</h3>-->
-      <!--</div>-->
-      <!--<div class="modal-body" style="height: 600px; overflow: scroll;">-->
-<!---->
-        <!--{% for db in databases %}-->
-        <!--<div class="col-sm-6 col-md-4" style="width: 250px;">-->
-          <!--<div class="thumbnail" style="height: 160px;">-->
-            <!--<a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">-->
-            <!--{% if db.section.logo %}-->
-            <!--<img alt="100%x200" src="{% static db.section.logo %}" data-holder-rendered="true" style="height: 120px; width: 120px; display: block;" />-->
-            <!--{% else %}-->
-            <!--<img alt="100%x200" src="{% static 'images/unicef-logo.png' %}" data-holder-rendered="true" style="height: 120px; width: 180px; display: block;" />-->
-            <!--{% endif %}-->
-            <!--</a>-->
-            <!--<div class="caption" style="padding: 0px;">-->
-              <!--<h4 style="color: #0089d2;">-->
-                <!--<i class="fa fa-angle-right" style="padding-left: 10px; padding-right: 5px; font-size: 20px; font-weight: bold;"></i>-->
-                <!--<a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a>-->
-              <!--</h4>-->
-            <!--</div>-->
-          <!--</div>-->
-        <!--</div>-->
-        <!--{% endfor %}-->
-      <!--</div>-->
-    <!--</div>-->
-  <!--</div>-->
-<!--</div>-->
-
-<!--<div class="modal-backdrop fade in"></div>-->
 {% endblock content %}

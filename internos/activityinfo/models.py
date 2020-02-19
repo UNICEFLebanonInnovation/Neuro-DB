@@ -315,6 +315,7 @@ class Activity(models.Model):
         return self.name
 
     class Meta:
+        ordering = ['name']
         verbose_name_plural = 'activities'
 
 
@@ -521,10 +522,13 @@ class ActivityReport(TimeStampedModel):
     partner_label = models.CharField(max_length=250, blank=True, null=True)
     project_description = models.CharField(max_length=250, blank=True, null=True)
     project_label = models.CharField(max_length=250, blank=True, null=True)
+    project_start_date = models.DateField(blank=True, null=True)
+    project_end_date = models.DateField(blank=True, null=True)
     lcrp_appeal = models.CharField(max_length=250, blank=True, null=True)
     funded_by = models.CharField(max_length=250, blank=True, null=True)
     report_id = models.CharField(max_length=250, blank=True, null=True)
     site_id = models.CharField(max_length=250, blank=True, null=True)
+    site_type = models.CharField(max_length=250, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     outreach_platform = models.CharField(max_length=250, blank=True, null=True)
     database_id = models.CharField(max_length=250, blank=True, null=True)

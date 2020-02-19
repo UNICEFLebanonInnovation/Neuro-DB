@@ -61,8 +61,8 @@ def calculate_indicators_cumulative_results(ai_db):
     rows_data = {}
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT distinct ai.id, ai.ai_indicator, aa.id, aa.name, ai.values_sector, " 
-        "ai.values_sites_sector, ai.values_partners_sector, " 
+        "SELECT distinct ai.id, ai.ai_indicator, aa.id, aa.name, ai.values_sector, "
+        "ai.values_sites_sector, ai.values_partners_sector, "
         "ai.values_partners_sites_sector "
         "FROM public.activityinfo_indicator ai, public.activityinfo_activity aa "
         "WHERE ai.activity_id = aa.id AND aa.database_id = %s",
@@ -255,11 +255,11 @@ def calculate_master_indicators_values(ai_db, sub_indicators=False):
     cursor = connection.cursor()
     cursor.execute(
         "SELECT distinct a1.id, a1.ai_indicator, ai.ai_indicator, ai.id, ai.values_sector, "
-        "ai.values_sites_sector, ai.values_partners_sector, ai.values_partners_sites_sector, " 
+        "ai.values_sites_sector, ai.values_partners_sector, ai.values_partners_sites_sector, "
         "a1.master_indicator, a1.master_indicator_sub "
-        "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, " 
-        "public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator ai " 
-        "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id " 
+        "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, "
+        "public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator ai "
+        "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id "
         "AND aa.database_id = %s AND (a1.master_indicator = true or a1.master_indicator_sub = true)",
         [ai_db.id])
 
@@ -339,7 +339,7 @@ def calculate_indicators_values_percentage(ai_db):
         "ai.values_sites_sector, ai.values_partners_sector, ai.values_partners_sites_sector "
         "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, "
         "public.activityinfo_indicator_sub_indicators ais, public.activityinfo_indicator ai "
-        "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id " 
+        "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id "
         "AND aa.database_id = %s AND a1.calculated_indicator = true",
         [ai_db.id])
 
@@ -677,14 +677,14 @@ def calculate_indicators_status(database):
         off_track = days_passed_per - 10
         over_target = days_passed_per + 10
         if cumulative_per < off_track:
-            indicator.status_sector = 'Off Track'
-            indicator.status_color_sector = '#FF0000'
+            indicator.status = 'Off Track'
+            indicator.status_color = 'badge-danger'
         elif cumulative_per > over_target:
-            indicator.status_sector = 'Over Track'
-            indicator.status_color_sector = '#FFA500'
+            indicator.status = 'Over Track'
+            indicator.status_color = 'badge-warning'
         else:
-            indicator.status_sector = 'On Track'
-            indicator.status_color_sector = '#008000'
+            indicator.status = 'On Track'
+            indicator.status_color = 'badge-success'
 
         indicator.save()
 
