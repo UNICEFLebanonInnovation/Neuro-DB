@@ -100,14 +100,23 @@
                 <div tabindex="-1" class="dropdown-divider"></div>
               </div>
             </div>
-            <div class="search-wrapper d-inline-block">
+            <!--<div class="search-wrapper d-inline-block">-->
+                        <!--<div class="input-holder">-->
+                            <!--<input type="text" class="search-input" id="search-input" placeholder="Type to search">-->
+                            <!--<button class="search-icon"><span></span></button>-->
+                        <!--</div>-->
+                        <!--<button class="close"></button>-->
+                    <!--</div>-->
+          </div>
+
+
+            <div class="search-wrapper d-inline-block" style="position: absolute;">
                         <div class="input-holder">
                             <input type="text" class="search-input" id="search-input" placeholder="Type to search">
                             <button class="search-icon"><span></span></button>
                         </div>
-                        <button class="close"></button>
+                        <button class="close" id="close-search"></button>
                     </div>
-          </div>
 
           <div class="table-responsive" style="position: relative;overflow: scroll;height: 800px;">
             <table class="mb-0 table table-striped table-hover" id="exportheader"
@@ -147,10 +156,6 @@
                   {% if item.master_indicator %}
                   <td colspan="1" class="w-500">
                     {{ item.name }}
-                    {% if item.explication %}
-                    <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
-                      data-placement="top" title="{{ item.explication }}"></i>
-                    {% endif %}
                     <a href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
                       target="_blank">
                       <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
@@ -160,10 +165,6 @@
 <!--                  <td class="w-100">{{ item.ai_id }}</td>-->
                   <td class="w-500">
                     {{ item.name }}
-                    {% if item.explication %}
-                    <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
-                      data-placement="top" title="{{ item.explication }}"></i>
-                    {% endif %}
                     <a href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
                       target="_blank">
                       <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
@@ -547,13 +548,13 @@
   $(document).ready(function () {
 
   $('#filter_partners').multiselect({
-    buttonWidth : '180px',
+    buttonWidth : '200px',
     includeSelectAllOption : true,
 		nonSelectedText: 'Select multiple partners',
 		nSelectedText:'selected partners'
   });
  $('#filter_governorates').multiselect({
-    buttonWidth : '210px',
+    buttonWidth : '220px',
     includeSelectAllOption : true,
 		nonSelectedText: 'Select multiple governorates',
 		nSelectedText:'selected governorates'
@@ -709,6 +710,11 @@ function getSelectedValues() {
       return query.test(txt);
     }
 });
+
+  $('#close-search').click(function(e) {
+      $('input#search-input').val('');
+      $('input#search-input').focus();
+  });
 
 </script>
 

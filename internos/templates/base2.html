@@ -1,21 +1,54 @@
 {% load staticfiles i18n %}
 {% load util_tags %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Language" content="en">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'images/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'images/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'images/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'images/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'images/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192"  href="{% static 'images/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{% static 'images/ms-icon-144x144.png' %}">
+    <meta name="theme-color" content="#ffffff">
+
     <title>Neuro-DB |</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
     <meta name="description" content="This is an example dashboard created using build-in elements and components.">
     <meta name="msapplication-tap-highlight" content="no">
     <link href="{% static 'css/main.css' %}" rel="stylesheet">
     <link href="{% static 'css/editedStyle.css' %}" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <!--<link href="{% static 'css/custom.min.css' %}" rel="stylesheet">-->
+    <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
+    <link href="{% static 'tellme/feedback.min.css' %}" rel="stylesheet">
+    <style>
+      .site_title {padding-left: 8px; height: 65px; padding-top: 6px;}
+      #toTop{position: fixed;bottom: 10px;right: 10px;cursor: pointer;display: none;}
+      .vertical-right-aligned {transform: rotate(-90deg);transform-origin: 100% 100%;position: fixed;right: 0;top: 50%;z-index: 100;}
+    </style>
 </head>
 
 <body>
+
+    <button type="button" id="feedback-btn" class="btn btn-info vertical-right-aligned">
+        Feedback <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
+    </button>
+
     <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
         <div class="app-header header-shadow">
             <div class="app-header__logo">
@@ -101,9 +134,9 @@
             </div>
         </div>
       <div class="ui-theme-settings">
-            <button type="button" id="TooltipDemo" class="btn-open-options btn btn-warning">
-                <i class="fa fa-cog fa-w-16 fa-spin fa-2x"></i>
-            </button>
+            <!--<button type="button" id="TooltipDemo" class="btn-open-options btn btn-warning">-->
+                <!--<i class="fa fa-cog fa-w-16 fa-spin fa-2x"></i>-->
+            <!--</button>-->
             <div class="theme-settings__inner">
                 <div class="scrollbar-container">
                     <div class="theme-settings__options-wrapper">
@@ -421,7 +454,7 @@
                               <li>
                                    <a href="/">
                                         <i class="metismenu-icon pe-7s-keypad"></i>
-                                        Unicef Programs
+                                        Unicef Programmes
                                     </a>
                                 </li>
 
@@ -447,13 +480,13 @@
                                 <li>
                                    <a href="{% url 'activityinfo:hpm' %}">
                                         <i class="metismenu-icon pe-7s-display2"></i>
-                                        HPM
+                                        HPM tables
                                     </a>
                                 </li>
                                 <li>
                                       <a href="#">
                                         <i class="metismenu-icon pe-7s-science"></i>
-                                        AI Sector
+                                        AI Sector results
                                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                                       </a>
                                     <ul>
@@ -503,7 +536,7 @@
                                         </li>
                                         <li class="nav-item">
                                             <div  class="nav-link">
-                                               Neuro DB-2020
+                                               Neuro-DB 2020
                                             </div>
                                         </li>
                                     </ul>
@@ -533,7 +566,31 @@
     </div>
      <script src="{% static 'vendors/jquery/dist/jquery.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <!-- Custom Theme Scripts -->
+    <!--<script src="{% static 'js/custom.min.js' %}"></script>-->
+    <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>
+    {% include 'tellme/js_inc.html' %}
     {% block extra_js %}{% endblock %}
+    <script>
+        $(document).ready(function(){
+              $(window).scroll(function () {
+              if ($(this).scrollTop() != 0) {
+                $('#toTop').fadeIn();
+              } else {
+                $('#toTop').fadeOut();
+              }
+            });
+            $('#toTop').click(function(){
+                $("html, body").animate({ scrollTop: 0 }, 600);
+                return false;
+            });
+            $('.print-page').click(function(){
+                $('.expanded-all').trigger('click');
+                $('.read-more').hide();
+                window.print();
+            });
+        });
+    </script>
+
 </body>
 </html>
-

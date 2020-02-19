@@ -14,7 +14,7 @@ def r_script_command_line(script_name, ai_db):
     path2script = os.path.join(path, 'RScripts')
     path2script = os.path.join(path2script, script_name)
     print(path2script)
-    cmd = [command, path2script, ai_db.username, ai_db.password, str(ai_db.ai_id)]
+    cmd = [command, path2script, ai_db.username, ai_db.password, str(ai_db.db_id)]
 
     try:
         subprocess.check_output(cmd, universal_newlines=True)
@@ -25,42 +25,24 @@ def r_script_command_line(script_name, ai_db):
     return 1
 
 
-def read_data_from_file(ai_id, forced=False, report_type=None):
+def read_data_from_file(ai_db, forced=False, report_type=None):
     from internos.activityinfo.models import Database, ActivityReport, LiveActivityReport
-    # from internos.backends.models import ImportLog
-    # month_name = datetime.datetime.now().strftime("%B")
 
     if report_type == 'live':
         model = LiveActivityReport.objects.none()
-        LiveActivityReport.objects.filter(database_id=ai_id).delete()
-        return add_rows(ai_id=ai_id, model=model)
+        LiveActivityReport.objects.filter(database_id=ai_db.ai_id).delete()
+        return add_rows(ai_db=ai_db, model=model)
 
     if forced:
         model = ActivityReport.objects.none()
-        ActivityReport.objects.filter(database_id=ai_id).delete()
-        return add_rows(ai_id=ai_id, model=model)
-
-    # try:
-    #     ImportLog.objects.get(
-    #         object_id=ai_id,
-    #         object_type='AI',
-    #         month=month_name,
-    #         status=True)
-    #     return update_rows(ai_id)
-    # except ImportLog.DoesNotExist:
-    #     ImportLog.objects.create(
-    #         object_id=ai_id,
-    #         object_name=Database.objects.get(ai_id=ai_id).name,
-    #         object_type='AI',
-    #         month=month_name,
-    #         status=True)
-    #     return add_rows(ai_id=ai_id, model=model)
+        ActivityReport.objects.filter(database_id=ai_db.ai_id).delete()
+        return add_rows(ai_db=ai_db, model=model)
 
 
 def import_data_via_r_script(ai_db, report_type=None):
     r_script_command_line('ai_generate_excel.R', ai_db)
-    # total = read_data_from_file(ai_db.ai_id, True, report_type)
-    # return total
+    total = read_data_from_file(ai_db, True, report_type)
+    return total
 
 
 def get_awp_code(name):
@@ -104,12 +86,12 @@ def clean_string(value, string):
     return value.replace(string, '')
 
 
-def add_rows(ai_id=None, model=None):
+def add_rows(ai_db=None, model=None):
 
     month = int(datetime.datetime.now().strftime("%m"))
     month_name = datetime.datetime.now().strftime("%B")
     path = os.path.dirname(os.path.abspath(__file__))
-    path2file = path+'/AIReports/'+str(ai_id)+'_ai_data.csv'
+    path2file = path+'/AIReports/'+str(ai_db.db_id)+'_ai_data.csv'
     ctr = 0
 
     if not os.path.isfile(path2file):
@@ -137,8 +119,8 @@ def add_rows(ai_id=None, model=None):
             model.create(
                 month=month,
                 database=row['Folder'],
-                database_id=ai_id,
-                site_id=row['site.id'],
+                database_id=ai_db.ai_id,
+                # site_id=row['site.id'],
                 report_id=row['FormId'],
                 indicator_id=clean_string(row['Quantity.Field.ID'], 'i'),
                 indicator_name=unicode(row['Quantity.Field'], errors='replace'),
@@ -154,8 +136,8 @@ def add_rows(ai_id=None, model=None):
                 location_adminlevel_governorate_code=row['governorate.code'] if 'governorate.code' in row else '',
                 partner_description=unicode(row['partner.partner_full_name'],
                                             errors='replace') if 'partner.partner_full_name' in row else '',
-                project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['start_date'] == 'NA' else None,
-                project_end_date=row['projects.end_date'] if 'projects.end_date' in row else '',
+                project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
+                project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
                 project_label=unicode(row['projects.project_code'], errors='replace') if 'projects.project_code' in row else '',
                 project_description=unicode(row['projects.project_name'], errors='replace') if 'projects.project_name' in row else '',
                 funded_by=funded_by,
@@ -274,7 +256,7 @@ def generate_indicators_number(ai_db):
 
 
 def link_indicators_data(ai_db, report_type=None):
-    generate_indicators_number(ai_db)
+    # generate_indicators_number(ai_db)
     result = link_indicators_activity_report(ai_db, report_type)
     # link_ai_partners(report_type)
     # link_etools_partners()
