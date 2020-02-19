@@ -151,9 +151,11 @@ def add_rows(ai_db=None, model=None):
                     'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
 
                 location_name=unicode(row['ai_allsites.name'], errors='replace') if 'ai_allsites.name' in row else '',
-                partner_id=row['partner.id'] if 'partner_id' in row else '',
+                partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
                 location_adminlevel_governorate=unicode(row['governorate.name'],
                                                         errors='replace') if 'governorate.name' in row else '',
+                # start_date=datetime.datetime.strptime(row['month'], 'YYYY-MM-DD') if 'month' in row else '',
+                start_date='{}-01'.format(row['month']) if 'month' in row else '',
                 # form_category=row['form.category'] if 'form.category' in row else '',
                 # indicator_units=row['indicator.units'] if 'indicator.units' in row else '',
                 # lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
@@ -1170,7 +1172,7 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
     )
 
     last_month = int(datetime.datetime.now().strftime("%m"))
-    last_month = 13
+    # last_month = 13
 
     if report_type == 'live':
         report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
@@ -1396,7 +1398,7 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    last_month = 13
+    # last_month = 13
 
     for indicator in indicators.iterator():
         for month in range(1, last_month):
@@ -1510,7 +1512,7 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    last_month = 13
+    # last_month = 13
 
     for indicator in indicators.iterator():
         for month in range(1, last_month):
@@ -1605,7 +1607,8 @@ def calculate_individual_indicators_values_11(ai_db):
     if ai_db.is_funded_by_unicef:
         reports = reports.filter(funded_by='UNICEF')
 
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(ai_id__isnull=True).only(
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(master_indicator=True)\
+        .exclude(master_indicator_sub=True).only(
         'ai_indicator',
         'values_live',
         'values_gov_live',
@@ -1701,10 +1704,11 @@ def calculate_individual_indicators_values_1(ai_db):
     from internos.activityinfo.models import Indicator
 
     last_month = int(datetime.datetime.now().strftime("%m"))
-    last_month = 13
+    # last_month = 13
 
     ai_id = str(ai_db.ai_id)
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(ai_id__isnull=True).only(
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(master_indicator=True)\
+        .exclude(master_indicator_sub=True).only(
         'ai_indicator',
         'values',
         'values_gov',
@@ -1836,10 +1840,11 @@ def calculate_individual_indicators_values_2(ai_db):
     from internos.activityinfo.models import Indicator
 
     last_month = int(datetime.datetime.now().strftime("%m"))
-    last_month = 13
+    # last_month = 13
 
     ai_id = str(ai_db.ai_id)
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(ai_id__isnull=True).only(
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(master_indicator=True)\
+        .exclude(master_indicator_sub=True).only(
         'ai_indicator',
         'values_live',
         'values_gov_live',
