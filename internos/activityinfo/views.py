@@ -122,12 +122,12 @@ class ReportView(TemplateView):
                 pass
 
         # if selected_partner or selected_governorate:
-        if selected_partners or selected_governorate:
+        if selected_partners or selected_governorates:
             selected_filter = True
 
         # if selected_partner == '0' and selected_governorate == '0':
-        if selected_partners == [] and selected_governorate == '0':
-            selected_filter = False
+        # if selected_partners == [] and selected_governorate == '0':
+        #     selected_filter = False
 
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
