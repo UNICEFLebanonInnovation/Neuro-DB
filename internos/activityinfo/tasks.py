@@ -140,6 +140,26 @@ def copy_indicators_values_to_hpm():
         indicator.save()
 
 
+@app.task
+def change_indicators_code():
+    from internos.activityinfo.models import Indicator
+
+    indicators = Indicator.objects.filter(activity_id=112).only('ai_indicator', 'name')
+    print(indicators.count())
+    indicators2 = Indicator.objects.filter(activity_id=113)
+    print(indicators2.count())
+
+    ctr = 0
+    for item in indicators.iterator():
+        result = Indicator.objects.filter(name=item.name, activity_id=113).exclude(ai_indicator=item.ai_indicator)
+        if result.count():
+            ctr += 1
+            result.update(explication='PART2')
+            result.update(ai_indicator=item.ai_indicator)
+
+    print(ctr)
+
+
 def import_activityinfo_locations_data():
     from internos.activityinfo.client import ActivityInfoClient
     from internos.activityinfo.models import (

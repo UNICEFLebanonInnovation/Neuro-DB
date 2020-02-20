@@ -12,34 +12,23 @@
     <form action="{% url 'activityinfo:report' %}" method="get">
       <div class="page-title-wrapper">
         <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
-        <div class="page-title-heading">
+        <div class="page-title-heading" data-step="4" data-intro="Filter options by partner or governorate">
           <div class="page-title-icon">
             <i class="pe-7s-filter icon-gradient bg-mean-fruit">
             </i>
           </div>
           <div class="page-title-subheading">Filter by :</div>
-            <select  class="btn btn-outline-primary" multiple="multiple"  id="filter_partners" name="partners">
+            <select  class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
               {% for partner in partners %}
              <option class="dropdown-item" value="{{ partner.partner_id }}" {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}</option>
               {% endfor %}
             </select>
-          {% if partner_info %}
-          <i class="fa fa-info-circle faa-pulse animated-hover"
-            style="font-size: 25px; color: #0089d2; padding-top: 3px;" data-toggle="modal"
-            data-target="#partnerModal"></i>
-          {% endif %}
 
-            <select  class="btn btn-outline-primary" multiple="multiple"  id="filter_governorates" name="governorates">
+            <select  class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">
                {% for gov in governorates %}
              <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}"  {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
               {% endfor %}
             </select>
-            {% if partner_info %}
-            <i class="fa fa-info-circle faa-pulse animated-hover"
-              style="font-size: 25px; color: #0089d2; padding-top: 3px;" data-toggle="modal"
-              data-target="#partnerModal"></i>
-            {% endif %}
-
           <button type="submit" class="btn btn-primary mr-3 mr-left-5" >Search</button>
 
           <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"
@@ -47,7 +36,7 @@
         </div>
 
         <div class="page-title-actions">
-          <div class="d-inline-block" data-step="6"
+          <div class="d-inline-block" data-step="5"
             data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
             <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
             <br />
@@ -79,7 +68,7 @@
         <div class="card-body">
 
           <div class="card-title d-inline-block">
-            <span data-intro="Collapse / Expand master indicators">
+            <span data-step="6" data-intro="Collapse / Expand master indicators">
               <a href="#" class="collapse-all active" ><i class="fa fa-th-large"></i></a>
               <a href="#" class="expanded-all"><i
                   class="fa fa-bars"></i></a>
@@ -91,12 +80,11 @@
                 <i class="fa fa-download"></i>
                 <span class="caret"></span>
               </button>
-              <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu">
+              <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7" data-intro="Download Dashboard report and raw data">
                 <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>
                 <div tabindex="-1" class="dropdown-divider"></div>
-                <a type="button" tabindex="0" class="dropdown-item"
-                  href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full
-                  raw data</a>
+                <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                  href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full raw data</a>
                 <div tabindex="-1" class="dropdown-divider"></div>
               </div>
             </div>
@@ -110,7 +98,7 @@
           </div>
 
 
-            <div class="search-wrapper d-inline-block" style="position: absolute;">
+            <div class="search-wrapper d-inline-block" style="position: absolute;" data-step="8" data-intro="Search for a specific Indicator">
                         <div class="input-holder">
                             <input type="text" class="search-input" id="search-input" placeholder="Type to search">
                             <button class="search-icon"><span></span></button>

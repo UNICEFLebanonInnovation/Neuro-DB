@@ -460,7 +460,7 @@ position: relative;">Neuro-DB</span>
                         </span>
                     </div>
                   <div class="scrollbar-sidebar">
-                        <div class="app-sidebar__inner">
+                        <div class="app-sidebar__inner" data-step="2" data-intro="Navigation menu for other sections">
                             <ul class="vertical-nav-menu">
 
                               <!--<li>-->
@@ -533,7 +533,18 @@ position: relative;">Neuro-DB</span>
                             </ul>
                         </div>
 
+                        <div style="position: fixed; bottom: 50px; left: 30px; z-index: 120" data-step="3"
+                             data-intro="For technical issue please call Ali Chamseddine or Mohamad Karnib">
+                            <a class="user-profile" href="mailto:achamseddine@unicef.org;mkranib@unicef.org?subject=ActivityInfo: Techincal issue"
+                             data-toggle="tooltip" data-placement="right" data-html="true"
+                              title="For technical issue please call: <br />
+                              Ali Chamseddine or Mohamad Karnib">
+                                <img src="{% static 'images/support-1.jpg' %}" alt="" style="width: 50px; height: 50px;"/>
+                            </a>
+                        </div>
+
                     </div>
+
                 </div>
         <div class="app-main__outer">
              {% block content %}
