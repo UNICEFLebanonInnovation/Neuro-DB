@@ -111,7 +111,7 @@ def add_rows(ai_db=None, model=None):
                 indicator_value = 0
 
             funded_by = row['funded_by.funded_by'] if 'funded_by.funded_by' in row else ''
-            partner_label = unicode(row['partner.name'], errors='replace') if 'partner.name' in row else ''
+            partner_label = unicode(row['partner.name'], errors='ignore') if 'partner.name' in row else ''
 
             if partner_label == 'UNICEF':
                 funded_by = 'UNICEF'
@@ -155,7 +155,7 @@ def add_rows(ai_db=None, model=None):
                     'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
 
                 location_name=unicode(row['ai_allsites.name'], errors='replace') if 'ai_allsites.name' in row else '',
-                partner_id=row['partner_id'] if 'partner_id' in row else partner_label[0:6],
+                partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
                 location_adminlevel_governorate=unicode(row['governorate.name'],
                                                         errors='replace') if 'governorate.name' in row else '',
                 # start_date=datetime.datetime.strptime(row['month'], 'YYYY-MM-DD') if 'month' in row else '',
