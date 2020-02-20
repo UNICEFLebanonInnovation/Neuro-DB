@@ -9954,7 +9954,7 @@ a,button,.btn {
 .app-header__logo .logo-src {
     height: 23px;
     width: 97px;
-    background: url(../images/logo-inverse.png)
+    background: url(../images/logo.gif)
 }
 
 .app-header__menu,.app-header__mobile-menu {
@@ -14791,8 +14791,9 @@ a.badge-alternate:hover,a.badge-alternate:focus {
 .badge {
     font-weight: bold;
     text-transform: uppercase;
-    padding: 5px 10px;
+    padding: 8px 13px;
     min-width: 19px
+
 }
 
 .badge-light {
