@@ -120,10 +120,6 @@ def add_rows(ai_db=None, model=None):
             if 'month' in row and row['month'] and not row['month'] == 'NA':
                 start_date = '{}-01'.format(row['month'])
 
-            partner_id = partner_label[0:6]
-
-            print(partner_id)
-
             model.create(
                 month=month,
                 database=row['Folder'],
@@ -159,7 +155,7 @@ def add_rows(ai_db=None, model=None):
                     'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
 
                 location_name=unicode(row['ai_allsites.name'], errors='replace') if 'ai_allsites.name' in row else '',
-                partner_id=row['partner_id'] if 'partner_id' in row else partner_id,
+                partner_id=row['partner_id'] if 'partner_id' in row else partner_label[0:6],
                 location_adminlevel_governorate=unicode(row['governorate.name'],
                                                         errors='replace') if 'governorate.name' in row else '',
                 # start_date=datetime.datetime.strptime(row['month'], 'YYYY-MM-DD') if 'month' in row else '',
