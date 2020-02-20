@@ -300,11 +300,11 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'calculated_indicator',
         'hpm_indicator',
         'separator_indicator',
-        'tag_gender',
-        'tag_age',
-        'tag_nationality',
-        'tag_disability',
-        'tag_programme',
+        # 'tag_gender',
+        # 'tag_age',
+        # 'tag_nationality',
+        # 'tag_disability',
+        # 'tag_programme',
     )
     suit_list_filter_horizontal = (
         'activity__database__reporting_year',
@@ -317,10 +317,10 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'calculated_indicator',
         'hpm_indicator',
         'separator_indicator',
-        'tag_gender',
-        'tag_age',
-        'tag_nationality',
-        'tag_disability',
+        # 'tag_gender',
+        # 'tag_age',
+        # 'tag_nationality',
+        # 'tag_disability',
     )
     list_display = (
         'id',
@@ -331,13 +331,15 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'target_sector',
         'units',
         'activity',
-        'category',
         #'sequence',
         'master_indicator',
         'hpm_indicator',
-        'is_sector',
-        'is_section',
-        'support_disability',
+        'list_header',
+        'category',
+        'sequence',
+        # 'is_sector',
+        # 'is_section',
+        # 'support_disability',
         # 'values_tags'
     )
     filter_horizontal = (
@@ -351,9 +353,12 @@ class IndicatorAdmin(ImportExportModelAdmin):
         #'sequence',
         'master_indicator',
         'hpm_indicator',
-        'is_sector',
-        'is_section',
-        'support_disability',
+        'list_header',
+        'category',
+        'sequence',
+        # 'is_sector',
+        # 'is_section',
+        # 'support_disability',
         # 'values_tags'
     )
 
