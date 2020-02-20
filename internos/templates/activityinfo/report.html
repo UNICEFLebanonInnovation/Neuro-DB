@@ -685,7 +685,6 @@ function getSelectedValues() {
   document.querySelector("#export1").addEventListener("click", function () {
     var html = document.querySelector("table").outerHTML;
     var file_name = $("#exportheader").attr("content");
-    alert(file_name);
     export_table_to_csv(html, file_name);
   });
 
