@@ -312,7 +312,11 @@ class Activity(models.Model):
     ai_category_id = models.CharField(max_length=254,null=True,blank=True)
 
     def __unicode__(self):
-        return self.name
+        return u'{} - {}'.format(self.name, self.database.name)
+
+    @property
+    def database_name(self):
+        return self.database.name
 
     class Meta:
         ordering = ['name']

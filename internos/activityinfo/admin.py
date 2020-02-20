@@ -414,9 +414,9 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'calculated_indicator',
                 'calculated_percentage',
                 'measurement_type',
+                'numerator_indicator',
                 'denominator_indicator',
                 'denominator_multiplication',
-                'numerator_indicator',
                 'sub_indicators',
                 'summation_sub_indicators',
             ]
@@ -823,10 +823,10 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         objects = 0
         for db in queryset:
             objects += import_data_v4(db)
-        self.message_user(
-            request,
-            "{} objects created.".format(objects)
-        )
+            self.message_user(
+                request,
+                "{} objects created.".format(objects)
+            )
 
     def import_basic_data(self, request, queryset):
         objects = 0
