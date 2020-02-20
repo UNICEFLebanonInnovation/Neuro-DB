@@ -478,18 +478,18 @@ position: relative;">Neuro-DB</span>
                                         Dashboards
                                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                                     </a>
-                                   <ul>
+                                   <ul id="databases_list">
                                     {% get_databases as databases %}
                                      {% for db in databases %}
-                                   <li>
-                                    <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}
+                                   <li id="{{db.ai_id}}">
+                                    <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="">{{ db.label }}
                                       <i class="metismenu-icon"></i>
                                    </a>
                                    </li>
                                    {% endfor %}
                                     </ul>
                                 </li>
-                                <li>
+                                <li id="hpm">
                                    <a href="{% url 'activityinfo:hpm' %}">
                                         <i class="metismenu-icon pe-7s-display2"></i>
                                         HPM Tables
@@ -505,7 +505,8 @@ position: relative;">Neuro-DB</span>
                                         {% get_databases True as databases %}
                                          {% for db in databases %}
                                          <li>
-                                           <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">{{ db.label }}
+<!--                                              <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">-->
+                                           <a href="#">{{ db.label }}
                                             <i class="metismenu-icon"></i>
                                           </a>
                                         </li>
@@ -516,17 +517,20 @@ position: relative;">Neuro-DB</span>
 
                                 <li class="app-sidebar__heading">Partnership</li>
                                 <li>
-                                  <a href="{% url 'etools:partner_profile' %}">
+                                  <a href="#">
+<!--                                     <a href="{% url 'etools:partner_profile' %}">-->
                                         <i class="metismenu-icon pe-7s-user"></i>
                                     Partner Profile</a>
                                 </li>
                                <li>
-                                 <a href="{% url 'etools:interventions' %}">
+<!--                                 <a href="{% url 'etools:interventions' %}">-->
+                                      <a href="#">
                                     <i class="metismenu-icon pe-7s-link"></i>
                                     Interventions </a>
                                 </li>
                                 <li>
-                                 <a href="{% url 'etools:programmatic_visits_monitoring' %}">
+                                      <a href="#">
+<!--                                 <a href="{% url 'etools:programmatic_visits_monitoring' %}">-->
                                       <i class="metismenu-icon pe-7s-monitor"></i>
                                     Programmatic Visits Monitoring </a>
                                 </li>

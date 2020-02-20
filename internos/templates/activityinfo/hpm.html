@@ -757,5 +757,11 @@
 {% endblock content %}
 
 {% block extra_js %}
+<script>
 
+  $(document).ready(function () {
+    var selected_li=$('li#hpm').find('a');
+    selected_li.addClass("mm-active");
+    });
+  </script>
 {% endblock %}

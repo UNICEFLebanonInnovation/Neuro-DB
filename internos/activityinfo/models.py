@@ -112,7 +112,7 @@ class Database(models.Model):
         from .utils import get_awp_code, get_label
         """
         Import all activities, indicators and partners from
-        a ActivityInfo database specified by the AI ID
+         ActivityInfo database specified by the AI ID
         """
         client = ActivityInfoClient(self.username, self.password)
 
