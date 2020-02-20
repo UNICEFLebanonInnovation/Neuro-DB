@@ -40,7 +40,7 @@
             data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
             <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
             <br />
-            email: {{ database.focal_point.email }} " data-placement="bottom"
+            email: {{ database.focal_point.email }} " data-placement="bottom" data-html="true"
               class="btn-shadow mr-3 btn btn-primary">
               <i class="fa fa-user"></i>
             </button>
@@ -528,8 +528,6 @@
 <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
 
-
-
 <script>
 
   $(document).ready(function () {
@@ -548,7 +546,7 @@
 		nSelectedText:'selected partners'
   });
  $('#filter_governorates').multiselect({
-    buttonWidth : '220px',
+    buttonWidth : '230px',
     includeSelectAllOption : true,
 		nonSelectedText: 'Select multiple governorates',
 		nSelectedText:'selected governorates'
