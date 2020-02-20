@@ -96,6 +96,17 @@ position: relative;">Neuro-DB</span>
 
                     <ul class="header-menu nav">
                       <li class="nav-item">
+
+                        <div style="bottom: 50px; left: 30px; z-index: 120" data-step="3"
+                             data-intro="For technical issue please call Ali Chamseddine or Mohamad Karnib">
+                            <a class="user-profile" href="mailto:achamseddine@unicef.org;mkranib@unicef.org?subject=ActivityInfo: Techincal issue"
+                             data-toggle="tooltip" data-placement="right" data-html="true"
+                              title="For technical issue please call: <br />
+                              Ali Chamseddine or Mohamad Karnib">
+                                <img src="{% static 'images/support-1.png' %}" alt="" style="width: 50px; height: 50px;"/>
+                            </a>
+                        </div>
+
                       </li>
                        {% block project_title %}{% endblock %}
                     </ul>
@@ -478,18 +489,18 @@ position: relative;">Neuro-DB</span>
                                         Dashboards
                                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                                     </a>
-                                   <ul>
+                                   <ul id="databases_list">
                                     {% get_databases as databases %}
                                      {% for db in databases %}
-                                   <li>
-                                    <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}
+                                   <li id="{{db.ai_id}}">
+                                    <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="">{{ db.label }}
                                       <i class="metismenu-icon"></i>
                                    </a>
                                    </li>
                                    {% endfor %}
                                     </ul>
                                 </li>
-                                <li>
+                                <li id="hpm">
                                    <a href="{% url 'activityinfo:hpm' %}">
                                         <i class="metismenu-icon pe-7s-display2"></i>
                                         HPM Tables
@@ -505,7 +516,8 @@ position: relative;">Neuro-DB</span>
                                         {% get_databases True as databases %}
                                          {% for db in databases %}
                                          <li>
-                                           <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">{{ db.label }}
+<!--                                              <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">-->
+                                           <a href="#">{{ db.label }}
                                             <i class="metismenu-icon"></i>
                                           </a>
                                         </li>
@@ -516,31 +528,24 @@ position: relative;">Neuro-DB</span>
 
                                 <li class="app-sidebar__heading">Partnership</li>
                                 <li>
-                                  <a href="{% url 'etools:partner_profile' %}">
+                                  <a href="#">
+<!--                                     <a href="{% url 'etools:partner_profile' %}">-->
                                         <i class="metismenu-icon pe-7s-user"></i>
                                     Partner Profile</a>
                                 </li>
                                <li>
-                                 <a href="{% url 'etools:interventions' %}">
+<!--                                 <a href="{% url 'etools:interventions' %}">-->
+                                      <a href="#">
                                     <i class="metismenu-icon pe-7s-link"></i>
                                     Interventions </a>
                                 </li>
                                 <li>
-                                 <a href="{% url 'etools:programmatic_visits_monitoring' %}">
+                                      <a href="#">
+<!--                                 <a href="{% url 'etools:programmatic_visits_monitoring' %}">-->
                                       <i class="metismenu-icon pe-7s-monitor"></i>
                                     Programmatic Visits Monitoring </a>
                                 </li>
                             </ul>
-                        </div>
-
-                        <div style="position: fixed; bottom: 50px; left: 30px; z-index: 120" data-step="3"
-                             data-intro="For technical issue please call Ali Chamseddine or Mohamad Karnib">
-                            <a class="user-profile" href="mailto:achamseddine@unicef.org;mkranib@unicef.org?subject=ActivityInfo: Techincal issue"
-                             data-toggle="tooltip" data-placement="right" data-html="true"
-                              title="For technical issue please call: <br />
-                              Ali Chamseddine or Mohamad Karnib">
-                                <img src="{% static 'images/support-1.jpg' %}" alt="" style="width: 50px; height: 50px;"/>
-                            </a>
                         </div>
 
                     </div>

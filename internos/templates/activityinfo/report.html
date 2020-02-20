@@ -17,8 +17,7 @@
             <i class="pe-7s-filter icon-gradient bg-mean-fruit">
             </i>
           </div>
-          <div class="page-title-subheading">Filter by :</div>
-            <select  class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
+            <select  class="btn btn-outline-primary" multiple="multiple"  id="filter_partners" name="partners">
               {% for partner in partners %}
              <option class="dropdown-item" value="{{ partner.partner_id }}" {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}</option>
               {% endfor %}
@@ -29,7 +28,8 @@
              <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}"  {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
               {% endfor %}
             </select>
-          <button type="submit" class="btn btn-primary mr-3 mr-left-5" >Search</button>
+
+          <button type="submit" class="btn btn-primary mr-left-5" >Search</button>
 
           <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"
             class="btn btn-light d-inline-block">Cancel</a>
@@ -40,7 +40,7 @@
             data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
             <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
             <br />
-            email: {{ database.focal_point.email }} " data-placement="bottom"
+            email: {{ database.focal_point.email }} " data-placement="bottom" data-html="true"
               class="btn-shadow mr-3 btn btn-primary">
               <i class="fa fa-user"></i>
             </button>
@@ -113,12 +113,11 @@
               <thead>
                 <tr>
 <!--                  <th content="Indicator ID">Indicator ID</th>-->
-                  <th content="Indicators Name">ActivityInfo Indicators</th>
-                  <th content="RWP Code">RWP</th>
+                  <th content="Indicator Name"> Indicator Name</th>
+                  <th content="RWP Code">RWP Code</th>
                   <th content="Target">Target</th>
                   <th content="Cumulative Results of All Months" data-toggle="tooltip" data-placement="top"
-                    title="Cumulative Results of All Months">
-                    Cumulative Results <i class="fa fa-question-circle-o"></i>
+                    title="Cumulative Results of All Months">Cumulative Results <i class="fa fa-question-circle-o"></i>
                   </th>
                   <th content="Total Percentage achieved of all months" data-toggle="tooltip" data-placement="top"
                     title="Total Percentage achieved of all months">
@@ -138,11 +137,11 @@
 
                 {% if display_indicator %}
                 <tr class="level1" itemid="{{ item.id }}"
-                  {% if item.master_indicator %}style="background-color:#e0f3ff; font-weight: bold; font-size: 14px;"
+                  {% if item.master_indicator %}style="background-color:#e0f3ff; font-weight: bold; font-size: 14px;border-bottom:2px solid #fff;"
                   {% elif item.individual_indicator %}style="background-color:#dadada;" {% endif %}>
                   <!--<td>{{ item.id }}</td>-->
                   {% if item.master_indicator %}
-                  <td colspan="1" class="w-500">
+                  <td  class="w-150">
                     {{ item.name }}
                     <a href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
                       target="_blank">
@@ -150,8 +149,8 @@
                     </a>
                   </td>
                   {% else %}
-<!--                  <td class="w-100">{{ item.ai_id }}</td>-->
-                  <td class="w-500">
+<!--                  <td class="w-10">{{ item.ai_id }}</td>-->
+                  <td  class="w-150">
                     {{ item.name }}
                     <a href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
                       target="_blank">
@@ -160,27 +159,27 @@
                   </td>
                   {% endif %}
                   <!--<td>Site</td>-->
-                  <td class="w-100">{{ item.awp_code }}</td>
-                  <td class="w-100">
+                  <td class="w-10">{{ item.awp_code }}</td>
+                  <td class="w-10">
                     {% if item.measurement_type == 'percentage' %}
                     {{ item.target }}%
                     {% else %}
                     {{ item.target|number_format }}
                     {% endif %}
                   </td>
-                  <td class="w-130">
+                  <td class="w-10">
                     {{ cumulative_value }}
                   </td>
-                  <td class="w-130">
+                  <td class="w-10">
                     {% get_indicator_achieved item month selected_partners selected_governorates as achieved %}
                     {{ achieved }}%
                   </td>
-                  <td class="w-70">
+                  <td class="w-10">
                     <div class='badge {{ item.status_color }}'>{{ item.status }}</div>
                    </td>
 
                   {% for month, month_name in months %}
-                  <td class="w-70">
+                  <td class="w-10">
                     {% get_indicator_value item month selected_partners selected_governorates as value %}
                     {{ value }}
                   </td>
@@ -192,7 +191,7 @@
                   {% if item1.master_indicator_sub %}style="background-color: #ca292940;" {% endif %}>
                   <!--<td>{{ item1.id }}</td>-->
                   {% if item1.master_indicator_sub %}
-                  <td colspan="2" class="w-500">
+                  <td  class="w-150">
                     {{ item1.name }}
                     {% if item1.explication %}
                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
@@ -205,7 +204,7 @@
                   </td>
                   {% else %}
 <!--                  <td class="w-100">{{ item1.ai_id }}</td>-->
-                  <td class="w-500">
+                  <td  class="w-150">
                     {{ item1.name }}
                     {% if item1.explication %}
                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
@@ -218,22 +217,22 @@
                   </td>
                   {% endif %}
                   <!--<td>Site</td>-->
-                  <td class="w-100">{{ item1.awp_code }}</td>
-                  <td class="w-100">{{ item1.target|number_format }}</td>
-                  <td class="w-130">
+                  <td class="w-10">{{ item1.awp_code }}</td>
+                  <td class="w-10">{{ item1.target|number_format }}</td>
+                  <td class="w-10">
                     {% get_indicator_cumulative item1 month selected_partners selected_governorates as cumulative_value %}
                     {{ cumulative_value }}
                   </td>
-                  <td class="w-130">
+                  <td class="w-10">
                     {% get_indicator_achieved item1 month selected_partners selected_governorates as achieved %}
                     {{ achieved }}%
                   </td>
-                  <td class="w-70">
+                  <td class="w-10">
                     <div class='badge {{ item1.status_color }}'>{{ item1.status }}</div>
 
                   </td>
                   {% for month, month_name in months %}
-                  <td class="w-70">
+                  <td class="w-10">
                     {% get_indicator_value item1 month selected_partners selected_governorates as value %}
                     {{ value }}
                   </td>
@@ -246,7 +245,7 @@
                   itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                   <!--<td>{{ item2.id }}</td>-->
                   {% if item2.master_indicator_sub_sub %}
-                  <td class="w-500" colspan="1">
+                  <td class="w-150" colspan="1">
                     {{ item2.name }}
                     {% if item2.explication %}
                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
@@ -259,7 +258,7 @@
                   </td>
                   {% else %}
 <!--                  <td class="w-100">{{ item2.ai_id }}</td>-->
-                  <td class="w-500">
+                  <td class="w-150">
                     {{ item2.name }}
                     {% if item2.explication %}
                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
@@ -272,22 +271,22 @@
                   </td>
                   {% endif %}
                   <!--<td>Site</td>-->
-                  <td class="w-100">{{ item2.awp_code }}</td>
-                  <td class="w-100">{{ item2.target|number_format }}</td>
-                  <td class="w-130">
+                  <td class="w-10">{{ item2.awp_code }}</td>
+                  <td class="w-10">{{ item2.target|number_format }}</td>
+                  <td class="w-10">
                     {% get_indicator_cumulative item2 month selected_partners selected_governorates as cumulative_value %}
                     {{ cumulative_value }}
                   </td>
-                  <td class="w-130">
+                  <td class="w-10">
                     {% get_indicator_achieved item2 month selected_partners selected_governorates as achieved %}
                     {{ achieved }}%
                   </td>
-                  <td class="w-70" >
+                  <td class="w-10" >
                      <div class='badge {{ item1.status_color }}'>{{ item1.status }}</div>
 
                   </td>
                   {% for month, month_name in months %}
-                  <td class="w-70">
+                  <td class="w-10">
                     {% get_indicator_value item2 month selected_partners selected_governorates as value %}
                     {{ value }}
                   </td>
@@ -529,11 +528,16 @@
 <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
 
-
-
 <script>
 
   $(document).ready(function () {
+
+    url=window.location.href
+    var id = url.substring(url.lastIndexOf('=') + 1);
+    var selected_li=$('li#'+id).find('a');
+    var parent = selected_li.parent();
+    parent.addClass("mm-active");
+    selected_li.addClass("mm-active");
 
   $('#filter_partners').multiselect({
     buttonWidth : '200px',
@@ -542,7 +546,7 @@
 		nSelectedText:'selected partners'
   });
  $('#filter_governorates').multiselect({
-    buttonWidth : '220px',
+    buttonWidth : '230px',
     includeSelectAllOption : true,
 		nonSelectedText: 'Select multiple governorates',
 		nSelectedText:'selected governorates'
@@ -703,6 +707,7 @@ function getSelectedValues() {
       $('input#search-input').val('');
       $('input#search-input').focus();
   });
+
 
 </script>
 
