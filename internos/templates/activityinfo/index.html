@@ -24,6 +24,7 @@
   <div class="row">
     {% for db in ai_databases %}
       <div class="col-md-6 col-xl-4">
+         <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">
           <div class="card mb-3 widget-content">
               <div class="widget-content-wrapper">
                   <div class="widget-content-left">
@@ -33,9 +34,9 @@
                       <div class="widget-subheading">
                         {{ db.label }}
 
-<!--                        <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring">-->
-<!--                         <i class="fa fa-rss faa-flash animated" style="font-size: 15px; color: #d23900;"></i>-->
-                       <!--</a>-->
+<!--   <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring">-->
+<!--   <i class="fa fa-rss faa-flash animated" style="font-size: 15px; color: #d23900;"></i>-->
+      <!--</a>-->
                       </div>
                   </div>
                   <div class="widget-content-right">
@@ -48,7 +49,7 @@
                         </a>
                   </div>
               </div>
-          </div>
+          </div> </a>
       </div>
      {% endfor %}
   </div>

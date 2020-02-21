@@ -2,31 +2,8 @@
 {% load staticfiles i18n %}
 {% load util_tags %}
 {% load static %}
-
 {% block project_title %}Interactive Dashboards{% endblock %}
-
 {% block content %}
-<style>
-.table-fixed {
-  box-shadow: -5px 7px 8px;
-  position: absolute;
-  margin-top: 12px;
-}
-.table thead {
-  background-color: #00AEEE;
-  color: white;
-}
-.w-70 { min-width:70px; width: 70px; max-width: 70px;}
-.w-100 { min-width:100px; width: 100px; max-width: 100px;}
-.w-120 { min-width:120px; width: 120px; max-width: 120px;}
-.w-130 { min-width:130px; width: 130px; max-width: 130px;}
-.w-140 { min-width:140px; width: 140px; max-width: 140px;}
-.w-150 { min-width:150px; width: 150px; max-width: 150px;}
-.w-400 { min-width:400px; width: 400px; max-width: 400px;}
-
-
-</style>
-
 <div class="app-main__inner">
   <div class="app-page-title">
     <div class="page-title-wrapper">
@@ -36,15 +13,12 @@
         </i>
       </div>
       <div>
-        HPM Table – Data as of {{ month_name }} 2019
+        HPM Table – Data as of {{ month_name }} 2020
       </div>
       <div>
-
-
- </div>
       </div>
+  </div>
         <div class="page-title-actions">
-
             <a class="btn btn-outline-primary dropdown-toggle mb-2 mr-2" href="#" role="button" id="drop4"
               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i class="fa fa-table faa-bounce animated-hover" style="font-size: 20px;"></i>
@@ -74,31 +48,29 @@
 
 
     </div>
-    </div>
-
   </div>
-  <div class="row" style="min-width: 800px;">
-  <div class="w-1002 col-sm-12 col-xs-12">
-    <div class="x_panel">
+</div>
+  <div class="row">
 
-      <div class="x_content">
-
-        <table id="exporttable1" content="" class="table table-striped table-bordered">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+         <div class="table-responsive" style="position: relative;overflow: scroll;height: 800px;">
+           <table id="hpm_exporttable1" class="mb-0 table table-striped table-hover ">
           <thead>
           <tr>
-            <th colspan="2" style="vertical-align: middle;">SUMMARY OF PROGRAMME RESULTS – {{ month_name }} 2019 SITREP
+            <th colspan="2" style="vertical-align: middle;">SUMMARY OF PROGRAMME RESULTS – {{ month_name }} 2020 SITREP
               – LEBANON
             </th>
-            <th style="vertical-align: middle;">Sector Target</th>
-            <th style="vertical-align: middle;">Sector Result</th>
-            <th style="vertical-align: middle;">Change since last report</th>
-            <th style="vertical-align: middle;">UNICEF Target (2019)</th>
-            <th style="vertical-align: middle;">UNICEF Result</th>
-            <th style="vertical-align: middle;">Change since last report</th>
+            <th >Sector Target</th>
+            <th >Sector Result</th>
+            <th >Change since last report</th>
+            <th>UNICEF Target (2019)</th>
+            <th >UNICEF Result</th>
+            <th >Change since last report</th>
           </tr>
           </thead>
           <tbody>
-          <tr style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;">
+          <tr class="hpm-tr-header">
             <td colspan="8">Education <sup>1</sup>
               <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
                  title="No figures are reported yet"></i>
@@ -748,10 +720,10 @@
           </tr>
           </tbody>
         </table>
-      </div>
+        </div>
+     </div>
     </div>
-  </div>
-</div>
+ </div>
 </div>
 
 {% endblock content %}

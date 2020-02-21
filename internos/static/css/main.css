@@ -14791,8 +14791,10 @@ a.badge-alternate:hover,a.badge-alternate:focus {
 .badge {
     font-weight: bold;
     text-transform: uppercase;
-    padding: 8px 13px;
-    min-width: 19px
+    padding: 7px 11px;
+    min-width: 19px;
+    font-size:12px;
+
 
 }
 

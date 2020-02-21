@@ -134,8 +134,11 @@ class ReportView(TemplateView):
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
         if database.mapped_db:
-            master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
-
+            master_indicators1 = master_indicators.filter(master_indicator=True)
+            master_indicators2 = master_indicators.filter(
+                sub_indicators__isnull=True, individual_indicator=True
+            )
+            master_indicators = master_indicators1 | master_indicators2
         none_ai_indicators = Indicator.objects.filter(activity__none_ai_database=database).exclude(is_sector=True)
 
         master_indicators = master_indicators.values(
@@ -196,10 +199,10 @@ class ReportView(TemplateView):
         for i in range(1, 4):
             months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         return {
-            'selected_partner': selected_partner,
+            # 'selected_partner': selected_partner,
             'selected_partners': selected_partners,
             'selected_partner_name': selected_partner_name,
-            'selected_governorate': selected_governorate,
+            # 'selected_governorate': selected_governorate,
             'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
             'reports': report.order_by('id'),

@@ -99,14 +99,14 @@
 
 
             <div class="search-wrapper d-inline-block" style="position: absolute;" data-step="8" data-intro="Search for a specific Indicator">
-                        <div class="input-holder">
-                            <input type="text" class="search-input" id="search-input" placeholder="Type to search">
+                        <div class="input-holder" id="searchdiv">
+                            <input type="text" class="search-input" id="search-input" onkeyup="search()" placeholder="Type to search" >
                             <button class="search-icon"><span></span></button>
                         </div>
                         <button class="close" id="close-search"></button>
                     </div>
 
-          <div class="table-responsive" style="position: relative;overflow: scroll;height: 800px;">
+          <div class="table-responsive" style="position: relative;overflow: scroll;height: 600px;">
             <table class="mb-0 table table-striped table-hover" id="exportheader"
             content="{{ month_name }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard.csv"
             data-tableName="Dashboard - {{ database.label }} - 2020">
@@ -138,7 +138,7 @@
                 {% if display_indicator %}
                 <tr class="level1" itemid="{{ item.id }}"
                   {% if item.master_indicator %}style="background-color:#e0f3ff; font-weight: bold; font-size: 14px;border-bottom:2px solid #fff;"
-                  {% elif item.individual_indicator %}style="background-color:#dadada;" {% endif %}>
+                  {% elif item.individual_indicator %}class="individual" style="background-color:#dadada;" {% endif %}>
                   <!--<td>{{ item.id }}</td>-->
                   {% if item.master_indicator %}
                   <td  class="w-150">
@@ -188,7 +188,9 @@
                 {% get_sub_indicators_data item.id as sub_indicators %}
                 {% for item1 in sub_indicators %}
                 <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
-                  {% if item1.master_indicator_sub %}style="background-color: #ca292940;" {% endif %}>
+                  {% if item1.master_indicator_sub %}style="background-color: #ca292940;"
+                    {% elif item.individual_indicator %}class="individual" style="background-color:red;" {% endif %}>
+
                   <!--<td>{{ item1.id }}</td>-->
                   {% if item1.master_indicator_sub %}
                   <td  class="w-150">
@@ -219,7 +221,7 @@
                   <!--<td>Site</td>-->
                   <td class="w-10">{{ item1.awp_code }}</td>
                   <td class="w-10">{{ item1.target|number_format }}</td>
-                  <td class="w-10">
+               <td class="w-10">
                     {% get_indicator_cumulative item1 month selected_partners selected_governorates as cumulative_value %}
                     {{ cumulative_value }}
                   </td>
@@ -242,6 +244,7 @@
                 {% for item2 in sub_indicators1 %}
                 {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
                 <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
+                     {% if item.individual_indicator %} class="individual" style="background-color: red;" {% endif %}
                   itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                   <!--<td>{{ item2.id }}</td>-->
                   {% if item2.master_indicator_sub_sub %}
@@ -269,6 +272,7 @@
                       <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                     </a>
                   </td>
+
                   {% endif %}
                   <!--<td>Site</td>-->
                   <td class="w-10">{{ item2.awp_code }}</td>
@@ -687,7 +691,7 @@ function getSelectedValues() {
     var file_name = $("#exportheader").attr("content");
     export_table_to_csv(html, file_name);
   });
-
+function search() {
   $('input#search-input').quicksearch('table#exportheader tbody tr', {
     'delay': 300,
     'selector': 'td',
@@ -701,13 +705,19 @@ function getSelectedValues() {
       return query.test(txt);
     }
 });
+}
 
   $('#close-search').click(function(e) {
-      $('input#search-input').val('');
-      $('input#search-input').focus();
+  $("#searchdiv").triggerHandler("focus");
+      $('input#search-input').val('').focus();
+      search();
+       $('.level1').addClass('collapsed');
+      $('.level2').addClass('collapsed');
+      $('.level3').addClass('collapsed');
+
+      $('.level2').hide();
+      $('.level3').hide();
   });
-
-
 </script>
 
 {% endblock %}
