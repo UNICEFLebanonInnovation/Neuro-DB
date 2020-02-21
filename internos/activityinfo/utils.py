@@ -119,6 +119,8 @@ def add_rows(ai_db=None, model=None):
             start_date = None
             if 'month' in row and row['month'] and not row['month'] == 'NA':
                 start_date = '{}-01'.format(row['month'])
+            if 'month.' in row and row['month.'] and not row['month.'] == 'NA':
+                start_date = '{}-01'.format(row['month.'])
 
             model.create(
                 month=month,
