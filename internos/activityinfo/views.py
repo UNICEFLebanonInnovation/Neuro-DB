@@ -1380,7 +1380,7 @@ class ExportViewSet(ListView):
         month_name = 'December'
 
         path = os.path.dirname(os.path.abspath(__file__))
-        path2file = path+'/AIReports/'+str(ai_id)+'_ai_data.csv'
+        path2file = path + '/AIReports/' + str(instance.db_id) + '_ai_data.csv'
 
         filename = '{}_{}_{} Raw data.csv'.format(month_name, instance.reporting_year.name, instance.label)
 

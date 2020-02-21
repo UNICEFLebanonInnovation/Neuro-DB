@@ -119,6 +119,8 @@ def add_rows(ai_db=None, model=None):
             start_date = None
             if 'month' in row and row['month'] and not row['month'] == 'NA':
                 start_date = '{}-01'.format(row['month'])
+            if 'month.' in row and row['month.'] and not row['month.'] == 'NA':
+                start_date = '{}-01'.format(row['month.'])
 
             model.create(
                 month=month,
@@ -126,7 +128,8 @@ def add_rows(ai_db=None, model=None):
                 database_id=ai_db.ai_id,
                 # site_id=row['site.id'],
                 report_id=row['FormId'],
-                indicator_id=clean_string(row['Quantity.Field.ID'], 'i'),
+                # indicator_id=clean_string(row['Quantity.Field.ID'], 'i'),
+                indicator_id=row['Quantity.Field.ID'],
                 indicator_name=unicode(row['Quantity.Field'], errors='replace'),
                 indicator_awp_code=get_awp_code(unicode(row['Quantity.Field'], errors='replace')),
                 month_name=row['month'] if 'month' in row else '',
