@@ -1734,7 +1734,7 @@ pre code {
 .table th,.table td {
     padding: .55rem;
     vertical-align: top;
-    border-top: 1px solid #e9ecef
+
 }
 
 .table thead th {
@@ -14880,7 +14880,7 @@ a.badge-alternate:hover,a.badge-alternate:focus {
     text-transform: uppercase;
     color: rgba(13,27,62,0.7);
     font-weight: bold;
-    font-size: .88rem
+    font-size:1.1rem
 }
 
 .card-header {

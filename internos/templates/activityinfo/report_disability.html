@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load staticfiles i18n %}
 {% load util_tags %}
 {% load static %}
@@ -7,24 +7,6 @@
 
 {% block content %}
 <style>
-.table-fixed {
-  box-shadow: -5px 7px 8px;
-  position: absolute;
-  margin-top: 12px;
-}
-.table thead {
-  background-color: #00AEEE;
-  color: white;
-}
-.w-70 { width: 70px; max-width: 70px;}
-.w-100 { width: 100px; max-width: 100px;}
-.w-120 { width: 120px; max-width: 120px;}
-.w-130 { width: 130px; max-width: 130px;}
-.w-140 { width: 140px; max-width: 140px;}
-.w-150 { width: 150px; max-width: 150px;}
-.w-400 { width: 400px; max-width: 400px;}
-.w-500 { width: 500px; max-width: 500px;}
-
 .collapse-all.active, .expanded-all.active {
   color: #0089d2;
 }
@@ -54,8 +36,21 @@
   }
 
 </style>
+<div class="app-main__inner">
+  <div class="row">
+    <div class="main-card mb-3 card">
+      <div class="card-body">
+        <div class="card-title d-inline-block">
+          <i class="fa fa-fw icon-gradient bg-ripe-malin" aria-hidden="true"></i>
+          </i>
+          {{ database.section }} - Disability Report
+        </div>
+      </div>
+    </div>
+  </div>
 
-<!-- top tiles -->
+
+</div>
 <div class="w-1002 col-sm-12 col-xs-12">
     <div class="x_panel">
       <div class="x_title">

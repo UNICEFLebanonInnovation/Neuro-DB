@@ -657,7 +657,6 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
                 return get_indicator_unit(indicator, value)
             if type(gov) == unicode:
                 for par in partner:
-                    # key = "{}-{}-{}".format(month, par, gov)
                     key = "{}-{}-{}".format(month, gov, par)
                     value += indicator['values_partners_gov'][key]
                 return get_indicator_unit(indicator, value)
@@ -746,19 +745,48 @@ def get_indicator_tag_value(indicator, tag):
 @register.assignment_tag
 def get_indicator_live_value(indicator, month=None, partner=None, gov=None):
     try:
-        if partner and gov and not partner == '0' and not gov == '0':
-            key = "{}-{}-{}".format(month, partner, gov)
-            return get_indicator_unit(indicator, indicator['values_partners_gov_live'][key])
-        if partner and not partner == '0':
-            key = "{}-{}".format(month, partner)
-            return get_indicator_unit(indicator, indicator['values_partners_live'][key])
+        value = 0
+        if partner and gov and not gov == '0':
+            if type(partner) == unicode:
+                key = "{}-{}-{}".format(month, gov, partner)
+                value += indicator['values_partners_gov_live'][key]
+                return get_indicator_unit(indicator, value)
+            if type(gov) == unicode:
+                for par in partner:
+                    key = "{}-{}-{}".format(month, gov, par)
+                    value += indicator['values_partners_gov_live'][key]
+                return get_indicator_unit(indicator, value)
+            else:
+                for par in partner:
+                    for g in gov:
+                        key = "{}-{}-{}".format(month, g, par)
+                        value += indicator['values_partners_gov_live'][key]
+                return get_indicator_unit(indicator, value)
+        if partner:
+            if type(partner) == unicode:
+                key = "{}-{}".format(month, partner)
+                value += indicator['values_partners_live'][key]
+                return get_indicator_unit(indicator, value)
+            for par in partner:
+                key = "{}-{}".format(month, par)
+                value += indicator['values_partners_live'][key]
+            return get_indicator_unit(indicator, value)
+        if gov:
+            if type(gov) == unicode:
+                key = "{}-{}".format(month, gov)
+                value += indicator['values_gov_live'][key]
+                return get_indicator_unit(indicator, value)
+            for gv in gov:
+                key = "{}-{}".format(month, gv)
+                if key in indicator['values_gov_live']:
+                    value += indicator['values_gov_live'][key]
+            return get_indicator_unit(indicator, value)
         if gov and not gov == '0':
             key = "{}-{}".format(month, gov)
             return get_indicator_unit(indicator, indicator['values_gov_live'][key])
 
         return get_indicator_unit(indicator, indicator['values_live'][str(month)])
     except Exception as ex:
-        # print(ex)
         return get_indicator_unit(indicator, 0)
 
 

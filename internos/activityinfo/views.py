@@ -1157,9 +1157,13 @@ class LiveReportView(TemplateView):
     def get_context_data(self, **kwargs):
         selected_filter = False
         selected_partner = self.request.GET.get('partner', 0)
+        selected_partners = self.request.GET.getlist('partners', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorate = self.request.GET.get('governorate', 0)
+        selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+
+
 
         partner_info = {}
         today = datetime.date.today()
@@ -1184,19 +1188,11 @@ class LiveReportView(TemplateView):
             except Exception as ex:
                 # print(ex)
                 pass
-
-        if selected_partner or selected_governorate:
+        if selected_partners or selected_governorates:
             selected_filter = True
 
-        if selected_partner == '0' and selected_governorate == '0':
-            selected_filter = False
-
-        partners = {}
-        for partner in report.values('partner_label', 'partner_id').distinct():
-            partners[partner['partner_id']] = partner['partner_label']
-        governorates = {}
-        for gov in report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct():
-            governorates[gov['location_adminlevel_governorate_code']] = gov['location_adminlevel_governorate']
+        partners = report.values('partner_label', 'partner_id').distinct()
+        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
         if database.mapped_db:
@@ -1234,9 +1230,9 @@ class LiveReportView(TemplateView):
         ).distinct()
 
         return {
-            'selected_partner': selected_partner,
+            'selected_partners': selected_partners,
             'selected_partner_name': selected_partner_name,
-            'selected_governorate': selected_governorate,
+            'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
             'reports': report.order_by('id'),
             'month': month,

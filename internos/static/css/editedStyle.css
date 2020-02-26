@@ -32,15 +32,21 @@ font-size:20px;
 }
 @media only screen and (min-width:1024px) and (max-width:1899px) {
 .card-body .table-responsive{
-    /*max-width:900px !important*/
+   max-width:900px !important;
+
+    }
+    .tag-widget{
+      width:45%;
     }
 }
 
 @media only screen and (min-width:1900px){
   .card-body .table-responsive{
-    max-width:100% !important;
+    max-width:1500px !important;
     }
 }
+
+
 		 .dropdown-menu {
 			border-radius: 0;
 		  }
@@ -131,7 +137,6 @@ li.dropdown-item.active,li.dropdown-item:active {
 	 top: 0;
 	 box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 	 text-align:center;
-	 border:3px dashed #f2f2f2;
 	 vertical-align:middle;
 	 font-size:15px;
  }
@@ -143,8 +148,8 @@ font-size:15px;
 text-decoration:none !important;
 }
 
-.w-10 { width: 10%; text-align:center;}
-.w-150 { width: 50%}
+.w-10 { width: 10%; text-align:center; min-width:85px;}
+.w-150 { width: 50% ; min-width:180px;}
 
 #hpm_exporttable1 th{
 vertical-align:middle;
@@ -153,7 +158,6 @@ border-top:2px dashed #f2f2f2;
 	 position: sticky;
 	 top: 0;
 	 box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-	 border-top:3px dashed #f2f2f2;
 	 vertical-align:middle;
 	 font-size:15px;
 }
@@ -164,5 +168,31 @@ border-top:2px dashed #f2f2f2;
  background-color:#8FCAE7;
   font-weight: bold;
   font-size: 14px;"
-
   }
+  .dashboard_icons{
+ margin: 5px;
+  }
+.dashboard_icons a{
+padding : 5px;
+font-size:18px;
+}
+.dashboard_icons a:hover{
+text-decoration:none;
+}
+table tbody tr.master_indicator{
+background-color:#e0f3ff !important;
+font-weight: bold;
+font-size: 14px;
+border-bottom:2px solid #fff;
+}
+table tbody tr.individual_indicator{
+background-color:#dadada !important;
+font-weight: bold;
+font-size: 14px;
+border-bottom:2px solid #fff;
+}
+
+.tag-widget{
+margin-right:20px;
+margin-left:20px;
+}
