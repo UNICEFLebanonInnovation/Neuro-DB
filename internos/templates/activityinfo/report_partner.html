@@ -1,37 +1,18 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load staticfiles i18n %}
 {% load util_tags %}
 {% load static %}
 
-{% block project_title %}Neuro-DB{% endblock %}
-
 {% block content %}
 <style>
-.table-fixed {
-  box-shadow: -5px 7px 8px;
-  position: absolute;
-  margin-top: 12px;
-}
-.table thead {
-  background-color: #00AEEE;
-  color: white;
-}
-.w-30 { width: 30px; max-width: 30px;}
-.w-50 { width: 50px; max-width: 50px;}
-.w-70 { width: 70px; max-width: 70px;}
-.w-100 { width: 100px; max-width: 100px;}
-.w-120 { width: 120px; max-width: 120px;}
-.w-130 { width: 130px; max-width: 130px;}
-.w-140 { width: 140px; max-width: 140px;}
-.w-150 { width: 150px; max-width: 150px;}
-.w-400 { width: 400px; max-width: 400px;}
-.w-500 { width: 500px; max-width: 500px;}
-
 .collapse-all.active, .expanded-all.active {
   color: #0089d2;
 }
+
 .bootstrap-select button.dropdown-toggle {
-   color: white !important;
+    color: #3f6ad8 !important;
+    border-color: #3f6ad8 !important;
+    background-color:white !important;
 }
 .x_title .bootstrap-select {
   width: 80% !important;
@@ -44,100 +25,89 @@
 }
 
 </style>
-
-<!-- top tiles -->
-<div class="row" style="clear: both;">
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
-    <h3 style="margin-top: 0px;"><i class="fa fa-filter"></i> Filter by:</h3>
-  </div>
-
-
-  <form action="{% url 'activityinfo:report_partner' %}" method="get">
+<div class="app-main__inner">
+  <div class="app-page-title">
+    <div class="page-title-wrapper">
+       <form action="{% url 'activityinfo:report_partner' %}" method="get">
       <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
       <input type="hidden" name="indicator_id" value="{{ indicator.id }}" />
-
-      <div class="col-md-3 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by governorate">
-          <select class="selectpicker show-tick" title="Select a governorate" name="governorate" data-style="btn-primary" id="filter_govs">
+        <div class="page-title-heading" data-step="4" data-intro="Filter options by partner or governorate">
+           <div class="page-title-icon">
+              <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
+            </i>
+          </div>
+           <select class="dropdown mr-3" title="Select a governorate" name="governorate" data-style="btn-outline-primary" id="filter_govs">
               <option value="">All governorates</option>
               {% for gov in governorates %}
                   <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorate %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
               {% endfor %}
           </select>
-      </div>
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-success">Search</button>
-      </div>
+          <button type="submit" class="d-inline-block btn btn-outline-primary">Search</button>
 
-      <div class="col-md-3 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="6" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+    </div>
+       </form>
+        <div class="page-title-actions">
+          <div class="d-inline-block" data-step="5"
+            data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+            <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
+            <br />
+            email: {{ database.focal_point.email }} " data-placement="bottom" data-html="true"
+              class="btn-shadow mr-3 btn btn-outline-primary">
+              <i class="fa fa-user"></i>
+            </button>
 
-        <i class="fa fa-user faa-pulse animated-hover" data-toggle="tooltip" data-placement="bottom" data-html="true"
-           title="Database focal point: {{ database.focal_point }} <br/>
-                  email: {{ database.focal_point.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point.first_name }} </i>
-        <a href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database" data-toggle="tooltip" data-placement="bottom"
-           title="Send email to the database focal point" style="padding-left: 20px;">
-          <i class="fa fa-envelope-o faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
-        </a>
-
-        <ul class="nav navbar-left" style="margin-top: -7px;" data-step="10" data-intro="Download Dashboard report and raw data">
-          <li class="dropdown">
-            <a id="drop5" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
-               data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-                        <i class="fa fa-download faa-bounce animated-hover" style="font-size: 25px;"></i>
-              <span class="caret"></span>
+            <a class="btn shadow mr-3 btn-outline-dark"
+              href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database"
+              data-toggle="tooltip" data-placement="bottom" title="Send email to the database focal point">
+              <i class="fa fa-envelope"></i>
             </a>
-            <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
-              <li role="presentation" class="divider" style="margin-top: -1px;"></li>
-              <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Partner dashboard</a>
-              <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
-              <li role="presentation"><a href="#" id="export2" role="menuitem" tabindex="-1">Governorate dashboard</a>
-              <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
-            </ul>
-          </li>
-        </ul>
 
-        <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
-           title="Show me some tips" style="padding-left: 20px;">
-          <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
-        </a>
+            <a class="btn shadow mr-3 btn-outline-warning" href="javascript:void(0);"
+              onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip"
+              data-placement="bottom" title="Show me some tips">
+             <i class="fa fa-lightbulb" aria-hidden="true"></i>
+            </a>
 
-      </div>
-
-  </form>
-
+          </div>
+        </div>
+  </div>
 </div>
 
-<!-- /top tiles -->
-<div class="row">
-  <div class="w-1002 col-sm-12 col-xs-12">
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2>
-                      <strong>Dashboard - {{ database.label }} - 2019</strong>
-                    </h2>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="x_title">
-                    <form action="{% url 'activityinfo:report_partner' %}" method="get">
-                        <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
-                        <input type="hidden" name="governorate" value="{{ selected_governorate }}" />
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="main-card mb-3 card">
+        <div class="card-body">
+          <div class="card-title">
+         <span> Dashboard - {{ database.label }} - 2020</span>
+            <div class="dropdown d-inline-block" data-intro="Download Dashboard report and raw data">
+              <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
+                data-toggle="dropdown" class="mb-2 mr-2 dropdown-toggle btn btn-link">
+                <i class="fa fa-download"></i>
+              </button>
+              <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7" >
+                <button type="button" tabindex="0" id="export1" class="dropdown-item">Partner Dashboard</button>
+                <div tabindex="-1" class="dropdown-divider"></div>
+                <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;" id="export2" role="menuitem" >Governorate dashboard</a>
+                <div tabindex="-1" class="dropdown-divider"></div>
+              </div>
+            </div>
+          </div>
+          <form action="{% url 'activityinfo:report_partner' %}" method="get">
+            <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
+            <input type="hidden" name="governorate" value="{{ selected_governorate }}"/>
+            <div  class="d-inline-block" data-intro="Go to specific Indicator">
+              <select class="dropdown" data-style="btn-primary" data-live-search="true"
+                      name="indicator_id" id="filter_indicator">
+                {% for item in indicators %}
+                <option value="{{ item.id }}" {% if item.id == selected_indicator %}selected{% endif %}>{{ item.name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+             <button type="submit" class="btn d-inline-block btn-outline-primary">Go</button>
+          </form>
 
-                        <div class="col-md-10 col-sm-4 col-xs-6" style="overflow: unset !important; padding-left: 2px;" data-step="57" data-intro="Go to specific Indicator">
-                            <select class="selectpicker show-tick" data-style="btn-primary" data-live-search="true" name="indicator_id" id="filter_indicator">
-                              {% for item in indicators %}
-                                <option value="{{ item.id }}" {% if item.id == selected_indicator %}selected{% endif %}>{{ item.name }}</option>
-                              {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                          <button type="submit" class="btn btn-success">Go</button>
-                        </div>
-                    </form>
-                    <div class="clearfix"></div>
-                  </div>
-
-                  <div class="x_content" style="">
-
-                    <table id="exporttable1" content="{{ database.label }}_Partners_Dashboard.csv"
+           <table id="exporttable1" content="{{ database.label }}_Partners_Dashboard.csv"
                            data-tableName="Dashboard - {{ database.label }} - 2019"
                            class="table" style="width: 800px;">
                       <thead>
@@ -162,11 +132,7 @@
                         {% endfor %}
                       </tbody>
                     </table>
-                  </div>
-
-                  <div class="x_content" style="">
-
-                    <table id="exporttable2" content="{{ database.label }}_Governorates_Dashboard.csv"
+           <table id="exporttable2" content="{{ database.label }}_Governorates_Dashboard.csv"
                            data-tableName="Dashboard - {{ database.label }} - 2019"
                            class="table" style="width: 800px;">
                       <thead>
@@ -191,37 +157,48 @@
                         {% endfor %}
                       </tbody>
                     </table>
-                  </div>
-
-                  <div style="position: absolute; right: 20px;">
+          <div style="position: absolute; right: 20px;">
                     <div id="mapView" class="col-lg-8"></div>
                   </div>
         </div>
+      </div>
+    </div>
   </div>
-
 </div>
-<br />
-
-
 {% endblock content %}
 
 {% block extra_js %}
+  <script src="{% static 'vendors/bootstrap/dist/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
   <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
-
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
 
 {% include 'activityinfo/map.html' %}
 
 <script>
 
-$(document).ready(function(){
+  var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
 
-    $('#filter_indicator').selectpicker();
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+};
+  $(document).ready(function () {
+
+    var id = getUrlParameter('ai_id');
+    var selected_li=$('li#'+id).find('a');
+    var parent = selected_li.parent();
+    parent.addClass("mm-active");
+    selected_li.addClass("mm-active");
+
+ $('#filter_indicator').selectpicker();
 
 function download_csv(csv, filename) {
     var csvFile;

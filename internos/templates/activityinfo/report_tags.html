@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load staticfiles i18n %}
 {% load util_tags %}
 {% load static %}
@@ -7,30 +7,16 @@
 
 {% block content %}
 <style>
-.table-fixed {
-  box-shadow: -5px 7px 8px;
-  position: absolute;
-  margin-top: 12px;
-}
-.table thead {
-  background-color: #00AEEE;
-  color: white;
-}
-.w-70 { width: 70px; max-width: 70px;}
-.w-100 { width: 100px; max-width: 100px;}
-.w-120 { width: 120px; max-width: 120px;}
-.w-130 { width: 130px; max-width: 130px;}
-.w-140 { width: 140px; max-width: 140px;}
-.w-150 { width: 150px; max-width: 150px;}
-.w-400 { width: 400px; max-width: 400px;}
-.w-500 { width: 500px; max-width: 500px;}
-
 .collapse-all.active, .expanded-all.active {
   color: #0089d2;
 }
   svg {
     width: 100%;
     height: 100%;
+  }
+  svg .legend{
+    width:100%;
+    height:100%
   }
 
   path.slice{
@@ -43,211 +29,221 @@
     stroke-width: 2px;
     fill: none;
   }
-  .chart_top {
-      float: left;
-      width: 350px;
-  }
-
 </style>
 
-<!-- top tiles -->
-<div class="row tile_count">
-
-  <div class="chart_top">
-    <span class="count_top"><i class="fa fa-info"></i> Disabilities</span>
-    <div class="" id="chart-1"></div>
-  </div>
-
-  <div class="chart_top">
-    <span class="count_top"><i class="fa fa-info"></i> Nationalities</span>
-    <div class="" id="chart-2"></div>
-  </div>
-
-  <div class="chart_top">
-    <span class="count_top"><i class="fa fa-info"></i> Gender</span>
-    <div class="" id="chart-3"></div>
-  </div>
-
-  <div class="chart_top">
-    <span class="count_top"><i class="fa fa-info"></i> Age Group</span>
-    <div class="" id="chart-4"></div>
-  </div>
-
-</div>
-
-<!-- /top tiles -->
-<div class="row" style="min-width: 2100px;">
-  <div class="w-1002 col-sm-12 col-xs-12">
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2>
-                      <strong>Dashboard - {{ database.label }} - 2019</strong>
-                      <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
-                             autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
-                             aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
-                             style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="8" data-intro="Search for a specific Indicator">
-                    </h2>
-                    <ul class="nav navbar-left" style="margin-top: -7px;" data-step="10" data-intro="Download Dashboard report and raw data">
-                      <li class="dropdown">
-                        <a id="drop5" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
-                           data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-                                    <i class="fa fa-download faa-bounce animated-hover" style="font-size: 25px;"></i>
-                          <span class="caret"></span>
-                        </a>
-                        <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
-                          <li role="presentation" class="divider" style="margin-top: -1px;"></li>
-                          <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Current dashboard</a>
-                          <li role="presentation" class="divider"></li>
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full raw data</a>
-                          <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
-                        </ul>
-                      </li>
-                    </ul>
-                    <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                    </ul>
-                    <div class="clearfix"></div>
-                  </div>
-
-                  <div class="x_content" style="display:none;">
-                    <table id="exportheader" class="table table-striped table-bordered" style="margin-left: -3px; margin-bottom: -3px; box-shadow: -5px 5px 10px;">
-                      <thead>
-                        <tr>
-                          <th content="Indicator ID" style="vertical-align: middle; width: 99px; max-width: 99px;">Indicator ID</th>
-                          <th content="ActivityInfo Indicators" style="vertical-align: middle; width: 397px; max-width: 397px;">ActivityInfo Indicators</th>
-                          <th content="RWP" style="vertical-align: middle; width: 98px; max-width: 98px;">RWP</th>
-                          <th content="Target" style="vertical-align: middle;  width: 98px; max-width: 98px;">Target</th>
-                          <th content="Cumulative Results of All Months" style="vertical-align: middle; width: 127px; max-width: 127px;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
-                            Cumulative Results <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
-                          <th content="Total Percentage achieved of all months" style="vertical-align: middle; width: 127px; max-width: 127px;" data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">
-                            % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
-                          <th content="Status" style="vertical-align: middle; width: 69px; max-width: 69px;">Status</th>
-                          {% for tag in tags_gender %}
-                            <th content="{{ tag.label }}" style="vertical-align: middle;">{{ tag.label }}</th>
-                          {% endfor %}
-                        </tr>
-                      </thead>
-                    </table>
-                  </div>
-
-                  <div class="x_content" style="">
-
-                    <table id="exporttable1" content="{{ month_name }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard.csv"
-                           data-tableName="Dashboard - {{ database.label }} - 2019"
-                           class="table table-striped table-bordered">
-                      <thead>
-                        <tr>
-                          <th class="w-100" content="Indicator ID" style="vertical-align: middle;">Indicator ID</th>
-                          <th class="w-400" content="ActivityInfo Indicators" style="vertical-align: middle;">ActivityInfo Indicators</th>
-                          <th class="w-100" content="RWP" style="vertical-align: middle;">RWP</th>
-                          <th class="w-100" content="Target" style="vertical-align: middle;">Target</th>
-                          <th class="w-130" content="Cumulative Results of All Months" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
-                            Cumulative Results <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
-                          <th class="w-130" content="Total Percentage achieved of all months" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">
-                            % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
-                          <th class="w-70" content="Status" style="vertical-align: middle;">Status</th>
-
-                          {% for tag in tags_gender %}
-                            <th content="{{ tag.tag_gender__label }}" style="vertical-align: middle;">{{ tag.tag_gender__label }}</th>
-                          {% endfor %}
-
-                          {% for tag in tags_nationality %}
-                            <th content="{{ tag.tag_nationality__label }}" style="vertical-align: middle;">{{ tag.tag_nationality__label }}</th>
-                          {% endfor %}
-
-                          {% for tag in tags_age %}
-                            <th content="{{ tag.tag_age__label }}" style="vertical-align: middle;">{{ tag.tag_age__label }}</th>
-                          {% endfor %}
-
-                          {% for tag in tags_disability %}
-                            <th content="{{ tag.tag_disability__label }}" style="vertical-align: middle;">{{ tag.tag_disability__label }}</th>
-                          {% endfor %}
-
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for item in master_indicators %}
-                          {% get_indicator_cumulative item month selected_partners selected_governorate as cumulative_value %}
-
-                          <tr class="level1" itemid="{{ item.id }}">
-                            <th colspan="2" class="w-500">{{ item.name }}</th>
-                              <td class="w-100">{{ item.awp_code }}</td>
-                              <td class="w-100">
-                                {% if item.measurement_type == 'percentage' %}
-                                  {{ item.target }}%
-                                {% else %}
-                                  {{ item.target|number_format }}
-                                {% endif %}
-                              </td>
-                              <td class="w-130">
-                                {{ cumulative_value }}
-                              </td>
-                              <td class="w-130">
-                                {% get_indicator_achieved item month selected_partners selected_governorate as achieved %}
-                                {{ achieved }}%
-                              </td>
-                              <td class="w-70" style="background-color:{{ item.status_color }}; color: #FFF;">{{ item.status }}</td>
-
-                              {% for tag in tags_gender %}
-                                <td>
-                                  {% get_indicator_tag_value item tag.tag_gender__name as value %}
-                                  {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
-                                </td>
-                              {% endfor %}
-
-                              {% for tag in tags_nationality %}
-                                <td>
-                                  {% get_indicator_tag_value item tag.tag_nationality__name as value %}
-                                  {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
-                                </td>
-                              {% endfor %}
-
-                              {% for tag in tags_age %}
-                                <td>
-                                  {% get_indicator_tag_value item tag.tag_age__name as value %}
-                                  {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
-                                </td>
-                              {% endfor %}
-
-                              {% for tag in tags_disability %}
-                                <td>
-                                  {% get_indicator_tag_value item tag.tag_disability__name as value %}
-                                  {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
-                                </td>
-                              {% endfor %}
-
-                          </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
+<div class="app-main__inner">
+  <div class="app-page-title">
+      <div class="page-title-wrapper">
+        <div class="page-title-heading">
+          <div class="page-title-icon">
+           <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title=""></i>
+            </i>
+          </div>
+          <div> {{ database.label }} - Tags - 2020 </div>
         </div>
+        <div class="page-title-actions">
+
+        </div>
+      </div>
   </div>
+  <div class="row mt-3">
+      <div class="tag-widget">
+        <div class="card mb-3 widget-content">
+          <div class="widget-content-outer">
+            <div class="widget-content-wrapper" style="display:block !important">
+              <div class="widget-content-left">
+                <div class="widget-heading">
+                  <i class="fa fa-info"></i> Disabilities</div>
+              </div>
+              <div class="" id="chart-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tag-widget">
+        <div class="card mb-3 widget-content">
+          <div class="widget-content-outer">
+            <div class="widget-content-wrapper" style="display:block !important">
+              <div class="widget-content-left">
+                <div class="widget-heading"><i class="fa fa-info"></i> Nationalities</div>
+              </div>
+              <div class="" id="chart-2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tag-widget">
+        <div class="card mb-3 widget-content">
+          <div class="widget-content-outer">
+            <div class="widget-content-wrapper" style="display:block !important">
+              <div class="widget-content-left">
+                <div class="widget-heading"><i class="fa fa-info"></i> Gender</div>
+              </div>
+              <div class="" id="chart-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tag-widget">
+        <div class="card mb-3 widget-content">
+          <div class="widget-content-outer">
+            <div class="widget-content-wrapper" style="display:block !important">
+              <div class="widget-content-left">
+                <div class="widget-heading"><i class="fa fa-info"></i> Age Group</div>
+              </div>
+              <div class="" id="chart-4"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="main-card mb-3 card">
+      <div class="card-body">
+        <div class="card-title d-inline-block">
+          <i class="fa fa-fw icon-gradient  bg-malibu-beach" aria-hidden="true"></i>
+          </i>
+          Dashboard - {{ database.label }} - 2020
+          <div class="dropdown d-inline-block" data-intro="Download Dashboard report and raw data">
+            <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
+                    data-toggle="dropdown" class="mb-2 mr-2 dropdown-toggle btn btn-link">
+              <i class="fa fa-download"></i>
+              <span class="caret"></span>
+            </button>
+            <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
+              <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>
+              <div tabindex="-1" class="dropdown-divider"></div>
+              <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                 href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full
+                raw data</a>
+              <div tabindex="-1" class="dropdown-divider"></div>
+            </div>
+          </div>
+        </div>
+        <div class="search-wrapper d-inline-block" style="position: absolute;" data-step="8"
+             data-intro="Search for a specific Indicator">
+          <div class="input-holder" id="searchdiv">
+            <input type="text" class="search-input" id="search-input" onkeyup="search()" placeholder="Type to search">
+            <button class="search-icon"><span></span></button>
+          </div>
+          <button class="close" id="close-search"></button>
+        </div>
+        <div class="table-responsive" style="position: relative;overflow: scroll;height: 600px; max-width:1500px">
+          <table class="mb-0 table table-striped table-hover" id="exportheader"
+                 content="{{ month_name }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard.csv"
+                 data-tableName="Dashboard - {{ database.label }} - 2020">
+            <thead>
+            <tr>
+              <th class="w-150" content="ActivityInfo Indicators">Indicator Name</th>
+              <th class="w-10" content="RWP">RWP Code</th>
+              <th class="w-10" content="Target" >Target</th>
+              <th class="w-10" content="Cumulative Results of All Months" data-toggle="tooltip" data-placement="top"
+                  title="Cumulative Results of All Months">
+                Cumulative Results <i class="fa fa-question-circle-o"></i>
+              </th>
+              <th class="w-150" content="Total Percentage achieved of all months" data-toggle="tooltip"
+                  data-placement="top" title="Total Percentage achieved of all months">
+                Percentage Achieved <i class="fa fa-question-circle-o"></i>
+              </th>
+              <th class="w-10" content="Status">Status</th>
 
+              {% for tag in tags_gender %}
+              <th content="{{ tag.tag_gender__label }}">{{ tag.tag_gender__label }}</th>
+              {% endfor %}
+
+              {% for tag in tags_nationality %}
+              <th class="w-10" content="{{ tag.tag_nationality__label }}">{{ tag.tag_nationality__label }}</th>
+              {% endfor %}
+
+              {% for tag in tags_age %}
+              <th class="w-10" content="{{ tag.tag_age__label }}">{{ tag.tag_age__label }}</th>
+              {% endfor %}
+
+              {% for tag in tags_disability %}
+              <th class="w-10" content="{{ tag.tag_disability__label }}">{{ tag.tag_disability__label }}</th>
+              {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in master_indicators %}
+            {% get_indicator_cumulative item month selected_partners selected_governorate as cumulative_value %}
+
+            <tr class="level1" itemid="{{ item.id }}">
+              <td class="w-150">{{ item.name }}</td>
+              <td class="w-10">{{ item.awp_code }}</td>
+              <td class="w-10">
+                {% if item.measurement_type == 'percentage' %}
+                {{ item.target }}%
+                {% else %}
+                {{ item.target|number_format }}
+                {% endif %}
+              </td>
+              <td class="w-10">
+                {{ cumulative_value }}
+              </td>
+              <td class="w-10">
+                {% get_indicator_achieved item month selected_partners selected_governorate as achieved %}
+                {{ achieved }}%
+              </td>
+              <td class="w-10">
+                <div class='badge {{ item.status_color }}'>{{ item.status }}</div>
+              </td>
+
+              {% for tag in tags_gender %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_gender__name as value %}
+                {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_nationality %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_nationality__name as value %}
+                {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_age %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_age__name as value %}
+                {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_disability %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_disability__name as value %}
+                {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
+              </td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<br />
+</div>
 
-
-{% endblock content %}
+  {% endblock content %}
 
 {% block extra_js %}
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
   <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
 
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
 
-<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
-<script type="text/javascript" src="{% static 'js/d3.chart.js' %}"></script>
+  <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript" src="{% static 'js/d3.chart.js' %}"></script>
 
-<script>
+  <script>
 
 
 var range = ["#31B6FD", "#F5C040", "#A5D027", "#5BCF78", "#4584D3"];
@@ -257,7 +253,7 @@ var data1 = '{{ disability_values|safe }}';
 data1 = JSON.parse(data1);
 var domain1 = '{{ disability_keys|safe }}';
 domain1 = JSON.parse(domain1)
-d3ChartPie(data1, '#chart-1', domain1, range, 200, 125);
+d3ChartPie(data1, '#chart-1', domain1, range, 180, 125);
 
 // Nationalities
 var data2 = '{{ nationality_values|safe }}';
@@ -280,10 +276,30 @@ var domain4 = '{{ age_keys|safe }}';
 domain4 = JSON.parse(domain4)
 d3ChartPie(data4, '#chart-4', domain4, range, 200, 125);
 
-</script>
+  </script>
+  <script>
+  var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
 
-<script>
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
 
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+};
+  $(document).ready(function () {
+
+    var id = getUrlParameter('ai_id');
+    var selected_li=$('li#'+id).find('a');
+    var parent = selected_li.parent();
+    parent.addClass("mm-active");
+    selected_li.addClass("mm-active");
+    });
 
 function download_csv(csv, filename) {
     var csvFile;
@@ -314,7 +330,7 @@ function download_csv(csv, filename) {
 function export_table_to_csv(html, filename) {
 	var csv = [];
 	var rows_header = document.querySelectorAll("table#exportheader thead tr");
-	var rows = document.querySelectorAll("table#exporttable1 tbody tr");
+	var rows = document.querySelectorAll("table#exportheader tbody tr");
 
     for (var i = 0; i < rows_header.length; i++) {
 		var row = [], cols = rows_header[i].querySelectorAll("th");
@@ -344,13 +360,13 @@ function export_table_to_csv(html, filename) {
 
 document.querySelector("#export1").addEventListener("click", function () {
     var html = document.querySelector("table").outerHTML;
-    var file_name = $("#exporttable1").attr("content");
+    var file_name = $("#exportheader").attr("content");
 	  export_table_to_csv(html, file_name);
 });
 
-$('input#search-input').quicksearch('table#exporttable1 tbody tr', {
+$('input#search-input').quicksearch('table#exportheader tbody tr', {
 	'delay': 300,
-	'selector': 'th',
+	'selector': 'td',
 	'stripeRows': ['odd', 'even'],
 	'loader': 'span.loading',
 	'bind': 'keyup click input',
@@ -368,6 +384,6 @@ $('input#search-input').quicksearch('table#exporttable1 tbody tr', {
 	}
 });
 
-    </script>
 
+  </script>
 {% endblock %}

@@ -134,8 +134,11 @@ class ReportView(TemplateView):
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
         if database.mapped_db:
-            master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
-
+            master_indicators1 = master_indicators.filter(master_indicator=True)
+            master_indicators2 = master_indicators.filter(
+                sub_indicators__isnull=True, individual_indicator=True
+            )
+            master_indicators = master_indicators1 | master_indicators2
         none_ai_indicators = Indicator.objects.filter(activity__none_ai_database=database).exclude(is_sector=True)
 
         master_indicators = master_indicators.values(
@@ -196,10 +199,10 @@ class ReportView(TemplateView):
         for i in range(1, 4):
             months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         return {
-            'selected_partner': selected_partner,
+            # 'selected_partner': selected_partner,
             'selected_partners': selected_partners,
             'selected_partner_name': selected_partner_name,
-            'selected_governorate': selected_governorate,
+            # 'selected_governorate': selected_governorate,
             'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
             'reports': report.order_by('id'),
@@ -1154,9 +1157,13 @@ class LiveReportView(TemplateView):
     def get_context_data(self, **kwargs):
         selected_filter = False
         selected_partner = self.request.GET.get('partner', 0)
+        selected_partners = self.request.GET.getlist('partners', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorate = self.request.GET.get('governorate', 0)
+        selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+
+
 
         partner_info = {}
         today = datetime.date.today()
@@ -1181,19 +1188,11 @@ class LiveReportView(TemplateView):
             except Exception as ex:
                 # print(ex)
                 pass
-
-        if selected_partner or selected_governorate:
+        if selected_partners or selected_governorates:
             selected_filter = True
 
-        if selected_partner == '0' and selected_governorate == '0':
-            selected_filter = False
-
-        partners = {}
-        for partner in report.values('partner_label', 'partner_id').distinct():
-            partners[partner['partner_id']] = partner['partner_label']
-        governorates = {}
-        for gov in report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct():
-            governorates[gov['location_adminlevel_governorate_code']] = gov['location_adminlevel_governorate']
+        partners = report.values('partner_label', 'partner_id').distinct()
+        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
         if database.mapped_db:
@@ -1231,9 +1230,9 @@ class LiveReportView(TemplateView):
         ).distinct()
 
         return {
-            'selected_partner': selected_partner,
+            'selected_partners': selected_partners,
             'selected_partner_name': selected_partner_name,
-            'selected_governorate': selected_governorate,
+            'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
             'reports': report.order_by('id'),
             'month': month,

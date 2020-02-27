@@ -141,8 +141,8 @@ function d3ChartPie(data, mchart, domain, range, width, height){
                         .attr("class","legend")
                         .attr("x", width - padding.right - 65)
                         .attr("y", 35)
-                        .attr("height", 100)
-                        .attr("width",100);
+                        .attr("height", 120)
+                        .attr("width",120);
 
         legend.selectAll("g").data(data)
               .enter()
@@ -287,8 +287,8 @@ function d3ChartBar(dataset, mbars, chart_domain, domain, range) {
 								.attr("class","legend")
 								.attr("x", w - padding.right - 65)
 								.attr("y", 25)
-								.attr("height", 100)
-								.attr("width",100);
+								.attr("height", 120)
+								.attr("width",120);
 
 				legend.selectAll("g").data(dataset)
 					  .enter()

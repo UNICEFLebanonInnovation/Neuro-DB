@@ -57,20 +57,20 @@ def is_owner(user, instance):
 
 @register.filter(name='multiply')
 def multiply(value, arg):
-    return value*arg
+    return value * arg
 
 
 @register.filter(name='percentage')
 def percentage(number, total):
     if number and total:
-        return round((number*100.0)/total, 2)
+        return round((number * 100.0) / total, 2)
     return 0
 
 
 @register.filter(name='percentage_int')
 def percentage_int(number, total):
     if number:
-        return int(round((number*100.0)/total, 2))
+        return int(round((number * 100.0) / total, 2))
     return 0
 
 
@@ -101,7 +101,6 @@ def number_format(value):
 
 @register.assignment_tag
 def to_display_indicator(selected_filters, cumulative_result):
-
     # if not selected_filters:
     #     return True
     #
@@ -113,7 +112,6 @@ def to_display_indicator(selected_filters, cumulative_result):
 
 @register.assignment_tag
 def get_indicator_unit(indicator, value):
-
     if not value:
         return '0'
 
@@ -566,10 +564,14 @@ def get_indicator_hpm_data(ai_id, month=None):
             'name': indicator.name,
             'cumulative': cumulative_result,
             'last_report_changes': last_report_changes,
-            'boys': str(round(indicator.values_tags['boys'])).replace('.0', '') if 'boys' in indicator.values_tags else 0,
-            'girls': str(round(indicator.values_tags['girls'])).replace('.0', '') if 'girls' in indicator.values_tags else 0,
-            'male': str(round(indicator.values_tags['male'])).replace('.0', '') if 'male' in indicator.values_tags else 0,
-            'female': str(round(indicator.values_tags['female'])).replace('.0', '') if 'female' in indicator.values_tags else 0,
+            'boys': str(round(indicator.values_tags['boys'])).replace('.0',
+                                                                      '') if 'boys' in indicator.values_tags else 0,
+            'girls': str(round(indicator.values_tags['girls'])).replace('.0',
+                                                                        '') if 'girls' in indicator.values_tags else 0,
+            'male': str(round(indicator.values_tags['male'])).replace('.0',
+                                                                      '') if 'male' in indicator.values_tags else 0,
+            'female': str(round(indicator.values_tags['female'])).replace('.0',
+                                                                          '') if 'female' in indicator.values_tags else 0,
             'bln': str("{:,}".format(round(tag_prog_bln))).replace('.0', ''),
             'cbece': str("{:,}".format(round(tag_prog_cbece))).replace('.0', ''),
             'alp': str("{:,}".format(round(tag_prog_alp))).replace('.0', ''),
@@ -578,7 +580,8 @@ def get_indicator_hpm_data(ai_id, month=None):
             'last_report_changes_cbece': str("{:,}".format(last_report_changes_cbece)).replace('.0', ''),
             'last_report_changes_alp': str("{:,}".format(last_report_changes_alp)).replace('.0', ''),
             'lebanese': str("{:,}".format(tag_nath_leb)).replace('.0', ''),
-            'non_lebanese': str("{:,}".format(tag_nath_syr + tag_nath_prs + tag_nath_prl + tag_nath_oth)).replace('.0', ''),
+            'non_lebanese': str("{:,}".format(tag_nath_syr + tag_nath_prs + tag_nath_prl + tag_nath_oth)).replace('.0',
+                                                                                                                  ''),
             'last_report_changes_lebanese': str("{:,}".format(last_report_changes_leb)).replace('.0', ''),
             'last_report_changes_non_lebanese': str("{:,}".format(last_report_changes_syr
                                                                   + last_report_changes_prs + last_report_changes_prl
@@ -652,11 +655,17 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
                 key = "{}-{}-{}".format(month, gov, partner)
                 value += indicator['values_partners_gov'][key]
                 return get_indicator_unit(indicator, value)
-            for par in partner:
-                # key = "{}-{}-{}".format(month, par, gov)
-                key = "{}-{}-{}".format(month, gov, par)
-                value += indicator['values_partners_gov'][key]
-            return get_indicator_unit(indicator, value)
+            if type(gov) == unicode:
+                for par in partner:
+                    key = "{}-{}-{}".format(month, gov, par)
+                    value += indicator['values_partners_gov'][key]
+                return get_indicator_unit(indicator, value)
+            else:
+                for par in partner:
+                    for g in gov:
+                        key = "{}-{}-{}".format(month, g, par)
+                        value += indicator['values_partners_gov'][key]
+                return get_indicator_unit(indicator, value)
         if partner:
             if type(partner) == unicode:
                 key = "{}-{}".format(month, partner)
@@ -736,19 +745,48 @@ def get_indicator_tag_value(indicator, tag):
 @register.assignment_tag
 def get_indicator_live_value(indicator, month=None, partner=None, gov=None):
     try:
-        if partner and gov and not partner == '0' and not gov == '0':
-            key = "{}-{}-{}".format(month, partner, gov)
-            return get_indicator_unit(indicator, indicator['values_partners_gov_live'][key])
-        if partner and not partner == '0':
-            key = "{}-{}".format(month, partner)
-            return get_indicator_unit(indicator, indicator['values_partners_live'][key])
+        value = 0
+        if partner and gov and not gov == '0':
+            if type(partner) == unicode:
+                key = "{}-{}-{}".format(month, gov, partner)
+                value += indicator['values_partners_gov_live'][key]
+                return get_indicator_unit(indicator, value)
+            if type(gov) == unicode:
+                for par in partner:
+                    key = "{}-{}-{}".format(month, gov, par)
+                    value += indicator['values_partners_gov_live'][key]
+                return get_indicator_unit(indicator, value)
+            else:
+                for par in partner:
+                    for g in gov:
+                        key = "{}-{}-{}".format(month, g, par)
+                        value += indicator['values_partners_gov_live'][key]
+                return get_indicator_unit(indicator, value)
+        if partner:
+            if type(partner) == unicode:
+                key = "{}-{}".format(month, partner)
+                value += indicator['values_partners_live'][key]
+                return get_indicator_unit(indicator, value)
+            for par in partner:
+                key = "{}-{}".format(month, par)
+                value += indicator['values_partners_live'][key]
+            return get_indicator_unit(indicator, value)
+        if gov:
+            if type(gov) == unicode:
+                key = "{}-{}".format(month, gov)
+                value += indicator['values_gov_live'][key]
+                return get_indicator_unit(indicator, value)
+            for gv in gov:
+                key = "{}-{}".format(month, gv)
+                if key in indicator['values_gov_live']:
+                    value += indicator['values_gov_live'][key]
+            return get_indicator_unit(indicator, value)
         if gov and not gov == '0':
             key = "{}-{}".format(month, gov)
             return get_indicator_unit(indicator, indicator['values_gov_live'][key])
 
-        return get_indicator_unit(indicator,indicator['values_live'][str(month)])
+        return get_indicator_unit(indicator, indicator['values_live'][str(month)])
     except Exception as ex:
-        # print(ex)
         return get_indicator_unit(indicator, 0)
 
 
@@ -780,7 +818,6 @@ def get_array_value(data, key1=None, key2=None, key3=None):
 
 @register.assignment_tag
 def get_trip_values(data, partner=None, offices=None, section=None):
-
     result = 0
 
     if not type(section) == int:
