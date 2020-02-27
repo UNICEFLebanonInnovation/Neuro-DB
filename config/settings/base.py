@@ -137,7 +137,7 @@ MANAGERS = ADMINS
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-    'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neuroDb1'),
+    'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
     # 'default': env.db('DATABASE_URL', default='postgres://postgres:password1@localhost:5432/internos'),
 }
 # DATABASES = {
@@ -146,7 +146,7 @@ DATABASES = {
 #          'NAME': 'neurodb',
 #          'USER': 'postgres',
 #          'PASSWORD': 'ILOVEunicef990',
-#          'HOST': 'Lebapostgres01.unicef.org',
+#          'HOST': 'localhost',
 #          'PORT': '5432',
 #      }
 # }
