@@ -140,6 +140,7 @@ DATABASES = {
     'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
     # 'default': env.db('DATABASE_URL', default='postgres://postgres:password1@localhost:5432/internos'),
 }
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
