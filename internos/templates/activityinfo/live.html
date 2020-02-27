@@ -2,9 +2,6 @@
 {% load staticfiles i18n %}
 {% load util_tags %}
 {% load static %}
-
-{% block project_title %}Neuro-DB{% endblock %}
-
 {% block content %}
 
 <div class="app-main__inner">
@@ -76,8 +73,7 @@
               <a href="#" class="expanded-all"><i
                 class="fa fa-bars"></i></a>
             </span>
-            Dashboard - {{ database.label }} - 2020
-
+             Live Dashboard - {{ database.label }} - 2020
             <div class="dropdown d-inline-block" data-intro="Download Dashboard report and raw data">
               <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
                       data-toggle="dropdown" class="mb-2 mr-2 dropdown-toggle btn btn-link">

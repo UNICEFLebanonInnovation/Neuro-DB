@@ -14,7 +14,7 @@
         <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
         <div class="page-title-heading" data-step="4" data-intro="Filter options by partner or governorate">
           <div class="page-title-icon">
-              <i class="fa fa-fw icon-gradient bg-ripe-malin" aria-hidden="true" title="Copy to use filter"></i>
+              <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
             </i>
           </div>
                <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
@@ -73,27 +73,27 @@
             </span>
           Dashboard - {{ database.label }} - 2020
               <div class="d-inline-block dashboard_icons">
-             <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display indicators data disaggregated" >
+             <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display indicators data disaggregated" class="text-info" >
                   <i class="fa fa-tags animated"></i>
                 </a>
-                <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring"
+                <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring" class="text-danger"
                     data-step="9" data-intro="Open live ActivityInfo Dashboard">
-                  <i class="fa fa-rss faa-flash animated" ></i>
+                  <i class="fa fa-rss faa-flash "></i>
                 </a>
-                <a href="{% url 'activityinfo:report_map' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display reported indicators on map"
+                <a  class="disabled" href="#" data-toggle="tooltip" data-placement="top" title="Display reported indicators on map" style=" color:currentColor;cursor: not-allowed; opacity: 0.5;text-decoration: none;"
                     data-step="15" data-intro="Display reported indicators on map">
                   <i class="fa fa-map" ></i>
                 </a>
-                <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display disability report"
+                <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display disability report" class="text-warning"
                     data-step="16" data-intro="Display disability report">
-                  <i class="fa fa-wheelchair" ></i>
+                  <i class="fa fa-wheelchair"></i>
                 </a>
           </div>
             <div class="dropdown d-inline-block" data-intro="Download Dashboard report and raw data">
               <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
                 data-toggle="dropdown" class="mb-2 mr-2 dropdown-toggle btn btn-link">
                 <i class="fa fa-download"></i>
-                <span class="caret"></span>
+
               </button>
               <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7" >
                 <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>
@@ -106,11 +106,11 @@
             </div>
           </div>
             <div class="search-wrapper d-inline-block" style="position: absolute;" data-step="8" data-intro="Search for a specific Indicator">
-                        <div class="input-holder" id="searchdiv">
-                            <input type="text" class="search-input" id="search-input" onkeyup="search()" placeholder="Type to search" >
-                            <button class="search-icon"><span></span></button>
-                        </div>
-                        <button class="close" id="close-search"></button>
+              <div class="input-holder" id="searchdiv">
+                  <input type="text" class="search-input" id="search-input" onkeyup="search()" placeholder="Type to search" >
+                  <button class="search-icon"><span></span></button>
+              </div>
+              <button class="close" id="close-search"></button>
             </div>
           <div class="table-responsive" style="position: relative;overflow: scroll;height: 600px;">
             <table class="mb-0 table table-striped table-hover" id="exportheader"
@@ -148,18 +148,19 @@
                   {% if item.master_indicator %}
                   <td  class="w-150">
                     {{ item.name }}
-                    <a href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                      target="_blank">
-                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+<!--                    href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"-->
+                    <a href="#"
+                      target="_blank" class="text-info">
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
                     </a>
                   </td>
                   {% else %}
 <!--                  <td class="w-10">{{ item.ai_id }}</td>-->
                   <td  class="w-150">
                     {{ item.name }}
-                    <a href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                      target="_blank">
-                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    <a href="#"
+                      target="_blank" class="text-info">
+                      <i class="fa fa-fw" aria-hidden="true" title=""></i>
                     </a>
                   </td>
                   {% endif %}
@@ -204,9 +205,9 @@
                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
                       data-placement="top" title="{{ item1.explication }}"></i>
                     {% endif %}
-                    <a href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                      target="_blank">
-                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    <a href="#"
+                      target="_blank" class="text-info">
+                     <i class="fa fa-fw" aria-hidden="true" title=""></i>
                     </a>
                   </td>
                   {% else %}
@@ -217,9 +218,9 @@
                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
                       data-placement="top" title="{{ item1.explication }}"></i>
                     {% endif %}
-                    <a href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                      target="_blank">
-                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    <a href="#"
+                      target="_blank" class="text-info">
+                     <i class="fa fa-fw" aria-hidden="true" title=""></i>
                     </a>
                   </td>
                   {% endif %}
@@ -259,9 +260,9 @@
                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
                       data-placement="top" title="{{ item2.explication }}"></i>
                     {% endif %}
-                    <a href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
-                      target="_blank">
-                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    <a href="#"
+                      target="_blank" class="text-info">
+                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
                     </a>
                   </td>
                   {% else %}
@@ -272,9 +273,9 @@
                     <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
                       data-placement="top" title="{{ item2.explication }}"></i>
                     {% endif %}
-                    <a href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
-                      target="_blank">
-                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    <a href="#"
+                      target="_blank" class="text-info">
+                     <i class="fa fa-fw" aria-hidden="true" title=""></i>
                     </a>
                   </td>
 
@@ -363,8 +364,8 @@
         <div class="row">
           <div class="col-md-12" style="font-size: 16px;">
             <i class="fa fa-user" style="color: #0089d2;"></i>
-            <a href="https://etools.unicef.org/pmp/partners/{{ partner_info.etl_id }}/details" target="_blank">
-              {{ partner_info.name }} <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+            <a href="https://etools.unicef.org/pmp/partners/{{ partner_info.etl_id }}/details" target="_blank" class="text-info">
+              {{ partner_info.name }} <i class="fa fa-fw" aria-hidden="true" title=""></i></i>
             </a>
           </div>
         </div>
@@ -396,7 +397,7 @@
             <i class="fa fa-file-text-o" style="font-size: 16px; color: #0089d2;"></i>
             <a href="https://etools.unicef.org/pmp/interventions/{{ inter.etl_id }}/details" target="_blank">
               {{ inter.number }}
-              <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+             <i class="fa fa-fw" aria-hidden="true" title=""></i>
             </a>
           </div>
           <div class="col-md-2">
@@ -435,7 +436,7 @@
             {{ partner_info.programmatic_visits.last_visit.travel.purpose }}
             <a href="https://etools.unicef.org/t2f/edit-travel/{{ partner_info.programmatic_visits.last_visit.travel.id }}"
               target="_blank">
-              <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+           <i class="fa fa-fw" aria-hidden="true" title=""></i>
             </a>
           </div>
           <div class="col-md-6">
@@ -456,7 +457,7 @@
             <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
             {{ partner_info.audits.last_audit }}
             <a href="https://etools.unicef.org/ap/audits/{{ partner_info.audits.last_audit.id }}" target="_blank">
-              <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+             <i class="fa fa-fw" aria-hidden="true" title=""></i>
             </a>
           </div>
         </div>
@@ -474,7 +475,7 @@
             {{ partner_info.micro_assessments.last_audit }}
             <a href="https://etools.unicef.org/ap/micro-assessments/{{ partner_info.micro_assessments.last_audit.id }}"
               target="_blank">
-              <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+             <i class="fa fa-fw" aria-hidden="true" title=""></i>
             </a>
           </div>
         </div>
@@ -492,7 +493,7 @@
             {{ partner_info.spot_checks.last_audit }}
             <a href="https://etools.unicef.org/ap/spot-checks/{{ partner_info.spot_checks.last_audit.id }}"
               target="_blank">
-              <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+              <i class="fa fa-fw" aria-hidden="true" title=""></i>
             </a>
           </div>
         </div>
@@ -510,7 +511,7 @@
             {{ partner_info.special_visits.last_audit }}
             <a href="https://etools.unicef.org/ap/special-visits/{{ partner_info.special_visits.last_audit.id }}"
               target="_blank">
-              <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+              <i class="fa fa-fw" aria-hidden="true" title=""></i>
             </a>
           </div>
         </div>

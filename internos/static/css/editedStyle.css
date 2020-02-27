@@ -22,7 +22,7 @@ margin-bottom:5px !important;
 .mr-left-5{
 margin-left:5px;
 }
-.card-title span a{
+.card-title span , .card-title span a{
  font-size:20px;
  padding-right:5px;
 }

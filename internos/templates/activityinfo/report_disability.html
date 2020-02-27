@@ -3,7 +3,6 @@
 {% load util_tags %}
 {% load static %}
 
-{% block project_title %}Neuro-DB{% endblock %}
 
 {% block content %}
 <style>
@@ -12,7 +11,6 @@
 }
   svg {
     width: 100%;
-    height: 100%;
   }
 
   path.slice{
@@ -26,8 +24,8 @@
     fill: none;
   }
   .chart_top {
-      <!--float: left;-->
-      width: 375px;
+   width:100%;
+   height:100%
   }
 
   g.x.axis g.tick text {
@@ -37,84 +35,97 @@
 
 </style>
 <div class="app-main__inner">
-  <div class="row">
-    <div class="main-card mb-3 card">
-      <div class="card-body">
-        <div class="card-title d-inline-block">
-          <i class="fa fa-fw icon-gradient bg-ripe-malin" aria-hidden="true"></i>
+
+  <div class="app-page-title">
+
+    <div class="page-title-wrapper">
+
+      <div class="page-title-heading">
+        <div class="page-title-icon">
+          <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true"></i>
           </i>
-          {{ database.section }} - Disability Report
+        </div>
+        <div> {{ database.section }} - Disability Report
+          <div class="page-title-subheading">
+          </div>
+        </div>
+        <div class="page-title-actions">
         </div>
       </div>
+
     </div>
+
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+
+       <div class="main-card mb-3 card">
+         <div class="card-body">
+           <h5 class="card-title">Disability types </h5>
+        <div class="chart_top">
+          <table class="table">
+            <thead>
+            <tr>
+              <th class="w-150"> Indicator Name</th>
+              {% for tag in tags_disability %}
+              <th content="{{ tag.tag_disability__label }}" style="vertical-align: middle;">{{ tag.tag_disability__label }}
+              </th>
+              {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in master_indicators %}
+            {% get_indicator_cumulative item as cumulative_value %}
+            <tr>
+              <th>{{ item.name }}</th>
+              {% for tag in tags_disability %}
+              {% get_indicator_tag_value item tag.tag_disability__name as value %}
+              <td>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar"
+                       aria-valuenow="{{ value|percentage_float:item.cumulative_values.months }}" aria-valuemin="0"
+                       aria-valuemax="100" style="{% if value != '0' %}width: 50%;{% endif %}">
+                    {{ value }}
+                  </div>
+                </div>
+              </td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+         </div>
+       </div>
+
+      <div class="main-card mb-3 card">
+         <div class="card-body">
+           <h5 class="card-title">Disability types </h5>
+        <div class="chart_top">
+          <div id="chart-1"></div>
+        </div>
+         </div>
+       </div>
+
+       <div class="main-card mb-3 card">
+         <div class="card-body">
+           <h5 class="card-title">Disability types by Partner  </h5>
+          <div id="chart-2"></div>
+        </div>
+       </div>
+
+     <div class="main-card mb-3 card">
+         <div class="card-body">
+           <h5 class="card-title">  Disability types by Governorate</h5>
+          <div id="chart-3"></div>
+        </div>
+     </div>
+    </div>
+
+
   </div>
 
-
 </div>
-<div class="w-1002 col-sm-12 col-xs-12">
-    <div class="x_panel">
-      <div class="x_title">
-        <h2>{{ database.section }} - Disability Report</h2>
-
-        <ul class="nav navbar-right panel_toolbox">
-          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-        </ul>
-        <div class="clearfix"></div>
-      </div>
-
-      <div class="x_content">
-
-        <div class="chart_top" style="float: left; width: 410px;">
-            <span class="count_top"><i class="fa fa-info"></i> Disability types</span>
-            <div id="chart-1"></div>
-        </div>
-
-        <div class="chart_top" style="float: left; min-width: 400px; min-height: 200px;">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th class="w-400">ActivityInfo Indicators</th>
-                  {% for tag in tags_disability %}
-                    <th content="{{ tag.tag_disability__label }}" style="vertical-align: middle;">{{ tag.tag_disability__label }}</th>
-                  {% endfor %}
-                </tr>
-              </thead>
-              <tbody>
-                {% for item in master_indicators %}
-                  {% get_indicator_cumulative item as cumulative_value %}
-                  <tr>
-                    <th>{{ item.name }}</th>
-                      {% for tag in tags_disability %}
-                          {% get_indicator_tag_value item tag.tag_disability__name as value %}
-                        <td>
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="{{ value|percentage_float:item.cumulative_values.months }}" aria-valuemin="0" aria-valuemax="100" style="{% if value != '0' %}width: 50%;{% endif %}">
-                              {{ value }}
-                            </div>
-                          </div>
-                        </td>
-                      {% endfor %}
-
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-        </div>
-
-        <div class="" style="float: left;">
-            <span class="count_top"><i class="fa fa-info"></i> Disability types by Partner</span>
-            <div id="chart-2"></div>
-        </div>
-
-        <div class="" style="float: left;">
-            <span class="count_top"><i class="fa fa-info"></i> Disability types by Governorate</span>
-            <div id="chart-3"></div>
-        </div>
-
-      </div>
-    </div>
-</div>
-
 {% endblock content %}
 
 {% block extra_js %}
@@ -150,6 +161,32 @@ var range = ["#31B6FD", "#F5C040", "#A5D027", "#5BCF78", "#4584D3"];
     domain3 = JSON.parse(domain3);
     d3ChartBar(data3, '#chart-3', domain1, domain3, range);
 
+</script>
+
+
+<script>
+  var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+};
+  $(document).ready(function () {
+
+    var id = getUrlParameter('ai_id');
+    var selected_li=$('li#'+id).find('a');
+    var parent = selected_li.parent();
+    parent.addClass("mm-active");
+    selected_li.addClass("mm-active");
+});
 </script>
 
 {% endblock %}

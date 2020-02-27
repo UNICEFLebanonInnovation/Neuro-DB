@@ -29,13 +29,24 @@
     stroke-width: 2px;
     fill: none;
   }
-  .chart_top {
-
-  }
 </style>
 
 <div class="app-main__inner">
-    <div class="row tile_count">
+  <div class="app-page-title">
+      <div class="page-title-wrapper">
+        <div class="page-title-heading">
+          <div class="page-title-icon">
+           <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title=""></i>
+            </i>
+          </div>
+          <div> {{ database.label }} - Tags - 2020 </div>
+        </div>
+        <div class="page-title-actions">
+
+        </div>
+      </div>
+  </div>
+  <div class="row mt-3">
       <div class="tag-widget">
         <div class="card mb-3 widget-content">
           <div class="widget-content-outer">
@@ -61,7 +72,6 @@
           </div>
         </div>
       </div>
-
       <div class="tag-widget">
         <div class="card mb-3 widget-content">
           <div class="widget-content-outer">
@@ -92,7 +102,7 @@
     <div class="main-card mb-3 card">
       <div class="card-body">
         <div class="card-title d-inline-block">
-          <i class="fa fa-fw icon-gradient bg-ripe-malin" aria-hidden="true"></i>
+          <i class="fa fa-fw icon-gradient  bg-malibu-beach" aria-hidden="true"></i>
           </i>
           Dashboard - {{ database.label }} - 2020
           <div class="dropdown d-inline-block" data-intro="Download Dashboard report and raw data">
