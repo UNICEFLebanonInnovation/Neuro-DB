@@ -49,7 +49,7 @@ DJANGO_APPS = [
     # 'jet',
     # 'jet.dashboard',
     'django.contrib.admin',
-    # 'django.contrib.gis',
+    'django.contrib.gis',
     'django_json_widget',
     'prettyjson',
     'leaflet',
@@ -140,26 +140,15 @@ MANAGERS = ADMINS
 #     'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neuroDb1'),
 #     # 'default': env.db('DATABASE_URL', default='postgres://postgres:password1@localhost:5432/internos'),
 # }
-# DATABASES = {
-#      'default': {
-#          'ENGINE': 'django.db.backends.postgresql',
-#          'NAME': 'neurodb',
-#          'USER': 'postgres',
-#          'PASSWORD': 'ILOVEunicef990',
-#          'HOST': 'Lebapostgres01.unicef.org',
-#          'PORT': '5432',
-#      }
-# }
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'neurodb_online',
-        'USER': 'postgres',
-        'PASSWORD': 'ILOVEunicef990',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+     'default': {
+         'ENGINE': 'django.db.backends.postgresql',
+         'NAME': 'neurodb',
+         'USER': 'postgres',
+         'PASSWORD': 'ILOVEunicef990',
+         'HOST': 'Lebapostgres01.unicef.org',
+         'PORT': '5432',
+     }
 }
 
 # DATABASES = {
