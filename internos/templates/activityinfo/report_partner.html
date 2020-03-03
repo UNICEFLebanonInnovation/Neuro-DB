@@ -23,10 +23,10 @@
               <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
             </i>
           </div>
-           <div class="dropdown d-inline-block governorates-drp">
+           <div class="dropdown d-inline-block">
               <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" name="governorate"id="filter_govs" style="min-width:150px;"
                       class="mb-2 mr-2 dropdown-toggle btn btn-outline-primary">{{selected_governorate_name}}</button>
-              <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu" >
+              <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu governorates-drp" >
                  <a class="dropdown-item" data-value="0" href=""> All Governorate</a>
                    {% for gov in governorates %}
                   <a  value="{{ gov.location_adminlevel_governorate_code }}" onclick="selectGov('{{gov.location_adminlevel_governorate_code}}')"
@@ -70,7 +70,7 @@
       <div class="main-card mb-3 card">
         <div class="card-body">
           <div class="card-title">
-         <span> Dashboard - {{ database.label }} - 2020</span>
+         <span> Dashboard - {{ database.label }} - {{ database.reporting_year }}</span>
             <div class="dropdown d-inline-block" data-intro="Download Dashboard report and raw data">
               <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
                 data-toggle="dropdown" class="mb-2 mr-2 dropdown-toggle btn btn-link">
@@ -105,10 +105,13 @@
           </div>
             </div>
           </form>
-
+   </div>
+      </div>
+           <div class="main-card mb-3 card">
+        <div class="card-body">
            <table id="exporttable1" content="{{ database.label }}_Partners_Dashboard.csv"
-                           data-tableName="Dashboard - {{ database.label }} - 2019"
-                           class="table" style="width: 800px;">
+                           data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year }}"
+                           class="table table-striped " style="width: 800px;">
                       <thead>
                         <tr>
                           <th style="vertical-align: middle;" content="Partner">Partner</th>
@@ -131,9 +134,14 @@
                         {% endfor %}
                       </tbody>
                     </table>
+        </div>
+           </div>
+
+          <div class="main-card mb-3 card">
+        <div class="card-body">
            <table id="exporttable2" content="{{ database.label }}_Governorates_Dashboard.csv"
-                           data-tableName="Dashboard - {{ database.label }} - 2019"
-                           class="table" style="width: 800px;">
+                           data-tableName="Dashboard - {{ database.label }} - {{reporting_year}}"
+                           class="table table-striped " style="width: 800px;">
                       <thead>
                         <tr>
                           <th style="vertical-align: middle;" content="Governorate">Governorate</th>
@@ -156,9 +164,9 @@
                         {% endfor %}
                       </tbody>
                     </table>
-
         </div>
-      </div>
+          </div>
+
     </div>
   </div>
     <div class="row">
