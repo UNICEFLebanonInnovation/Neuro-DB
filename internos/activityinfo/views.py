@@ -91,6 +91,9 @@ class ReportView(TemplateView):
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
+        current_year = date.today().year
+
+
         partner_info = {}
         today = datetime.date.today()
         first = today.replace(day=1)
@@ -115,6 +118,7 @@ class ReportView(TemplateView):
                 database = Database.objects.filter(reporting_year__name=reporting_year).first()
 
         report = ActivityReport.objects.filter(database=database)
+        reporting_year = database.reporting_year
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
@@ -204,8 +208,7 @@ class ReportView(TemplateView):
         ).distinct()
 
         months = []
-        current_year = date.today().year
-        reporting_year = database.reporting_year
+
 
         if reporting_year == current_year:
             for i in range(1, 4):
