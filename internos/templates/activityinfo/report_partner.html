@@ -2,48 +2,40 @@
 {% load staticfiles i18n %}
 {% load util_tags %}
 {% load static %}
-
 {% block content %}
 <style>
 .collapse-all.active, .expanded-all.active {
   color: #0089d2;
 }
 
-.bootstrap-select button.dropdown-toggle {
-    color: #3f6ad8 !important;
-    border-color: #3f6ad8 !important;
-    background-color:white !important;
-}
-.x_title .bootstrap-select {
-  width: 80% !important;
-}
-.x_title ul li a span {
-  color: #000 !important;
-}
-.x_title ul li a.active span, .x_title ul li a.selected span {
-  color: #fff;
-}
-
 </style>
+
 <div class="app-main__inner">
   <div class="app-page-title">
     <div class="page-title-wrapper">
-       <form action="{% url 'activityinfo:report_partner' %}" method="get">
+       <form action="{% url 'activityinfo:report_partner' %}" method="get" id="govform">
       <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
       <input type="hidden" name="indicator_id" value="{{ indicator.id }}" />
+         <input type="hidden" name="governorate" value="" id="governorateinput" />
+
         <div class="page-title-heading" data-step="4" data-intro="Filter options by partner or governorate">
            <div class="page-title-icon">
               <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
             </i>
           </div>
-           <select class="dropdown mr-3" title="Select a governorate" name="governorate" data-style="btn-outline-primary" id="filter_govs">
-              <option value="">All governorates</option>
-              {% for gov in governorates %}
-                  <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorate %}selected{% endif %}>{{ gov.location_adminlevel_governorate }}</option>
-              {% endfor %}
-          </select>
-          <button type="submit" class="d-inline-block btn btn-outline-primary">Search</button>
-
+           <div class="dropdown d-inline-block governorates-drp">
+              <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" name="governorate"id="filter_govs" style="min-width:150px;"
+                      class="mb-2 mr-2 dropdown-toggle btn btn-outline-primary">{{selected_governorate_name}}</button>
+              <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu" >
+                 <a class="dropdown-item" data-value="0" href=""> All Governorate</a>
+                   {% for gov in governorates %}
+                  <a  value="{{ gov.location_adminlevel_governorate_code }}" onclick="selectGov('{{gov.location_adminlevel_governorate_code}}')"
+                     {% if gov.location_adminlevel_governorate_code == selected_governorate %}class="dropdown-item active"
+                     {% else %}class="dropdown-item" {% endif %}>
+                    {{ gov.location_adminlevel_governorate }}</a>
+                    {% endfor %}
+              </div>
+          </div>
     </div>
        </form>
         <div class="page-title-actions">
@@ -92,19 +84,26 @@
               </div>
             </div>
           </div>
-          <form action="{% url 'activityinfo:report_partner' %}" method="get">
+          <form action="{% url 'activityinfo:report_partner' %}" method="get" id="indicator_form">
             <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
             <input type="hidden" name="governorate" value="{{ selected_governorate }}"/>
+              <input type="hidden" name="indicator_id" id="indicator_id" value="{{ indicator.id }}" />
             <div  class="d-inline-block" data-intro="Go to specific Indicator">
-              <select class="dropdown" data-style="btn-primary" data-live-search="true"
-                      name="indicator_id" id="filter_indicator">
-                {% for item in indicators %}
-                <option value="{{ item.id }}" {% if item.id == selected_indicator %}selected{% endif %}>{{ item.name }}
-                </option>
-                {% endfor %}
-              </select>
+
+                   <div class="dropdown d-inline-block ">
+              <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown"
+                       name="indicator_id" id="filter_indicator"
+                      class="mb-2 mr-2 dropdown-toggle btn btn-outline-primary">{{selected_indicator_name}}</button>
+              <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu" >
+                    {% for item in indicators %}
+                  <a  style="white-space: normal; width:600px; font-size:12px;" value="{{ item.id }}" onclick="selectIndic('{{item.id}}')"
+                     {% if item.id == selected_indicator %}class="dropdown-item active"
+                     {% else %}class="dropdown-item" {% endif %}>
+                    {{ item.name }}</a>
+                    {% endfor %}
+              </div>
+          </div>
             </div>
-             <button type="submit" class="btn d-inline-block btn-outline-primary">Go</button>
           </form>
 
            <table id="exporttable1" content="{{ database.label }}_Partners_Dashboard.csv"
@@ -157,24 +156,29 @@
                         {% endfor %}
                       </tbody>
                     </table>
-          <div style="position: absolute; right: 20px;">
-                    <div id="mapView" class="col-lg-8"></div>
-                  </div>
+
         </div>
       </div>
     </div>
+  </div>
+    <div class="row">
+      <div class="col-lg-8">
+         <div id="mapView" ></div>
+      </div>
   </div>
 </div>
 {% endblock content %}
 
 {% block extra_js %}
-  <script src="{% static 'vendors/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+ <script src="{% static 'vendors/bootstrap/dist/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
   <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
 {% include 'activityinfo/map.html' %}
 
 <script>
+
+
 
   var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = window.location.search.substring(1),
@@ -190,6 +194,19 @@
         }
     }
 };
+
+function selectGov(gov){
+$("#govform #governorateinput").val(gov);
+$("#govform").submit();
+
+}
+
+function selectIndic(indicator){
+$("#indicator_form #indicator_id").val(indicator);
+$("#indicator_form").submit();
+
+}
+
   $(document).ready(function () {
 
     var id = getUrlParameter('ai_id');
@@ -198,7 +215,7 @@
     parent.addClass("mm-active");
     selected_li.addClass("mm-active");
 
- $('#filter_indicator').selectpicker();
+
 
 function download_csv(csv, filename) {
     var csvFile;
