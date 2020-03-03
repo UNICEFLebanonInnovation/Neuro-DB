@@ -106,7 +106,21 @@ position: relative;">Neuro-DB</span>
                         </div>
 
                       </li>
-                       {% block project_title %}{% endblock %}
+                      <li class="btn-group nav-item">
+                         {% if reporting_year == '2019' %}
+                             <a href="/"  class="nav-link text-primary" >
+                                <i class="nav-link-icon fa fa-database text-primary"></i>
+                              Back to 2020
+                              </a>
+                               {% else %}
+                              <a href="/?rep_year=2019"  class="nav-link text-primary" >
+                                <i class="nav-link-icon fa fa-database text-primary"></i>
+                              Switch to 2019
+                              </a>
+
+                           {% endif %}
+                        </li>
+
                     </ul>
                 </div>
                 <div class="app-header-right">
@@ -596,6 +610,15 @@ position: relative;">Neuro-DB</span>
     {% block extra_js %}{% endblock %}
     <script>
         $(document).ready(function(){
+
+       /* $("#switch_year").onclick(){
+        var otheryear = $(this).data("otheryear") || '2020';
+        otheryear =otheryear=='2020'?'2019':'2020';
+        $(this).data("otheryear",otheryear);
+        $(this).text("Switch to " +   otheryear);
+        }*/
+
+
               $(window).scroll(function () {
               if ($(this).scrollTop() != 0) {
                 $('#toTop').fadeIn();

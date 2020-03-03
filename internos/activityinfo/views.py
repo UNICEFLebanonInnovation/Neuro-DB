@@ -11,39 +11,46 @@ from django.http import HttpResponse, JsonResponse
 
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
-from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner, IndicatorTag
+from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner, IndicatorTag, ReportingYear
 from internos.users.models import Section
+from datetime import date
 
 
 class IndexView(TemplateView):
-
     template_name = 'activityinfo/index.html'
 
     def get_context_data(self, **kwargs):
-        databases = Database.objects.filter(reporting_year__current=True).exclude(ai_id=10240).order_by('label')
+        year = date.today().year
+        reporting_year = self.request.GET.get('rep_year', year)
 
+        if reporting_year is None: reporting_year == year
+
+        databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('label')
         return {
             'ai_databases': databases,
+            'reporting_year':reporting_year
         }
 
 
 class DashboardView(TemplateView):
-
     template_name = 'activityinfo/dashboard.html'
 
     def get_context_data(self, **kwargs):
         month = int(self.request.GET.get('month', int(datetime.datetime.now().strftime("%m")) - 1))
         month_name = self.request.GET.get('month', datetime.datetime.now().strftime("%B"))
         ai_id = int(self.request.GET.get('ai_id', 0))
+        from datetime import date
+        year = date.today().year
+        reporting_year = self.request.GET.get('rep_year', year)
 
         if ai_id:
             database = Database.objects.get(ai_id=ai_id)
         else:
             try:
                 section = self.request.user.section
-                database = Database.objects.get(section=section, reporting_year__current=True)
+                database = Database.objects.get(section=section, reporting_year__name=reporting_year)
             except Exception:
-                database = Database.objects.filter(reporting_year__current=True).first()
+                database = Database.objects.filter(reporting_year__name=reporting_year).first()
 
         report = ActivityReport.objects.filter(
             database=database,
@@ -73,7 +80,6 @@ class DashboardView(TemplateView):
 
 
 class ReportView(TemplateView):
-
     template_name = 'activityinfo/report.html'
 
     def get_context_data(self, **kwargs):
@@ -104,9 +110,9 @@ class ReportView(TemplateView):
         else:
             try:
                 section = self.request.user.section
-                database = Database.objects.get(section=section, reporting_year__current=True)
+                database = Database.objects.get(section=section, reporting_year__name=reporting_year)
             except Exception:
-                database = Database.objects.filter(reporting_year__current=True).first()
+                database = Database.objects.filter(reporting_year__name=reporting_year).first()
 
         report = ActivityReport.objects.filter(database=database)
         if database.is_funded_by_unicef:
@@ -130,9 +136,11 @@ class ReportView(TemplateView):
         #     selected_filter = False
 
         partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
+            'sequence')
         if database.mapped_db:
             master_indicators1 = master_indicators.filter(master_indicator=True)
             master_indicators2 = master_indicators.filter(
@@ -196,8 +204,15 @@ class ReportView(TemplateView):
         ).distinct()
 
         months = []
-        for i in range(1, 4):
-            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        current_year = date.today().year
+        reporting_year = database.reporting_year
+
+        if reporting_year == current_year:
+            for i in range(1, 4):
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        else:
+            for i in range(1, 13):
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         return {
             # 'selected_partner': selected_partner,
             'selected_partners': selected_partners,
@@ -217,12 +232,12 @@ class ReportView(TemplateView):
             'master_indicators': master_indicators,
             'partner_info': partner_info,
             'selected_filter': selected_filter,
-            'none_ai_indicators': none_ai_indicators
+            'none_ai_indicators': none_ai_indicators,
+            'reporting_year': reporting_year
         }
 
 
 class ReportPartnerView(TemplateView):
-
     template_name = 'activityinfo/report_partner.html'
 
     def get_context_data(self, **kwargs):
@@ -243,11 +258,13 @@ class ReportPartnerView(TemplateView):
 
         selected_indicator = int(self.request.GET.get('indicator_id', 0))
         selected_governorate = self.request.GET.get('governorate', 0)
+        selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
         indicator = Indicator.objects.get(id=selected_indicator)
+        selected_indicator_name = indicator.name
         indicator = {
             'id': indicator.id,
             'ai_id': indicator.ai_id,
@@ -271,7 +288,8 @@ class ReportPartnerView(TemplateView):
             report = report.filter(funded_by__contains='UNICEF')
 
         partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
 
         indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
 
@@ -343,6 +361,11 @@ class ReportPartnerView(TemplateView):
 
         locations = json.dumps(locations.values())
 
+        if selected_governorate is not None:
+            for x in governorates:
+                if x["location_adminlevel_governorate_code"] == selected_governorate:
+                    selected_governorate_name = x["location_adminlevel_governorate"]
+
         return {
             'reports': report.order_by('id'),
             'month': month,
@@ -356,14 +379,14 @@ class ReportPartnerView(TemplateView):
             'indicators': indicators,
             'indicator': indicator,
             'selected_governorate': selected_governorate,
-            'selected_partner': 0,
+            'selected_governorate_name': selected_governorate_name,
             'selected_indicator': selected_indicator,
+            'selected_indicator_name': selected_indicator_name,
             'locations': locations,
         }
 
 
 class ReportMapView(TemplateView):
-
     template_name = 'activityinfo/report_map.html'
 
     def get_context_data(self, **kwargs):
@@ -442,7 +465,8 @@ class ReportMapView(TemplateView):
         form_categories = report.values('form_category').distinct()
         months = report.values('month', 'month_name').distinct()
 
-        donors_set = PCA.objects.filter(end__year=now.year, donors__isnull=False, donors__len__gt=0).values('number', 'donors').distinct()
+        donors_set = PCA.objects.filter(end__year=now.year, donors__isnull=False, donors__len__gt=0).values('number',
+                                                                                                            'donors').distinct()
 
         donors = {}
         for item in donors_set:
@@ -473,11 +497,9 @@ class ReportMapView(TemplateView):
 
 
 class ReportPartnerSectorView(TemplateView):
-
     template_name = 'activityinfo/report_partner_sector.html'
 
     def get_context_data(self, **kwargs):
-
         partner_info = {}
         today = datetime.date.today()
         first = today.replace(day=1)
@@ -518,8 +540,10 @@ class ReportPartnerSectorView(TemplateView):
         report = ActivityReport.objects.filter(database=database)
 
         partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
-        cadastrals = report.values('location_adminlevel_cadastral_area_code', 'location_adminlevel_cadastral_area').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
+        cadastrals = report.values('location_adminlevel_cadastral_area_code',
+                                   'location_adminlevel_cadastral_area').distinct()
 
         indicators = Indicator.objects.filter(activity__database=database).exclude(is_section=True).order_by('sequence')
 
@@ -569,7 +593,6 @@ class ReportPartnerSectorView(TemplateView):
 
 
 class ReportMapSectorView(TemplateView):
-
     template_name = 'activityinfo/report_map_sector.html'
 
     def get_context_data(self, **kwargs):
@@ -674,7 +697,6 @@ class ReportMapSectorView(TemplateView):
 
 
 class ReportDisabilityView(TemplateView):
-
     template_name = 'activityinfo/report_disability.html'
 
     def get_context_data(self, **kwargs):
@@ -708,17 +730,20 @@ class ReportDisabilityView(TemplateView):
             report = report.filter(funded_by__contains='UNICEF')
 
         tags_disability = Indicator.objects.filter(activity__database__id__exact=database.id,
-                                                   tag_disability__isnull=False).exclude(is_sector=True)\
-            .values('tag_disability_id', 'tag_disability__name', 'tag_disability__label').distinct().order_by('tag_disability__sequence')
+                                                   tag_disability__isnull=False).exclude(is_sector=True) \
+            .values('tag_disability_id', 'tag_disability__name', 'tag_disability__label').distinct().order_by(
+            'tag_disability__sequence')
 
         tags_gender = Indicator.objects.filter(activity__database__id__exact=database.id,
-                                               tag_gender__isnull=False).exclude(is_sector=True)\
+                                               tag_gender__isnull=False).exclude(is_sector=True) \
             .values('tag_gender__name', 'tag_gender__label').distinct().order_by('tag_gender__sequence')
 
         partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
+            'sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
@@ -754,7 +779,8 @@ class ReportDisabilityView(TemplateView):
 
         disability_per_partner = {}
         disability_partners = {}
-        partners1 = report.filter(ai_indicator__tag_disability__isnull=False).values('partner_label', 'partner_id').distinct()
+        partners1 = report.filter(ai_indicator__tag_disability__isnull=False).values('partner_label',
+                                                                                     'partner_id').distinct()
         for partner in partners1:
             if partner['partner_id'] not in disability_partners:
                 disability_partners[partner['partner_id']] = partner['partner_label']
@@ -774,11 +800,11 @@ class ReportDisabilityView(TemplateView):
                             p_value += int(value)
 
                 disability_per_partner[tag['tag_disability__label']].append({
-                        'name': partner['partner_label'],
-                        'y': p_value,
-                        'x': partner['partner_label'],
-                        'type': tag['tag_disability__label']
-                    })
+                    'name': partner['partner_label'],
+                    'y': p_value,
+                    'x': partner['partner_label'],
+                    'type': tag['tag_disability__label']
+                })
 
         disability_per_gov = {}
         disability_govs = {}
@@ -787,7 +813,8 @@ class ReportDisabilityView(TemplateView):
         for gov in govs1:
             if gov['location_adminlevel_governorate_code'] not in disability_govs:
                 disability_govs[gov['location_adminlevel_governorate_code']] = gov['location_adminlevel_governorate']
-            gov_indicators = indicators.filter(report_indicators__location_adminlevel_governorate_code=gov['location_adminlevel_governorate_code'])
+            gov_indicators = indicators.filter(
+                report_indicators__location_adminlevel_governorate_code=gov['location_adminlevel_governorate_code'])
 
             for tag in tags_disability:
                 p_value = 0
@@ -803,11 +830,11 @@ class ReportDisabilityView(TemplateView):
                             p_value += int(value)
 
                 disability_per_gov[tag['tag_disability__label']].append({
-                        'name': gov['location_adminlevel_governorate'],
-                        'y': p_value,
-                        'x': gov['location_adminlevel_governorate'],
-                        'type': tag['tag_disability__label']
-                    })
+                    'name': gov['location_adminlevel_governorate'],
+                    'y': p_value,
+                    'x': gov['location_adminlevel_governorate'],
+                    'type': tag['tag_disability__label']
+                })
 
         disability_values = []
         for key, value in disability_calculation.items():
@@ -848,7 +875,6 @@ class ReportDisabilityView(TemplateView):
 
 
 class ReportSectorView(TemplateView):
-
     template_name = 'activityinfo/report_sector.html'
 
     def get_context_data(self, **kwargs):
@@ -900,10 +926,13 @@ class ReportSectorView(TemplateView):
             selected_filter = False
 
         partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
-        cadastrals = report.values('location_adminlevel_cadastral_area_code', 'location_adminlevel_cadastral_area').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
+        cadastrals = report.values('location_adminlevel_cadastral_area_code',
+                                   'location_adminlevel_cadastral_area').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_section=True).order_by('sequence')
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_section=True).order_by(
+            'sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
@@ -936,7 +965,6 @@ class ReportSectorView(TemplateView):
         for i in range(1, 13):
             months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
-
         return {
             'selected_partner': selected_partner,
             'selected_partners': selected_partners,
@@ -961,7 +989,6 @@ class ReportSectorView(TemplateView):
 
 
 class ReportTagView(TemplateView):
-
     template_name = 'activityinfo/report_tags.html'
 
     def get_context_data(self, **kwargs):
@@ -1003,13 +1030,18 @@ class ReportTagView(TemplateView):
             report = report.filter(funded_by__contains='UNICEF')
 
         tags_gender = Indicator.objects.filter(activity__database__id__exact=database.id,
-                                               tag_gender__isnull=False).exclude(is_sector=True).values('tag_gender__name', 'tag_gender__label').distinct().order_by('tag_gender__sequence')
+                                               tag_gender__isnull=False).exclude(is_sector=True).values(
+            'tag_gender__name', 'tag_gender__label').distinct().order_by('tag_gender__sequence')
         tags_nationality = Indicator.objects.filter(activity__database__id__exact=database.id,
-                                                    tag_nationality__isnull=False).exclude(is_sector=True).values('tag_nationality__name', 'tag_nationality__label').distinct().order_by('tag_nationality__sequence')
+                                                    tag_nationality__isnull=False).exclude(is_sector=True).values(
+            'tag_nationality__name', 'tag_nationality__label').distinct().order_by('tag_nationality__sequence')
         tags_age = Indicator.objects.filter(activity__database__id__exact=database.id,
-                                            tag_age__isnull=False).exclude(is_sector=True).values('tag_age__name', 'tag_age__label').distinct().order_by('tag_age__sequence')
+                                            tag_age__isnull=False).exclude(is_sector=True).values('tag_age__name',
+                                                                                                  'tag_age__label').distinct().order_by(
+            'tag_age__sequence')
         tags_disability = Indicator.objects.filter(activity__database__id__exact=database.id,
-                                                   tag_disability__isnull=False).exclude(is_sector=True).values('tag_disability__name', 'tag_disability__label').distinct().order_by('tag_disability__sequence')
+                                                   tag_disability__isnull=False).exclude(is_sector=True).values(
+            'tag_disability__name', 'tag_disability__label').distinct().order_by('tag_disability__sequence')
 
         if selected_partner:
             try:
@@ -1029,9 +1061,11 @@ class ReportTagView(TemplateView):
             selected_filter = False
 
         partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
+            'sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
@@ -1096,19 +1130,19 @@ class ReportTagView(TemplateView):
 
         gender_values = []
         for key, value in gender_calculation.items():
-            gender_values.append({ "label": key, "value": value})
+            gender_values.append({"label": key, "value": value})
 
         nationality_values = []
         for key, value in nationality_calculation.items():
-            nationality_values.append({ "label": key, "value": value})
+            nationality_values.append({"label": key, "value": value})
 
         disability_values = []
         for key, value in disability_calculation.items():
-            disability_values.append({ "label": key, "value": value})
+            disability_values.append({"label": key, "value": value})
 
         age_values = []
         for key, value in age_calculation.items():
-            age_values.append({ "label": key, "value": value})
+            age_values.append({"label": key, "value": value})
 
         months = []
         for i in range(1, 13):
@@ -1151,7 +1185,6 @@ class ReportTagView(TemplateView):
 
 
 class LiveReportView(TemplateView):
-
     template_name = 'activityinfo/live.html'
 
     def get_context_data(self, **kwargs):
@@ -1162,8 +1195,6 @@ class LiveReportView(TemplateView):
         selected_governorate = self.request.GET.get('governorate', 0)
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
-
-
 
         partner_info = {}
         today = datetime.date.today()
@@ -1192,9 +1223,11 @@ class LiveReportView(TemplateView):
             selected_filter = True
 
         partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
+            'sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
@@ -1250,11 +1283,9 @@ class LiveReportView(TemplateView):
 
 
 class HPMView(TemplateView):
-
     template_name = 'activityinfo/hpm.html'
 
     def get_context_data(self, **kwargs):
-
         today = datetime.date.today()
         # first = today.replace(day=1)
         # last_month = first - datetime.timedelta(days=1)
@@ -1283,7 +1314,6 @@ class HPMView(TemplateView):
 
 
 class HPMExportViewSet(ListView):
-
     model = Indicator
     queryset = Indicator.objects.filter(hpm_indicator=True)
 
@@ -1320,7 +1350,6 @@ class HPMExportViewSet(ListView):
 
 
 class ExportViewSet1(ListView):
-
     model = ActivityReport
     queryset = ActivityReport.objects.all()
 
@@ -1358,12 +1387,10 @@ class ExportViewSet1(ListView):
 
 
 class ExportViewSet(ListView):
-
     model = ActivityReport
     queryset = ActivityReport.objects.none()
 
     def get(self, request, *args, **kwargs):
-
         ai_id = self.request.GET.get('ai_id', 0)
         instance = Database.objects.get(ai_id=ai_id)
 
@@ -1384,4 +1411,3 @@ class ExportViewSet(ListView):
             response = HttpResponse(f.read(), content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename=%s;' % filename
         return response
-
