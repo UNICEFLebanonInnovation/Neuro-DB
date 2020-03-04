@@ -152,22 +152,26 @@ text-decoration:none !important;
 .w-150 { width: 50% ; min-width:180px;}
 
 #hpm_exporttable1 th{
-vertical-align:middle;
-border-top:2px dashed #f2f2f2;
+
+  vertical-align:middle;
  	 background: white;
 	 position: sticky;
 	 top: 0;
 	 box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 	 vertical-align:middle;
-	 font-size:15px;
+	 font-size:14px;
 }
 #hpm_exporttable1{
   border-collapse: collapse; }
 
 #hpm_exporttable1 .hpm-tr-header{
- background-color:#8FCAE7;
+background-color:#e0f3ff;
   font-weight: bold;
-  font-size: 14px;"
+  font-size: 14px;
+  text-align:left !important;
+  }
+  #hpm_exporttable1 tr td:not(:first-child){
+  text-align:center;
   }
   .dashboard_icons{
  margin: 5px;
