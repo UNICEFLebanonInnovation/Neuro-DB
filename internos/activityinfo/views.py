@@ -108,17 +108,10 @@ class ReportView(TemplateView):
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
-        if ai_id:
-            database = Database.objects.get(ai_id=ai_id)
-            reporting_year = database.reporting_year
-        else:
-            try:
-                section = self.request.user.section
-                database = Database.objects.get(section=section, reporting_year__current=True)
-            except Exception:
-                database = Database.objects.filter(reporting_year__current=True).first()
+        database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year
 
-        report = ActivityReport.objects.filter(database=database)
+        report = ActivityReport.objects.filter(database_id=database.ai_id)
 
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
@@ -210,7 +203,6 @@ class ReportView(TemplateView):
 
         months = []
 
-
         if reporting_year == current_year:
             for i in range(1, 4):
                 months.append((i, datetime.date(2008, i, 1).strftime('%B')))
@@ -289,8 +281,8 @@ class ReportPartnerView(TemplateView):
             'values': indicator.values,
             'reporting_year': str(reporting_year)
         }
-        print (reporting_year)
-        report = ActivityReport.objects.filter(database=database)
+
+        report = ActivityReport.objects.filter(database_id=database.ai_id)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
