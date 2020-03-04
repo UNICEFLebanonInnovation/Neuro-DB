@@ -104,12 +104,9 @@ class ReportView(TemplateView):
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
-
-        if ai_id:
-            database = Database.objects.get(ai_id=ai_id)
-            reporting_year = database.reporting_year
+        database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year
         report = ActivityReport.objects.filter(database_id=database.ai_id)
-
 
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
