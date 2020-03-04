@@ -81,6 +81,7 @@ class ReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
         selected_filter = False
+        display_live = False
         selected_partner = self.request.GET.get('partner', 0)
         selected_partners = self.request.GET.getlist('partners', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
