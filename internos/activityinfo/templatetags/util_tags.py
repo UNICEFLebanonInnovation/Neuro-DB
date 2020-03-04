@@ -98,6 +98,10 @@ def number_format(value):
     except Exception:
         return value
 
+@register.assignment_tag
+def get_current_year():
+    from datetime import date
+    return date.today().year
 
 @register.assignment_tag
 def to_display_indicator(selected_filters, cumulative_result):

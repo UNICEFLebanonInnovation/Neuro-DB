@@ -2,7 +2,7 @@
 {% load staticfiles i18n %}
 {% load util_tags %}
 {% load static %}
-{% block project_title %}Interactive Dashboards{% endblock %}
+
 {% block content %}
 <div class="app-main__inner">
   <div class="app-page-title">
@@ -13,40 +13,40 @@
         </i>
       </div>
       <div>
-        HPM Table – Data as of {{ month_name }} 2020
+        HPM Table – Data as of {{ month_name }} {{reporting_year}}
       </div>
       <div>
       </div>
   </div>
         <div class="page-title-actions">
-            <a class="btn btn-outline-primary dropdown-toggle mb-2 mr-2" href="#" role="button" id="drop4"
+            <ul class="nav navbar-left d-inline-block"  data-step="6" data-intro="Download Dashboard report and raw data">
+              <li class="dropdown">
+                <a id="drop5" href="#"  class="dropdown-toggle" title="Download report"
+                   data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                            <i class="fa fa-download faa-bounce animated-hover" ></i>
+                  <span class="caret"></span>
+                </a>
+                <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
+                  {% for item in months %}
+
+                    <li role="presentation"><a role="menuitem" class="dropdown-item" tabindex="-1" href="{% url 'activityinfo:hpm_report' %}?month={{ item.month }}">{{ item.month_name }}</a>
+                  {% endfor %}
+                </ul>
+              </li>
+            </ul>
+         <a class="btn btn-outline-primary dropdown-toggle mb-2 mr-2" href="#" role="button" id="drop4"
               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i class="fa fa-table faa-bounce animated-hover" style="font-size: 20px;"></i>
               Select HPM report
               <span class="caret"></span>
             </a>
-            <div   id="menu1" class="dropdown-menu" aria-labelledby="drop4">
+            <div   id="menu1" class="dropdown-menu" aria-labelledby="drop5">
               {% for item in months %}
-                <a class="dropdown-item" href="{% url 'activityinfo:hpm' %}?month={{ item.month }}">{{ item.month_name }}</a>
+                <a class="dropdown-item" href="{% url 'activityinfo:hpm' %}?month={{ item.month }}">
+                  {{ item.month_name }}
+                </a>
                 {% endfor %}
             </div>
-
-           <a class="btn btn-outline-primary dropdown-toggle mb-2 mr-2" href="#" role="button" id="drop5"
-              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  title="Download report">
-              <i class="fa fa-download faa-bounce animated-hover" style="font-size: 25px;"></i>
-              <span class="caret"></span>
-            </a>
-            <div id="menu2" class="dropdown-menu" aria-labelledby="drop5">
-
-              {% for item in months %}
-
-                <a class="dropdown-item" tabindex="-1" href="{% url 'activityinfo:hpm_report' %}?month={{ item.month }}">{{item.month_name }}</a>
-                {% endfor %}
-            </div>
-
-          <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-
-
     </div>
   </div>
 </div>
@@ -54,19 +54,19 @@
 
     <div class="main-card mb-3 card">
         <div class="card-body">
-         <div class="table-responsive" style="position: relative;overflow: scroll;height: 800px;">
-           <table id="hpm_exporttable1" class="mb-0 table table-striped table-hover ">
+        <div class="table-responsive" style="">
+            <table class="mb-0 table table-striped table-hover" id="hpm_exporttable1" >
           <thead>
           <tr>
-            <th colspan="2" style="vertical-align: middle;">SUMMARY OF PROGRAMME RESULTS – {{ month_name }} 2020 SITREP
+            <th class="w-150" colspan="2" >SUMMARY OF PROGRAMME RESULTS – {{ month_name }} {{ reporting_year }} SITREP
               – LEBANON
             </th>
-            <th >Sector Target</th>
-            <th >Sector Result</th>
-            <th >Change since last report</th>
-            <th>UNICEF Target (2019)</th>
-            <th >UNICEF Result</th>
-            <th >Change since last report</th>
+            <th class="w-10">Sector Target</th>
+            <th class="w-10">Sector Result</th>
+            <th class="w-10">Change since last report</th>
+            <th class="w-10">UNICEF Target ({{ reporting_year }})</th>
+            <th class="w-10">UNICEF Result</th>
+            <th class="w-10">Change since last report</th>
           </tr>
           </thead>
           <tbody>
@@ -77,7 +77,7 @@
             </td>
           </tr>
           <tr>
-            <td rowspan="3" style="width: 600px;">
+            <td rowspan="3" width="w-150">
               {% get_indicator_hpm_data 4325 month as value %}
               <span style="display: none;">{{ value.id }}</span>
               # of (Lebanese and non-Lebanese) girls and boys whose registration fees are covered by subsidies for
@@ -143,7 +143,7 @@
             <td>{{ value.last_report_changes }}</td>
           </tr>
 
-          <tr style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;">
+          <tr  class="hpm-tr-header">
             <td colspan="8">Child Protection</td>
           </tr>
           <tr>
@@ -192,7 +192,7 @@
             <td>{{ value_2740.last_report_changes }}</td>
           </tr>
 
-          <tr style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;">
+          <tr class="hpm-tr-header">
             <td colspan="8">Water, Sanitation, and Hygiene</td>
           </tr>
           <tr>
@@ -262,7 +262,7 @@
             <td>{{ value_1535.last_report_changes }}</td>
           </tr>
 
-          <tr style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;">
+          <tr class="hpm-tr-header">
             <td colspan="8">Health & Nutrition <sup>1</sup>
               <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
                  title="No figures are reported yet"></i>
@@ -308,7 +308,7 @@
             <td>{{ value_2178.last_report_changes }}</td>
           </tr>
 
-          <tr style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;">
+          <tr class="hpm-tr-header">
             <td colspan="8">Youth and Adolescents</td>
           </tr>
           <tr>
@@ -379,7 +379,7 @@
             <td>{{ value_3347.last_report_changes }}</td>
           </tr>
 
-          <tr style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;">
+          <tr class="hpm-tr-header">
             <td colspan="8">Social Policy, Basic Needs <sup>1</sup>
               <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
                  title="No figures are reported yet"></i>
@@ -413,7 +413,7 @@
             <td>{{ value_783.last_report_changes }}</td>
           </tr>
 
-          <tr style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;">
+          <tr class="hpm-tr-header">
             <td colspan="8">Communication for Development</td>
           </tr>
           <tr>
@@ -433,7 +433,7 @@
             <td>{{ value_1396.last_report_changes }}</td>
           </tr>
 
-          <tr style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;">
+          <tr class="hpm-tr-header">
             <td colspan="8">Palestinian Programme</td>
           </tr>
           <tr>
@@ -562,7 +562,7 @@
             <td>{{ value_1299.cumulative }}</td>
             <td>{{ value_1299.last_report_changes }}</td>
           </tr>
-          <tr style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;">
+          <tr class="hpm-tr-header">
             <td colspan="8">Footnotes</td>
           </tr>
           <tr>

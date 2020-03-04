@@ -22,15 +22,11 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
-
-        if reporting_year is None: reporting_year == year
-
         databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('label')
         db_year = databases[0].reporting_year
-
         return {
             'ai_databases': databases,
-            'reporting_year':reporting_year
+            'reporting_year': reporting_year
         }
 
 
@@ -94,6 +90,7 @@ class ReportView(TemplateView):
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
         current_year = date.today().year
+        current_month = date.today().month
         partner_info = {}
         today = datetime.date.today()
         first = today.replace(day=1)
@@ -111,13 +108,6 @@ class ReportView(TemplateView):
         if ai_id:
             database = Database.objects.get(ai_id=ai_id)
             reporting_year = database.reporting_year
-        else:
-            try:
-                section = self.request.user.section
-                database = Database.objects.get(section=section, reporting_year__current=True)
-            except Exception:
-                database = Database.objects.filter(reporting_year__current=True).first()
-
         report = ActivityReport.objects.filter(database=database)
 
         if database.is_funded_by_unicef:
@@ -209,12 +199,18 @@ class ReportView(TemplateView):
         ).distinct()
 
         months = []
-
-
-        if reporting_year == current_year:
-            for i in range(1, 4):
-                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        if int(str(reporting_year)) == current_year:
+            display_live = True
+            if current_month == 1:
+                months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
+            if current_month == 2:
+                for i in range(1, 3):
+                    months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+            if current_month > 2:
+                for i in range(current_month - 2, current_month + 1):
+                    months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         else:
+            display_live = False
             for i in range(1, 13):
                 months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         return {
@@ -237,7 +233,8 @@ class ReportView(TemplateView):
             'partner_info': partner_info,
             'selected_filter': selected_filter,
             'none_ai_indicators': none_ai_indicators,
-            'reporting_year': str(reporting_year)
+            'reporting_year': str(reporting_year),
+            'display_live': display_live
         }
 
 
@@ -289,7 +286,7 @@ class ReportPartnerView(TemplateView):
             'values': indicator.values,
             'reporting_year': str(reporting_year)
         }
-        print (reporting_year)
+
         report = ActivityReport.objects.filter(database=database)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
@@ -1189,7 +1186,7 @@ class ReportTagView(TemplateView):
             'nationality_keys': json.dumps(nationality_calculation.keys()),
             'disability_keys': json.dumps(disability_calculation.keys()),
             'age_keys': json.dumps(age_calculation.keys()),
-            'reporting_year':str(reporting_year)
+            'reporting_year': str(reporting_year)
         }
 
 
@@ -1215,7 +1212,7 @@ class LiveReportView(TemplateView):
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
-        reporting_year= database.reporting_year
+        reporting_year = database.reporting_year
         report = LiveActivityReport.objects.filter(database=database)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
@@ -1231,12 +1228,12 @@ class LiveReportView(TemplateView):
         if selected_partners or selected_governorates:
             selected_filter = True
 
-        partners = report.values('partner_label', 'partner_id').distinct('partner_id')
-
+        partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct('location_adminlevel_governorate_code')
+                                     'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
+            'sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
@@ -1281,14 +1278,14 @@ class LiveReportView(TemplateView):
             'month_name': month_name,
             'month_number': month_number,
             'database': database,
-            'partners': partners.distinct(),
-            'governorates': governorates.distinct(),
+            'partners': partners,
+            'governorates': governorates,
             'master_indicators': master_indicators,
             'selected_filter': selected_filter,
             'partner_info': partner_info,
             'day_number': day_number,
             'months': months,
-            'reporting_year':str(reporting_year)
+            'reporting_year': str(reporting_year)
         }
 
 
@@ -1302,12 +1299,12 @@ class HPMView(TemplateView):
         # day_number = int(today.strftime("%d"))
         # month = int(self.request.GET.get('month', last_month.strftime("%m")))
         month = int(self.request.GET.get('month', int(today.strftime("%m")) - 1))
-        month = 12
+        year = date.today().year
+        reporting_year = self.request.GET.get('rep_year', year)
+        month = date.today().month
+        month_name = calendar.month_name[month]
         # if day_number < 15:
         #     month = month - 1
-
-        month_name = calendar.month_name[month]
-        month_name = 'December'
 
         months = []
         for i in range(1, 13):
@@ -1320,6 +1317,7 @@ class HPMView(TemplateView):
             'month_name': month_name,
             'month': month,
             'months': months,
+            'reporting_year': reporting_year
         }
 
 
@@ -1329,7 +1327,8 @@ class HPMExportViewSet(ListView):
 
     def get(self, request, *args, **kwargs):
         from .utils import update_hpm_table_docx
-
+        year = date.today().year
+        reporting_year = self.request.GET.get('rep_year', year)
         today = datetime.date.today()
         # first = today.replace(day=1)
         # last_month = first - datetime.timedelta(days=1)
@@ -1343,12 +1342,10 @@ class HPMExportViewSet(ListView):
         months = []
         for i in range(1, 13):
             months.append((datetime.date(2008, i, 1).strftime('%B')))
+            filename = "HPM Table {} {}.docx".format(months[month], reporting_year)
+            new_file = update_hpm_table_docx(self.queryset, month, months[month], filename)
 
-        # filename = "HPM Table {} 2019.docx".format(months[month])
-        filename = "HPM Table December 2019.docx"
-
-        # new_file = update_hpm_table_docx(self.queryset, month, months[month], filename)
-        new_file = update_hpm_table_docx(self.queryset, month, 'December', filename)
+        # new_file = update_hpm_table_docx(self.queryset, month, 'December', filename)
 
         with open(new_file, 'rb') as fh:
             response = HttpResponse(
