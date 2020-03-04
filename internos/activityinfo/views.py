@@ -261,7 +261,7 @@ class ReportPartnerView(TemplateView):
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
-        reporting_year = database.reporting_year
+        reporting_year = database.reporting_year.name
 
         indicator = Indicator.objects.get(id=selected_indicator)
         selected_indicator_name = indicator.name
