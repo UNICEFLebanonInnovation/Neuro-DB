@@ -204,3 +204,9 @@ width:230px !important;
 }
 .search-wrapper.active .close{
 left:230px !important;}
+
+ .dropdown-menu.show{
+    max-height: 300px;
+    overflow-y: auto
+
+}

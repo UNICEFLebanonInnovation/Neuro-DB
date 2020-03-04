@@ -71,7 +71,7 @@
               <a href="#" class="expanded-all"><i
                   class="fa fa-bars"></i></a>
             </span>
-          Dashboard - {{ database.label }} - {{reporting_year}}
+             Dashboard - {{ database.label }} - {{reporting_year}}
               <div class="d-inline-block dashboard_icons">
              <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display indicators data disaggregated" class="text-info" >
                   <i class="fa fa-tags animated"></i>
@@ -85,6 +85,7 @@
                   <i class="fa fa-map" ></i>
                 </a>
                 <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display disability report" class="text-warning"
+                   style=" color:currentColor;cursor: not-allowed; opacity: 0.5;text-decoration: none;"
                     data-step="16" data-intro="Display disability report">
                   <i class="fa fa-wheelchair"></i>
                 </a>
@@ -148,7 +149,6 @@
                   {% if item.master_indicator %}
                   <td  class="w-150">
                     {{ item.name }}
-<!--                    -->
                     <a href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
                       target="_blank" class="text-info">
                   <i class="fa fa-fw" aria-hidden="true" title=""></i>

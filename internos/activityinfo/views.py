@@ -23,12 +23,14 @@ class IndexView(TemplateView):
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
 
-        if reporting_year is None: reporting_year == year
+        # if reporting_year is None:
+        #     reporting_year = year
 
         databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('label')
+
         return {
             'ai_databases': databases,
-            'reporting_year':reporting_year
+            'reporting_year': reporting_year
         }
 
 
@@ -39,7 +41,7 @@ class DashboardView(TemplateView):
         month = int(self.request.GET.get('month', int(datetime.datetime.now().strftime("%m")) - 1))
         month_name = self.request.GET.get('month', datetime.datetime.now().strftime("%B"))
         ai_id = int(self.request.GET.get('ai_id', 0))
-        from datetime import date
+
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
 
@@ -91,6 +93,7 @@ class ReportView(TemplateView):
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
+        current_year = date.today().year
         partner_info = {}
         today = datetime.date.today()
         first = today.replace(day=1)
@@ -105,16 +108,11 @@ class ReportView(TemplateView):
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
-        if ai_id:
-            database = Database.objects.get(ai_id=ai_id)
-        else:
-            try:
-                section = self.request.user.section
-                database = Database.objects.get(section=section, reporting_year__name=reporting_year)
-            except Exception:
-                database = Database.objects.filter(reporting_year__name=reporting_year).first()
+        database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year
 
-        report = ActivityReport.objects.filter(database=database)
+        report = ActivityReport.objects.filter(database_id=database.ai_id)
+
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
@@ -204,8 +202,6 @@ class ReportView(TemplateView):
         ).distinct()
 
         months = []
-        current_year = date.today().year
-        reporting_year = database.reporting_year
 
         if reporting_year == current_year:
             for i in range(1, 4):
@@ -233,7 +229,7 @@ class ReportView(TemplateView):
             'partner_info': partner_info,
             'selected_filter': selected_filter,
             'none_ai_indicators': none_ai_indicators,
-            'reporting_year': reporting_year
+            'reporting_year': str(reporting_year)
         }
 
 
@@ -263,6 +259,8 @@ class ReportPartnerView(TemplateView):
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year
+
         indicator = Indicator.objects.get(id=selected_indicator)
         selected_indicator_name = indicator.name
         indicator = {
@@ -281,9 +279,10 @@ class ReportPartnerView(TemplateView):
             'values_partners': indicator.values_partners,
             'values_gov': indicator.values_gov,
             'values': indicator.values,
+            'reporting_year': str(reporting_year)
         }
 
-        report = ActivityReport.objects.filter(database=database)
+        report = ActivityReport.objects.filter(database_id=database.ai_id)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
@@ -1025,6 +1024,7 @@ class ReportTagView(TemplateView):
             except Exception:
                 database = Database.objects.filter(reporting_year__current=True).first()
 
+        reporting_year = database.reporting_year
         report = ActivityReport.objects.filter(database=database)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
@@ -1181,6 +1181,7 @@ class ReportTagView(TemplateView):
             'nationality_keys': json.dumps(nationality_calculation.keys()),
             'disability_keys': json.dumps(disability_calculation.keys()),
             'age_keys': json.dumps(age_calculation.keys()),
+            'reporting_year':str(reporting_year)
         }
 
 
@@ -1206,8 +1207,8 @@ class LiveReportView(TemplateView):
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
-
-        report = LiveActivityReport.objects.filter(database=database)
+        reporting_year = database.reporting_year
+        report = LiveActivityReport.objects.filter(database_id=database.ai_id)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
@@ -1222,12 +1223,12 @@ class LiveReportView(TemplateView):
         if selected_partners or selected_governorates:
             selected_filter = True
 
-        partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
+        partners = report.values('partner_label', 'partner_id').distinct('partner_id')
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
-            'sequence')
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct('location_adminlevel_governorate_code')
+
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
@@ -1272,13 +1273,14 @@ class LiveReportView(TemplateView):
             'month_name': month_name,
             'month_number': month_number,
             'database': database,
-            'partners': partners,
-            'governorates': governorates,
+            'partners': partners.distinct(),
+            'governorates': governorates.distinct(),
             'master_indicators': master_indicators,
             'selected_filter': selected_filter,
             'partner_info': partner_info,
             'day_number': day_number,
             'months': months,
+            'reporting_year': str(reporting_year)
         }
 
 
