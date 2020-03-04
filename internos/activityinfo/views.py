@@ -23,14 +23,14 @@ class IndexView(TemplateView):
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
 
-        if reporting_year is None: reporting_year == year
+        # if reporting_year is None:
+        #     reporting_year = year
 
         databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('label')
-        db_year = databases[0].reporting_year
 
         return {
             'ai_databases': databases,
-            'reporting_year':reporting_year
+            'reporting_year': reporting_year
         }
 
 
@@ -41,7 +41,7 @@ class DashboardView(TemplateView):
         month = int(self.request.GET.get('month', int(datetime.datetime.now().strftime("%m")) - 1))
         month_name = self.request.GET.get('month', datetime.datetime.now().strftime("%B"))
         ai_id = int(self.request.GET.get('ai_id', 0))
-        from datetime import date
+
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
 
@@ -1207,8 +1207,8 @@ class LiveReportView(TemplateView):
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
-        reporting_year= database.reporting_year
-        report = LiveActivityReport.objects.filter(database=database)
+        reporting_year = database.reporting_year
+        report = LiveActivityReport.objects.filter(database_id=database.ai_id)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
@@ -1280,7 +1280,7 @@ class LiveReportView(TemplateView):
             'partner_info': partner_info,
             'day_number': day_number,
             'months': months,
-            'reporting_year':str(reporting_year)
+            'reporting_year': str(reporting_year)
         }
 
 
