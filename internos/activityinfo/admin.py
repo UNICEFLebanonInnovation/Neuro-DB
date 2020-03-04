@@ -326,7 +326,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
         'id',
         'ai_indicator',
         'awp_code',
-        'label',
+        'name',
         'target',
         'target_sector',
         'units',
