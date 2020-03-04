@@ -81,6 +81,7 @@ class ReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
         selected_filter = False
+        display_live = False
         selected_partner = self.request.GET.get('partner', 0)
         selected_partners = self.request.GET.getlist('partners', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
@@ -104,12 +105,9 @@ class ReportView(TemplateView):
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
-
-        if ai_id:
-            database = Database.objects.get(ai_id=ai_id)
-            reporting_year = database.reporting_year
+        database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year
         report = ActivityReport.objects.filter(database_id=database.ai_id)
-
 
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
@@ -1410,7 +1408,7 @@ class ExportViewSet(ListView):
         month_name = 'December'
 
         path = os.path.dirname(os.path.abspath(__file__))
-        path2file = path + '/AIReports/' + str(instance.db_id) + '_ai_data.csv'
+        path2file = path + '/AIReports/' + str(instance.ai_id) + '_ai_data.csv'
 
         filename = '{}_{}_{} Raw data.csv'.format(month_name, instance.reporting_year.name, instance.label)
 
