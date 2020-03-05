@@ -415,6 +415,7 @@ a:not([href]):not([tabindex]) {
 a:not([href]):not([tabindex]):hover,a:not([href]):not([tabindex]):focus {
 
     text-decoration: none
+    text-decoration: none
 }
 
 a:not([href]):not([tabindex]):focus {
@@ -11417,7 +11418,7 @@ a,button,.btn {
 }
 
 .bg-plum-plate {
-    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important
+    background-image: linear-gradient(135deg, #667eea 0%, #5178db 100%)  !important
 }
 
 .bg-happy-fisher {

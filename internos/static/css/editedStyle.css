@@ -30,102 +30,131 @@ margin-left:5px;
 .card-title #drop5{
 font-size:20px;
 }
-@media only screen and (min-width:1024px) and (max-width:1899px) {
+/*
+  ##Device = Desktops
+*/
+@media only screen and (max-width:1899px){
 .card-body .table-responsive{
-   max-width:900px !important;
-
-    }
-    .tag-widget{
+    max-width : 1100px !important;
+}
+ .tag-widget{
       width:45%;
     }
+    .select2{
+      width:600px
+      }
 }
-
-@media only screen and (min-width:1900px){
-  .card-body .table-responsive{
-    max-width:1500px !important;
+/*
+  ##Device = Laptops, Desktops
+*/
+@media only screen and (min-width: 1025px) and (max-width: 1280px) {
+   .card-body .table-responsive{
+   max-width:900px !important;
     }
+ .select2{
+      width:500px
+      }
+}
+/*
+  ##Device = Tablets, Ipads (portrait)
+*/
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+.card-body .table-responsive{
+   max-width:900px !important;
+    }
+     .select2{
+      width:400px
+      }
 }
 
-
-		 .dropdown-menu {
-			border-radius: 0;
-		  }
-		  body .multiselect-native-select {
-			position: relative;
-		  }
-		   .multiselect-native-select select {
-			border: 0 !important;
-			clip: rect(0 0 0 0) !important;
-			height: 1px !important;
-			margin: -1px -1px -1px -3px !important;
-			overflow: hidden !important;
-			padding: 0px !important;
-			position: absolute !important;
-			width: 1px !important;
-			left: 50%;
-			top: 30px;
-		  }
-		   .multiselect-container {
-			position: absolute;
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-		  }
-		   .multiselect-container .input-group {
-			margin: 5px;
-		  }
-		   .multiselect-container li {
-			padding: 0;
-		  }
-		   .multiselect-container li .multiselect-all label {
-			font-weight: 700;
-		  }
-		   .multiselect-container li a {
-			padding: 0;
-		  }
-		   .multiselect-container li a label {
-			margin: 0;
-			height: 100%;
-			cursor: pointer;
-			font-weight: 400;
-			padding: 3px 20px 3px 40px;
-		  }
-		   .multiselect-container li a label input[type=checkbox] {
-			margin-bottom: 5px;
-		  }
-		   .multiselect-container li a label.radio {
-			margin: 0;
-		  }
-		   .multiselect-container li a label.checkbox {
-			margin: 0;
-		  }
-		   .multiselect-container li.multiselect-group label {
-			margin: 0;
-			padding: 3px 20px 3px 20px;
-			height: 100%;
-			font-weight: 700;
-		  }
-		   .multiselect-container li.multiselect-group-clickable label {
-			cursor: pointer;
-		  }
-		   .btn-group .btn-group .multiselect.btn {
-			border-top-left-radius: 4px;
-			border-bottom-left-radius: 4px;
-		  }
-		   .form-inline .multiselect-container label.checkbox {
-			padding: 3px 20px 3px 40px;
-		  }
-		   .form-inline .multiselect-container label.radio {
-			padding: 3px 20px 3px 40px;
-		  }
-		   .form-inline .multiselect-container li a label.checkbox input[type=checkbox] {
-			margin-left: -20px;
-			margin-right: 0;
-		  }
-		  .form-inline .multiselect-container li a label.radio input[type=radio] {
-			margin-left: -20px;
-			margin-right: 0;
-		  }
+/* Device = Tablets, Ipads (landscape) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+.card-body .table-responsive{
+   max-width:900px !important;
+    }
+     .select2{
+      width:400px
+      }
+}
+.dropdown-menu {
+border-radius: 0;
+}
+body .multiselect-native-select {
+position: relative;
+}
+ .multiselect-native-select select {
+border: 0 !important;
+clip: rect(0 0 0 0) !important;
+height: 1px !important;
+margin: -1px -1px -1px -3px !important;
+overflow: hidden !important;
+padding: 0px !important;
+position: absolute !important;
+width: 1px !important;
+left: 50%;
+top: 30px;
+}
+ .multiselect-container {
+position: absolute;
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+ .multiselect-container .input-group {
+margin: 5px;
+}
+ .multiselect-container li {
+padding: 0;
+}
+ .multiselect-container li .multiselect-all label {
+font-weight: 700;
+}
+ .multiselect-container li a {
+padding: 0;
+}
+ .multiselect-container li a label {
+margin: 0;
+height: 100%;
+cursor: pointer;
+font-weight: 400;
+padding: 3px 20px 3px 40px;
+}
+ .multiselect-container li a label input[type=checkbox] {
+margin-bottom: 5px;
+}
+ .multiselect-container li a label.radio {
+margin: 0;
+}
+ .multiselect-container li a label.checkbox {
+margin: 0;
+}
+ .multiselect-container li.multiselect-group label {
+margin: 0;
+padding: 3px 20px 3px 20px;
+height: 100%;
+font-weight: 700;
+}
+ .multiselect-container li.multiselect-group-clickable label {
+cursor: pointer;
+}
+ .btn-group .btn-group .multiselect.btn {
+border-top-left-radius: 4px;
+border-bottom-left-radius: 4px;
+}
+ .form-inline .multiselect-container label.checkbox {
+padding: 3px 20px 3px 40px;
+}
+ .form-inline .multiselect-container label.radio {
+padding: 3px 20px 3px 40px;
+}
+ .form-inline .multiselect-container li a label.checkbox input[type=checkbox] {
+margin-left: -20px;
+margin-right: 0;
+}
+.form-inline .multiselect-container li a label.radio input[type=radio] {
+margin-left: -20px;
+margin-right: 0;
+}
 
 li.dropdown-item.active,li.dropdown-item:active {
     background-color: #e0f3ff !important;
@@ -206,11 +235,108 @@ color: white !important;
 .search-wrapper.active .input-holder{
 width:230px !important;
 }
-.search-wrapper.active .close{
-left:230px !important;}
+/*.search-wrapper.active .close{
+left:230px !important;}*/
 
- .dropdown-menu.show{
+/* .dropdown-menu.show{
     max-height: 300px;
     overflow-y: auto
+}*/
+.font-icon-wrapper{
+margin: 0 !important;
+}
+
+.dropdown-menu-header {
+    color: #fff;
+    margin-top: -0.65rem;
+    margin-bottom: 0.65rem;
+    position: relative;
+    z-index: 6;
+    }
+
+.dropdown-menu .dropdown-menu-header, .dropdown-menu .menu-header-image,
+ .dropdown-menu .dropdown-menu-header-inner {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    }
+
+.dropdown-menu .grid-menu-xl {
+    margin-bottom: -0.48148148rem;
+    }
+.dropdown-menu .grid-menu {
+    margin-bottom: -0.65rem;
+    padding: 1px;
+}
+.grid-menu .btn {
+    display: block;
+    border: 0;
+    min-width: 100%;
+  }
+
+  .btn-icon-vertical {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    min-width: 100px;
+}
+.btn-group .btn {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+.dd-header-bg-1 {
+    background: url(/static/images/abstract1.jpg);
+}
+.dropdown-menu-xl {
+    min-width: 25rem;
+}
+.dropdown-menu {
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+    margin: 0.125rem;
+}
+.dropdown-menu-header .dropdown-menu-header-inner {
+    margin: -1px -1px 0;
+    padding: 0.5rem 0.5rem;
+    position: relative;
+}
+.dropdown-menu-header .menu-header-content {
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+.menu-header-title {
+    font-weight: 500;
+    font-size: 1.25rem;
+    margin: 0;
+}
+.menu-header-subtitle{
+    margin: 5px 0 0;
+    opacity: .8;
+}
+.btn-icon-lg {
+    font-size: 2.5rem !important;
+}
+.bg-night-fade {
+    background-image: linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%) !important}
+
+
+.btn-icon-vertical .fa-fw{
+   width:100%;
+}
+.btn-square{
+border:1px solid #eee !important;
+}
+.btn-square:hover , .btn-square.active{
+    background: #e0f3ff;
+    color: #3f6ad8;
+    }
+.grid-menu-xl .no-gutters {
+    margin: 5px;
+
+}
+
+.btn-square i {
+display: block !important;
+}
+.no-gutters>.col, .no-gutters>[class*="col-"]{
+padding:2px;
 
 }

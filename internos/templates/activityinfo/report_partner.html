@@ -84,27 +84,38 @@
               </div>
             </div>
           </div>
-          <form action="{% url 'activityinfo:report_partner' %}" method="get" id="indicator_form">
+          <div class="row col-md-12">
+            <form style="width:100%" action="{% url 'activityinfo:report_partner' %}" method="get" id="indicator_form">
             <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
             <input type="hidden" name="governorate" value="{{ selected_governorate }}"/>
               <input type="hidden" name="indicator_id" id="indicator_id" value="{{ indicator.id }}" />
-            <div  class="d-inline-block" data-intro="Go to specific Indicator">
+          <div class="d-inline-block">
+            <select class="d-inline-block select2" style="display:inline-block !important" data-style="btn-primary" data-live-search="true" name="indicator_id">
+	             {% for item in indicators %}
+                <option value="{{ item.id }}" {% if item.id == selected_indicator %}selected{% endif %} onselect="selectIndic('{{item.id}}')">{{ item.name }}</option>
+               {% endfor %}
+	          </select>
 
-                   <div class="dropdown d-inline-block ">
-              <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown"
-                       name="indicator_id" id="filter_indicator"
-                      class="mb-2 mr-2 dropdown-toggle btn btn-outline-primary">{{selected_indicator_name}}</button>
-              <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu" >
-                    {% for item in indicators %}
-                  <a  style="white-space: normal; width:600px; font-size:12px;" value="{{ item.id }}" onclick="selectIndic('{{item.id}}')"
-                     {% if item.id == selected_indicator %}class="dropdown-item active"
-                     {% else %}class="dropdown-item" {% endif %}>
-                    {{ item.name }}</a>
-                    {% endfor %}
-              </div>
-          </div>
+              <button type="submit" class="btn btn-outline-primary" style="margin-top:-20px">Go</button>
             </div>
+<!--            <div  class="d-inline-block" data-intro="Go to specific Indicator">-->
+<!--              <div class="dropdown d-inline-block ">-->
+<!--              <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown"-->
+<!--                       name="indicator_id" id="filter_indicator"-->
+<!--                      class="mb-2 mr-2 dropdown-toggle btn btn-outline-primary">{{selected_indicator_name}}</button>-->
+<!--              <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu" >-->
+<!--                    {% for item in indicators %}-->
+<!--                  <a  style="white-space: normal; width:600px; font-size:12px;" value="{{ item.id }}" onclick="selectIndic('{{item.id}}')"-->
+<!--                     {% if item.id == selected_indicator %}class="dropdown-item active"-->
+<!--                     {% else %}class="dropdown-item" {% endif %}>-->
+<!--                    {{ item.name }}</a>-->
+<!--                    {% endfor %}-->
+<!--              </div>-->
+<!--          </div>-->
+<!--            </div>-->
           </form>
+          </div>
+
    </div>
       </div>
            <div class="main-card mb-3 card">
@@ -182,11 +193,14 @@
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
   <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
+<link href="{% static 'css/select2.min.css'%}" rel="stylesheet" />
+<script src="{% static 'js/select2.min.js' %}"></script>
 {% include 'activityinfo/map.html' %}
-
 <script>
 
-
+  $('.select2').select2({
+  width: null,
+});
 
   var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = window.location.search.substring(1),
@@ -224,7 +238,7 @@ $("#indicator_form").submit();
     selected_li.addClass("mm-active");
 
   var rep_year= getUrlParameter('rep_year');
-  
+
 
 function download_csv(csv, filename) {
     var csvFile;

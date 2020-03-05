@@ -106,7 +106,7 @@ class ReportView(TemplateView):
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
-        reporting_year = database.reporting_year
+        reporting_year = database.reporting_year.name
         report = ActivityReport.objects.filter(database_id=database.ai_id)
 
         if database.is_funded_by_unicef:
@@ -198,7 +198,7 @@ class ReportView(TemplateView):
         ).distinct()
 
         months = []
-        if int(str(reporting_year)) == current_year:
+        if int(reporting_year) == current_year:
             display_live = True
             if current_month == 1:
                 months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
@@ -208,6 +208,10 @@ class ReportView(TemplateView):
             if current_month > 2:
                 for i in range(current_month - 2, current_month + 1):
                     months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        else:
+            display_live = False
+            for i in range(1, 13):
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         return {
             # 'selected_partner': selected_partner,
             'selected_partners': selected_partners,
@@ -259,7 +263,7 @@ class ReportPartnerView(TemplateView):
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
-        reporting_year = database.reporting_year
+        reporting_year = database.reporting_year.name
 
         indicator = Indicator.objects.get(id=selected_indicator)
         selected_indicator_name = indicator.name
