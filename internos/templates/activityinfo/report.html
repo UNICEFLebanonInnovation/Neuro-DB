@@ -535,6 +535,8 @@
 <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
 <script>
+
+  $(document).ready(function () {
   var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = window.location.search.substring(1),
         sURLVariables = sPageURL.split('&'),
@@ -549,8 +551,6 @@
         }
     }
 };
-  $(document).ready(function () {
-
     var id = getUrlParameter('ai_id');
     var selected_li=$('li#'+id).find('a');
     var parent = selected_li.parent();

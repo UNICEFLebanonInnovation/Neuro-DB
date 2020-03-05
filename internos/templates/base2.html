@@ -2,7 +2,8 @@
 {% load util_tags %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Meta, title, CSS, favicons, etc. -->
     <meta charset="utf-8">
@@ -17,7 +18,7 @@
     <link rel="apple-touch-icon" sizes="144x144" href="{% static 'images/apple-icon-144x144.png' %}">
     <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/apple-icon-152x152.png' %}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-icon-180x180.png' %}">
-    <link rel="icon" type="image/png" sizes="192x192"  href="{% static 'images/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/android-icon-192x192.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon-96x96.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
@@ -26,7 +27,8 @@
     <meta name="theme-color" content="#ffffff">
 
     <title>Neuro-DB |</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
     <meta name="description" content="This is an example dashboard created using build-in elements and components.">
     <meta name="msapplication-tap-highlight" content="no">
     <link href="{% static 'css/main.css' %}" rel="stylesheet">
@@ -37,9 +39,28 @@
     <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
     <link href="{% static 'tellme/feedback.min.css' %}" rel="stylesheet">
     <style>
-      .site_title {padding-left: 8px; height: 65px; padding-top: 6px;}
-      #toTop{position: fixed;bottom: 10px;right: 10px;cursor: pointer;display: none;}
-      .vertical-right-aligned {transform: rotate(-90deg);transform-origin: 100% 100%;position: fixed;right: 0;top: 50%;z-index: 100;}
+        .site_title {
+            padding-left: 8px;
+            height: 65px;
+            padding-top: 6px;
+        }
+
+        #toTop {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .vertical-right-aligned {
+            transform: rotate(-90deg);
+            transform-origin: 100% 100%;
+            position: fixed;
+            right: 0;
+            top: 50%;
+            z-index: 100;
+        }
     </style>
 </head>
 
@@ -52,11 +73,11 @@
     <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
         <div class="app-header header-shadow">
             <div class="app-header__logo">
-<!--                <div class="logo-src"></div>-->
-              <a href="/" class="site_title" data-step="1" data-intro="Go to home page">
-                <img src="{% static 'images/logo_inverse.png' %}" height="55" width="55" alt="Neuro-DB-logo"/>
-              </a>
-<span style="font-size: 1.1rem; text-transform: uppercase;
+                <!--                <div class="logo-src"></div>-->
+                <a href="/" class="site_title" data-step="1" data-intro="Go to home page">
+                    <img src="{% static 'images/logo_inverse.png' %}" height="55" width="55" alt="Neuro-DB-logo" />
+                </a>
+                <span style="font-size: 1.1rem; text-transform: uppercase;
 margin: .75rem 0;
 font-weight: bold;
 color: #3f6ad8;
@@ -64,7 +85,8 @@ white-space: nowrap;
 position: relative;">Neuro-DB</span>
                 <div class="header__pane ml-auto">
                     <div>
-                        <button type="button" class="hamburger close-sidebar-btn hamburger--elastic" data-class="closed-sidebar">
+                        <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                            data-class="closed-sidebar">
                             <span class="hamburger-box">
                                 <span class="hamburger-inner"></span>
                             </span>
@@ -83,85 +105,152 @@ position: relative;">Neuro-DB</span>
             </div>
             <div class="app-header__menu">
                 <span>
-                    <button type="button" class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                    <button type="button"
+                        class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
                         <span class="btn-icon-wrapper">
                             <i class="fa fa-ellipsis-v fa-w-6"></i>
                         </span>
                     </button>
                 </span>
             </div>
-          <div class="app-header__content">
+            <div class="app-header__content">
+                <input id="reporting_year" hidden value="{{ reporting_year }}">
                 <div class="app-header-left">
-             <div class="search-wrapper" data-step="8" data-intro="Search for a specific Indicator">
-              <div class="input-holder" id="searchdiv">
-                  <input type="text" class="search-input" id="search-input" onkeyup="search()" placeholder="Type to search" >
-                  <button class="search-icon"><span></span></button>
-              </div>
-              <button class="close" id="close-search"></button>
-             </div>
-                    <ul class="header-menu nav">
-                      <li class="nav-item">
-                        <div data-step="3" data-intro="For technical issue please call Ali Chamseddine or Mohamad Karnib">
-                            <a class="user-profile nav-link" href="mailto:achamseddine@unicef.org;mkarnib@unicef.org?subject=ActivityInfo: Techincal issue"
-                             data-toggle="tooltip" data-placement="right" data-html="true"
-                              title="For technical issue please call: <br />
-                              Ali Chamseddine or Mohamad Karnib">
-                                <img src="{% static 'images/support-1.png' %}" alt="" style="width: 50px; height: 50px;"/>
-                            </a>
+                    <div class="search-wrapper" data-step="8" data-intro="Search for a specific Indicator">
+                        <div class="input-holder" id="searchdiv">
+                            <input type="text" class="search-input" id="search-input" onkeyup="search()"
+                                placeholder="Type to search">
+                            <button class="search-icon"><span></span></button>
                         </div>
+                        <button class="close" id="close-search"></button>
+                    </div>
+                    <ul class="header-menu nav">
+                        <li class="nav-item">
+                            <div data-step="3"
+                                data-intro="For technical issue please call Ali Chamseddine or Mohamad Karnib">
+                                <a class="user-profile nav-link"
+                                    href="mailto:achamseddine@unicef.org;mkarnib@unicef.org?subject=ActivityInfo: Techincal issue"
+                                    data-toggle="tooltip" data-placement="right" data-html="true" title="For technical issue please call: <br />
+                              Ali Chamseddine or Mohamad Karnib">
+                                    <img src="{% static 'images/support-1.png' %}" alt=""
+                                        style="width: 50px; height: 50px;" />
+                                </a>
+                            </div>
 
-                      </li>
-                      <li class="btn-group nav-item">
-
-                         {% if reporting_year == '2019'%}
-                             <a href="/"  class="nav-link text-primary"  >
-                                <i class="nav-link-icon fa fa-calendar text-primary"></i>
-                              Back to 2020
-                              </a>
-                               {% else %}
-                              <a href="/?rep_year=2019"  class="nav-link text-primary" >
-                                <i class="nav-link-icon fa fa-calendar text-primary"></i>
-                              Switch to 2019
-                              </a>
-                           {% endif %}
                         </li>
+<!--                        <li class="btn-group nav-item">-->
+
+<!--                            {% if reporting_year == '2019'%}-->
+<!--                            <a href="/" class="nav-link text-primary">-->
+<!--                                <i class="nav-link-icon fa fa-calendar text-primary"></i>-->
+<!--                                Back to 2020-->
+<!--                            </a>-->
+<!--                            {% else %}-->
+<!--                            <a href="/?rep_year=2019" class="nav-link text-primary">-->
+<!--                                <i class="nav-link-icon fa fa-calendar text-primary"></i>-->
+<!--                                Switch to 2019-->
+<!--                            </a>-->
+<!--                            {% endif %}-->
+<!--                        </li>-->
 
                     </ul>
                 </div>
                 <div class="app-header-right">
+                    <div class="btn-group dropdown" placement="bottom" id="calendar_btn">
+                        <button aria-haspopup="true" class="btn btn-link p-0 mr-2" type="button" aria-expanded="true">
+                            <div class="font-icon-wrapper">
+                                <i class="fa fa-fw" aria-hidden="true" title="Copy to use calendar"></i>
+                            </div>
+                        </button>
+                        <div class="dropdown-menu-xl dropdown-menu" x-placement="bottom"
+                            style="top: 0px; left: 0px; position: absolute; transform: translate(-300px, 46px);">
+                            <div class="dropdown-menu-header">
+                                <div class="dropdown-menu-header-inner bg-plum-plate">
+                                    <div class="menu-header-image dd-header-bg-1"></div>
+                                    <div class="menu-header-content text-white">
+                                        <h5 class="menu-header-title">Dashboard Calendar</h5>
+                                        <h6 class="menu-header-subtitle">Change Reporting Year</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid-menu grid-menu-xl grid-menu-3col">
+                                <div class="no-gutters row">
+                                    <div class="col-sm-6 col-xl-6">
+                                        <a class="btn-icon-vertical btn-square btn  " id="2019" href="/?rep_year=2019">
+                                            <i class="fa fa-fw icon-gradient bg-plum-plate btn-icon-wrapper btn-icon-lg mb-3"
+                                                aria-hidden="true"></i>
+                                            2019
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-6">
+                                        <a class="btn-icon-vertical btn-square  btn" id="2020" href="/">
+                                            <i
+                                                class="fa fa-fw  icon-gradient bg-plum-plate btn-icon-wrapper btn-icon-lg mb-3"></i>
+                                            2020
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-6">
+                                        <a class="btn-icon-vertical btn-square  btn  disabled">
+                                            <i
+                                                class="fa fa-fw icon-gradient bg-plum-plate btn-icon-wrapper btn-icon-lg mb-3"></i>
+                                            2021
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-6">
+                                        <a class="btn-icon-vertical btn-square btn disabled ">
+                                            <i
+                                                class="fa fa-fw icon-gradient bg-plum-plate btn-icon-wrapper btn-icon-lg mb-3"></i>
+                                            2022
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                     <div class="header-btn-lg pr-0">
                         <div class="widget-content p-0">
                             <div class="widget-content-wrapper">
                                 <div class="widget-content-left">
                                     <div class="btn-group">
-
-                                       {% if request.user.is_authenticated %}
-                                        <a  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
-                                            <img width="42" class="rounded-circle" src="{% static 'images/new_user.png' %}" alt="">
-                                          {{ request.user }}
+                                        {% if request.user.is_authenticated %}
+                                        <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            class="p-0 btn">
+                                            <img width="42" class="rounded-circle"
+                                                src="{% static 'images/new_user.png' %}" alt="">
+                                            {{ request.user }}
                                             <i class="fa fa-angle-down ml-2 opacity-8"></i>
                                         </a>
-                                       <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
-                                          {% if request.user.is_staff %}
+                                        <div tabindex="-1" role="menu" aria-hidden="true"
+                                            class="dropdown-menu dropdown-menu-right">
+                                            {% if request.user.is_staff %}
                                             <a type="button" tabindex="0" class="dropdown-item" href="/admin/">Admin</a>
-                                           {% endif %}
+                                            {% endif %}
                                             <div tabindex="-1" class="dropdown-divider"></div>
-                                            <a href="{% url 'account_logout' %}" type="button" tabindex="0" class="dropdown-item"><i class="fa fa-sign-out pull-right"></i>Log Out</a>
+                                            <a href="{% url 'account_logout' %}" type="button" tabindex="0"
+                                                class="dropdown-item"><i class="fa fa-sign-out pull-right"></i>Log
+                                                Out</a>
                                         </div>
 
-                                      {% else %}
+                                        {% else %}
 
-                                      <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="user-profile p-0 btn">
-                                            <img width="42" class="rounded-circle" src="{% static 'images/new_user.png' %}" alt="">
-                                          {{ request.user }}
+                                        <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            class="user-profile p-0 btn">
+                                            <img width="42" class="rounded-circle"
+                                                src="{% static 'images/new_user.png' %}" alt="">
+                                            {{ request.user }}
                                             <i class="fa fa-angle-down ml-2 opacity-8"></i>
-                                      </a>
-                                       <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right dropdown-usermenu">
+                                        </a>
+                                        <div tabindex="-1" role="menu" aria-hidden="true"
+                                            class="dropdown-menu dropdown-menu-right dropdown-usermenu">
 
                                             <div tabindex="-1" class="dropdown-divider"></div>
-                                         <a href="{% url 'account_login' %}" type="button" tabindex="0" class="dropdown-item"><i class="fa fa-sign-in pull-right"></i>Login</a>
+                                            <a href="{% url 'account_login' %}" type="button" tabindex="0"
+                                                class="dropdown-item"><i class="fa fa-sign-in pull-right"></i>Login</a>
                                         </div>
-                                      {% endif %}
+                                        {% endif %}
                                     </div>
                                 </div>
 
@@ -171,9 +260,9 @@ position: relative;">Neuro-DB</span>
                 </div>
             </div>
         </div>
-      <div class="ui-theme-settings">
+        <div class="ui-theme-settings">
             <!--<button type="button" id="TooltipDemo" class="btn-open-options btn btn-warning">-->
-                <!--<i class="fa fa-cog fa-w-16 fa-spin fa-2x"></i>-->
+            <!--<i class="fa fa-cog fa-w-16 fa-spin fa-2x"></i>-->
             <!--</button>-->
             <div class="theme-settings__inner">
                 <div class="scrollbar-container">
@@ -186,16 +275,19 @@ position: relative;">Neuro-DB</span>
                                     <div class="widget-content p-0">
                                         <div class="widget-content-wrapper">
                                             <div class="widget-content-left mr-3">
-                                                <div class="switch has-switch switch-container-class" data-class="fixed-header">
+                                                <div class="switch has-switch switch-container-class"
+                                                    data-class="fixed-header">
                                                     <div class="switch-animate switch-on">
-                                                        <input type="checkbox" checked data-toggle="toggle" data-onstyle="success">
+                                                        <input type="checkbox" checked data-toggle="toggle"
+                                                            data-onstyle="success">
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="widget-content-left">
                                                 <div class="widget-heading">Fixed Header
                                                 </div>
-                                                <div class="widget-subheading">Makes the header top fixed, always visible!
+                                                <div class="widget-subheading">Makes the header top fixed, always
+                                                    visible!
                                                 </div>
                                             </div>
                                         </div>
@@ -205,16 +297,19 @@ position: relative;">Neuro-DB</span>
                                     <div class="widget-content p-0">
                                         <div class="widget-content-wrapper">
                                             <div class="widget-content-left mr-3">
-                                                <div class="switch has-switch switch-container-class" data-class="fixed-sidebar">
+                                                <div class="switch has-switch switch-container-class"
+                                                    data-class="fixed-sidebar">
                                                     <div class="switch-animate switch-on">
-                                                        <input type="checkbox" checked data-toggle="toggle" data-onstyle="success">
+                                                        <input type="checkbox" checked data-toggle="toggle"
+                                                            data-onstyle="success">
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="widget-content-left">
                                                 <div class="widget-heading">Fixed Sidebar
                                                 </div>
-                                                <div class="widget-subheading">Makes the sidebar left fixed, always visible!
+                                                <div class="widget-subheading">Makes the sidebar left fixed, always
+                                                    visible!
                                                 </div>
                                             </div>
                                         </div>
@@ -224,16 +319,19 @@ position: relative;">Neuro-DB</span>
                                     <div class="widget-content p-0">
                                         <div class="widget-content-wrapper">
                                             <div class="widget-content-left mr-3">
-                                                <div class="switch has-switch switch-container-class" data-class="fixed-footer">
+                                                <div class="switch has-switch switch-container-class"
+                                                    data-class="fixed-footer">
                                                     <div class="switch-animate switch-off">
-                                                        <input type="checkbox" data-toggle="toggle" data-onstyle="success">
+                                                        <input type="checkbox" data-toggle="toggle"
+                                                            data-onstyle="success">
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="widget-content-left">
                                                 <div class="widget-heading">Fixed Footer
                                                 </div>
-                                                <div class="widget-subheading">Makes the app footer bottom fixed, always visible!
+                                                <div class="widget-subheading">Makes the app footer bottom fixed, always
+                                                    visible!
                                                 </div>
                                             </div>
                                         </div>
@@ -245,7 +343,9 @@ position: relative;">Neuro-DB</span>
                             <div>
                                 Header Options
                             </div>
-                            <button type="button" class="btn-pill btn-shadow btn-wide ml-auto btn btn-focus btn-sm switch-header-cs-class" data-class="">
+                            <button type="button"
+                                class="btn-pill btn-shadow btn-wide ml-auto btn btn-focus btn-sm switch-header-cs-class"
+                                data-class="">
                                 Restore Default
                             </button>
                         </h3>
@@ -255,79 +355,115 @@ position: relative;">Neuro-DB</span>
                                     <h5 class="pb-2">Choose Color Scheme
                                     </h5>
                                     <div class="theme-settings-swatches">
-                                        <div class="swatch-holder bg-primary switch-header-cs-class" data-class="bg-primary header-text-light">
+                                        <div class="swatch-holder bg-primary switch-header-cs-class"
+                                            data-class="bg-primary header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-secondary switch-header-cs-class" data-class="bg-secondary header-text-light">
+                                        <div class="swatch-holder bg-secondary switch-header-cs-class"
+                                            data-class="bg-secondary header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-success switch-header-cs-class" data-class="bg-success header-text-dark">
+                                        <div class="swatch-holder bg-success switch-header-cs-class"
+                                            data-class="bg-success header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-info switch-header-cs-class" data-class="bg-info header-text-dark">
+                                        <div class="swatch-holder bg-info switch-header-cs-class"
+                                            data-class="bg-info header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-warning switch-header-cs-class" data-class="bg-warning header-text-dark">
+                                        <div class="swatch-holder bg-warning switch-header-cs-class"
+                                            data-class="bg-warning header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-danger switch-header-cs-class" data-class="bg-danger header-text-light">
+                                        <div class="swatch-holder bg-danger switch-header-cs-class"
+                                            data-class="bg-danger header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-light switch-header-cs-class" data-class="bg-light header-text-dark">
+                                        <div class="swatch-holder bg-light switch-header-cs-class"
+                                            data-class="bg-light header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-dark switch-header-cs-class" data-class="bg-dark header-text-light">
+                                        <div class="swatch-holder bg-dark switch-header-cs-class"
+                                            data-class="bg-dark header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-focus switch-header-cs-class" data-class="bg-focus header-text-light">
+                                        <div class="swatch-holder bg-focus switch-header-cs-class"
+                                            data-class="bg-focus header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-alternate switch-header-cs-class" data-class="bg-alternate header-text-light">
+                                        <div class="swatch-holder bg-alternate switch-header-cs-class"
+                                            data-class="bg-alternate header-text-light">
                                         </div>
                                         <div class="divider">
                                         </div>
-                                        <div class="swatch-holder bg-vicious-stance switch-header-cs-class" data-class="bg-vicious-stance header-text-light">
+                                        <div class="swatch-holder bg-vicious-stance switch-header-cs-class"
+                                            data-class="bg-vicious-stance header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-midnight-bloom switch-header-cs-class" data-class="bg-midnight-bloom header-text-light">
+                                        <div class="swatch-holder bg-midnight-bloom switch-header-cs-class"
+                                            data-class="bg-midnight-bloom header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-night-sky switch-header-cs-class" data-class="bg-night-sky header-text-light">
+                                        <div class="swatch-holder bg-night-sky switch-header-cs-class"
+                                            data-class="bg-night-sky header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-slick-carbon switch-header-cs-class" data-class="bg-slick-carbon header-text-light">
+                                        <div class="swatch-holder bg-slick-carbon switch-header-cs-class"
+                                            data-class="bg-slick-carbon header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-asteroid switch-header-cs-class" data-class="bg-asteroid header-text-light">
+                                        <div class="swatch-holder bg-asteroid switch-header-cs-class"
+                                            data-class="bg-asteroid header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-royal switch-header-cs-class" data-class="bg-royal header-text-light">
+                                        <div class="swatch-holder bg-royal switch-header-cs-class"
+                                            data-class="bg-royal header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-warm-flame switch-header-cs-class" data-class="bg-warm-flame header-text-dark">
+                                        <div class="swatch-holder bg-warm-flame switch-header-cs-class"
+                                            data-class="bg-warm-flame header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-night-fade switch-header-cs-class" data-class="bg-night-fade header-text-dark">
+                                        <div class="swatch-holder bg-night-fade switch-header-cs-class"
+                                            data-class="bg-night-fade header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-sunny-morning switch-header-cs-class" data-class="bg-sunny-morning header-text-dark">
+                                        <div class="swatch-holder bg-sunny-morning switch-header-cs-class"
+                                            data-class="bg-sunny-morning header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-tempting-azure switch-header-cs-class" data-class="bg-tempting-azure header-text-dark">
+                                        <div class="swatch-holder bg-tempting-azure switch-header-cs-class"
+                                            data-class="bg-tempting-azure header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-amy-crisp switch-header-cs-class" data-class="bg-amy-crisp header-text-dark">
+                                        <div class="swatch-holder bg-amy-crisp switch-header-cs-class"
+                                            data-class="bg-amy-crisp header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-heavy-rain switch-header-cs-class" data-class="bg-heavy-rain header-text-dark">
+                                        <div class="swatch-holder bg-heavy-rain switch-header-cs-class"
+                                            data-class="bg-heavy-rain header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-mean-fruit switch-header-cs-class" data-class="bg-mean-fruit header-text-dark">
+                                        <div class="swatch-holder bg-mean-fruit switch-header-cs-class"
+                                            data-class="bg-mean-fruit header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-malibu-beach switch-header-cs-class" data-class="bg-malibu-beach header-text-light">
+                                        <div class="swatch-holder bg-malibu-beach switch-header-cs-class"
+                                            data-class="bg-malibu-beach header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-deep-blue switch-header-cs-class" data-class="bg-deep-blue header-text-dark">
+                                        <div class="swatch-holder bg-deep-blue switch-header-cs-class"
+                                            data-class="bg-deep-blue header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-ripe-malin switch-header-cs-class" data-class="bg-ripe-malin header-text-light">
+                                        <div class="swatch-holder bg-ripe-malin switch-header-cs-class"
+                                            data-class="bg-ripe-malin header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-arielle-smile switch-header-cs-class" data-class="bg-arielle-smile header-text-light">
+                                        <div class="swatch-holder bg-arielle-smile switch-header-cs-class"
+                                            data-class="bg-arielle-smile header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-plum-plate switch-header-cs-class" data-class="bg-plum-plate header-text-light">
+                                        <div class="swatch-holder bg-plum-plate switch-header-cs-class"
+                                            data-class="bg-plum-plate header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-happy-fisher switch-header-cs-class" data-class="bg-happy-fisher header-text-dark">
+                                        <div class="swatch-holder bg-happy-fisher switch-header-cs-class"
+                                            data-class="bg-happy-fisher header-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-happy-itmeo switch-header-cs-class" data-class="bg-happy-itmeo header-text-light">
+                                        <div class="swatch-holder bg-happy-itmeo switch-header-cs-class"
+                                            data-class="bg-happy-itmeo header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-mixed-hopes switch-header-cs-class" data-class="bg-mixed-hopes header-text-light">
+                                        <div class="swatch-holder bg-mixed-hopes switch-header-cs-class"
+                                            data-class="bg-mixed-hopes header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-strong-bliss switch-header-cs-class" data-class="bg-strong-bliss header-text-light">
+                                        <div class="swatch-holder bg-strong-bliss switch-header-cs-class"
+                                            data-class="bg-strong-bliss header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-grow-early switch-header-cs-class" data-class="bg-grow-early header-text-light">
+                                        <div class="swatch-holder bg-grow-early switch-header-cs-class"
+                                            data-class="bg-grow-early header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-love-kiss switch-header-cs-class" data-class="bg-love-kiss header-text-light">
+                                        <div class="swatch-holder bg-love-kiss switch-header-cs-class"
+                                            data-class="bg-love-kiss header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-premium-dark switch-header-cs-class" data-class="bg-premium-dark header-text-light">
+                                        <div class="swatch-holder bg-premium-dark switch-header-cs-class"
+                                            data-class="bg-premium-dark header-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-happy-green switch-header-cs-class" data-class="bg-happy-green header-text-light">
+                                        <div class="swatch-holder bg-happy-green switch-header-cs-class"
+                                            data-class="bg-happy-green header-text-light">
                                         </div>
                                     </div>
                                 </li>
@@ -335,7 +471,9 @@ position: relative;">Neuro-DB</span>
                         </div>
                         <h3 class="themeoptions-heading">
                             <div>Sidebar Options</div>
-                            <button type="button" class="btn-pill btn-shadow btn-wide ml-auto btn btn-focus btn-sm switch-sidebar-cs-class" data-class="">
+                            <button type="button"
+                                class="btn-pill btn-shadow btn-wide ml-auto btn btn-focus btn-sm switch-sidebar-cs-class"
+                                data-class="">
                                 Restore Default
                             </button>
                         </h3>
@@ -345,79 +483,115 @@ position: relative;">Neuro-DB</span>
                                     <h5 class="pb-2">Choose Color Scheme
                                     </h5>
                                     <div class="theme-settings-swatches">
-                                        <div class="swatch-holder bg-primary switch-sidebar-cs-class" data-class="bg-primary sidebar-text-light">
+                                        <div class="swatch-holder bg-primary switch-sidebar-cs-class"
+                                            data-class="bg-primary sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-secondary switch-sidebar-cs-class" data-class="bg-secondary sidebar-text-light">
+                                        <div class="swatch-holder bg-secondary switch-sidebar-cs-class"
+                                            data-class="bg-secondary sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-success switch-sidebar-cs-class" data-class="bg-success sidebar-text-dark">
+                                        <div class="swatch-holder bg-success switch-sidebar-cs-class"
+                                            data-class="bg-success sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-info switch-sidebar-cs-class" data-class="bg-info sidebar-text-dark">
+                                        <div class="swatch-holder bg-info switch-sidebar-cs-class"
+                                            data-class="bg-info sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-warning switch-sidebar-cs-class" data-class="bg-warning sidebar-text-dark">
+                                        <div class="swatch-holder bg-warning switch-sidebar-cs-class"
+                                            data-class="bg-warning sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-danger switch-sidebar-cs-class" data-class="bg-danger sidebar-text-light">
+                                        <div class="swatch-holder bg-danger switch-sidebar-cs-class"
+                                            data-class="bg-danger sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-light switch-sidebar-cs-class" data-class="bg-light sidebar-text-dark">
+                                        <div class="swatch-holder bg-light switch-sidebar-cs-class"
+                                            data-class="bg-light sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-dark switch-sidebar-cs-class" data-class="bg-dark sidebar-text-light">
+                                        <div class="swatch-holder bg-dark switch-sidebar-cs-class"
+                                            data-class="bg-dark sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-focus switch-sidebar-cs-class" data-class="bg-focus sidebar-text-light">
+                                        <div class="swatch-holder bg-focus switch-sidebar-cs-class"
+                                            data-class="bg-focus sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-alternate switch-sidebar-cs-class" data-class="bg-alternate sidebar-text-light">
+                                        <div class="swatch-holder bg-alternate switch-sidebar-cs-class"
+                                            data-class="bg-alternate sidebar-text-light">
                                         </div>
                                         <div class="divider">
                                         </div>
-                                        <div class="swatch-holder bg-vicious-stance switch-sidebar-cs-class" data-class="bg-vicious-stance sidebar-text-light">
+                                        <div class="swatch-holder bg-vicious-stance switch-sidebar-cs-class"
+                                            data-class="bg-vicious-stance sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-midnight-bloom switch-sidebar-cs-class" data-class="bg-midnight-bloom sidebar-text-light">
+                                        <div class="swatch-holder bg-midnight-bloom switch-sidebar-cs-class"
+                                            data-class="bg-midnight-bloom sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-night-sky switch-sidebar-cs-class" data-class="bg-night-sky sidebar-text-light">
+                                        <div class="swatch-holder bg-night-sky switch-sidebar-cs-class"
+                                            data-class="bg-night-sky sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-slick-carbon switch-sidebar-cs-class" data-class="bg-slick-carbon sidebar-text-light">
+                                        <div class="swatch-holder bg-slick-carbon switch-sidebar-cs-class"
+                                            data-class="bg-slick-carbon sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-asteroid switch-sidebar-cs-class" data-class="bg-asteroid sidebar-text-light">
+                                        <div class="swatch-holder bg-asteroid switch-sidebar-cs-class"
+                                            data-class="bg-asteroid sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-royal switch-sidebar-cs-class" data-class="bg-royal sidebar-text-light">
+                                        <div class="swatch-holder bg-royal switch-sidebar-cs-class"
+                                            data-class="bg-royal sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-warm-flame switch-sidebar-cs-class" data-class="bg-warm-flame sidebar-text-dark">
+                                        <div class="swatch-holder bg-warm-flame switch-sidebar-cs-class"
+                                            data-class="bg-warm-flame sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-night-fade switch-sidebar-cs-class" data-class="bg-night-fade sidebar-text-dark">
+                                        <div class="swatch-holder bg-night-fade switch-sidebar-cs-class"
+                                            data-class="bg-night-fade sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-sunny-morning switch-sidebar-cs-class" data-class="bg-sunny-morning sidebar-text-dark">
+                                        <div class="swatch-holder bg-sunny-morning switch-sidebar-cs-class"
+                                            data-class="bg-sunny-morning sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-tempting-azure switch-sidebar-cs-class" data-class="bg-tempting-azure sidebar-text-dark">
+                                        <div class="swatch-holder bg-tempting-azure switch-sidebar-cs-class"
+                                            data-class="bg-tempting-azure sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-amy-crisp switch-sidebar-cs-class" data-class="bg-amy-crisp sidebar-text-dark">
+                                        <div class="swatch-holder bg-amy-crisp switch-sidebar-cs-class"
+                                            data-class="bg-amy-crisp sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-heavy-rain switch-sidebar-cs-class" data-class="bg-heavy-rain sidebar-text-dark">
+                                        <div class="swatch-holder bg-heavy-rain switch-sidebar-cs-class"
+                                            data-class="bg-heavy-rain sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-mean-fruit switch-sidebar-cs-class" data-class="bg-mean-fruit sidebar-text-dark">
+                                        <div class="swatch-holder bg-mean-fruit switch-sidebar-cs-class"
+                                            data-class="bg-mean-fruit sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-malibu-beach switch-sidebar-cs-class" data-class="bg-malibu-beach sidebar-text-light">
+                                        <div class="swatch-holder bg-malibu-beach switch-sidebar-cs-class"
+                                            data-class="bg-malibu-beach sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-deep-blue switch-sidebar-cs-class" data-class="bg-deep-blue sidebar-text-dark">
+                                        <div class="swatch-holder bg-deep-blue switch-sidebar-cs-class"
+                                            data-class="bg-deep-blue sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-ripe-malin switch-sidebar-cs-class" data-class="bg-ripe-malin sidebar-text-light">
+                                        <div class="swatch-holder bg-ripe-malin switch-sidebar-cs-class"
+                                            data-class="bg-ripe-malin sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-arielle-smile switch-sidebar-cs-class" data-class="bg-arielle-smile sidebar-text-light">
+                                        <div class="swatch-holder bg-arielle-smile switch-sidebar-cs-class"
+                                            data-class="bg-arielle-smile sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-plum-plate switch-sidebar-cs-class" data-class="bg-plum-plate sidebar-text-light">
+                                        <div class="swatch-holder bg-plum-plate switch-sidebar-cs-class"
+                                            data-class="bg-plum-plate sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-happy-fisher switch-sidebar-cs-class" data-class="bg-happy-fisher sidebar-text-dark">
+                                        <div class="swatch-holder bg-happy-fisher switch-sidebar-cs-class"
+                                            data-class="bg-happy-fisher sidebar-text-dark">
                                         </div>
-                                        <div class="swatch-holder bg-happy-itmeo switch-sidebar-cs-class" data-class="bg-happy-itmeo sidebar-text-light">
+                                        <div class="swatch-holder bg-happy-itmeo switch-sidebar-cs-class"
+                                            data-class="bg-happy-itmeo sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-mixed-hopes switch-sidebar-cs-class" data-class="bg-mixed-hopes sidebar-text-light">
+                                        <div class="swatch-holder bg-mixed-hopes switch-sidebar-cs-class"
+                                            data-class="bg-mixed-hopes sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-strong-bliss switch-sidebar-cs-class" data-class="bg-strong-bliss sidebar-text-light">
+                                        <div class="swatch-holder bg-strong-bliss switch-sidebar-cs-class"
+                                            data-class="bg-strong-bliss sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-grow-early switch-sidebar-cs-class" data-class="bg-grow-early sidebar-text-light">
+                                        <div class="swatch-holder bg-grow-early switch-sidebar-cs-class"
+                                            data-class="bg-grow-early sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-love-kiss switch-sidebar-cs-class" data-class="bg-love-kiss sidebar-text-light">
+                                        <div class="swatch-holder bg-love-kiss switch-sidebar-cs-class"
+                                            data-class="bg-love-kiss sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-premium-dark switch-sidebar-cs-class" data-class="bg-premium-dark sidebar-text-light">
+                                        <div class="swatch-holder bg-premium-dark switch-sidebar-cs-class"
+                                            data-class="bg-premium-dark sidebar-text-light">
                                         </div>
-                                        <div class="swatch-holder bg-happy-green switch-sidebar-cs-class" data-class="bg-happy-green sidebar-text-light">
+                                        <div class="swatch-holder bg-happy-green switch-sidebar-cs-class"
+                                            data-class="bg-happy-green sidebar-text-light">
                                         </div>
                                     </div>
                                 </li>
@@ -425,7 +599,8 @@ position: relative;">Neuro-DB</span>
                         </div>
                         <h3 class="themeoptions-heading">
                             <div>Main Content Options</div>
-                            <button type="button" class="btn-pill btn-shadow btn-wide ml-auto active btn btn-focus btn-sm">Restore Default
+                            <button type="button"
+                                class="btn-pill btn-shadow btn-wide ml-auto active btn btn-focus btn-sm">Restore Default
                             </button>
                         </h3>
                         <div class="p-3">
@@ -435,10 +610,14 @@ position: relative;">Neuro-DB</span>
                                     </h5>
                                     <div class="theme-settings-swatches">
                                         <div role="group" class="mt-2 btn-group">
-                                            <button type="button" class="btn-wide btn-shadow btn-primary btn btn-secondary switch-theme-class" data-class="body-tabs-line">
+                                            <button type="button"
+                                                class="btn-wide btn-shadow btn-primary btn btn-secondary switch-theme-class"
+                                                data-class="body-tabs-line">
                                                 Line
                                             </button>
-                                            <button type="button" class="btn-wide btn-shadow btn-primary active btn btn-secondary switch-theme-class" data-class="body-tabs-shadow">
+                                            <button type="button"
+                                                class="btn-wide btn-shadow btn-primary active btn btn-secondary switch-theme-class"
+                                                data-class="body-tabs-shadow">
                                                 Shadow
                                             </button>
                                         </div>
@@ -450,198 +629,224 @@ position: relative;">Neuro-DB</span>
                 </div>
             </div>
         </div>
-      <div class="app-main">
-                <div class="app-sidebar sidebar-shadow">
-                  <div class="app-header__logo">
-                <div class="logo-src"></div>
-                <div class="header__pane ml-auto">
-                    <div>
-                        <button type="button" class="hamburger close-sidebar-btn hamburger--elastic" data-class="closed-sidebar">
-                            <span class="hamburger-box">
-                                <span class="hamburger-inner"></span>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-                    <div class="app-header__mobile-menu">
+        <div class="app-main">
+            <div class="app-sidebar sidebar-shadow">
+                <div class="app-header__logo">
+                    <div class="logo-src"></div>
+                    <div class="header__pane ml-auto">
                         <div>
-                            <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                            <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                                data-class="closed-sidebar">
                                 <span class="hamburger-box">
                                     <span class="hamburger-inner"></span>
                                 </span>
                             </button>
                         </div>
                     </div>
-                    <div class="app-header__menu">
-                        <span>
-                            <button type="button" class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
-                                <span class="btn-icon-wrapper">
-                                    <i class="fa fa-ellipsis-v fa-w-6"></i>
-                                </span>
-                            </button>
-                        </span>
+                </div>
+                <div class="app-header__mobile-menu">
+                    <div>
+                        <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
                     </div>
+                </div>
+                <div class="app-header__menu">
+                    <span>
+                        <button type="button"
+                            class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                            <span class="btn-icon-wrapper">
+                                <i class="fa fa-ellipsis-v fa-w-6"></i>
+                            </span>
+                        </button>
+                    </span>
+                </div>
 
 
-                  <div class="scrollbar-sidebar">
-                        <div class="app-sidebar__inner" data-step="2" data-intro="Navigation menu for other sections">
-                            <ul class="vertical-nav-menu">
+                <div class="scrollbar-sidebar">
+                    <div class="app-sidebar__inner" data-step="2" data-intro="Navigation menu for other sections">
+                        <ul class="vertical-nav-menu">
 
-                              <!--<li>-->
-                                   <!--<a href="/">-->
-                                        <!--<i class="metismenu-icon pe-7s-keypad"></i>-->
-                                        <!--Unicef Programmes-->
-                                    <!--</a>-->
-                                <!--</li>-->
+                            <!--<li>-->
+                            <!--<a href="/">-->
+                            <!--<i class="metismenu-icon pe-7s-keypad"></i>-->
+                            <!--Unicef Programmes-->
+                            <!--</a>-->
+                            <!--</li>-->
 
 
-                              <li class="app-sidebar__heading">Activity Info Results</li>
-                                <li>
-                                    <a href="/">
-                                        <i class="metismenu-icon pe-7s-menu"></i>
-                                        Dashboards
-                                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
-                                    </a>
-                                   <ul id="databases_list">
+                            <li class="app-sidebar__heading">Activity Info Results</li>
+                            <li>
+                                <a href="/">
+                                    <i class="metismenu-icon pe-7s-menu"></i>
+                                    Dashboards
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul id="databases_list">
                                     {% get_databases as databases %}
-                                     {% for db in databases %}
-                                   <li id="{{db.ai_id}}">
-                                    <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="">{{ db.label }}
-                                      <i class="metismenu-icon"></i>
-                                   </a>
-                                   </li>
-                                   {% endfor %}
-                                    </ul>
-                                </li>
-                                <li id="hpm">
-                                   <a href="{% url 'activityinfo:hpm' %}">
-                                        <i class="metismenu-icon pe-7s-display2"></i>
-                                        HPM Tables
-                                    </a>
-                                </li>
-                                <li>
-                                      <a href="#">
-                                        <i class="metismenu-icon pe-7s-science"></i>
-                                        Sector Results
-                                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
-                                      </a>
-                                    <ul>
-                                        {% get_databases True as databases %}
-                                         {% for db in databases %}
-                                         <li>
-<!--                                              <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">-->
-                                           <a href="#">{{ db.label }}
+                                    {% for db in databases %}
+                                    <li id="{{db.ai_id}}">
+                                        <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}"
+                                            class="">{{ db.label }}
                                             <i class="metismenu-icon"></i>
-                                          </a>
-                                        </li>
-                                      {% endfor %}
-                                 </ul>
-                                </li>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            <li id="hpm">
+                                <a href="{% url 'activityinfo:hpm' %}">
+                                    <i class="metismenu-icon pe-7s-display2"></i>
+                                    HPM Tables
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-science"></i>
+                                    Sector Results
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul>
+                                    {% get_databases True as databases %}
+                                    {% for db in databases %}
+                                    <li>
+                                        <!--                                              <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">-->
+                                        <a href="#">{{ db.label }}
+                                            <i class="metismenu-icon"></i>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
 
 
-                                <li class="app-sidebar__heading">Partnership</li>
-                                <li>
-                                  <a href="#">
-<!--                                     <a href="{% url 'etools:partner_profile' %}">-->
-                                        <i class="metismenu-icon pe-7s-user"></i>
+                            <li class="app-sidebar__heading">Partnership</li>
+                            <li>
+                                <a href="#">
+                                    <!--                                     <a href="{% url 'etools:partner_profile' %}">-->
+                                    <i class="metismenu-icon pe-7s-user"></i>
                                     Partner Profile</a>
-                                </li>
-                               <li>
-<!--                                 <a href="{% url 'etools:interventions' %}">-->
-                                      <a href="#">
+                            </li>
+                            <li>
+                                <!--                                 <a href="{% url 'etools:interventions' %}">-->
+                                <a href="#">
                                     <i class="metismenu-icon pe-7s-link"></i>
                                     Interventions </a>
-                                </li>
-                                <li>
-                                      <a href="#">
-<!--                                 <a href="{% url 'etools:programmatic_visits_monitoring' %}">-->
-                                      <i class="metismenu-icon pe-7s-monitor"></i>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <!--                                 <a href="{% url 'etools:programmatic_visits_monitoring' %}">-->
+                                    <i class="metismenu-icon pe-7s-monitor"></i>
                                     Programmatic Visits Monitoring </a>
-                                </li>
-                            </ul>
-                        </div>
-
+                            </li>
+                        </ul>
                     </div>
 
                 </div>
-        <div class="app-main__outer">
-             {% block content %}
-             {% endblock content %}
-           <div class="app-wrapper-footer">
-                        <div class="app-footer">
-                            <div class="app-footer__inner">
-                                <div class="app-footer-left">
-                                    <ul class="nav">
-                                        <li class="nav-item">
-                                          <img src="{% static 'images/unicef-logo.png' %}" height="50" style="margin-top: -7px;" alt=""/>
-                                        </li>
-                                        <li class="nav-item">
-                                            <div  class="nav-link">
-                                               Neuro-DB 2020
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="app-footer-right">
-<!--                                    <ul class="nav">-->
-<!--                                        <li class="nav-item">-->
-<!--                                            <a href="javascript:void(0);" class="nav-link">-->
-<!--                                                Footer Link 3-->
-<!--                                            </a>-->
-<!--                                        </li>-->
-<!--                                        <li class="nav-item">-->
-<!--                                            <a href="javascript:void(0);" class="nav-link">-->
-<!--                                                <div class="badge badge-success mr-1 ml-0">-->
-<!--                                                    <small>NEW</small>-->
-<!--                                                </div>-->
-<!--                                                Footer Link 4-->
-<!--                                            </a>-->
-<!--                                        </li>-->
-<!--                                    </ul>-->
-                                </div>
+
+            </div>
+            <div class="app-main__outer">
+                {% block content %}
+                {% endblock content %}
+                <div class="app-wrapper-footer">
+                    <div class="app-footer">
+                        <div class="app-footer__inner">
+                            <div class="app-footer-left">
+                                <ul class="nav">
+                                    <li class="nav-item">
+                                        <img src="{% static 'images/unicef-logo.png' %}" height="50"
+                                            style="margin-top: -7px;" alt="" />
+                                    </li>
+                                    <li class="nav-item">
+                                        <div class="nav-link">
+                                            Neuro-DB 2020
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="app-footer-right">
+                                <!--                                    <ul class="nav">-->
+                                <!--                                        <li class="nav-item">-->
+                                <!--                                            <a href="javascript:void(0);" class="nav-link">-->
+                                <!--                                                Footer Link 3-->
+                                <!--                                            </a>-->
+                                <!--                                        </li>-->
+                                <!--                                        <li class="nav-item">-->
+                                <!--                                            <a href="javascript:void(0);" class="nav-link">-->
+                                <!--                                                <div class="badge badge-success mr-1 ml-0">-->
+                                <!--                                                    <small>NEW</small>-->
+                                <!--                                                </div>-->
+                                <!--                                                Footer Link 4-->
+                                <!--                                            </a>-->
+                                <!--                                        </li>-->
+                                <!--                                    </ul>-->
                             </div>
                         </div>
                     </div>
-        </div>
+                </div>
+            </div>
         </div>
     </div>
-     <script src="{% static 'vendors/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'vendors/jquery/dist/jquery.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
     <!-- Custom Theme Scripts -->
     <!--<script src="{% static 'js/custom.min.js' %}"></script>-->
     <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>
     {% include 'tellme/js_inc.html' %}
     {% block extra_js %}{% endblock %}
+
     <script>
-        $(document).ready(function(){
+        $(document).on("click", function (event) {
+            var $trigger = $(".dropdown");
+            if ($trigger !== event.target && !$trigger.has(event.target).length) {
+                $(".dropdown-menu-xl").slideUp("fast");
+            }
+        });
 
-       /* $("#switch_year").onclick(){
-        var otheryear = $(this).data("otheryear") || '2020';
-        otheryear =otheryear=='2020'?'2019':'2020';
-        $(this).data("otheryear",otheryear);
-        $(this).text("Switch to " +   otheryear);
-        }*/
-
-
-              $(window).scroll(function () {
-              if ($(this).scrollTop() != 0) {
-                $('#toTop').fadeIn();
-              } else {
-                $('#toTop').fadeOut();
-              }
+        $(document).ready(function () {
+            $('#calendar_btn').click(function () {
+                $('.dropdown-menu-xl').slideToggle("fast");
             });
-            $('#toTop').click(function(){
-                $("html, body").animate({ scrollTop: 0 }, 600);
-                return false;
+
+            var getUrlParameter = function getUrlParameter(sParam) {
+                var sPageURL = window.location.search.substring(1),
+                    sURLVariables = sPageURL.split('&'),
+                    sParameterName,
+                    i;
+
+                for (i = 0; i < sURLVariables.length; i++) {
+                    sParameterName = sURLVariables[i].split('=');
+
+                    if (sParameterName[0] === sParam) {
+                        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                    }
+                }
+            };
+            var id = getUrlParameter(' rep_year'); if (id == null || undefined) {
+                var currentYear = (new Date).getFullYear(); var
+                    rep_year = $('#reporting_year').val();
+                var selected_year = "";
+                 if (rep_year == currentYear) {
+                    selected_year = $('a#' + currentYear);
+                } else { selected_year = $('a#' + rep_year); }
+            } else {
+                selected_year = $('a#' + id);
+            } selected_year.addClass("active"); $(window).scroll(function () {
+                if ($(this).scrollTop() != 0) {
+                    $('#toTop').fadeIn();
+                } else { $('#toTop').fadeOut(); }
             });
-            $('.print-page').click(function(){
-                $('.expanded-all').trigger('click');
-                $('.read-more').hide();
-                window.print();
+            $('#toTop').click(function () {
+                $("html,body").animate({ scrollTop: 0 }, 600); return false;
+            }); $('.print-page').click(function () {
+                $('.expanded-all').trigger('click'); $('.read-more').hide(); window.print();
             });
         });
+
     </script>
 
 </body>
+
 </html>
