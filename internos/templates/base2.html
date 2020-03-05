@@ -92,10 +92,15 @@ position: relative;">Neuro-DB</span>
             </div>
           <div class="app-header__content">
                 <div class="app-header-left">
-
+             <div class="search-wrapper" data-step="8" data-intro="Search for a specific Indicator">
+              <div class="input-holder" id="searchdiv">
+                  <input type="text" class="search-input" id="search-input" onkeyup="search()" placeholder="Type to search" >
+                  <button class="search-icon"><span></span></button>
+              </div>
+              <button class="close" id="close-search"></button>
+             </div>
                     <ul class="header-menu nav">
                       <li class="nav-item">
-
                         <div data-step="3" data-intro="For technical issue please call Ali Chamseddine or Mohamad Karnib">
                             <a class="user-profile nav-link" href="mailto:achamseddine@unicef.org;mkarnib@unicef.org?subject=ActivityInfo: Techincal issue"
                              data-toggle="tooltip" data-placement="right" data-html="true"
@@ -107,7 +112,7 @@ position: relative;">Neuro-DB</span>
 
                       </li>
                       <li class="btn-group nav-item">
-
+                           {{ reporting_year}}
                          {% if reporting_year == '2019'%}
                              <a href="/"  class="nav-link text-primary"  >
                                 <i class="nav-link-icon fa fa-calendar text-primary"></i>

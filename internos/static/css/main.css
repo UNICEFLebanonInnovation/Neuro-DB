@@ -415,6 +415,7 @@ a:not([href]):not([tabindex]) {
 a:not([href]):not([tabindex]):hover,a:not([href]):not([tabindex]):focus {
 
     text-decoration: none
+    text-decoration: none
 }
 
 a:not([href]):not([tabindex]):focus {
