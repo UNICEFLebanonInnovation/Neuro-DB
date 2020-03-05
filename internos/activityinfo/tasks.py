@@ -85,7 +85,7 @@ def import_data_and_generate_monthly_report():
     databases = Database.objects.filter(reporting_year__current=True)
     for db in databases:
         logger.info('1. Import report: '+db.name)
-        # import_data_via_r_script(db)
+        import_data_via_r_script(db)
         logger.info('2. Link data: ' + db.name)
         link_indicators_data(db)
         logger.info('3. Calculate indicator values')
