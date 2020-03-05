@@ -49,7 +49,7 @@ DJANGO_APPS = [
     # 'jet',
     # 'jet.dashboard',
     'django.contrib.admin',
-    #'django.contrib.gis',
+    'django.contrib.gis',
     'django_json_widget',
     'prettyjson',
     'leaflet',
@@ -137,10 +137,10 @@ MANAGERS = ADMINS
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-   'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
-   # 'default': env.db('DATABASE_URL', default='postgres://postgres:password1@localhost:5432/internos'),
+    'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
+    #'default': env.db('DATABASE_URL', default='postgres://postgres:password1@localhost:5432/internos'),
 }
-# ///
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
