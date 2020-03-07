@@ -353,6 +353,8 @@ class Indicator(models.Model):
 
     ai_id = models.PositiveIntegerField(blank=True, null=True)
     activity = models.ForeignKey(Activity)
+    partner = models.ForeignKey(Partner)
+    partner_target = models.PositiveIntegerField(default=0)
     name = models.CharField(max_length=5000)
     label = models.CharField(max_length=5000, blank=True, null=True)
     description = models.CharField(max_length=1500, blank=True, null=True)

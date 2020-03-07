@@ -254,6 +254,8 @@ class IndicatorResource(resources.ModelResource):
             'tag_disability',
             'none_ai_indicator',
             'measurement_type',
+            'partner',
+            'partner_target',
             'activity__name',
             'activity__database__ai_id',
             'activity__database__name',
@@ -395,6 +397,13 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'is_sector',
                 'is_section',
                 'support_disability',
+            ]
+        }),
+        ('Partners_Targets', {
+            'classes': ('suit-tab', 'suit-tab-general',),
+            'fields': [
+                'partner',
+                'partner_target',
             ]
         }),
         ('Tags', {
