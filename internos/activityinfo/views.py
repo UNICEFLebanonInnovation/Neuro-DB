@@ -84,8 +84,8 @@ class ReportView(TemplateView):
         display_live = False
         selected_partner = self.request.GET.get('partner', 0)
         selected_partners = self.request.GET.getlist('partners', [])
+        selected_months = self.request.GET.getlist('s_months', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
-        selected_governorate = self.request.GET.get('governorate', 0)
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
@@ -122,7 +122,7 @@ class ReportView(TemplateView):
                 pass
 
         # if selected_partner or selected_governorate:
-        if selected_partners or selected_governorates:
+        if selected_partners or selected_governorates or selected_months:
             selected_filter = True
 
         # if selected_partner == '0' and selected_governorate == '0':
@@ -132,6 +132,14 @@ class ReportView(TemplateView):
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
+
+        s_months = []
+        if int(reporting_year) == current_year:
+            for i in range(1, current_month+1):
+                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        else:
+            for i in range(1, 13):
+                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
             'sequence')
@@ -196,29 +204,32 @@ class ReportView(TemplateView):
             'values_partners_gov_live',
             'cumulative_values_live',
         ).distinct()
-
         months = []
-        if int(reporting_year) == current_year:
-            display_live = True
-            if current_month == 1:
-                months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
-            if current_month == 2:
-                for i in range(1, 3):
-                    months.append((i, datetime.date(2008, i, 1).strftime('%B')))
-            if current_month > 2:
-                for i in range(current_month - 2, current_month + 1):
-                    months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        if selected_months is not None and len(selected_months) > 0:
+            for mon in selected_months:
+                months.append((mon, datetime.date(2008, int(mon), 1).strftime('%B')))
         else:
-            display_live = False
-            for i in range(1, 13):
-                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+            if int(reporting_year) == current_year:
+                display_live = True
+                if current_month == 1:
+                    months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
+                if current_month == 2:
+                    for i in range(1, 3):
+                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                if current_month > 2:
+                    for i in range(current_month - 2, current_month + 1):
+                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+            else:
+                display_live = False
+                for i in range(1, 13):
+                    months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
         return {
-            # 'selected_partner': selected_partner,
             'selected_partners': selected_partners,
             'selected_partner_name': selected_partner_name,
-            # 'selected_governorate': selected_governorate,
             'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
+            'selected_months': selected_months,
             'reports': report.order_by('id'),
             'month': month,
             'year': today.year,
@@ -228,6 +239,7 @@ class ReportView(TemplateView):
             'database': database,
             'partners': partners,
             'governorates': governorates,
+            's_months':s_months,
             'master_indicators': master_indicators,
             'partner_info': partner_info,
             'selected_filter': selected_filter,

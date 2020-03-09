@@ -348,7 +348,6 @@ class IndicatorCategory(models.Model):
     def __unicode__(self):
         return self.name
 
-
 class Indicator(models.Model):
 
     ai_id = models.PositiveIntegerField(blank=True, null=True)
@@ -426,7 +425,6 @@ class Indicator(models.Model):
     is_sector = models.BooleanField(default=False)
     is_section = models.BooleanField(default=False)
     support_disability = models.BooleanField(default=False)
-
     values_sector = JSONField(blank=True, null=True)
     values_tags_sector = JSONField(blank=True, null=True, default={})
     values_sites_sector = JSONField(blank=True, null=True)
@@ -473,6 +471,12 @@ class Indicator(models.Model):
 
     class Meta:
         ordering = ['id']
+
+
+class IndicatorPartner(models.Model):
+    partner = models.ForeignKey(Partner)
+    target = models.PositiveIntegerField(default=0)
+    ai_indicator = models.ForeignKey(Indicator, blank=True, null=True)
 
 
 class AttributeGroup(models.Model):
