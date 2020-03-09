@@ -157,7 +157,7 @@ class ActivityInlineAdmin(nested_admin.NestedStackedInline):
         return False
 
 
-class PartnerInlineAdmin(nested_admin.NestedStackedInline):
+class PartnerInlineAdmin(nested_admin.NestedTabularInline):
     can_delete = False
     model = IndicatorPartner
     verbose_name = 'Partner'
@@ -181,6 +181,7 @@ class PartnerInlineAdmin(nested_admin.NestedStackedInline):
     #
     # def has_delete_permission(self, request, obj=None):
     #     return False
+
 
 class ActivityResource(resources.ModelResource):
 
