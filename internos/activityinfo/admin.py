@@ -158,12 +158,11 @@ class ActivityInlineAdmin(nested_admin.NestedStackedInline):
 
 
 class PartnerInlineAdmin(nested_admin.NestedTabularInline):
-    can_delete = False
     model = IndicatorPartner
     verbose_name = 'Partner'
     verbose_name_plural = 'Partners'
-    min_num = 1
-    max_num = 10
+    min_num = 0
+    max_num = 99
     extra = 0
     fk_name = 'ai_indicator'
     suit_classes = u'suit-tab suit-tab-partner-targets'
@@ -172,15 +171,6 @@ class PartnerInlineAdmin(nested_admin.NestedTabularInline):
         'partner',
         'target',
     )
-    # readonly_fields = (
-
-    # )
-
-    # def has_add_permission(self, request):
-    #     return False
-    #
-    # def has_delete_permission(self, request, obj=None):
-    #     return False
 
 
 class ActivityResource(resources.ModelResource):
