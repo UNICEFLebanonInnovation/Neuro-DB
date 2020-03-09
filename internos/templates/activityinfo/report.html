@@ -12,64 +12,71 @@
     <form action="{% url 'activityinfo:report' %}" method="get">
       <div class="page-title-wrapper">
         <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
-        <div class="page-title-heading" data-step="4" data-intro="Filter options by partner or governorate or month">
+        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
           <div class="page-title-icon">
             <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
             </i>
           </div>
-          <div>
-            <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
-              {% for partner in partners %}
-              <option class="dropdown-item" value="{{ partner.partner_id }}"
-                      {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
-              </option>
-              {% endfor %}
-            </select>
-            <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">
-              {% for gov in governorates %}
-              <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
-                {{ gov.location_adminlevel_governorate }}
-              </option>
-              {% endfor %}
-            </select>
-            <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="s_months">
-               {% for month, month_name in s_months %}
-              <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
-                {{ month_name }}
-              </option>
-              {% endfor %}
-            </select>
-            <div class="page-title-subheading" style="opacity:1; text-align:center">
-              <button type="submit" class="btn btn-primary mr-left-5">Search</button>
+          <div style="width:100%; margin-top:12px">
+            <div class="row">
+              <div class="col-lg-10 col-sm-12">
+                <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
+                {% for partner in partners %}
+                <option class="dropdown-item" value="{{ partner.partner_id }}"
+                        {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
+                </option>
+                {% endfor %}
+              </select>
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">
+                {% for gov in governorates %}
+                <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
+                  {{ gov.location_adminlevel_governorate }}
+                </option>
+                {% endfor %}
+              </select>
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="s_months">
+                 {% for month, month_name in s_months %}
+                <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
+                  {{ month_name }}
+                </option>
+                {% endfor %}
+              </select>
+            <button type="submit" class="btn btn shadow btn-primary mr-left-5"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
               <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"
-                 class="btn btn-light d-inline-block">Cancel</a>
+                 class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
+
             </div>
-          </div>
-        </div>
-        <div class="page-title-actions">
-          <div class="d-inline-block" data-step="5"
-               data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
-            <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
+            <div class="col-lg-2 col-sm-12" style="padding:0;" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+
+              <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
             <br />
             email: {{ database.focal_point.email }} " data-placement="bottom" data-html="true"
-                    class="btn-shadow mr-3 btn btn-outline-primary">
+                    class="btn-shadow  btn btn-outline-primary">
               <i class="fa fa-user"></i>
             </button>
 
-            <a class="btn shadow mr-3 btn-outline-dark"
+            <a class="btn shadow  btn-outline-dark"
                href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database"
                data-toggle="tooltip" data-placement="bottom" title="Send email to the database focal point">
               <i class="fa fa-envelope"></i>
             </a>
 
-            <a class="btn shadow mr-3 btn-outline-warning" href="javascript:void(0);"
+            <a class="btn shadow  btn-outline-warning" href="javascript:void(0);"
                onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip"
                data-placement="bottom" title="Show me some tips">
               <i class="fa fa-lightbulb" aria-hidden="true"></i>
             </a>
-
+            </div>
           </div>
+            <div class="page-title-subheading">
+              Filter by multiple Partners, Governorates, and Months
+            </div>
+          </div>
+
         </div>
+
+
+
       </div>
     </form>
   </div>
@@ -587,23 +594,26 @@
 
 
   $('#filter_partners').multiselect({
-    buttonWidth : '200px',
+    buttonWidth : '180px',
     includeSelectAllOption : true,
-		nonSelectedText: 'Select multiple partners',
-		nSelectedText:'selected partners'
+		nonSelectedText: 'Partners',
+		nSelectedText:'selected partners',
+		numberDisplayed:1
   });
  $('#filter_governorates').multiselect({
-    buttonWidth : '230px',
+    buttonWidth : '190px',
     includeSelectAllOption : true,
-		nonSelectedText: 'Select multiple governorates',
-		nSelectedText:'selected governorates'
+		nonSelectedText: 'Governorates',
+		nSelectedText:'selected governorates',
+		numberDisplayed:1
   });
 
 $('#filter_month').multiselect({
-    buttonWidth : '200px',
+    buttonWidth : '180px',
     includeSelectAllOption : true,
-		nonSelectedText: 'Select multiple months',
-		nSelectedText:'selected months'
+		nonSelectedText: 'Months',
+		nSelectedText:'selected months',
+		numberDisplayed:1
   });
 
       $('.level1').addClass('collapsed');
