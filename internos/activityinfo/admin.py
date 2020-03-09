@@ -506,7 +506,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                       ('report-values-sector', 'Report values sector'),
                       ('hpm-values', 'HPM values'),
                       ('live-values', 'Live values'),
-                      ('partner_targets', 'Partner Targets'),
+                      ('partner-targets', 'Partner Targets'),
                     )
 
 
