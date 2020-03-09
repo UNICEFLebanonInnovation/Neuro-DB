@@ -157,6 +157,31 @@ class ActivityInlineAdmin(nested_admin.NestedStackedInline):
         return False
 
 
+class PartnerInlineAdmin(nested_admin.NestedStackedInline):
+    can_delete = False
+    model = IndicatorPartner
+    verbose_name = 'Partner'
+    verbose_name_plural = 'Partners'
+    min_num = 1
+    max_num = 10
+    extra = 0
+    fk_name = 'ai_indicator'
+    suit_classes = u'suit-tab suit-tab-partner-targets'
+    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    fields = (
+        'partner',
+        'target',
+    )
+    # readonly_fields = (
+
+    # )
+
+    # def has_add_permission(self, request):
+    #     return False
+    #
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
+
 class ActivityResource(resources.ModelResource):
 
     class Meta:
@@ -254,8 +279,6 @@ class IndicatorResource(resources.ModelResource):
             'tag_disability',
             'none_ai_indicator',
             'measurement_type',
-            'partner',
-            'partner_target',
             'activity__name',
             'activity__database__ai_id',
             'activity__database__name',
@@ -283,9 +306,12 @@ class IndicatorResource(resources.ModelResource):
         )
 
 
-class IndicatorAdmin(ImportExportModelAdmin):
+class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     form = IndicatorForm
-    # formset = IndicatorFormSet
+    # formset =
+    inlines = [
+        PartnerInlineAdmin,
+    ]
     resource_class = IndicatorResource
     search_fields = (
         'ai_indicator',
@@ -399,13 +425,6 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'support_disability',
             ]
         }),
-        ('Partners_Targets', {
-            'classes': ('suit-tab', 'suit-tab-general',),
-            'fields': [
-                'partner',
-                'partner_target',
-            ]
-        }),
         ('Tags', {
             'classes': ('suit-tab', 'suit-tab-general',),
             'fields': [
@@ -474,6 +493,11 @@ class IndicatorAdmin(ImportExportModelAdmin):
                 'cumulative_values_live',
             ]
         }),
+        ('Partner Targets', {
+            'classes': ('suit-tab', 'suit-tab-partner-targets',),
+            'fields': [
+            ]
+        }),
     ]
 
     suit_form_tabs = (
@@ -482,6 +506,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
                       ('report-values-sector', 'Report values sector'),
                       ('hpm-values', 'HPM values'),
                       ('live-values', 'Live values'),
+                      ('partner_targets', 'Partner Targets'),
                     )
 
 
