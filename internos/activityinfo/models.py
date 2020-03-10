@@ -262,9 +262,11 @@ class Database(models.Model):
 
 class Partner(models.Model):
 
-    ai_id = models.PositiveIntegerField(unique=True)
+    ai_id = models.PositiveIntegerField(blank=True,null=True)
+    ai_partner_id = models.CharField(blank=True, max_length=254)
     number = models.CharField(max_length=254, blank=True, null=True)
-    database = models.ForeignKey(Database)
+    database = models.ForeignKey(Database,blank=True, null=True,)
+    year = models.CharField(max_length=250, blank=True, null=True)
     name = models.CharField(max_length=254)
     full_name = models.CharField(max_length=254, null=True)
     partner_etools = models.ForeignKey(PartnerOrganization, blank=True, null=True, related_name='+')

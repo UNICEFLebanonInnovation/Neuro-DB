@@ -23,12 +23,12 @@
   <div class="row">
     {% for db in ai_databases %}
       <div class="col-md-6 col-xl-4">
-          <div class="card mb-3 widget-content">
-              <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">
+          <div class="card mb-3">
+              <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="widget-content">
               <div class="widget-content-wrapper">
                   <div class="widget-content-left">
                       <div class="widget-heading">
-                        <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="app-sidebar__heading">{{ db.section.code }}</a>
+                        <span class="app-sidebar__heading">{{ db.section.code }}</span>
                       </div>
                       <div class="widget-subheading">
                         {{ db.label }}
@@ -38,13 +38,13 @@
                       </div>
                   </div>
                   <div class="widget-content-right">
-                       <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">
+<!--                       <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">-->
                         {% if db.section.logo %}
                         <img alt="100%x200" src="{% static db.section.logo %}" data-holder-rendered="true" style="height: 120px; width: 120px; display: block;" />
                         {% else %}
                         <img alt="100%x200" src="{% static 'images/unicef-logo.png' %}" data-holder-rendered="true" style="height: 120px; width: 180px; display: block;" />
                         {% endif %}
-                        </a>
+<!--                        </a>-->
                   </div>
               </div>
               </a>

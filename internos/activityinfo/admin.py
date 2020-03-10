@@ -39,19 +39,21 @@ class PartnerResource(resources.ModelResource):
 class PartnerAdmin(ImportExportModelAdmin):
     resource_class = PartnerResource
     list_filter = (
-        'database__reporting_year',
-        'database',
+        # 'database__reporting_year',
+        # 'database',
+        'year',
     )
     readonly_fields = (
-        'ai_id',
+        'ai_partner_id',
         'name',
         'full_name',
         'database'
     )
     list_display = (
-        'ai_id',
+        'ai_partner_id',
         'name',
         'full_name',
+        'year',
         'database',
         'partner_etools',
     )
@@ -777,6 +779,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'ai_country_id'
     )
     actions = [
+        'import_partners',
         're_formatting_json',
         'import_basic_data',
         'update_basic_data',
@@ -857,6 +860,16 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 request,
                 "{} objects created.".format(objects)
             )
+
+    def import_partners(self, request,queryset):
+        from .utilities import import_partners
+        objects = 0
+        for db in queryset:
+            objects += import_partners(db)
+        self.message_user(
+            request,
+            "Partners imported successfully"
+        )
 
     def import_basic_data(self, request, queryset):
         objects = 0

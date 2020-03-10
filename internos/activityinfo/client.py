@@ -96,6 +96,9 @@ class ActivityInfoClient(object):
     def get_database(self, db_id):
         return self.make_request('resources/database/{}/schema'.format(db_id)).json()
 
+    def get_partners(self,form_id):
+        return self.make_request('resources/form/{}/query/rows'.format(form_id)).json()
+
     def get_sites(self, database=None, partner=None, activity=None, indicator=None, attribute=None):
         sites = self.make_request(
             'resources/sites',
