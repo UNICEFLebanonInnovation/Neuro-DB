@@ -14,7 +14,7 @@ def r_script_command_line(script_name, ai_db):
     path2script = os.path.join(path, 'RScripts')
     path2script = os.path.join(path2script, script_name)
     print(path2script)
-    cmd = [command, path2script, ai_db.username, ai_db.password, str(ai_db.db_id)]
+    cmd = [command, path2script, ai_db.username, ai_db.password, str(ai_db.ai_id)]
 
     try:
         subprocess.check_output(cmd, universal_newlines=True)
