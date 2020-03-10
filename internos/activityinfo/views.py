@@ -1419,9 +1419,6 @@ class ExportViewSet(ListView):
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
         month_name = last_month.strftime("%B")
-        month_number = '12'
-        month = 12
-        month_name = 'December'
 
         path = os.path.dirname(os.path.abspath(__file__))
         path2file = path + '/AIReports/' + str(instance.ai_id) + '_ai_data.csv'
