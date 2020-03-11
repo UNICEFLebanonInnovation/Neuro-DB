@@ -88,9 +88,9 @@ def import_partners(ai_db):
     db_info = client.get_partners(form_id)
     for item in db_info:
         try:
-            partner = Partner.objects.get(ai_partner_id=item['@id'], year=date.today().year)
+            partner = Partner.objects.get(ai_id=item['@id'], year=date.today().year)
         except Partner.DoesNotExist:
-            partner = Partner(ai_partner_id=item['@id'])
+            partner = Partner(ai_id=item['@id'])
         partner.name = item['Name']
         partner.full_name = item['Partner full name'] if 'Partner full name' in item else ''
         partner.year = date.today().year
