@@ -124,7 +124,7 @@
                 <div tabindex="-1" class="dropdown-divider"></div>
                 <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
                    href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
-                  Full raw data</a>
+                  Sector Results</a>
                 <div tabindex="-1" class="dropdown-divider"></div>
               </div>
             </div>
@@ -132,7 +132,7 @@
           </div>
           <div class="table-responsive" style="position: relative;overflow: scroll;height: 600px;">
             <table class="mb-0 table table-striped table-hover" id="exportheader"
-                   content="{{ database.label }}_Dashboard_{{ month_name }}_{{ database.reporting_year.name }}.csv"
+                   content="{{ database.label }}_Dashboard_{{ database.reporting_year.name }}.csv"
                    data-tableName="Dashboard - {{ database.label }} - 2020">
               <thead>
               <tr>

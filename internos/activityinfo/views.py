@@ -1419,16 +1419,12 @@ class ExportViewSet(ListView):
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
         month_name = last_month.strftime("%B")
-
         path = os.path.dirname(os.path.abspath(__file__))
-
         if instance.reporting_year.name == '2020':
             path2file = path + '/AIReports/' + str(instance.db_id) + '_ai_data.csv'
         else:
             path2file = path + '/AIReports/' + str(instance.ai_id) + '_ai_data.csv'
-
-        filename = '{}_{}_{} Raw data.csv'.format(month_name, instance.reporting_year.name, instance.label)
-
+        filename = 'Sector Results_{}_{}_{}.csv'.format(instance.label, month_name, instance.reporting_year.name)
         with open(path2file, 'r') as f:
             response = HttpResponse(f.read(), content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename=%s;' % filename
