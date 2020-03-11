@@ -13,9 +13,7 @@ def r_script_command_line(script_name, ai_db):
     path = os.path.dirname(__file__)
     path2script = os.path.join(path, 'RScripts')
     path2script = os.path.join(path2script, script_name)
-    print(path2script)
     cmd = [command, path2script, ai_db.username, ai_db.password, str(ai_db.ai_id)]
-
     try:
         subprocess.check_output(cmd, universal_newlines=True)
     except subprocess.CalledProcessError as e:
@@ -43,7 +41,6 @@ def import_data_via_r_script(ai_db, report_type=None):
     r_script_command_line('ai_generate_excel.R', ai_db)
     total = read_data_from_file(ai_db, True, report_type)
     return total
-
 
 def get_awp_code(name):
     try:

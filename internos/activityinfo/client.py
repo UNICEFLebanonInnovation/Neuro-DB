@@ -87,14 +87,17 @@ class ActivityInfoClient(object):
     def get_databases(self):
         return self.make_request('resources/databases').json()
 
-    def get_databases_v4(self):
-        return self.make_request('resources/databases/ck2yrizmo2').json()
+    def get_databases_v4(self,database_id):
+        return self.make_request('resources/databases/{}'.format(database_id)).json()
 
     def get_database_indicators_v4(self,form_id):
         return self.make_request('/resources/form/{}/schema'.format(form_id)).json()
 
     def get_database(self, db_id):
         return self.make_request('resources/database/{}/schema'.format(db_id)).json()
+
+    def get_partners(self,form_id):
+        return self.make_request('resources/form/{}/query/rows'.format(form_id)).json()
 
     def get_sites(self, database=None, partner=None, activity=None, indicator=None, attribute=None):
         sites = self.make_request(

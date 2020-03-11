@@ -18,6 +18,8 @@ from .client import ActivityInfoClient
 class ReportingYear(models.Model):
     name = models.CharField(max_length=254)
     current = models.BooleanField(default=False)
+    database_id = models.CharField(max_length=254,null=True) #general id to call 2020 databases from activityinfo
+    form_id = models.CharField(max_length=254, null=True)#form id to call 2020 partners from activityinfo
 
     def __unicode__(self):
         return self.name
@@ -64,6 +66,7 @@ class Database(models.Model):
     mapping_extraction2 = JSONField(blank=True, null=True)
     mapping_extraction3 = JSONField(blank=True, null=True)
     is_funded_by_unicef = models.BooleanField(default=False)
+    display = models.BooleanField(default=False)
     is_sector = models.BooleanField(default=False)
     reporting_year = models.ForeignKey(
         ReportingYear,
@@ -262,9 +265,10 @@ class Database(models.Model):
 
 class Partner(models.Model):
 
-    ai_id = models.PositiveIntegerField(unique=True)
+    ai_id = models.CharField(blank=True,null=True,max_length=254)
     number = models.CharField(max_length=254, blank=True, null=True)
-    database = models.ForeignKey(Database)
+    database = models.ForeignKey(Database,blank=True, null=True,)
+    year = models.CharField(max_length=250, blank=True, null=True)
     name = models.CharField(max_length=254)
     full_name = models.CharField(max_length=254, null=True)
     partner_etools = models.ForeignKey(PartnerOrganization, blank=True, null=True, related_name='+')
