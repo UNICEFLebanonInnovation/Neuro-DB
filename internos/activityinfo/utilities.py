@@ -7,7 +7,8 @@ import copy
 
 def import_data_v4(ai_db):
     client = ActivityInfoClient(ai_db.username, ai_db.password)
-    db_info = client.get_databases_v4()
+    main_db_id = ReportingYear.objects.get(current=True).database_id
+    db_info = client.get_databases_v4(main_db_id)
     resources = db_info['resources']
     new_data = {}
 
@@ -83,7 +84,8 @@ def import_data_v4(ai_db):
 def import_partners(ai_db):
     from datetime import date
     client = ActivityInfoClient(ai_db.username, ai_db.password)
-    db_info = client.get_partners('ck2yrje312')
+    form_id = ReportingYear.objects.get(current=True).form_id
+    db_info = client.get_partners(form_id)
     for item in db_info:
         try:
             partner = Partner.objects.get(ai_partner_id=item['@id'], year=date.today().year)

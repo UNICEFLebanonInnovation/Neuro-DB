@@ -44,13 +44,13 @@ class PartnerAdmin(ImportExportModelAdmin):
         'year',
     )
     readonly_fields = (
-        'ai_partner_id',
+        'ai_id',
         'name',
         'full_name',
         'database'
     )
     list_display = (
-        'ai_partner_id',
+        'ai_id',
         'name',
         'full_name',
         'year',
@@ -772,6 +772,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'mapped_db',
         'is_funded_by_unicef',
         'is_sector',
+        'display'
     )
     readonly_fields = (
         'description',
@@ -823,6 +824,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'mapped_db',
                 'is_funded_by_unicef',
                 'is_sector',
+                'display',
                 'description',
                 'country_name',
                 'ai_country_id',
@@ -1086,6 +1088,8 @@ class ReportingYearAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'current',
+        'database_id',
+        'form_id'
     )
 
 
