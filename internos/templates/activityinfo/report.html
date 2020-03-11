@@ -41,8 +41,8 @@
                 </option>
                 {% endfor %}
               </select>
-            <button type="submit" class="btn btn shadow btn-primary mr-left-5"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
-              <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"
+            <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
+              <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
 
             </div>
@@ -72,11 +72,7 @@
               Filter by multiple Partners, Governorates, and Months
             </div>
           </div>
-
         </div>
-
-
-
       </div>
     </form>
   </div>
@@ -708,31 +704,25 @@ $('#filter_month').multiselect({
 
   function export_table_to_csv(html, filename) {
     var csv = [];
+    $("tr:hidden,td:hidden","#exportheader").remove();
     var rows_header = document.querySelectorAll("table#exportheader thead tr");
     var rows = document.querySelectorAll("table#exportheader tbody tr");
-
     for (var i = 0; i < rows_header.length; i++) {
       var row = [], cols = rows_header[i].querySelectorAll("th");
-
       for (var j = 0; j < cols.length; j++)
         row.push($(cols[j]).attr('content'));
-
       csv.push(row.join(","));
     }
-
     for (var i = 0; i < rows.length; i++) {
       var row = [], cols = rows[i].querySelectorAll("td");
-
       for (var j = 0; j < cols.length; j++) {
         if ($(cols[j]).attr('colspan') == '2') {
           row.push('');
         }
         row.push('"' + cols[j].innerText + '"');
       }
-
       csv.push(row.join(","));
     }
-
     // Download CSV
     download_csv(csv.join("\n"), filename);
   }

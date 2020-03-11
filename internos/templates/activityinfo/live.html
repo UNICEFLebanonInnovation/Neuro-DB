@@ -32,7 +32,7 @@
           </select>
 
 
-          
+
 
 
 
@@ -480,6 +480,7 @@ function download_csv(csv, filename) {
 
 function export_table_to_csv(html, filename) {
 	var csv = [];
+	 $("tr:hidden,td:hidden","#exportheader").remove();
 	var rows_header = document.querySelectorAll("table#exportheader thead tr");
 	var rows = document.querySelectorAll("table#exportheader tbody tr");
 
