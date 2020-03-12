@@ -88,18 +88,17 @@
             </span>
             Dashboard - {{ database.label }} - {{reporting_year}}
             <div class="d-inline-block dashboard_icons">
-              <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
-                 data-placement="top" title="Display indicators data disaggregated" class="text-info">
-                <i class="fa fa-tags animated"></i>
-              </a>
-
-              {% if display_live %}
+                {% if display_live %}
               <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
                  data-placement="top" title="Display live data monitoring" class="text-danger"
                  data-step="9" data-intro="Open live ActivityInfo Dashboard">
                 <i class="fa fa-rss faa-flash "></i>
               </a>
               {% endif%}
+              <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
+                 data-placement="top" title="Display indicators data disaggregated" class="text-info">
+                <i class="fa fa-tags animated"></i>
+              </a>
               <a class="disabled" href="#" data-toggle="tooltip" data-placement="top"
                  title="Display reported indicators on map"
                  style=" color:currentColor;cursor: not-allowed; opacity: 0.5;text-decoration: none;"
