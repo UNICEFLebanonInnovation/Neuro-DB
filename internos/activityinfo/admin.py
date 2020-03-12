@@ -358,8 +358,8 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'list_header',
         'category',
         'sequence',
-        # 'is_sector',
-        # 'is_section',
+        'is_sector',
+        'is_section',
         # 'support_disability',
         # 'values_tags'
     )
