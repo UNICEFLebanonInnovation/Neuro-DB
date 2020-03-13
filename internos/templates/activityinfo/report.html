@@ -168,7 +168,7 @@
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
                     target="_blank" class="text-info">
-                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                    <i class="fa fa-link" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% else %}
@@ -178,7 +178,7 @@
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
                     target="_blank" class="text-info">
-                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                    <i class="fa fa-link" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% endif %}
@@ -226,7 +226,7 @@
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
                     target="_blank" class="text-info">
-                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                    <i class="fa fa-link" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% else %}
@@ -240,7 +240,7 @@
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
                     target="_blank" class="text-info">
-                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                    <i class="fa fa-link" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% endif %}
@@ -283,7 +283,7 @@
                   <a
                     href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
                     target="_blank" class="text-info">
-                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                    <i class="fa fa-link" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% else %}
@@ -297,7 +297,7 @@
                   <a
                     href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
                     target="_blank" class="text-info">
-                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                    <i class="fa fa-link" aria-hidden="true" title=""></i>
                   </a>
                 </td>
 
@@ -388,7 +388,7 @@
                 <i class="fa fa-user" style="color: #0089d2;"></i>
                 <a href="https://etools.unicef.org/pmp/partners/{{ partner_info.etl_id }}/details" target="_blank"
                    class="text-info">
-                  {{ partner_info.name }} <i class="fa fa-fw" aria-hidden="true" title=""></i></i>
+                  {{ partner_info.name }} <i class="fa fa-fw" aria-hidden="true" title=""></i></i>
                 </a>
               </div>
             </div>
@@ -420,7 +420,7 @@
                 <i class="fa fa-file-text-o" style="font-size: 16px; color: #0089d2;"></i>
                 <a href="https://etools.unicef.org/pmp/interventions/{{ inter.etl_id }}/details" target="_blank">
                   {{ inter.number }}
-                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
                 </a>
               </div>
               <div class="col-md-2">
@@ -461,7 +461,7 @@
                 <a
                   href="https://etools.unicef.org/t2f/edit-travel/{{ partner_info.programmatic_visits.last_visit.travel.id }}"
                   target="_blank">
-                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
                 </a>
               </div>
               <div class="col-md-6">
@@ -482,7 +482,7 @@
                 <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
                 {{ partner_info.audits.last_audit }}
                 <a href="https://etools.unicef.org/ap/audits/{{ partner_info.audits.last_audit.id }}" target="_blank">
-                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
                 </a>
               </div>
             </div>
@@ -502,7 +502,7 @@
                 <a
                   href="https://etools.unicef.org/ap/micro-assessments/{{ partner_info.micro_assessments.last_audit.id }}"
                   target="_blank">
-                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
                 </a>
               </div>
             </div>
@@ -520,7 +520,7 @@
                 {{ partner_info.spot_checks.last_audit }}
                 <a href="https://etools.unicef.org/ap/spot-checks/{{ partner_info.spot_checks.last_audit.id }}"
                    target="_blank">
-                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
                 </a>
               </div>
             </div>
@@ -538,7 +538,7 @@
                 {{ partner_info.special_visits.last_audit }}
                 <a href="https://etools.unicef.org/ap/special-visits/{{ partner_info.special_visits.last_audit.id }}"
                    target="_blank">
-                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
                 </a>
               </div>
             </div>
