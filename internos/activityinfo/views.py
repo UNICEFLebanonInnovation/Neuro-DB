@@ -6,13 +6,9 @@ import datetime
 import calendar
 from django.db.models import Q, Sum
 from django.views.generic import ListView, TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, JsonResponse
-
-from internos.backends.djqscsv import render_to_csv_response
-from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
 from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner, IndicatorTag, ReportingYear
-from internos.users.models import Section
+
 from datetime import date
 
 
@@ -121,7 +117,6 @@ class ReportView(TemplateView):
                 print(ex)
                 pass
 
-        # if selected_partner or selected_governorate:
         if selected_partners or selected_governorates or selected_months:
             selected_filter = True
 
@@ -145,9 +140,7 @@ class ReportView(TemplateView):
             'sequence')
         if database.mapped_db:
             master_indicators1 = master_indicators.filter(master_indicator=True)
-            master_indicators2 = master_indicators.filter(
-                sub_indicators__isnull=True, individual_indicator=True
-            )
+            master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
             master_indicators = master_indicators1 | master_indicators2
         none_ai_indicators = Indicator.objects.filter(activity__none_ai_database=database).exclude(is_sector=True)
 
@@ -269,6 +262,7 @@ class ReportPartnerView(TemplateView):
         month_name = 'December'
 
         selected_indicator = int(self.request.GET.get('indicator_id', 0))
+        selected_sub_indicator = self.request.GET.getlist('sub_indicator_id', [])
         selected_governorate = self.request.GET.get('governorate', 0)
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
@@ -276,9 +270,23 @@ class ReportPartnerView(TemplateView):
 
         database = Database.objects.get(ai_id=ai_id)
         reporting_year = database.reporting_year.name
-
+        selected_sub_indicator = [int(x) for x in selected_sub_indicator]
         indicator = Indicator.objects.get(id=selected_indicator)
         selected_indicator_name = indicator.name
+        list_selected_sub = Indicator.objects.filter(id__in=selected_sub_indicator)
+        list_selected_sub = list_selected_sub.values(
+            'id',
+            'ai_id',
+            'name',
+            'units',
+            'target',
+            'measurement_type',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+        )
         indicator = {
             'id': indicator.id,
             'ai_id': indicator.ai_id,
@@ -307,8 +315,9 @@ class ReportPartnerView(TemplateView):
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
 
-        indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by('sequence')
-
+        master_indicators = Indicator.objects.filter(activity__database=database,master_indicator=True).exclude(is_sector=True).order_by('sequence')
+        individual_indicators = Indicator.objects.filter(activity__database=database,individual_indicator=True).exclude(is_sector=True).order_by('sequence')
+        indicators = master_indicators | individual_indicators
         indicators = indicators.values(
             'id',
             'ai_id',
@@ -397,7 +406,9 @@ class ReportPartnerView(TemplateView):
             'selected_governorate': selected_governorate,
             'selected_governorate_name': selected_governorate_name,
             'selected_indicator': selected_indicator,
+            'selected_sub_indicator': selected_sub_indicator,
             'selected_indicator_name': selected_indicator_name,
+            'list_selected_sub': list_selected_sub,
             'locations': locations,
         }
 
@@ -895,13 +906,15 @@ class ReportSectorView(TemplateView):
 
     def get_context_data(self, **kwargs):
         selected_filter = False
+        display_live = False
         selected_partner = self.request.GET.get('partner', 0)
         selected_partners = self.request.GET.getlist('partners', [])
-        selected_governorate = self.request.GET.get('governorate', 0)
-        selected_cadastral = self.request.GET.get('cadastral', 0)
-        selected_governorates = self.request.GET.get('governorates', 0)
+        selected_cadastral = self.request.GET.getlist('cadastral', [])
+        selected_months = self.request.GET.getlist('s_months', [])
 
         partner_info = {}
+        current_year = date.today().year
+        current_month = date.today().month
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
@@ -915,16 +928,9 @@ class ReportSectorView(TemplateView):
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
-        if ai_id:
-            database = Database.objects.get(ai_id=ai_id)
-        else:
-            try:
-                section = self.request.user.section
-                database = Database.objects.get(section=section, reporting_year__current=True)
-            except Exception:
-                database = Database.objects.filter(reporting_year__current=True).first()
-
-        report = ActivityReport.objects.filter(database=database)
+        database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year.name
+        report = ActivityReport.objects.filter(database_id=database.ai_id)
 
         if selected_partner:
             try:
@@ -935,17 +941,22 @@ class ReportSectorView(TemplateView):
                 print(ex)
                 pass
 
-        if selected_partners or selected_cadastral:
+        if selected_partners or selected_cadastral or selected_months:
             selected_filter = True
 
-        if selected_partners == [] and selected_cadastral == '0':
+        if selected_partners == [] and selected_cadastral == [] and selected_months == []:
             selected_filter = False
 
         partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
         cadastrals = report.values('location_adminlevel_cadastral_area_code',
                                    'location_adminlevel_cadastral_area').distinct()
+        s_months = []
+        if int(reporting_year) == current_year:
+            for i in range(1, current_month + 1):
+                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        else:
+            for i in range(1, 13):
+                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_section=True).order_by(
             'sequence')
@@ -978,15 +989,29 @@ class ReportSectorView(TemplateView):
         ).distinct()
 
         months = []
-        for i in range(1, 13):
-            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        if selected_months is not None and len(selected_months) > 0:
+            for mon in selected_months:
+                months.append((mon, datetime.date(2008, int(mon), 1).strftime('%B')))
+        else:
+            if int(reporting_year) == current_year:
+                display_live = True
+                if current_month == 1:
+                    months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
+                if current_month == 2:
+                    for i in range(1, 3):
+                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                if current_month > 2:
+                    for i in range(current_month - 2, current_month + 1):
+                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+            else:
+                display_live = False
+                for i in range(1, 13):
+                    months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         return {
-            'selected_partner': selected_partner,
             'selected_partners': selected_partners,
-            'selected_governorate': selected_governorate,
             'selected_cadastral': selected_cadastral,
-            'selected_governorates': selected_governorates,
+            'selected_months': selected_months,
             'reports': report.order_by('id'),
             'month': month,
             'year': today.year,
@@ -995,11 +1020,13 @@ class ReportSectorView(TemplateView):
             'months': months,
             'database': database,
             'partners': partners,
-            'governorates': governorates,
+            's_months': s_months,
             'cadastrals': cadastrals,
             'master_indicators': master_indicators,
             'partner_info': partner_info,
             'selected_filter': selected_filter,
+            'reporting_year': str(reporting_year),
+            'display_live': display_live
 
         }
 

@@ -30,25 +30,6 @@
             </option>
             {% endfor %}
           </select>
-
-
-
-
-
-
-<!--          <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">-->
-<!--            {% for partner in partners %}-->
-<!--            <option class="dropdown-item" value="{{ partner.partner_id }}" {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}-->
-<!--            </option>-->
-<!--            {% endfor %}-->
-<!--          </select>-->
-<!--          <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">-->
-<!--            {% for gov in governorates %}-->
-<!--            <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>-->
-<!--              {{gov.location_adminlevel_governorate }}-->
-<!--            </option>-->
-<!--            {% endfor %}-->
-<!--          </select>-->
           <button type="submit" class="btn btn-primary mr-left-5">Search</button>
           <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"
              class="btn btn-light d-inline-block">Cancel</a>

@@ -112,7 +112,7 @@
                 <i class="fa fa-wheelchair"></i>
               </a>
             </div>
-            <div class="dropdown d-inline-block" data-intro="Download Dashboard report and raw data">
+            <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Sector Results">
               <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
                       data-toggle="dropdown" class="mb-2 mr-2 dropdown-toggle btn btn-link">
                 <i class="fa fa-download"></i>
@@ -167,18 +167,20 @@
                   {{ item.name }}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info">
-                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                    target="_blank" class="text-info" data-intro="View Results by Partner"  data-toggle="tooltip"
+                 data-placement="top" title="View Results by Partner">
+                    <i class="fa fa-link" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% else %}
-                <!--                  <td class="w-10">{{ item.ai_id }}</td>-->
+                <!-- <td class="w-10">{{ item.ai_id }}</td>-->
                 <td class="w-150">
                   {{ item.name }}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info">
-                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                    target="_blank" class="text-info" data-intro="View Results by Partner" data-toggle="tooltip"
+                 data-placement="top" title="View Results by Partner">
+                  <i class="fa fa-link" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% endif %}
@@ -225,8 +227,9 @@
                   {% endif %}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                    target="_blank" class="text-info">
-                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                    target="_blank" class="text-info" data-intro="View Results by Partner" data-toggle="tooltip"
+                 data-placement="top" title="View Results by Partner">
+                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% else %}
@@ -239,8 +242,9 @@
                   {% endif %}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                    target="_blank" class="text-info">
-                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                    target="_blank" class="text-info"data-intro="View Results by Partner" data-toggle="tooltip"
+                 data-placement="top" title="View Results by Partner">
+                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% endif %}
@@ -581,6 +585,7 @@
         }
     }
 };
+
     var id = getUrlParameter('ai_id');
     var selected_li=$('li#'+id).find('a');
     var parent = selected_li.parent();
@@ -679,25 +684,12 @@ $('#filter_month').multiselect({
     var csvFile;
     var downloadLink;
 
-    // CSV FILE
     csvFile = new Blob([csv], { type: "text/csv" });
-
-    // Download link
     downloadLink = document.createElement("a");
-
-    // File name
     downloadLink.download = filename;
-
-    // We have to create a link to the file
     downloadLink.href = window.URL.createObjectURL(csvFile);
-
-    // Make sure that the link is not displayed
     downloadLink.style.display = "none";
-
-    // Add the link to your DOM
     document.body.appendChild(downloadLink);
-
-    // Lanzamos
     downloadLink.click();
   }
 

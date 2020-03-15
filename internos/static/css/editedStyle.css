@@ -23,10 +23,13 @@ margin-bottom:5px !important;
 margin-left:5px;
 }
 .card-title span , .card-title span a{
- font-size:20px;
+ font-size:16px;
  padding-right:5px;
 }
-
+.card-header, .card-title .select2 , .select2-selection__rendered{
+font-weight:normal;
+font-size:13px !important;
+}
 .card-title #drop5{
 font-size:20px;
 }
@@ -341,3 +344,59 @@ padding:2px;
 
 }
 a:hover{ text-decoration:none !important;}
+.card-title #export1{
+
+}
+
+#exporttable2 th , #exporttable1 th{
+
+ 	 background: white;
+	 position: sticky;
+	 top: 0;
+	 box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+	 vertical-align:middle;
+	 text-align:center;
+	 font-size:14px;
+}
+  #exporttable1 tr td{
+  text-align:center;
+  }
+.indicator_select_title{
+   vertical-align:top;
+   font-size: 13px;
+   color: rgba(13,27,62,0.55);
+   font-weight:bold;
+   text-transform: uppercase;
+
+}
+.sub_indicator_select_title{
+   vertical-align:top;
+   font-size: 13px;
+   color: rgba(13,27,62,0.55);
+   font-weight:bold;
+   text-transform: uppercase;
+}
+.text-bold{
+  font-weight:bold;
+}
+#btn_go{
+   vertical-align:top;
+    padding: 4px 10px;
+}
+#govform #filter_govs{
+padding : 3px 10px
+}
+#btn_cancel{
+    margin-top:-7px;
+    padding: 3px 9px;
+}
+#indicator_form .col-md-3 , #govform .col-md-3 {
+padding-right:0px;
+padding-left:10px;
+}
+#indicator_form .col-md-9 ,#govform .col-md-9{
+padding-right:0px;
+padding-left:0px;
+
+}
+
