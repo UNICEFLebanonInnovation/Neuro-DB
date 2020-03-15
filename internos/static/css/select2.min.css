@@ -234,7 +234,7 @@
 
 .select2-container--default .select2-selection--multiple {
 	background-color: white;
-	border: 1px solid #aaa;
+	border: 1px solid #3f6ad8;
 	border-radius: 4px;
 	cursor: text
 }
@@ -267,14 +267,18 @@
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-	background-color: #e4e4e4;
-	border: 1px solid #aaa;
+	background-color: #e0f3ff;
+	border: 1px solid #3f6ad8;
 	border-radius: 4px;
 	cursor: default;
 	float: left;
 	margin-right: 5px;
 	margin-top: 5px;
-	padding: 0 5px
+	padding: 0 5px;
+	width:100%;
+  word-wrap: break-word !important;
+  text-overflow: inherit !important;
+  white-space: normal !important;
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
@@ -306,7 +310,7 @@
 }
 
 .select2-container--default.select2-container--focus .select2-selection--multiple {
-	border: solid black 1px;
+	border: solid #3f6ad8 1px;
 	outline: 0
 }
 

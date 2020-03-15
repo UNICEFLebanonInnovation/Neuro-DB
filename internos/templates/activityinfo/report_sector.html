@@ -1,379 +1,395 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load staticfiles i18n %}
 {% load util_tags %}
 {% load static %}
-
-{% block project_title %}Neuro-DB{% endblock %}
-
 {% block content %}
-<style>
-.table-fixed {
-  box-shadow: -5px 7px 8px;
-  position: absolute;
-  margin-top: 12px;
-}
-.table thead {
-  background-color: #00AEEE;
-  color: white;
-}
-.w-70 { width: 70px; max-width: 70px;}
-.w-100 { width: 100px; max-width: 100px;}
-.w-120 { width: 120px; max-width: 120px;}
-.w-130 { width: 130px; max-width: 130px;}
-.w-140 { width: 140px; max-width: 140px;}
-.w-150 { width: 150px; max-width: 150px;}
-.w-400 { width: 400px; max-width: 400px;}
-.w-500 { width: 500px; max-width: 500px;}
 
-.collapse-all.active, .expanded-all.active {
-  color: #0089d2;
-}
+<div class="app-main__inner">
+  <div class="app-page-title">
+    <form action="{% url 'activityinfo:report_sector' %}" method="get">
+      <div class="page-title-wrapper">
+        <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
+        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
+          <div class="page-title-icon">
+            <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
+            </i>
+          </div>
+          <div style="width:100%; margin-top:12px">
+            <div class="row">
+              <div class="col-lg-10 col-sm-12">
+                <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
+                {% for partner in partners %}
+                <option class="dropdown-item" value="{{ partner.partner_id }}"
+                        {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
+                </option>
+                {% endfor %}
+              </select>
 
-.bootstrap-select button.dropdown-toggle {
-   background-color: #337ab7;
-   color: white !important;
-}
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="cadastral">
+                   {% for item in cadastrals %}
+                   <option value="{{ item.location_adminlevel_cadastral_area_code }}"
+                      {% if item.location_adminlevel_cadastral_area_code in selected_cadastral %} selected {% endif %}>
+                     {{ item.location_adminlevel_cadastral_area }}
+                   </option>
+                {% endfor %}
+              </select>
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="s_months">
+                 {% for month, month_name in s_months %}
+                <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %}
+                selected {% endif %}>
+                  {{ month_name }}
+                </option>
+                {% endfor %}
+              </select>
+            <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
+              <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ database.ai_id }}"title="Cancel"
+                 class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
 
-</style>
+            </div>
+            <div class="col-lg-2 col-sm-12" style="padding:0;" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
 
-<!-- top tiles -->
-<div class="row" style="clear: both;">
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
-    <h3 style="margin-top: 0px;"><i class="fa fa-filter"></i> Filter by:</h3>
-  </div>
+              <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point_sector }}
+            <br />
+            email: {{ database.focal_point_sector.email }} " data-placement="bottom" data-html="true"
+                    class="btn-shadow  btn btn-outline-primary">
+              <i class="fa fa-user"></i>
+            </button>
 
+            <a class="btn shadow  btn-outline-dark"
+               href="mailto:{{ database.focal_point_sector.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database"
+               data-toggle="tooltip" data-placement="bottom" title="Send email to the database focal point">
+              <i class="fa fa-envelope"></i>
+            </a>
 
-<form action="{% url 'activityinfo:report_sector' %}" method="get">
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="4" data-intro="Filter options by partner">
-      <input type="hidden" name="ai_id" value="{{ database.ai_id }}" />
-      <select class="selectpicker show-tick" data-actions-box="true" multiple title="Select one or more partner" name="partners" data-style="btn-info" id="filter_partners">
-          {% for partner in partners %}
-              <option value="{{ partner.partner_id }}" {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}</option>
-          {% endfor %}
-      </select>
-      {% if partner_info %}
-        <i class="fa fa-info-circle faa-pulse animated-hover" style="font-size: 25px; color: #0089d2; padding-top: 3px;"
-           data-toggle="modal" data-target="#partnerModal"></i>
-      {% endif %}
-  </div>
-
-  <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="5" data-intro="Filter options by cadastral">
-      <select class="selectpicker show-tick" title="Select a cadastral" name="cadastral" data-style="btn-info" id="filter_govs">
-          {% for item in cadastrals %}
-              <option value="{{ item.location_adminlevel_cadastral_area_code }}" {% if item.location_adminlevel_cadastral_area == selected_cadastral %}selected{% endif %}>{{ item.location_adminlevel_cadastral_area }}</option>
-          {% endfor %}
-      </select>
-  </div>
-    <div class="col-md-2">
-      <button type="submit" class="btn btn-success">Search</button>
-      <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ database.ai_id }}" class="btn btn-warning">Cancel</a>
-    </div>
-
-    <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;" data-step="6" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
-
-  <!--<span data-step="3" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">-->
-    <i class="fa fa-user faa-pulse animated-hover" data-toggle="tooltip" data-placement="bottom" data-html="true"
-       title="Database focal point: {{ database.focal_point_sector }} <br/>
-              email: {{ database.focal_point_sector.email }} <br/>" style="font-size: 25px;"> {{ database.focal_point_sector.first_name }} </i>
-    <!--<a href="skype:{{ database.focal_point.skype_account }}?chat" data-toggle="tooltip" data-placement="bottom"-->
-       <!--title="Chat with the database focal point via skype" style="padding-left: 20px;">-->
-      <!--<i class="fa fa-skype faa-pulse animated-hover" style="font-size: 25px; color: #2dc6ff;"></i>-->
-    <!--</a>-->
-    <a href="mailto:{{ database.focal_point_sector.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database" data-toggle="tooltip" data-placement="bottom"
-       title="Send email to the database focal point" style="padding-left: 20px;">
-      <i class="fa fa-envelope-o faa-pulse animated-hover" style="font-size: 25px; color: #0089d2"></i>
-    </a>
-
-    <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
-       title="Show me some tips" style="padding-left: 20px;">
-      <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
-    </a>
-
-  </div>
-
-</form>
-
-</div>
-
-<!-- /top tiles -->
-<div class="row" style="min-width: 2100px;">
-  <div class="w-1002 col-sm-12 col-xs-12">
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2>
-                      <span data-step="7" data-intro="Collapse / Expand master indicators">
-                        <a href="#" class="collapse-all" style="font-size: 25px;"><i class="fa fa-th-large"></i></a>
-                        <a href="#" class="expanded-all active" style="font-size: 25px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
-                      </span>
-                      <strong>Dashboard - {{ database.label }} - Sector - 2019</strong>
-                      <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
-                             autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
-                             aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
-                             style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;" data-step="8" data-intro="Search for a specific Indicator">
-                      <a href="{% url 'activityinfo:report_map_sector' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display reported indicators on map" style="padding-left: 20px;"
-                          data-step="15" data-intro="Display reported indicators on map">
-                        <i class="fa fa-map-o" style="font-size: 30px; color: #0089d2;"></i>
-                      </a>
-                    </h2>
-                    <ul class="nav navbar-left" style="margin-top: -7px;" data-step="10" data-intro="Download Dashboard report and raw data">
-                      <li class="dropdown">
-                        <a id="drop5" href="#" style="font-size: 25px; padding: 10px 25px 0;" class="dropdown-toggle" title="Download report"
-                           data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-                                    <i class="fa fa-download faa-bounce animated-hover" style="font-size: 25px;"></i>
-                          <span class="caret"></span>
-                        </a>
-                        <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
-                          <li role="presentation" class="divider" style="margin-top: -1px;"></li>
-                          <li role="presentation"><a href="#" id="export1" role="menuitem" tabindex="-1">Current dashboard</a>
-                          <li role="presentation" class="divider"></li>
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">Full raw data</a>
-                          <li role="presentation" class="divider" style="margin-bottom: -1px;"></li>
-                        </ul>
-                      </li>
-                    </ul>
-                    <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                    </ul>
-                    <div class="clearfix"></div>
-                  </div>
-
-                  <div class="x_content">
-                    <table id="exportheader" class="table table-striped table-bordered" style="margin-left: -3px; margin-bottom: -3px; box-shadow: -5px 5px 10px;">
-                      <thead>
-                        <tr>
-                          <!--<th>#</th>-->
-                          <th content="Indicator ID" style="vertical-align: middle; width: 99px; max-width: 99px;">Indicator ID</th>
-                          <th content="ActivityInfo Indicators" style="vertical-align: middle; width: 397px; max-width: 397px;">ActivityInfo Indicators</th>
-                          <!--<th class="w-120" content="Level of reporting" style="vertical-align: middle;">Level of reporting</th>-->
-                          <th content="RWP" style="vertical-align: middle; width: 98px; max-width: 98px;">RWP</th>
-                          <th content="Target" style="vertical-align: middle;  width: 98px; max-width: 98px;">Target</th>
-                          <th content="Cumulative Results of All Months" style="vertical-align: middle; width: 127px; max-width: 127px;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
-                            Cumulative Results <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
-                          <th content="Total Percentage achieved of all months" style="vertical-align: middle; width: 127px; max-width: 127px;" data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">
-                            % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
-                          <th content="Status" style="vertical-align: middle; width: 69px; max-width: 69px;">Status</th>
-                          {% for month, month_name in months %}
-                            <th content="{{ month_name }}" style="vertical-align: middle; width: 69px; max-width: 69px;">{{ month_name }}</th>
-                          {% endfor %}
-                        </tr>
-                      </thead>
-                    </table>
-                  </div>
-
-                  <div class="x_content" style="height: 600px; overflow: scroll;">
-
-                    <table id="exporttable1" content="{{ month_name }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard.csv"
-                           data-tableName="Dashboard - {{ database.label }} - 2019"
-                           class="table table-striped table-bordered">
-                      <thead style="display:none;">
-                        <tr>
-                          <!--<th>#</th>-->
-                          <th class="w-100" content="Indicator ID" style="vertical-align: middle;">Indicator ID</th>
-                          <th class="w-400" content="ActivityInfo Indicators" style="vertical-align: middle;">ActivityInfo Indicators</th>
-                          <!--<th class="w-120" content="Level of reporting" style="vertical-align: middle;">Level of reporting</th>-->
-                          <th class="w-100" content="RWP" style="vertical-align: middle;">RWP</th>
-                          <th class="w-100" content="Target" style="vertical-align: middle;">Target</th>
-                          <th class="w-130" content="Cumulative Results of All Months" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Cumulative Results of All Months">
-                            Cumulative Results <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
-                          <th class="w-130" content="Total Percentage achieved of all months" style="vertical-align: middle;" data-toggle="tooltip" data-placement="top" title="Total Percentage achieved of all months">
-                            % achieved <i class="fa fa-question-circle-o" style="font-size:16px;"></i>
-                          </th>
-                          <th class="w-70" content="Status" style="vertical-align: middle;">Status</th>
-                          {% for month, month_name in months %}
-                            <th class="w-70" content="{{ month_name }}" style="vertical-align: middle;">{{ month_name }}</th>
-                          {% endfor %}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for item in master_indicators %}
-                          {% get_indicator_cumulative_sector item month selected_partners selected_cadastral as cumulative_value %}
-                          {% to_display_indicator selected_filter cumulative_value as display_indicator %}
-
-                          {% if display_indicator %}
-                          <tr class="level1" itemid="{{ item.id }}" {% if item.master_indicator %}style="background-color:#8FCAE7; font-weight: bold; font-size: 14px;"{% elif item.individual_indicator %}style="background-color:#dadada;"{% endif %}>
-                              <!--<td>{{ item.id }}</td>-->
-                              {% if item.master_indicator %}
-                                <th colspan="2" class="w-500">
-                                  {{ item.name }}
-                                  {% if item.explication %}
-                                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item.explication }}"></i>
-                                  {% endif %}
-
-                                  <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}" target="_blank">
-                                    <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
-                                  </a>
-                                </th>
-                              {% else %}
-                                <td class="w-100">{{ item.ai_id }}</td>
-                                <th class="w-400">
-                                  {{ item.name }}
-                                  {% if item.explication %}
-                                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item.explication }}"></i>
-                                  {% endif %}
-
-                                  <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item.id }}" target="_blank">
-                                    <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
-                                  </a>
-                                </th>
-                              {% endif %}
-                              <!--<td>Site</td>-->
-                              <td class="w-100">{{ item.awp_code }}</td>
-                              <td class="w-100">
-                                {% if item.measurement_type == 'percentage' %}
-                                  {{ item.target_sector }}%
-                                {% else %}
-                                  {{ item.target_sector|number_format }}
-                                {% endif %}
-                              </td>
-                              <td class="w-130">
-                                {{ cumulative_value }}
-                              </td>
-                              <td class="w-130">
-                                {% get_indicator_achieved_sector item month selected_partners selected_cadastral as achieved %}
-                                {{ achieved }}%
-                              </td>
-                              <td class="w-70" style="background-color:{{ item.status_color_sector }}; color: #FFF;">{{ item.status_sector }}</td>
-                              {% for month, month_name in months %}
-                                <td class="w-70">
-                                  {% get_indicator_value_sector item month selected_partners selected_cadastral as value %}
-                                  {{ value }}
-                                </td>
-                              {% endfor %}
-                          </tr>
-                          {% get_sub_indicators_data item.id True as sub_indicators %}
-                          {% for item1 in sub_indicators %}
-                            <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}" {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
-                                <!--<td>{{ item1.id }}</td>-->
-                                {% if item1.master_indicator_sub %}
-                                  <th colspan="2" class="w-500">
-                                    {{ item1.name }}
-                                    {% if item1.explication %}
-                                    <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item1.explication }}"></i>
-                                    {% endif %}
-
-                                    <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}" target="_blank">
-                                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
-                                    </a>
-                                  </th>
-                                {% else %}
-                                  <td class="w-100">{{ item1.ai_id }}</td>
-                                  <th class="w-400">
-                                    {{ item1.name }}
-                                    {% if item1.explication %}
-                                    <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item1.explication }}"></i>
-                                    {% endif %}
-
-                                    <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}" target="_blank">
-                                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
-                                    </a>
-                                  </th>
-                                {% endif %}
-                                <!--<td>Site</td>-->
-                                <td class="w-100">{{ item1.awp_code }}</td>
-                                <td class="w-100">{{ item1.target_sector|number_format }}</td>
-                                <td class="w-130">
-                                   {% get_indicator_cumulative_sector item1 month selected_partners selected_cadastral as cumulative_value %}
-                                   {{ cumulative_value }}
-                                </td>
-                                <td class="w-130">
-                                  {% get_indicator_achieved_sector item1 month selected_partners selected_cadastral as achieved %}
-                                  {{ achieved }}%
-                                </td>
-                                <td class="w-70" style="background-color:{{ item1.status_color_sector }}; color: #FFF;">{{ item1.status_sector }}</td>
-                                {% for month, month_name in months %}
-                                  <td class="w-70">
-                                      {% get_indicator_value_sector item1 month selected_partners selected_cadastral as value %}
-                                      {{ value }}
-                                  </td>
-                                {% endfor %}
-                            </tr>
-                            {% get_sub_indicators_data item1.id True as sub_indicators1 %}
-                            {% for item2 in sub_indicators1 %}
-                              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
-                              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}" itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
-                                  <!--<td>{{ item2.id }}</td>-->
-                                  {% if item2.master_indicator_sub_sub %}
-                                    <th class="w-500" colspan="2">
-                                      {{ item2.name }}
-                                      {% if item2.explication %}
-                                      <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
-                                      {% endif %}
-
-                                      <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}" target="_blank">
-                                        <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
-                                      </a>
-                                    </th>
-                                  {% else %}
-                                    <td class="w-100">{{ item2.ai_id }}</td>
-                                    <th class="w-400">
-                                      {{ item2.name }}
-                                      {% if item2.explication %}
-                                      <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
-                                      {% endif %}
-
-                                      <a href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}" target="_blank">
-                                        <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
-                                      </a>
-                                    </th>
-                                  {% endif %}
-                                  <!--<td>Site</td>-->
-                                  <td class="w-100">{{ item2.awp_code }}</td>
-                                  <td class="w-100">{{ item2.target_sector|number_format }}</td>
-                                  <td class="w-130">
-                                     {% get_indicator_cumulative_sector item2 month selected_partners selected_cadastral as cumulative_value %}
-                                     {{ cumulative_value }}
-                                  </td>
-                                  <td class="w-130">
-                                    {% get_indicator_achieved_sector item2 month selected_partners selected_cadastral as achieved %}
-                                    {{ achieved }}%
-                                  </td>
-                                  <td class="w-70" style="background-color:{{ item2.status_color_sector }}; color: #FFF;">{{ item2.status_sector }}</td>
-                                  {% for month, month_name in months %}
-                                    <td class="w-70">
-                                      {% get_indicator_value_sector item2 month selected_partners selected_cadastral as value %}
-                                      {{ value }}
-                                    </td>
-                                  {% endfor %}
-                              </tr>
-                              {% endif %}
-                            {% endfor %}
-                          {% endfor %}
-                        {% endif %}
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
+            <a class="btn shadow  btn-outline-warning" href="javascript:void(0);"
+               onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip"
+               data-placement="bottom" title="Show me some tips">
+              <i class="fa fa-lightbulb" aria-hidden="true"></i>
+            </a>
+            </div>
+          </div>
+            <div class="page-title-subheading">
+              Filter by multiple Partners, Cadastrals, and Months
+            </div>
+          </div>
         </div>
+      </div>
+    </form>
+  </div>
+    <div class="row">
+    <div class="col-lg-12">
+      <div class="main-card mb-3 card">
+        <div class="card-body">
+          <div class="card-title  d-inline-block">
+            <span data-step="6" data-intro="Collapse / Expand master indicators">
+              <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
+              <a href="#" class="expanded-all"><i
+                class="fa fa-bars"></i></a>
+            </span>
+            Dashboard - {{ database.label }}  - {{reporting_year}}
+            <div class="d-inline-block dashboard_icons">
+                {% if display_live %}
+<!--              <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"-->
+<!--                 data-placement="top" title="Display live data monitoring" class="text-danger"-->
+<!--                 data-step="9" data-intro="Open live ActivityInfo Dashboard">-->
+<!--                <i class="fa fa-rss faa-flash "></i>-->
+<!--              </a>-->
+              {% endif%}
+            </div>
+            <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Sector Results">
+              <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
+                      data-toggle="dropdown" class="mb-2 mr-2 dropdown-toggle btn btn-link">
+                <i class="fa fa-download"></i>
+
+              </button>
+              <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
+                <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>
+                <div tabindex="-1" class="dropdown-divider"></div>
+                <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                   href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
+                  Sector Results</a>
+                <div tabindex="-1" class="dropdown-divider"></div>
+              </div>
+            </div>
+
+          </div>
+          <div class="table-responsive" style="position: relative;overflow: scroll;height: 600px;">
+            <table class="mb-0 table table-striped table-hover" id="exportheader"
+                   content="{{ database.label }}_Dashboard_{{ database.reporting_year.name }}.csv"
+                   data-tableName="Dashboard - {{ database.label }} - 2020">
+              <thead>
+              <tr>
+                <th content="Indicator Name"> Indicator Name</th>
+                <th content="RWP Code">RWP Code</th>
+                <th content="Target">Target</th>
+                <th content="Cumulative Results of All Months" data-toggle="tooltip" data-placement="top"
+                    title="Cumulative Results of All Months">Cumulative Results <i class="fa fa-question-circle-o"></i>
+                </th>
+                <th content="Total Percentage achieved of all months" data-toggle="tooltip" data-placement="top"
+                    title="Total Percentage achieved of all months">
+                  Percentage Achieved <i class="fa fa-question-circle-o"></i>
+                </th>
+                <th content="Status">Status</th>
+
+                {% for month, month_name in months %}
+                <th content="{{ month_name }}">{{ month_name }}</th>
+                {% endfor %}
+              </tr>
+              </thead>
+              <tbody>
+              {% for item in master_indicators %}
+
+              {% get_indicator_cumulative_sector item month selected_partners selected_cadastral as cumulative_value %}
+              {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+
+              {% if display_indicator %}
+              <tr itemid="{{ item.id }}"
+                  {% if item.master_indicator %}class="level1 master_indicator"
+                  {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
+
+                {% if item.master_indicator %}
+                <td class="w-150">
+                  {{ item.name }}
+                  <a
+                    href="{% url 'activityinfo:report_partner_sector' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
+                    target="_blank" class="text-info" data-intro="View Results by Partner"  data-toggle="tooltip"
+                 data-placement="top" title="View Results by Partner">
+<!--                    <i class="fa fa-link" aria-hidden="true" title=""></i>-->
+                  </a>
+                </td>
+                {% else %}
+
+                <td class="w-150">
+                  {{ item.name }}
+                  <a
+                    href="{% url 'activityinfo:report_partner_sector' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
+                    target="_blank" class="text-info" data-intro="View Results by Partner" data-toggle="tooltip"
+                 data-placement="top" title="View Results by Partner">
+<!--                  <i class="fa fa-link" aria-hidden="true" title=""></i>-->
+                  </a>
+                </td>
+                {% endif %}
+                <!--<td>Site</td>-->
+                <td class="w-10">{{ item.awp_code }}</td>
+                <td class="w-10">
+                  {% if item.measurement_type == 'percentage' %}
+                  {{ item.target_sector }}%
+                  {% else %}
+                  {{ item.target_sector|number_format }}
+                  {% endif %}
+                </td>
+                <td class="w-10">
+                  {% get_indicator_cumulative_sector item selected_months selected_partners selected_cadastral as cumulative_value %}
+                  {{ cumulative_value }}
+                </td>
+                <td class="w-10">
+                {% get_indicator_achieved_sector item month selected_partners selected_cadastral as achieved %}
+                  {{ achieved }}%
+                </td>
+                <td class="w-10">
+                  <div class='badge {{ item.status_color_sector }}'>{{ item.status_sector }}</div>
+                </td>
+
+                {% for month, month_name in months %}
+                <td class="w-10">
+                  {% get_indicator_value_sector item month selected_partners selected_cadastral as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+              {% get_sub_indicators_data item.id True as sub_indicators %}
+              {% for item1 in sub_indicators %}
+              <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
+                  {% if item1.master_indicator_sub %}style="background-color: #ca292940;"
+                  {% elif item.individual_indicator %}style="background-color:#2d2d2d;" {% endif %}>
+
+                <!--<td>{{ item1.id }}</td>-->
+                {% if item1.master_indicator_sub %}
+                <td class="w-150">
+                  {{ item1.name }}
+                  {% if item1.explication %}
+                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
+                     data-placement="top" title="{{ item1.explication }}"></i>
+                  {% endif %}
+                  <a
+                    href="{% url 'activityinfo:report_partner_sector' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
+                    target="_blank" class="text-info" data-intro="View Results by Partner" data-toggle="tooltip"
+                 data-placement="top" title="View Results by Partner">
+<!--                     <i class="fa fa-link" aria-hidden="true" title=""></i>-->
+                  </a>
+                </td>
+                {% else %}
+                <!-- <td class="w-100">{{ item1.ai_id }}</td>-->
+                <td class="w-150">
+                  {{ item1.name }}
+                  {% if item1.explication %}
+                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
+                     data-placement="top" title="{{ item1.explication }}"></i>
+                  {% endif %}
+                  <a
+                    href="{% url 'activityinfo:report_partner_sector' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
+                    target="_blank" class="text-info"data-intro="View Results by Partner" data-toggle="tooltip"
+                 data-placement="top" title="View Results by Partner">
+<!--                 <i class="fa fa-link" aria-hidden="true" title=""></i>-->
+                  </a>
+                </td>
+                {% endif %}
+                <!--<td>Site</td>-->
+                <td class="w-10">{{ item1.awp_code }}</td>
+                <td class="w-10">{{ item1.target_sector|number_format }}</td>
+                <td class="w-10">
+                  {% get_indicator_cumulative_sector item1 selected_months selected_partners selected_cadastral as cumulative_value %}
+                  {{ cumulative_value }}
+                </td>
+                <td class="w-10">
+                  {% get_indicator_achieved_sector item1 month selected_partners selected_cadastral as achieved %}
+                  {{ achieved }}%
+                </td>
+                <td class="w-10">
+                  <div class='badge {{ item1.status_color_sector }}'>{{ item1.status_sector }}</div>
+
+                </td>
+                {% for month, month_name in months %}
+                <td class="w-10">
+                 {% get_indicator_value_sector item1 month selected_partners selected_cadastral as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+              {% get_sub_indicators_data item1.id True as sub_indicators1 %}
+              {% for item2 in sub_indicators1 %}
+              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
+              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
+                  {% if item.individual_indicator %} class="individual" style="background-color: red;" {% endif %}
+                  itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
+                <!--<td>{{ item2.id }}</td>-->
+                {% if item2.master_indicator_sub_sub %}
+                <td class="w-150" colspan="1">
+                  {{ item2.name }}
+                  {% if item2.explication %}
+                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
+                     data-placement="top" title="{{ item2.explication }}"></i>
+                  {% endif %}
+                  <a
+                    href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
+                    target="_blank" class="text-info">
+<!--                      <i class="fa fa-link" aria-hidden="true" title=""></i>-->
+                  </a>
+                </td>
+                {% else %}
+
+                <td class="w-150">
+                  {{ item2.name }}
+                  {% if item2.explication %}
+                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
+                     data-placement="top" title="{{ item2.explication }}"></i>
+                  {% endif %}
+                  <a
+                    href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
+                    target="_blank" class="text-info">
+                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                  </a>
+                </td>
+
+                {% endif %}
+                <!--<td>Site</td>-->
+                <td class="w-10">{{ item2.awp_code }}</td>
+                <td class="w-10">{{ item2.target_sector|number_format }}</td>
+                <td class="w-10">
+                    {% get_indicator_cumulative_sector item2 selected_months selected_partners selected_cadastral as cumulative_value %}
+                  {{ cumulative_value }}
+                </td>
+                <td class="w-10">
+                   {% get_indicator_achieved_sector item2 month selected_partners selected_cadastral as achieved %}
+                  {{ achieved }}%
+                </td>
+                <td class="w-10">
+                  <div class='badge {{ item1.status_color }}'>{{ item1.status }}</div>
+
+                </td>
+                {% for month, month_name in months %}
+                <td class="w-10">
+                  {% get_indicator_value_sector item2 month selected_partners selected_cadastral as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+              {% endif %}
+              {% endfor %}
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
-<br />
-
 
 {% endblock content %}
 
 {% block extra_js %}
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
   <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+<script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>
 
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
-
-<!-- (Optional) Latest compiled and minified JavaScript translation files -->
-<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/i18n/defaults-*.min.js"></script>-->
 
 <script>
 
-$(document).ready(function(){
+$(document).ready(function () {
+  var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+};
 
-    $('#filter_partners').selectpicker();
-    $('#filter_govs').selectpicker();
+    var id = getUrlParameter('ai_id');
+    var selected_li=$('li#'+'sector_'+id).find('a');
+    var parent = selected_li.parent();
+    parent.addClass("mm-active");
+    selected_li.addClass("mm-active");
+
+  $('#filter_partners').multiselect({
+    buttonWidth : '180px',
+    includeSelectAllOption : true,
+		nonSelectedText: 'Partners',
+		nSelectedText:'selected partners',
+		numberDisplayed:1
+  });
+ $('#filter_governorates').multiselect({
+    buttonWidth : '190px',
+    includeSelectAllOption : true,
+		nonSelectedText: 'Cadastrals',
+		nSelectedText:'selected cadastrals',
+		numberDisplayed:1,
+		maxHeight: 250
+  });
+
+$('#filter_month').multiselect({
+    buttonWidth : '180px',
+    includeSelectAllOption : true,
+		nonSelectedText: 'Months',
+		nSelectedText:'selected months',
+		numberDisplayed:1
+  });
+
+      $('.level1').addClass('collapsed');
+      $('.level2').addClass('collapsed');
+      $('.level3').addClass('collapsed');
+
+      $('.level2').hide();
+      $('.level3').hide();
 
     $('.expanded-all').click(function(){
         $('.expanded-all').addClass('active');
@@ -433,45 +449,31 @@ $(document).ready(function(){
 function download_csv(csv, filename) {
     var csvFile;
     var downloadLink;
-
-    // CSV FILE
     csvFile = new Blob([csv], {type: "text/csv"});
-
-    // Download link
     downloadLink = document.createElement("a");
-
-    // File name
     downloadLink.download = filename;
-
-    // We have to create a link to the file
     downloadLink.href = window.URL.createObjectURL(csvFile);
-
-    // Make sure that the link is not displayed
     downloadLink.style.display = "none";
-
-    // Add the link to your DOM
     document.body.appendChild(downloadLink);
-
-    // Lanzamos
     downloadLink.click();
 }
 
 function export_table_to_csv(html, filename) {
 	var csv = [];
+	 $("tr:hidden,td:hidden","#exportheader").remove();
 	var rows_header = document.querySelectorAll("table#exportheader thead tr");
-	var rows = document.querySelectorAll("table#exporttable1 tbody tr");
+	var rows = document.querySelectorAll("table#exportheader tbody tr");
 
     for (var i = 0; i < rows_header.length; i++) {
 		var row = [], cols = rows_header[i].querySelectorAll("th");
 
         for (var j = 0; j < cols.length; j++)
             row.push($(cols[j]).attr('content'));
-
     csv.push(row.join(","));
 	}
 
   for (var i = 0; i < rows.length; i++) {
-		var row = [], cols = rows[i].querySelectorAll("td, th");
+		var row = [], cols = rows[i].querySelectorAll("td, td");
 
         for (var j = 0; j < cols.length; j++) {
             if($(cols[j]).attr('colspan') == '2') {
@@ -479,32 +481,24 @@ function export_table_to_csv(html, filename) {
             }
             row.push('"'+cols[j].innerText+'"');
         }
-
 		csv.push(row.join(","));
 	}
-
     // Download CSV
     download_csv(csv.join("\n"), filename);
 }
 
 document.querySelector("#export1").addEventListener("click", function () {
     var html = document.querySelector("table").outerHTML;
-    var file_name = $("#exporttable1").attr("content");
+    var file_name = $("#exportheader").attr("content");
 	  export_table_to_csv(html, file_name);
 });
 
-$('input#search-input').quicksearch('table#exporttable1 tbody tr', {
+$('input#search-input').quicksearch('table#exportheader tbody tr', {
 	'delay': 300,
-	'selector': 'th',
+	'selector': 'td',
 	'stripeRows': ['odd', 'even'],
 	'loader': 'span.loading',
 	'bind': 'keyup click input',
-	<!--'show': function () {-->
-		<!--this.style.color = '';-->
-	<!--},-->
-	<!--'hide': function () {-->
-		<!--this.style.color = '#ccc';-->
-	<!--},-->
 	'prepareQuery': function (val) {
 		return new RegExp(val, "i");
 	},
@@ -512,7 +506,6 @@ $('input#search-input').quicksearch('table#exporttable1 tbody tr', {
 		return query.test(txt);
 	}
 });
-
-    </script>
+</script>
 
 {% endblock %}
