@@ -51,9 +51,9 @@
       <div class="main-card mb-3 card">
         <div class="card-body">
           <div class="card-title">
-            <span> Dashboard - {{ database.label }} - {{ database.reporting_year }}</span>
+             Dashboard - {{ database.label }} - {{ database.reporting_year }}
             <div class=" d-inline-block" data-intro="Download Dashboard report">
-              <button type="button" tabindex="0" id="export1" class="mb-2 mr-2 btn btn-link" data-toggle="tooltip"
+              <button type="button" tabindex="0" id="export1" style="font-size:20px;" class="mb-2 mr-2 btn btn-link" data-toggle="tooltip"
                       title="download partner dashboard">
                 <i class="fa fa-download"></i></button>
             </div>
@@ -134,9 +134,9 @@
             </form>
              </div>
 
-          <div class="row col-md-12 mb-3">
+          <div class="row col-md-12 mb-3 mt-3">
             <div class="table-responsive">
-            <table  content="Total Result"
+            <table  content="Total Results"
                    data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year }}"
                    class="table table-hover table-striped table_to_export" >
               <thead>
@@ -231,7 +231,6 @@
                 <th  content="Partner">Partner</th>
                 <th content="Total">Total <i class="fa fa-question-circle-o"></i>
                 </th>
-                <th content="Status">Status</th>
                 {% for month, month_name in months %}
                 <th content="{{ month_name }}"><span>{{ month_name }}</span></th>
                 {% endfor %}
@@ -248,9 +247,6 @@
                    {% get_indicator_partner_cumulative indicator  partner.partner_id  gov.location_adminlevel_governorate_code  as cumulative_value %}
                    {% endif %}
                   {{ cumulative_value }}
-                </td>
-                 <td class="w-10">
-                  <div class='badge {{ indicator.status_color }}'>{{ indicator.status }}</div>
                 </td>
                 {% for month, month_name in months %}
                 <td class="w-10" >
