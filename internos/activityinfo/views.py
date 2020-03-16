@@ -238,7 +238,9 @@ class ReportView(TemplateView):
             'selected_filter': selected_filter,
             'none_ai_indicators': none_ai_indicators,
             'reporting_year': str(reporting_year),
-            'display_live': display_live
+            'display_live': display_live,
+            'current_month': current_month,
+            'current_month_name':  datetime.datetime.now().strftime("%B")
         }
 
 
@@ -250,6 +252,7 @@ class ReportPartnerView(TemplateView):
         from internos.activityinfo.utils import load_reporting_map
 
         partner_info = {}
+        selected_filters = False
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
@@ -265,6 +268,9 @@ class ReportPartnerView(TemplateView):
         selected_sub_indicator = self.request.GET.getlist('sub_indicator_id', [])
         selected_governorate = self.request.GET.get('governorate', 0)
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+
+        if selected_indicator or selected_governorate:
+            selected_filters = True
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -303,7 +309,7 @@ class ReportPartnerView(TemplateView):
             'values_partners': indicator.values_partners,
             'values_gov': indicator.values_gov,
             'values': indicator.values,
-            'reporting_year': str(reporting_year)
+            'reporting_year': str(reporting_year),
         }
 
         report = ActivityReport.objects.filter(database_id=database.ai_id)
@@ -410,6 +416,8 @@ class ReportPartnerView(TemplateView):
             'selected_indicator_name': selected_indicator_name,
             'list_selected_sub': list_selected_sub,
             'locations': locations,
+            'selected_filters': selected_filters
+
         }
 
 
@@ -1347,6 +1355,12 @@ class HPMView(TemplateView):
         # if day_number < 15:
         #     month = month - 1
 
+        database = Database.objects.all()
+
+        report = ActivityReport.objects.filter(database_id=database.ai_id)
+
+        indicators = Indicator.objects.filter(activity__database=database).order_by('sequence')
+
         months = []
         for i in range(1, 13):
             months.append({
@@ -1451,7 +1465,7 @@ class ExportViewSet(ListView):
             path2file = path + '/AIReports/' + str(instance.db_id) + '_ai_data.csv'
         else:
             path2file = path + '/AIReports/' + str(instance.ai_id) + '_ai_data.csv'
-        filename = 'Sector Results_{}_{}_{}.csv'.format(instance.label, month_name, instance.reporting_year.name)
+        filename = '{}_{}_{}_Raw Data.csv'.format(instance.label, month_name, instance.reporting_year.name)
         with open(path2file, 'r') as f:
             response = HttpResponse(f.read(), content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename=%s;' % filename
