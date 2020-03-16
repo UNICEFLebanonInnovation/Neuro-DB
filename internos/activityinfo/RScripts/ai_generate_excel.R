@@ -10,10 +10,11 @@ myArgs <- commandArgs(trailingOnly = TRUE)
 
 ai_username <- myArgs[1]
 ai_password <- myArgs[2]
-ai_id <- myArgs[3]
+db_id <- myArgs[3]
+ai_id <- myArgs[4]
 
 activityInfoLogin(ai_username, ai_password)
 
-values <- getQuantityTable("ck2yrizmo2", ai_id)
+values <- getQuantityTable("ck2yrizmo2", db_id)
 outfilname<- paste('internos/activityinfo/AIReports/', ai_id, "_ai_data.csv", sep="")
 write.csv(values, outfilname, row.names=FALSE)
