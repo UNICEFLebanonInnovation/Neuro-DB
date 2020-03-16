@@ -112,7 +112,7 @@
                 <i class="fa fa-wheelchair"></i>
               </a>
             </div>
-            <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Sector Results">
+            <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Raw Data">
               <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
                       data-toggle="dropdown" class="mb-2 mr-2 dropdown-toggle btn btn-link">
                 <i class="fa fa-download"></i>
@@ -123,7 +123,7 @@
                 <div tabindex="-1" class="dropdown-divider"></div>
                 <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
                    href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
-                  Sector Results</a>
+                  Raw Data</a>
                 <div tabindex="-1" class="dropdown-divider"></div>
               </div>
             </div>
@@ -131,8 +131,8 @@
           </div>
           <div class="table-responsive" style="position: relative;overflow: scroll;height: 600px;">
             <table class="mb-0 table table-striped table-hover" id="exportheader"
-                   content="{{ database.label }}_Dashboard_{{ database.reporting_year.name }}.csv"
-                   data-tableName="Dashboard - {{ database.label }} - 2020">
+                   content="{{ database.label }}_Dashboard_ {{ current_month_name}}_{{ database.reporting_year.name }}.csv"
+                   data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.name }}">
               <thead>
               <tr>
                 <th content="Indicator Name"> Indicator Name</th>
@@ -167,8 +167,8 @@
                   {{ item.name }}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info">
-                    <i class="fa fa-link" aria-hidden="true" title=""></i>
+                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
+                    <i class="fa fa-users" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% else %}
@@ -177,8 +177,8 @@
                   {{ item.name }}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info">
-                    <i class="fa fa-link" aria-hidden="true" title=""></i>
+                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">>
+                    <i class="fa fa-users" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% endif %}
@@ -226,7 +226,7 @@
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
                     target="_blank" class="text-info">
-                    <i class="fa fa-link" aria-hidden="true" title=""></i>
+                    <i class="fa fa-users" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% else %}
@@ -239,8 +239,8 @@
                   {% endif %}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                    target="_blank" class="text-info">
-                    <i class="fa fa-link" aria-hidden="true" title=""></i>
+                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">>
+                    <i class="fa fa-users" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% endif %}
@@ -282,12 +282,12 @@
                   {% endif %}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
-                    target="_blank" class="text-info">
-                    <i class="fa fa-link" aria-hidden="true" title=""></i>
+                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">>
+                    <i class="fa fa-users" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% else %}
-                <!--                  <td class="w-100">{{ item2.ai_id }}</td>-->
+                <!--       <td class="w-100">{{ item2.ai_id }}</td>-->
                 <td class="w-150">
                   {{ item2.name }}
                   {% if item2.explication %}
@@ -296,8 +296,8 @@
                   {% endif %}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
-                    target="_blank" class="text-info">
-                    <i class="fa fa-link" aria-hidden="true" title=""></i>
+                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">>
+                    <i class="fa fa-users" aria-hidden="true" title=""></i>
                   </a>
                 </td>
 

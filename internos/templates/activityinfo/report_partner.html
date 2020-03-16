@@ -16,7 +16,7 @@
             <i class="fa fa-fw icon-gradient bg-malibu-beach"  aria-hidden="true"></i>
             </i>
           </div>
-          <div>
+          <div style="font-weight:bold">
          ActivityInfo Results by Partners
           </div>
         </div>
@@ -51,7 +51,7 @@
       <div class="main-card mb-3 card">
         <div class="card-body">
           <div class="card-title">
-             Dashboard - {{ database.label }} - {{ database.reporting_year }}
+            Partners Results of {{ database.label }} / {{ database.reporting_year }}
             <div class=" d-inline-block" data-intro="Download Dashboard report">
               <button type="button" tabindex="0" id="export1" style="font-size:20px;" class="mb-2 mr-2 btn btn-link" data-toggle="tooltip"
                       title="download partner dashboard">
@@ -59,6 +59,43 @@
             </div>
           </div>
              <div>
+               <form style="width:100%" action="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}" method="get" id="indicator_form">
+              <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
+
+               <div class="row mb-1">
+                 <div class="col-md-3">
+                   <div class="card-subtitle d-inline-block indicator_select_title">
+                 <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Indicator  </div>
+                 </div>
+                 <div class="col-md-9">
+                    <select class="d-inline-block select2" id="indicators" style="display:inline-block !important" data-style="btn-primary"
+                        data-live-search="true" name="indicator_id">
+                  {% for item in indicators %}
+                  <option value="{{ item.id }}" {% if item.id == selected_indicator %}selected{% endif %}>{{ item.name }}
+                  </option>
+                  {% endfor %}
+                </select>
+                 </div>
+               </div>
+<!--                  {% get_sub_master_indicators_data selected_indicator as sub_indicators %}-->
+<!--                     {% if sub_indicators %}-->
+<!--                      <div class="row mb-3" id="sub_indicators_list">-->
+<!--                        <div class="col-md-4">-->
+<!--                        <div class="card-subtitle d-inline-block sub_indicator_select_title">-->
+<!--                       <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter Partner Results By Sub_Indicator  </div>-->
+<!--                        </div>-->
+<!--                          <div class="col-md-8">-->
+<!--                            <select class="d-inline-block select2" multiple="multiple" style="display:inline-block !important" data-style="btn-primary"-->
+<!--                              data-live-search="true" id="sub_select_list" name="sub_indicator_id">-->
+<!--                              {% for item in sub_indicators %}-->
+<!--                              <option value="{{ item.id }}" {% if item.id in selected_sub_indicator %}selected{% endif %}>{{ item.name }}</option>-->
+<!--                              {% endfor %}-->
+<!--                            </select>-->
+<!--                              <button type="submit" class="btn btn-outline-primary" id="btn_go">Go</button>-->
+<!--                           </div>-->
+<!--                       </div>-->
+<!--                    {% endif %}-->
+            </form>
                <form action="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}" method="get" id="govform">
               <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
               <input type="hidden" name="governorate" value="" id="governorateinput"/>
@@ -66,7 +103,7 @@
               <div class="row">
                 <div class="col-md-3">
                   <div class="d-inline-block indicator_select_title">
-                    <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Governorate :
+                    <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Governorate
                   </div>
                 </div>
                 <div class="col-md-9">
@@ -95,56 +132,19 @@
               </div>
             </form>
 
-               <form style="width:100%" action="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}" method="get" id="indicator_form">
-              <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
 
-               <div class="row mb-1">
-                 <div class="col-md-3">
-                   <div class="card-subtitle d-inline-block indicator_select_title">
-                 <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Indicator : </div>
-                 </div>
-                 <div class="col-md-9">
-                    <select class="d-inline-block select2" id="indicators" style="display:inline-block !important" data-style="btn-primary"
-                        data-live-search="true" name="indicator_id">
-                  {% for item in indicators %}
-                  <option value="{{ item.id }}" {% if item.id == selected_indicator %}selected{% endif %}>{{ item.name }}
-                  </option>
-                  {% endfor %}
-                </select>
-                 </div>
-               </div>
-                  {% get_sub_master_indicators_data selected_indicator as sub_indicators %}
-                     {% if sub_indicators %}
-                      <div class="row mb-3" id="sub_indicators_list">
-                        <div class="col-md-3">
-                        <div class="card-subtitle d-inline-block sub_indicator_select_title">
-                       <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Sub_Indicator : </div>
-                        </div>
-                          <div class="col-md-9">
-                            <select class="d-inline-block select2" multiple="multiple" style="display:inline-block !important" data-style="btn-primary"
-                              data-live-search="true" id="sub_select_list" name="sub_indicator_id">
-                              {% for item in sub_indicators %}
-                              <option value="{{ item.id }}" {% if item.id in selected_sub_indicator %}selected{% endif %}>{{ item.name }}</option>
-                              {% endfor %}
-                            </select>
-                              <button type="submit" class="btn btn-outline-primary" id="btn_go">Go</button>
-                           </div>
-                       </div>
-                    {% endif %}
-            </form>
              </div>
 
           <div class="row col-md-12 mb-3 mt-3">
-            <div class="table-responsive">
+            <div class="table-responsive" id="exporttable1">
             <table  content="Total Results"
                    data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year }}"
-                   class="table table-hover table-striped table_to_export" >
+                   class="table table-hover table-striped" >
               <thead>
               <tr>
-                <th  content="Partner">Partner</th>
-                 <th content="Target">Target</th>
-                <th content="Total">Total <i class="fa fa-question-circle-o"></i>
-                </th>
+                 <th content="Partner">Partner</th>
+                 <th content="Target">Target by Partner</th>
+                 <th content="Total">Total</th>
                 <th content="Status">Status</th>
                 {% for month, month_name in months %}
                 <th content="{{ month_name }}"><span>{{ month_name }}</span></th>
@@ -152,22 +152,16 @@
               </tr>
               </thead>
               <tbody>
-              {% for partner in partners %}
+                {% for partner in partners %}
+                {% get_indicator_partner_cumulative indicator  partner.partner_id selected_governorate as cumulative_value %}
+                {% to_display_indicator selected_filters cumulative_value as display_indicator %}
+                {% if display_indicator %}
               <tr>
                 <td>{{ partner.partner_label }}</td>
-                  <td class="w-10">
-                  {% if indicator.measurement_type == 'percentage' %}
-                  {{ indicator.target }}%
-                  {% else %}
-                  {{ indicator.target|number_format }}
-                  {% endif %}
+                  <td class="w-20">
+                 0
                 </td>
                 <td class="w-10 text-bold">
-                   {% if selected_sub_indicator %}
-                   {% get_indicators_partner_cumulative list_selected_sub  partner.partner_id selected_governorate as cumulative_value %}
-                   {% else %}
-                   {% get_indicator_partner_cumulative indicator  partner.partner_id selected_governorate as cumulative_value %}
-                   {% endif %}
                   {{ cumulative_value }}
                 </td>
                  <td class="w-10">
@@ -180,6 +174,7 @@
                 </td>
                 {% endfor %}
               </tr>
+                {% endif %}
               {% endfor %}
               </tbody>
             </table>
@@ -202,32 +197,85 @@
               </thead>
               <tbody>
               {% for gov in governorates %}
+              {% get_indicator_partner_cumulative indicator  partner.partner_id gov.location_adminlevel_governorate_code as cumulative_value %}
+               {% to_display_indicator selected_filters cumulative_value as display_indicator %}
+                {% if display_indicator %}
               <tr>
-                <td>{{ gov.location_adminlevel_governorate }}</td>
+                <td class="w-10">{{ gov.location_adminlevel_governorate }}</td>
                 <td class="w-10 text-bold" >
-                   {% get_indicator_partner_cumulative indicator  partner.partner_id gov.location_adminlevel_governorate_code as cumulative_value %}
+
                   {{ cumulative_value }}
                 </td>
                 {% for month, month_name in months %}
-                <td>
+                <td class="w-10">
                   {% get_indicator_value indicator month partner.partner_id gov.location_adminlevel_governorate_code as value %}
                   {{ value }}
                 </td>
                 {% endfor %}
               </tr>
+              {% endif %}
               {% endfor %}
               </tbody>
             </table>
              </div>
           </div>
+
+
           <div class="row col-md-12 mb-3" style="display:none;">
+
+               <table  content="Total Results"
+                   data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year }}"
+                   class="table table-hover table-striped table_to_export" >
+                 {% for indicator in indicators %}
+              <thead>
+              <tr>
+                <th content="" style="display:none">{{ indicator.name }}</th>
+                 <th content="Partner">Partner</th>
+                 <th content="Target">Target by Partner</th>
+                 <th content="Total">Total</th>
+                <th content="Status">Status</th>
+                {% for month, month_name in months %}
+                <th content="{{ month_name }}"><span>{{ month_name }}</span></th>
+                {% endfor %}
+              </tr>
+              </thead>
+              <tbody>
+                {% for partner in partners %}
+                {% get_indicator_partner_cumulative indicator partner.partner_id  as cumulative_value %}
+                {% to_display_indicator selected_filters cumulative_value as display_indicator %}
+              <tr>
+                <td style="display:none;"></td>
+                <td>{{ partner.partner_label }}</td>
+                  <td class="w-10">
+                 0
+                </td>
+                <td class="w-10 text-bold">
+                  {{ cumulative_value }}
+                </td>
+                 <td class="w-10">
+                  <div class='badge {{ indicator.status_color }}'>{{ indicator.status }}</div>
+                </td>
+                {% for month, month_name in months %}
+                <td class="w-10" >
+                  {% get_indicator_value indicator month partner.partner_id  as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+
+              {% endfor %}
+              </tbody>
+             {% endfor %}
+            </table>
             {% for gov in governorates %}
 
               <table class="table_to_export" id="table_{{  gov.location_adminlevel_governorate_code }}" content="{{ gov.location_adminlevel_governorate }}"
                    data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year }}"
                    class="table table-hover table-striped" >
+               {% for indicator in indicators %}
               <thead>
               <tr>
+                 <th content="" style="display:none">{{ indicator.name }}</th>
                 <th  content="Partner">Partner</th>
                 <th content="Total">Total <i class="fa fa-question-circle-o"></i>
                 </th>
@@ -239,13 +287,10 @@
               <tbody>
               {% for partner in partners %}
               <tr>
+                <td style="display:none;"></td>
                 <td>{{ partner.partner_label }}</td>
                 <td class="w-10 text-bold">
-                   {% if selected_sub_indicator %}
-                   {% get_indicators_partner_cumulative list_selected_sub  partner.partner_id  gov.location_adminlevel_governorate_code  as cumulative_value %}
-                   {% else %}
                    {% get_indicator_partner_cumulative indicator  partner.partner_id  gov.location_adminlevel_governorate_code  as cumulative_value %}
-                   {% endif %}
                   {{ cumulative_value }}
                 </td>
                 {% for month, month_name in months %}
@@ -257,7 +302,9 @@
               </tr>
               {% endfor %}
               </tbody>
+                {% endfor %}
             </table>
+
 
             {% endfor %}
           </div>
