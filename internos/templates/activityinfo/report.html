@@ -177,7 +177,7 @@
                   {{ item.name }}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">>
+                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
                     <i class="fa fa-users" aria-hidden="true" title=""></i>
                   </a>
                 </td>
@@ -212,8 +212,8 @@
               {% get_sub_indicators_data item.id as sub_indicators %}
               {% for item1 in sub_indicators %}
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
-                  {% if item1.master_indicator_sub %}style="background-color: #ca292940;"
-                  {% elif item.individual_indicator %}style="background-color:#2d2d2d;" {% endif %}>
+                  {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
+                  {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
 
                 <!--<td>{{ item1.id }}</td>-->
                 {% if item1.master_indicator_sub %}
@@ -239,14 +239,14 @@
                   {% endif %}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">>
+                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
                     <i class="fa fa-users" aria-hidden="true" title=""></i>
                   </a>
                 </td>
                 {% endif %}
                 <!--<td>Site</td>-->
                 <td class="w-10">{{ item1.awp_code }}</td>
-                <td class="w-10">{{ item1.target|number_format }}</td>
+                <td class="w-10"></td>
                 <td class="w-10">
                   {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
@@ -256,7 +256,7 @@
                   {{ achieved }}%
                 </td>
                 <td class="w-10">
-                  <div class='badge {{ item1.status_color }}'>{{ item1.status }}</div>
+                  <div class=></div>
 
                 </td>
                 {% for month, month_name in months %}
@@ -282,7 +282,7 @@
                   {% endif %}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">>
+                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
                     <i class="fa fa-users" aria-hidden="true" title=""></i>
                   </a>
                 </td>
@@ -296,7 +296,7 @@
                   {% endif %}
                   <a
                     href="{% url 'activityinfo:report_partner' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">>
+                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
                     <i class="fa fa-users" aria-hidden="true" title=""></i>
                   </a>
                 </td>
@@ -304,7 +304,7 @@
                 {% endif %}
                 <!--<td>Site</td>-->
                 <td class="w-10">{{ item2.awp_code }}</td>
-                <td class="w-10">{{ item2.target|number_format }}</td>
+                <td class="w-10"></td>
                 <td class="w-10">
                   {% get_indicator_cumulative_months item2 selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
@@ -314,7 +314,7 @@
                   {{ achieved }}%
                 </td>
                 <td class="w-10">
-                  <div class='badge {{ item1.status_color }}'>{{ item1.status }}</div>
+                  <div></div>
 
                 </td>
                 {% for month, month_name in months %}

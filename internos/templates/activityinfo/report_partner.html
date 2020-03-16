@@ -144,7 +144,7 @@
               <tr>
                  <th content="Partner">Partner</th>
                  <th content="Target">Target by Partner</th>
-                 <th content="Total">Total</th>
+                 <th content="Total">Total Results</th>
                 <th content="Status">Status</th>
                 {% for month, month_name in months %}
                 <th content="{{ month_name }}"><span>{{ month_name }}</span></th>
@@ -188,7 +188,7 @@
               <thead>
               <tr>
                 <th content="Governorate">Governorate</th>
-                <th content="Total">Total <i class="fa fa-question-circle-o"></i>
+                <th content="Total">Total Results
                 </th>
                 {% for month, month_name in months %}
                 <th content="{{ month_name }}">{{ month_name }}</th>
@@ -226,13 +226,13 @@
                <table  content="Total Results"
                    data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year }}"
                    class="table table-hover table-striped table_to_export" >
-                 {% for indicator in indicators %}
+
               <thead>
               <tr>
-                <th content="" style="display:none">{{ indicator.name }}</th>
+                <th content="">Indicator</th>
                  <th content="Partner">Partner</th>
                  <th content="Target">Target by Partner</th>
-                 <th content="Total">Total</th>
+                 <th content="Total">Total Results</th>
                 <th content="Status">Status</th>
                 {% for month, month_name in months %}
                 <th content="{{ month_name }}"><span>{{ month_name }}</span></th>
@@ -240,15 +240,14 @@
               </tr>
               </thead>
               <tbody>
+                {% for indicator in indicators %}
                 {% for partner in partners %}
                 {% get_indicator_partner_cumulative indicator partner.partner_id  as cumulative_value %}
                 {% to_display_indicator selected_filters cumulative_value as display_indicator %}
               <tr>
-                <td style="display:none;"></td>
+                <td >{{ indicator.name }}</td>
                 <td>{{ partner.partner_label }}</td>
-                  <td class="w-10">
-                 0
-                </td>
+                  <td class="w-10">0</td>
                 <td class="w-10 text-bold">
                   {{ cumulative_value }}
                 </td>
@@ -262,32 +261,32 @@
                 </td>
                 {% endfor %}
               </tr>
-
-              {% endfor %}
+              {% endfor %}  {% endfor %}
               </tbody>
-             {% endfor %}
             </table>
             {% for gov in governorates %}
 
               <table class="table_to_export" id="table_{{  gov.location_adminlevel_governorate_code }}" content="{{ gov.location_adminlevel_governorate }}"
                    data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year }}"
                    class="table table-hover table-striped" >
-               {% for indicator in indicators %}
+
               <thead>
               <tr>
-                 <th content="" style="display:none">{{ indicator.name }}</th>
+                 <th content="" >Indicator</th>
                 <th  content="Partner">Partner</th>
-                <th content="Total">Total <i class="fa fa-question-circle-o"></i>
+                <th content="Total">Total Results <i class="fa fa-question-circle-o"></i>
                 </th>
                 {% for month, month_name in months %}
                 <th content="{{ month_name }}"><span>{{ month_name }}</span></th>
                 {% endfor %}
               </tr>
               </thead>
+
               <tbody>
+                {% for indicator in indicators %}
               {% for partner in partners %}
               <tr>
-                <td style="display:none;"></td>
+                <td >{{ indicator.name }}</td>
                 <td>{{ partner.partner_label }}</td>
                 <td class="w-10 text-bold">
                    {% get_indicator_partner_cumulative indicator  partner.partner_id  gov.location_adminlevel_governorate_code  as cumulative_value %}
@@ -301,8 +300,9 @@
                 {% endfor %}
               </tr>
               {% endfor %}
+                 {% endfor %}
               </tbody>
-                {% endfor %}
+
             </table>
 
 

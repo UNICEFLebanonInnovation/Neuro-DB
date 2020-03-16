@@ -1077,6 +1077,7 @@ class ReportTagView(TemplateView):
                 database = Database.objects.filter(reporting_year__current=True).first()
 
         reporting_year = database.reporting_year
+
         report = ActivityReport.objects.filter(database=database)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
@@ -1084,16 +1085,26 @@ class ReportTagView(TemplateView):
         tags_gender = Indicator.objects.filter(activity__database__id__exact=database.id,
                                                tag_gender__isnull=False).exclude(is_sector=True).values(
             'tag_gender__name', 'tag_gender__label').distinct().order_by('tag_gender__sequence')
+
+        tags_gender_number = len(tags_gender)
+
+
         tags_nationality = Indicator.objects.filter(activity__database__id__exact=database.id,
                                                     tag_nationality__isnull=False).exclude(is_sector=True).values(
             'tag_nationality__name', 'tag_nationality__label').distinct().order_by('tag_nationality__sequence')
+
+        tags_nationality_number = len(tags_nationality)
+
         tags_age = Indicator.objects.filter(activity__database__id__exact=database.id,
-                                            tag_age__isnull=False).exclude(is_sector=True).values('tag_age__name',
-                                                                                                  'tag_age__label').distinct().order_by(
-            'tag_age__sequence')
+                                            tag_age__isnull=False).exclude(is_sector=True).values('tag_age__name', 'tag_age__label').distinct().order_by('tag_age__sequence')
+        tags_age_number = len(tags_age)
+
         tags_disability = Indicator.objects.filter(activity__database__id__exact=database.id,
                                                    tag_disability__isnull=False).exclude(is_sector=True).values(
             'tag_disability__name', 'tag_disability__label').distinct().order_by('tag_disability__sequence')
+
+        tags_disability_number = len(tags_disability)
+
 
         if selected_partner:
             try:
@@ -1222,8 +1233,12 @@ class ReportTagView(TemplateView):
             'none_ai_indicators': none_ai_indicators,
             'tags': tags,
             'tags_gender': tags_gender,
+            'tags_gender_number': tags_gender_number,
             'tags_nationality': tags_nationality,
+            'tags_nationality_number': tags_nationality_number,
+            'tags_age_number': tags_age_number,
             'tags_age': tags_age,
+            'tags_disability_number': tags_disability_number,
             'tags_disability': tags_disability,
             'gender_values': json.dumps(gender_values),
             'nationality_values': json.dumps(nationality_values),
@@ -1233,7 +1248,8 @@ class ReportTagView(TemplateView):
             'nationality_keys': json.dumps(nationality_calculation.keys()),
             'disability_keys': json.dumps(disability_calculation.keys()),
             'age_keys': json.dumps(age_calculation.keys()),
-            'reporting_year': str(reporting_year)
+            'reporting_year': str(reporting_year),
+            'current_month_name': datetime.datetime.now().strftime("%B")
         }
 
 
