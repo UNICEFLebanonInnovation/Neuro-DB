@@ -352,6 +352,7 @@ class IndicatorCategory(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class Indicator(models.Model):
 
     ai_id = models.PositiveIntegerField(blank=True, null=True)
@@ -597,10 +598,13 @@ class LiveActivityReport(TimeStampedModel):
     partner_label = models.CharField(max_length=250, blank=True, null=True)
     project_description = models.CharField(max_length=250, blank=True, null=True)
     project_label = models.CharField(max_length=250, blank=True, null=True)
+    project_start_date = models.DateField(blank=True, null=True)
+    project_end_date = models.DateField(blank=True, null=True)
     lcrp_appeal = models.CharField(max_length=250, blank=True, null=True)
     funded_by = models.CharField(max_length=250, blank=True, null=True)
     report_id = models.CharField(max_length=250, blank=True, null=True)
     site_id = models.CharField(max_length=250, blank=True, null=True)
+    site_type = models.CharField(max_length=250, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     outreach_platform = models.CharField(max_length=250, blank=True, null=True)
     database_id = models.CharField(max_length=250, blank=True, null=True)
