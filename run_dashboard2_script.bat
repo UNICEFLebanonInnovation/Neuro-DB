@@ -1,2 +1,0 @@
-python manage.py import_data_and_generate_monthly_report
-pause

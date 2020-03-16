@@ -94,9 +94,9 @@ def array_value(data, key):
 @register.filter(name='number_format')
 def number_format(value):
     try:
-        return "{:,}".format(value)
+       return"{:,}".format(int(value))
     except Exception:
-        return value
+       return value
 
 
 @register.assignment_tag
@@ -325,29 +325,29 @@ def get_indicator_partner_cumulative(indicator,partner=None,gov=None):
 def get_indicators_partner_cumulative(indicator,partner=None,gov=None):
 
     value = 0
-    # try:
-    for ind in indicator:
-        cumulative_values = ind['cumulative_values']
-        if partner and gov and not gov == '0':
-            cumulative_values = cumulative_values.get('partners_govs')
-            key = '{}-{}'.format(gov, partner)
-            if key in cumulative_values:
-                value += cumulative_values[key]
+    try:
+        for ind in indicator:
+            cumulative_values = ind['cumulative_values']
+            if partner and gov and not gov == '0':
+                cumulative_values = cumulative_values.get('partners_govs')
+                key = '{}-{}'.format(gov, partner)
+                if key in cumulative_values:
+                    value += cumulative_values[key]
 
-        if partner and 'partners' in cumulative_values:
-            cumulative_values = cumulative_values.get('partners')
-            print(cumulative_values)
-            if partner in cumulative_values:
-                value += cumulative_values[partner]
+            if partner and 'partners' in cumulative_values:
+                cumulative_values = cumulative_values.get('partners')
+                print(cumulative_values)
+                if partner in cumulative_values:
+                    value += cumulative_values[partner]
 
-        if gov and 'govs' in cumulative_values:
-            cumulative_values = cumulative_values.get('govs')
-            if gov in cumulative_values:
-                value += cumulative_values[gov]
+            if gov and 'govs' in cumulative_values:
+                cumulative_values = cumulative_values.get('govs')
+                if gov in cumulative_values:
+                    value += cumulative_values[gov]
+        return check_indicators_unit(indicator, value)
 
-    return check_indicators_unit(indicator, value)
-    # except Exception as ex:
-    #     print('error ' + ex.message)
+    except Exception as ex:
+        print('error ' + ex.message)
 
 
 @register.assignment_tag
