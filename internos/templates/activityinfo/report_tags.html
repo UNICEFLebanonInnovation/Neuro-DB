@@ -3,7 +3,7 @@
 {% load util_tags %}
 {% load static %}
 
-{% block project_title %}Neuro-DB{% endblock %}
+
 
 {% block content %}
 <style>
@@ -107,7 +107,7 @@
           Disaggregation of {{ database.label }} Dashboard - 2020
            <div class=" d-inline-block" data-intro="Download Dashboard report">
               <button type="button" tabindex="0" id="export1" style="font-size:20px;" class="mb-2 mr-2 btn btn-link" data-toggle="tooltip"
-                      title="download partner dashboard">
+                      title="download disaggregation  dashboard">
                 <i class="fa fa-download"></i></button>
             </div>
         </div>
@@ -135,14 +135,14 @@
               {% endif %}
             </tr>
             <tr>
-              <th class="w-150" content="ActivityInfo Indicators">Indicator Name</th>
-              <th class="w-10" content="RWP">RWP Code</th>
+              <th class="w-150" content="Indicator Name">Indicator Name</th>
+              <th class="w-10" content="RWP Code">RWP Code</th>
               <th class="w-10" content="Target" >Target</th>
-              <th class="w-10" content="Cumulative Results of All Months" data-toggle="tooltip" data-placement="top"
+              <th class="w-10" content="Cumulative Results" data-toggle="tooltip" data-placement="top"
                   title="Cumulative Results of All Months">
                 Cumulative Results <i class="fa fa-question-circle-o"></i>
               </th>
-              <th class="w-10" content="Total Percentage achieved of all months" data-toggle="tooltip"
+              <th class="w-10" content="Percentage Achieved" data-toggle="tooltip"
                   data-placement="top" title="Total Percentage achieved of all months">
                 Percentage Achieved <i class="fa fa-question-circle-o"></i>
               </th>
@@ -192,13 +192,18 @@
               {% for tag in tags_gender %}
               <td class="w-10">
                 {% get_indicator_tag_value item tag.tag_gender__name as value %}
+                 {{ value | number_format }}
+                <br/>
                 {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
+
               </td>
               {% endfor %}
 
               {% for tag in tags_nationality %}
               <td class="w-10">
                 {% get_indicator_tag_value item tag.tag_nationality__name as value %}
+                {{ value | number_format }}
+                <br/>
                 {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
               </td>
               {% endfor %}
@@ -206,6 +211,8 @@
               {% for tag in tags_age %}
               <td class="w-10">
                 {% get_indicator_tag_value item tag.tag_age__name as value %}
+                 {{ value | number_format }}
+                <br/>
                 {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
               </td>
               {% endfor %}
@@ -213,6 +220,8 @@
               {% for tag in tags_disability %}
               <td class="w-10">
                 {% get_indicator_tag_value item tag.tag_disability__name as value %}
+                 {{ value | number_format }}
+                <br/>
                 {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
               </td>
               {% endfor %}

@@ -94,9 +94,9 @@ def array_value(data, key):
 @register.filter(name='number_format')
 def number_format(value):
     try:
-        return "{:,}".format(value)
+       return"{:,}".format(int(value))
     except Exception:
-        return value
+       return value
 
 
 @register.assignment_tag
