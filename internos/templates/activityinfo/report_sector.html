@@ -170,7 +170,7 @@
                 </td>
                 {% endif %}
                 <!--<td>Site</td>-->
-                <td class="w-10">{{ item.awp_code }}</td>
+                <td class="w-10">{{ item.awp_sector_code }}</td>
                 <td class="w-10">
                   {% if item.measurement_type == 'percentage' %}
                   {{ item.target_sector }}%
@@ -235,7 +235,7 @@
                 </td>
                 {% endif %}
                 <!--<td>Site</td>-->
-                <td class="w-10">{{ item1.awp_code }}</td>
+                <td class="w-10">{{ item1.awp_sector_code }}</td>
                 <td class="w-10">{{ item1.target_sector|number_format }}</td>
                 <td class="w-10">
                   {% get_indicator_cumulative_sector item1 selected_months selected_partners selected_cadastral as cumulative_value %}
@@ -293,7 +293,7 @@
 
                 {% endif %}
                 <!--<td>Site</td>-->
-                <td class="w-10">{{ item2.awp_code }}</td>
+                <td class="w-10">{{ item2.awp_sector_code }}</td>
                 <td class="w-10">{{ item2.target_sector|number_format }}</td>
                 <td class="w-10">
                     {% get_indicator_cumulative_sector item2 selected_months selected_partners selected_cadastral as cumulative_value %}

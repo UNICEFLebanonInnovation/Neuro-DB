@@ -64,7 +64,7 @@
 
                <div class="row mb-1">
                  <div class="col-md-3">
-                   <div class="card-subtitle d-inline-block indicator_select_title">
+                   <div class="d-inline-block indicator_select_title">
                  <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Indicator  </div>
                  </div>
                  <div class="col-md-9">
@@ -101,12 +101,12 @@
               <input type="hidden" name="governorate" value="" id="governorateinput"/>
                  <input type="hidden" name="indicator_id" id="indicator_id" value="{{ indicator.id }}"/>
               <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-3" >
                   <div class="d-inline-block indicator_select_title">
                     <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Governorate
                   </div>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-9" style="maring-left:-1px">
                   <div class="dropdown d-inline-block">
                     <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown"
                             name="governorate"
@@ -131,14 +131,11 @@
                 </div>
               </div>
             </form>
-
-
              </div>
-
           <div class="row col-md-12 mb-3 mt-3">
             <div class="table-responsive" id="exporttable1">
             <table  content="Total Results"
-                   data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year }}"
+                   data-tableName="Dashboard - {{ database.label }} of {{ current_month }}- {{ database.reporting_year }}"
                    class="table table-hover table-striped" >
               <thead>
               <tr>
@@ -165,7 +162,7 @@
                   {{ cumulative_value }}
                 </td>
                  <td class="w-10">
-                  <div class='badge {{ indicator.status_color }}'>{{ indicator.status }}</div>
+                  <div class='badge badge-danger'>OFF TRACK</div>
                 </td>
                 {% for month, month_name in months %}
                 <td class="w-10" >
@@ -201,9 +198,8 @@
                {% to_display_indicator selected_filters cumulative_value as display_indicator %}
                 {% if display_indicator %}
               <tr>
-                <td class="w-10">{{ gov.location_adminlevel_governorate }}</td>
+                <td class="w-10" style="text-align:left">{{ gov.location_adminlevel_governorate }}</td>
                 <td class="w-10 text-bold" >
-
                   {{ cumulative_value }}
                 </td>
                 {% for month, month_name in months %}
@@ -224,7 +220,7 @@
           <div class="row col-md-12 mb-3" style="display:none;">
 
                <table  content="Total Results"
-                   data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year }}"
+                      data-tableName="Dashboard - {{ database.label }} of {{ current_month }}- {{ database.reporting_year }}"
                    class="table table-hover table-striped table_to_export" >
 
               <thead>
@@ -243,7 +239,8 @@
                 {% for indicator in indicators %}
                 {% for partner in partners %}
                 {% get_indicator_partner_cumulative indicator partner.partner_id  as cumulative_value %}
-                {% to_display_indicator selected_filters cumulative_value as display_indicator %}
+                {% to_display_indicator True cumulative_value as display_indicator %}
+                {% if display_indicator %}
               <tr>
                 <td >{{ indicator.name }}</td>
                 <td>{{ partner.partner_label }}</td>
@@ -252,7 +249,7 @@
                   {{ cumulative_value }}
                 </td>
                  <td class="w-10">
-                  <div class='badge {{ indicator.status_color }}'>{{ indicator.status }}</div>
+                <div class='badge badge-danger'>OFF TRACK</div>
                 </td>
                 {% for month, month_name in months %}
                 <td class="w-10" >
@@ -261,6 +258,7 @@
                 </td>
                 {% endfor %}
               </tr>
+                {% endif %}
               {% endfor %}  {% endfor %}
               </tbody>
             </table>
@@ -285,11 +283,14 @@
               <tbody>
                 {% for indicator in indicators %}
               {% for partner in partners %}
+                {% get_indicator_partner_cumulative indicator  partner.partner_id  gov.location_adminlevel_governorate_code  as cumulative_value %}
+                {% to_display_indicator True cumulative_value as display_indicator %}
+                {% if display_indicator %}
               <tr>
                 <td >{{ indicator.name }}</td>
                 <td>{{ partner.partner_label }}</td>
                 <td class="w-10 text-bold">
-                   {% get_indicator_partner_cumulative indicator  partner.partner_id  gov.location_adminlevel_governorate_code  as cumulative_value %}
+
                   {{ cumulative_value }}
                 </td>
                 {% for month, month_name in months %}
@@ -299,6 +300,7 @@
                 </td>
                 {% endfor %}
               </tr>
+                {% endif %}
               {% endfor %}
                  {% endfor %}
               </tbody>
@@ -327,7 +329,7 @@
 
 <script>
         var wbook;
-        var sheetName ='{{ database.label}}_{{ gov.location_adminlevel_governorate }}_Partners_Dashboard';
+        var sheetName ='{{ database.label}}_Partners_Dashboard of {{ current_month }}- {{ database.reporting_year }}';
        $("#export1").click(function(){
        var tables = document.getElementsByClassName("table_to_export");
         for (var i = 0; i < tables.length; i++) {
@@ -339,7 +341,12 @@
             wbook = XLSX.utils.table_to_book(table, {sheet:tableName});
           } else{
             wbook.SheetNames.push(tableName);
-            wbook.Sheets[tableName] =  XLSX.utils.table_to_sheet(table);
+            wbook.Sheets[tableName] =  XLSX.utils.table_to_sheet(table, {
+          ignoreHiddenRows: true,
+           ignoreHiddenCells: true
+          });
+            worksheet=wbook.Sheets[tableName];
+
           }
         }
        XLSX.writeFile(wbook,  sheetName.replace('&amp;',' and ') + '.xlsx');

@@ -107,13 +107,14 @@ def get_current_year():
 
 @register.assignment_tag
 def to_display_indicator(selected_filters, cumulative_result):
+
     if not selected_filters:
         return True
 
     if selected_filters and (cumulative_result == '0' or cumulative_result == 0):
         return False
 
-    return  True
+    return True
 
 @register.assignment_tag
 def check_indicators_unit(indicators,cumulative_value):
@@ -131,7 +132,6 @@ def check_indicators_unit(indicators,cumulative_value):
 def get_indicator_unit(indicator, value):
     if not value:
         return '0'
-
     if indicator['measurement_type'] == 'percentage' or indicator['measurement_type'] == 'percentage_x':
         value = "{:,}".format(round(value * 100, 1))
         return '{} {}'.format(value, '%')
@@ -140,6 +140,7 @@ def get_indicator_unit(indicator, value):
         return "{:,}".format(int(value))
 
     return "{:,}".format(round(value, 1))
+
 
 
 @register.assignment_tag
@@ -336,7 +337,6 @@ def get_indicators_partner_cumulative(indicator,partner=None,gov=None):
 
             if partner and 'partners' in cumulative_values:
                 cumulative_values = cumulative_values.get('partners')
-                print(cumulative_values)
                 if partner in cumulative_values:
                     value += cumulative_values[partner]
 
@@ -777,6 +777,66 @@ def get_indicator_hpm_data(ai_id, month=None):
         print(ex.message)
         return data
 
+@register.assignment_tag
+def get_hpm_indicators(db_id,month=None):
+    from internos.activityinfo.models import Indicator ,Database
+
+    db_indicators = {}
+    db = Database.objects.get(id=db_id)
+    indicators = Indicator.objects.filter(activity__database=db, hpm_indicator=True).order_by('sequence')
+    indicators = indicators.values(
+        'id',
+        'ai_id',
+        'name',
+        'units',
+        'target',
+        'target_sector',
+        'cumulative_values',
+        'measurement_type',
+        'values',
+    ).distinct()
+    indicators = list(indicators)
+    db_indicators[db.ai_id] = []
+    db_indicators[db.ai_id].append(indicators)
+
+    return db_indicators
+
+
+@register.assignment_tag
+def get_display_db(dict_indicators,db_id):
+
+    for key, value in dict_indicators.items():
+        if key == db_id:
+            for indicator in value:
+                if indicator:
+                    return True
+                else:
+                    return False
+
+@register.assignment_tag
+def get_hpm_cumulative(indicator, month):
+    value = 0
+    if month > 1:
+        for m in range(1, month):
+            if str(m) in indicator['values']:
+                value += float(indicator['values'][str(m)])
+    return get_indicator_unit(indicator, value)
+
+@register.assignment_tag
+def get_hpm_cumulative_change(indicator,month):
+    cumulative_value1 = 0
+    cumulative_value2 = 0
+    change_value = 0
+    if month > 1:
+        for m in range(1, month + 1):
+            if str(m) in indicator['values']:
+                cumulative_value1 += float(indicator['values'][str(m)])
+        for m in range(1, month):
+            if str(m) in indicator['values']:
+                cumulative_value2 += float(indicator['values'][str(m)])
+
+    change_value = cumulative_value1 - cumulative_value2
+    return get_indicator_unit(indicator, change_value)
 
 @register.assignment_tag
 def get_sub_indicators_data(ai_id, is_sector=False):
@@ -1017,7 +1077,7 @@ def get_indicator_tag_value(indicator, tag):
             value = values_tags[tag]
         return str(round(value)).replace('.0', '')
     except Exception as ex:
-        # print(ex)
+        print(ex)
         return 0
 
 

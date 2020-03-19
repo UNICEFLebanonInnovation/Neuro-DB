@@ -90,25 +90,25 @@
             <div class="d-inline-block dashboard_icons">
                 {% if display_live %}
               <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
-                 data-placement="top" title="Display live data monitoring" class="text-danger"
+                 data-placement="top" title="Live Data Monitoring" class="text-danger"
                  data-step="9" data-intro="Open live ActivityInfo Dashboard">
                 <i class="fa fa-rss faa-flash "></i>
               </a>
               {% endif%}
               <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
-                 data-placement="top" title="Display indicators data disaggregated" class="text-info">
+                 data-placement="top" title="Indicators Data Disaggregated" class="text-info">
                 <i class="fa fa-tags animated"></i>
               </a>
               <a class="disabled" href="#" data-toggle="tooltip" data-placement="top"
-                 title="Display reported indicators on map"
+                 title="Reported indicators on map"
                  style=" color:currentColor;cursor: not-allowed; opacity: 0.5;text-decoration: none;"
-                 data-step="15" data-intro="Display reported indicators on map">
+                 data-step="15" data-intro="Reported Indicators on Map">
                 <i class="fa fa-map"></i>
               </a>
               <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
-                 data-placement="top" title="Display disability report" class="text-warning"
+                 data-placement="top" title="Disability Report" class="text-warning"
                  style=" color:currentColor;cursor: not-allowed; opacity: 0.5;text-decoration: none;"
-                 data-step="16" data-intro="Display disability report">
+                 data-step="16" data-intro="Disability report">
                 <i class="fa fa-wheelchair"></i>
               </a>
             </div>
@@ -223,11 +223,7 @@
                   <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
                      data-placement="top" title="{{ item1.explication }}"></i>
                   {% endif %}
-                  <a
-                    href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                    target="_blank" class="text-info">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
+
                 </td>
                 {% else %}
                 <!-- <td class="w-100">{{ item1.ai_id }}</td>-->
@@ -237,11 +233,7 @@
                   <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
                      data-placement="top" title="{{ item1.explication }}"></i>
                   {% endif %}
-                  <a
-                    href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
+
                 </td>
                 {% endif %}
                 <!--<td>Site</td>-->
@@ -252,8 +244,8 @@
                   {{ cumulative_value }}
                 </td>
                 <td class="w-10">
-                  {% get_indicator_achieved item1 month selected_partners selected_governorates as achieved %}
-                  {{ achieved }}%
+<!--                  {% get_indicator_achieved item1 month selected_partners selected_governorates as achieved %}-->
+<!--                  {{ achieved }}%-->
                 </td>
                 <td class="w-10">
                   <div class=></div>
@@ -310,8 +302,8 @@
                   {{ cumulative_value }}
                 </td>
                 <td class="w-10">
-                  {% get_indicator_achieved item2 month selected_partners selected_governorates as achieved %}
-                  {{ achieved }}%
+<!--                  {% get_indicator_achieved item2 month selected_partners selected_governorates as achieved %}-->
+<!--                  {{ achieved }}%-->
                 </td>
                 <td class="w-10">
                   <div></div>
