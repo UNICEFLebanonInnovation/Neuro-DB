@@ -39,6 +39,8 @@ class Database(models.Model):
                              )
     name = models.CharField(max_length=254)
     label = models.CharField(max_length=254, null=True, blank=True)
+    hpm_label = models.CharField(max_length=254, null=True, blank=True)
+    hpm_sequence = models.PositiveIntegerField(default=0)
     username = models.CharField(max_length=254)
     password = models.CharField(max_length=254)
     focal_point = models.ForeignKey(
@@ -68,6 +70,7 @@ class Database(models.Model):
     is_funded_by_unicef = models.BooleanField(default=False)
     display = models.BooleanField(default=False)
     is_sector = models.BooleanField(default=False)
+
     reporting_year = models.ForeignKey(
         ReportingYear,
         blank=True,
@@ -369,8 +372,10 @@ class Indicator(models.Model):
     ai_indicator = models.CharField(max_length=250, blank=True, null=True)
     reporting_level = models.CharField(max_length=254, blank=True, null=True)
     awp_code = models.CharField(max_length=1500, blank=True, null=True, verbose_name='RWP')
+    awp_sector_code = models.CharField(max_length=1500, blank=True, null=True, verbose_name='RWP_Sector')
     target = models.PositiveIntegerField(default=0)
     target_sector = models.PositiveIntegerField(default=0)
+    target_hpm = models.PositiveIntegerField(default=0)
     target_sub_total = models.PositiveIntegerField(default=0)
     cumulative_results = models.PositiveIntegerField(default=0)
     units = models.CharField(max_length=254, blank=True, null=True)

@@ -367,7 +367,7 @@ a:hover{ text-decoration:none !important;}
    font-size: 13px;
    color: rgba(13,27,62,0.55);
    font-weight:bold;
-   text-transform: uppercase;
+
 
 }
 .sub_indicator_select_title{
@@ -375,7 +375,7 @@ a:hover{ text-decoration:none !important;}
    font-size: 13px;
    color: rgba(13,27,62,0.55);
    font-weight:bold;
-   text-transform: uppercase;
+
 }
 .text-bold{
   font-weight:bold;
@@ -403,4 +403,64 @@ padding-left:0px;
 .fontS_20{
 font-size:20px !important;
 }
+
+.table-scroll {
+  position: relative;
+  width:100%;
+  z-index: 1;
+  margin: auto;
+  overflow: auto;
+  height: 550px;
+}
+.table-scroll table {
+  width: 100%;
+  min-width: 900px;
+  margin: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.table-wrap {
+  position: relative;
+}
+.table-scroll th
+{
+  background: #fff;
+  vertical-align: center;
+}
+
+
+.table-scroll thead th {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+   background: white;
+	 box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+	 text-align:center;
+	 vertical-align:middle;
+}
+
+.table-scroll th:first-child {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+.table-scroll  thead tr:first-child th , thead tr:last-child th
+ {
+  z-index: 5;
+ }
+.table-scroll  thead tr:last-child th{
+   position: sticky;
+  top: 40px;
+  background: white;
+	 box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+	 text-align:center;
+	 vertical-align:middle;
+  z-index: 5;
+}
+.table-scroll table tbody tr th ,.table-scroll table tbody tr td {
+    background-color: #e0f3ff !important;
+    border-bottom:1px solid #fff;
+}
+
 

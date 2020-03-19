@@ -78,7 +78,6 @@ class ReportView(TemplateView):
     def get_context_data(self, **kwargs):
         selected_filter = False
         display_live = False
-        selected_partner = self.request.GET.get('partner', 0)
         selected_partners = self.request.GET.getlist('partners', [])
         selected_months = self.request.GET.getlist('s_months', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
@@ -102,27 +101,15 @@ class ReportView(TemplateView):
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
+
         reporting_year = database.reporting_year.name
         report = ActivityReport.objects.filter(database_id=database.ai_id)
 
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
-        if selected_partner:
-            try:
-                partner = Partner.objects.get(number=selected_partner)
-                if partner.partner_etools:
-                    partner_info = partner.detailed_info
-            except Exception as ex:
-                print(ex)
-                pass
-
         if selected_partners or selected_governorates or selected_months:
             selected_filter = True
-
-        # if selected_partner == '0' and selected_governorate == '0':
-        # if selected_partners == [] and selected_governorate == '0':
-        #     selected_filter = False
 
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code',
@@ -232,7 +219,7 @@ class ReportView(TemplateView):
             'database': database,
             'partners': partners,
             'governorates': governorates,
-            's_months':s_months,
+            's_months': s_months,
             'master_indicators': master_indicators,
             'partner_info': partner_info,
             'selected_filter': selected_filter,
@@ -416,7 +403,8 @@ class ReportPartnerView(TemplateView):
             'selected_indicator_name': selected_indicator_name,
             'list_selected_sub': list_selected_sub,
             'locations': locations,
-            'selected_filters': selected_filters
+            'selected_filters': selected_filters,
+            'current_month': datetime.datetime.now().strftime("%B")
 
         }
 
@@ -980,7 +968,7 @@ class ReportSectorView(TemplateView):
             'master_indicator_sub_sub',
             'individual_indicator',
             'explication',
-            'awp_code',
+            'awp_sector_code',
             'measurement_type',
             'units',
             'target',
@@ -994,6 +982,7 @@ class ReportSectorView(TemplateView):
             'values_partners_sector',
             'values_sites_sector',
             'values_sector',
+
         ).distinct()
 
         months = []
@@ -1044,15 +1033,19 @@ class ReportTagView(TemplateView):
 
     def get_context_data(self, **kwargs):
         from internos.activityinfo.templatetags.util_tags import get_indicator_tag_value
+
         selected_filter = False
-        selected_partner = self.request.GET.get('partner', 0)
+        current_year = date.today().year
+        current_month = date.today().month
+
         selected_partners = self.request.GET.getlist('partners', [])
+        selected_months = self.request.GET.getlist('s_months', [])
+        selected_governorates = self.request.GET.getlist('governorates', [])
+
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
-        selected_governorate = self.request.GET.get('governorate', 0)
-        selected_governorates = self.request.GET.get('governorates', 0)
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
-        partner_info = {}
+
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
@@ -1067,20 +1060,26 @@ class ReportTagView(TemplateView):
         ai_id = int(self.request.GET.get('ai_id', 0))
         tags = IndicatorTag.objects.all().order_by('sequence')
 
-        if ai_id:
-            database = Database.objects.get(ai_id=ai_id)
-        else:
-            try:
-                section = self.request.user.section
-                database = Database.objects.get(section=section, reporting_year__current=True)
-            except Exception:
-                database = Database.objects.filter(reporting_year__current=True).first()
-
-        reporting_year = database.reporting_year
-
+        database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year.name
         report = ActivityReport.objects.filter(database=database)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
+
+        if selected_partners or selected_governorates or selected_months:
+            selected_filter = True
+
+        partners = report.values('partner_label', 'partner_id').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
+
+        s_months = []
+        if int(reporting_year) == current_year:
+            for i in range(1, current_month+1):
+                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        else:
+            for i in range(1, 13):
+                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         tags_gender = Indicator.objects.filter(activity__database__id__exact=database.id,
                                                tag_gender__isnull=False).exclude(is_sector=True).values(
@@ -1105,24 +1104,6 @@ class ReportTagView(TemplateView):
 
         tags_disability_number = len(tags_disability)
 
-
-        if selected_partner:
-            try:
-                partner = Partner.objects.get(number=selected_partner)
-                if partner.partner_etools:
-                    partner_info = partner.detailed_info
-            except Exception as ex:
-                print(ex)
-                pass
-
-        # if selected_partner or selected_governorate:
-        if selected_partners or selected_governorate:
-            selected_filter = True
-
-        # if selected_partner == '0' and selected_governorate == '0':
-        if selected_partners == [] and selected_governorate == '0':
-            selected_filter = False
-
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
@@ -1131,8 +1112,6 @@ class ReportTagView(TemplateView):
             'sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
-
-        none_ai_indicators = Indicator.objects.filter(activity__none_ai_database=database).exclude(is_sector=True)
 
         master_indicators = master_indicators.values(
             'id',
@@ -1207,30 +1186,29 @@ class ReportTagView(TemplateView):
         for key, value in age_calculation.items():
             age_values.append({"label": key, "value": value})
 
-        months = []
-        for i in range(1, 13):
-            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        # months = []
+        # for i in range(1, 13):
+        #     months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         return {
-            'selected_partner': selected_partner,
-            'selected_partners': selected_partners,
+
+             'selected_partners': selected_partners,
             'selected_partner_name': selected_partner_name,
-            'selected_governorate': selected_governorate,
             'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
+            'selected_months': selected_months,
             'reports': report.order_by('id'),
             'month': month,
             'year': today.year,
             'month_name': month_name,
             'month_number': month_number,
-            'months': months,
+            # 'months': months,
             'database': database,
             'partners': partners,
             'governorates': governorates,
+            's_months':s_months,
             'master_indicators': master_indicators,
-            'partner_info': partner_info,
             'selected_filter': selected_filter,
-            'none_ai_indicators': none_ai_indicators,
             'tags': tags,
             'tags_gender': tags_gender,
             'tags_gender_number': tags_gender_number,
@@ -1358,33 +1336,32 @@ class HPMView(TemplateView):
     template_name = 'activityinfo/hpm.html'
 
     def get_context_data(self, **kwargs):
-        today = datetime.date.today()
-        # first = today.replace(day=1)
-        # last_month = first - datetime.timedelta(days=1)
-        # day_number = int(today.strftime("%d"))
-        # month = int(self.request.GET.get('month', last_month.strftime("%m")))
-        month = int(self.request.GET.get('month', int(today.strftime("%m")) - 1))
+
+
+        current_month = date.today().month
+        month = int(self.request.GET.get('month', 0))
+        if month == 0:
+            month = current_month
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
-        month = date.today().month
         month_name = calendar.month_name[month]
-        # if day_number < 15:
-        #     month = month - 1
+        current_year = date.today().year
 
-        database = Database.objects.all()
-
-        report = ActivityReport.objects.filter(database_id=database.ai_id)
-
-        indicators = Indicator.objects.filter(activity__database=database).order_by('sequence')
+        databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('label')
 
         months = []
-        for i in range(1, 13):
-            months.append({
-                'month': i,
-                'month_name': (datetime.date(2008, i, 1).strftime('%B'))
-            })
+        if int(reporting_year) == current_year:
+            if current_month == 1:
+                months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
+            if current_month > 2:
+                for i in range(1, current_month + 1):
+                    months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        else:
+            for i in range(1, 13):
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         return {
+            'ai_databases': databases,
             'month_name': month_name,
             'month': month,
             'months': months,

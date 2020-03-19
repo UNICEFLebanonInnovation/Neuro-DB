@@ -427,6 +427,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'tag_disability',
                 'tag_programme',
                 'hpm_indicator',
+                'hpm_target'
             ]
         }),
         ('Sub indicators', {
@@ -772,7 +773,12 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'mapped_db',
         'is_funded_by_unicef',
         'is_sector',
-        'display'
+        'display',
+        'hpm_sequence'
+    )
+    list_editable = (
+        'is_sector',
+        'hpm_sequence'
     )
     readonly_fields = (
         'description',
@@ -815,6 +821,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'db_id',
                 'name',
                 'label',
+                'hpm_label',
+                'hpm_sequence',
                 'username',
                 'password',
                 'section',
