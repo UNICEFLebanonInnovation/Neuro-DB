@@ -39,11 +39,6 @@
     <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
     <link href="{% static 'tellme/feedback.min.css' %}" rel="stylesheet">
     <style>
-        .site_title {
-            padding-left: 8px;
-            height: 65px;
-            padding-top: 6px;
-        }
 
         #toTop {
             position: fixed;
@@ -73,16 +68,9 @@
     <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
         <div class="app-header header-shadow">
             <div class="app-header__logo">
-                <!--                <div class="logo-src"></div>-->
-                <a href="/" class="site_title" data-step="1" data-intro="Go to home page">
-                    <img src="{% static 'images/logo_inverse.png' %}" height="55" width="55" alt="Neuro-DB-logo" />
+                <a href="/" class="logo-src" data-step="1" data-intro="Go to home page" >
+                    <img src="{% static 'images/logo2.png' %}" width="160" height="40" alt="Neuro-DB-logo" />
                 </a>
-                <span style="font-size: 1.1rem; text-transform: uppercase;
-margin: .75rem 0;
-font-weight: bold;
-color: #3f6ad8;
-white-space: nowrap;
-position: relative;">Neuro-DB</span>
                 <div class="header__pane ml-auto">
                     <div>
                         <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
