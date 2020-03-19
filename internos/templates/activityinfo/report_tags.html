@@ -226,7 +226,7 @@
                 {% get_indicator_tag_value item tag.tag_gender__name as value %}
                  {{ value | number_format }}
                 <br/>
-                {% if tem.cumulative_values.months %}
+                {% if item.cumulative_values.months %}
                {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
                 {% endif %}
               </td>
@@ -237,7 +237,7 @@
                 {% get_indicator_tag_value item tag.tag_nationality__name as value %}
                 {{ value | number_format }}
                 <br/>
-             {% if tem.cumulative_values.months %}
+             {% if item.cumulative_values.months %}
                {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
                 {% endif %}
               </td>
@@ -248,7 +248,7 @@
                 {% get_indicator_tag_value item tag.tag_age__name as value %}
                  {{ value | number_format }}
                 <br/>
-              {% if tem.cumulative_values.months %}
+              {% if item.cumulative_values.months %}
                {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
                 {% endif %}
               </td>
@@ -259,7 +259,7 @@
                 {% get_indicator_tag_value item tag.tag_disability__name as value %}
                  {{ value | number_format }}
                 <br/>
-               {% if tem.cumulative_values.months %}
+                {% if item.cumulative_values.months %}
                {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
                 {% endif %}
               </td>
