@@ -427,7 +427,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'tag_disability',
                 'tag_programme',
                 'hpm_indicator',
-                'hpm_target'
+                'target_hpm'
             ]
         }),
         ('Sub indicators', {
