@@ -130,7 +130,7 @@ def add_rows(ai_db=None, model=None):
                 indicator_name=unicode(row['Quantity.Field'], errors='replace'),
                 indicator_awp_code=get_awp_code(unicode(row['Quantity.Field'], errors='replace')),
                 month_name=row['month'] if 'month' in row else '',
-                partner_label=partner_label,
+                partner_label=partner_label.replace('-','_'),
                 location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
                 location_adminlevel_caza=unicode(row['caza.name'], errors='replace') if 'caza.name' in row else '',
                 form=unicode(row['Form'], errors='replace') if 'Form' in row else '',
@@ -514,6 +514,7 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
             #         values_gov[c_key] = c_value
 
             for key, value in values1.items():
+
                 keys = key.split('-')
                 gov = keys[1]
                 if gov in values_gov:

@@ -86,7 +86,7 @@
               <a href="#" class="expanded-all"><i
                 class="fa fa-bars"></i></a>
             </span>
-            Dashboard - {{ database.label }} - {{reporting_year}}
+            Dashboard - {{ database.label }}|{{reporting_year}}
             <div class="d-inline-block dashboard_icons">
                 {% if display_live %}
               <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"

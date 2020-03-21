@@ -362,6 +362,7 @@ class Indicator(models.Model):
     activity = models.ForeignKey(Activity)
     name = models.CharField(max_length=5000)
     label = models.CharField(max_length=5000, blank=True, null=True)
+    hpm_label = models.CharField(max_length=5000, blank=True, null=True)
     description = models.CharField(max_length=1500, blank=True, null=True)
     explication = models.TextField(blank=True, null=True)
     list_header = models.CharField(max_length=250, blank=True, null=True)

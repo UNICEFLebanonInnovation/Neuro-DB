@@ -396,6 +396,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'awp_code',
                 'name',
                 'label',
+                'hpm_label',
                 'description',
                 'explication',
                 'activity',
