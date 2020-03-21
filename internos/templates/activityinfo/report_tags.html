@@ -136,7 +136,7 @@
           <i class="fa fa-fw icon-gradient  bg-malibu-beach" aria-hidden="true"></i>
           </i>
 
-          Disaggregation of {{ database.label }} AI Results - {{ reporting_year }}
+          Disaggregation of {{ database.label }} AI Results | {{ reporting_year }}
            <div class=" d-inline-block" data-intro="Download Dashboard report">
               <button type="button" tabindex="0" id="export1" style="font-size:20px;" class="mb-2 mr-2 btn btn-link" data-toggle="tooltip"
                       title="download disaggregation  dashboard">
@@ -150,20 +150,20 @@
                  data-tableName="Dashboard - {{ database.label }} - {{ reporting_year}}">
             <thead>
             <tr>
-              <th colspan="6">
+              <th  content="Indicator Information" colspan="6" >
                 Indicator Information
               </th>
               {% if tags_gender %}
-              <th colspan="{{ tags_gender_number }}">Gender</th>
+              <th content="Gender" colspan="{{ tags_gender_number }}">Gender</th>
               {% endif %}
               {% if tags_nationality %}
-              <th colspan="{{ tags_nationality_number }}">Nationalities</th>
+              <th content="Nationalities" colspan="{{ tags_nationality_number }}">Nationalities</th>
               {% endif %}
               {% if tags_age %}
-              <th colspan="{{ tags_age_number }}">Age Groups</th>
+              <th colspan="{{ tags_age_number }}" content="Age Groups">Age Groups</th>
               {% endif %}
               {% if tags_disability %}
-              <th colspan="{{ tags_disability_number }}">Disabilities</th>
+              <th colspan="{{ tags_disability_number }}" content="Disabilities">Disabilities</th>
               {% endif %}
             </tr>
             <tr>
@@ -280,11 +280,11 @@
 
 {% block extra_js %}
   <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
-  <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+<!--  <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>-->
   <script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>
 
-  <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
-  <script type="text/javascript" src="{% static 'js/d3.chart.js' %}"></script>
+<!--  <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>-->
+<!--  <script type="text/javascript" src="{% static 'js/d3.chart.js' %}"></script>-->
 
   <script>
 
@@ -388,8 +388,22 @@ function export_table_to_csv(html, filename) {
     for (var i = 0; i < rows_header.length; i++) {
 		var row = [], cols = rows_header[i].querySelectorAll("th");
 
-        for (var j = 0; j < cols.length; j++)
+        for (var j = 0; j < cols.length; j++){
+         var matches = $(cols[j]).attr('content').match(/\d+/g);
+          if (matches != null) {
+              var value= "'" + $(cols[j]).attr('content') + "'";
+            row.push(value);
+            } else{
             row.push($(cols[j]).attr('content'));
+          }
+         if($(cols[j]).attr('colspan') ){
+          var num = $(cols[j]).attr('colspan');
+          for( var c=1; c<num ; c++ ){
+              row.push('');
+           }
+        }
+
+        }
 
     csv.push(row.join(","));
 	}

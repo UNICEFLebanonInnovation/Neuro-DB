@@ -363,7 +363,7 @@ a:hover{ text-decoration:none !important;}
   text-align:center;
   }
 .indicator_select_title{
-   vertical-align:top;
+   vertical-align:middle;
    font-size: 13px;
    color: rgba(13,27,62,0.55);
    font-weight:bold;
@@ -391,11 +391,11 @@ padding : 3px 10px
     margin-top:-7px;
     padding: 3px 9px;
 }
-#indicator_form .col-md-3 , #govform .col-md-3 {
+#indicator_form .col-md-2 , #govform .col-md-3 {
 padding-right:0px;
 padding-left:10px;
 }
-#indicator_form .col-md-9 ,#govform .col-md-9{
+#indicator_form .col-md-10 ,#govform .col-md-9{
 padding-right:0px;
 padding-left:0px;
 
@@ -468,4 +468,7 @@ font-size:20px !important;
 background: none !important;
 width:160px !important;
  height:40px !important;
+}
+.card-title{
+text-transform:none !important;
 }

@@ -12,36 +12,9 @@
   <div class="app-page-title">
     <div class="page-title-wrapper">
         <div class="page-title-heading" data-step="4" >
-          <div class="page-title-icon">
-            <i class="fa fa-fw icon-gradient bg-malibu-beach"  aria-hidden="true"></i>
-            </i>
-          </div>
-          <div style="font-weight:bold">
-         ActivityInfo Results by Partners
-          </div>
+
         </div>
       <div class="page-title-actions">
-        <div class="d-inline-block" data-step="5"
-             data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
-          <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
-            <br />
-            email: {{ database.focal_point.email }} " data-placement="bottom" data-html="true"
-                  class="btn-shadow mr-3 btn btn-outline-primary">
-            <i class="fa fa-user"></i>
-          </button>
-
-          <a class="btn shadow mr-3 btn-outline-dark"
-             href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database"
-             data-toggle="tooltip" data-placement="bottom" title="Send email to the database focal point">
-            <i class="fa fa-envelope"></i>
-          </a>
-
-          <a class="btn shadow mr-3 btn-outline-warning" href="javascript:void(0);"
-             onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip"
-             data-placement="bottom" title="Show me some tips">
-            <i class="fa fa-lightbulb" aria-hidden="true"></i>
-          </a>
-        </div>
       </div>
     </div>
   </div>
@@ -51,7 +24,7 @@
       <div class="main-card mb-3 card">
         <div class="card-body">
           <div class="card-title">
-            Partners Results of {{ database.label }} / {{ database.reporting_year }}
+           ActivityInfo Results by Partners | {{ database.label }} | {{ database.reporting_year }}
             <div class=" d-inline-block" data-intro="Download Dashboard report">
               <button type="button" tabindex="0" id="export1" style="font-size:20px;" class="mb-2 mr-2 btn btn-link" data-toggle="tooltip"
                       title="download partner dashboard">
@@ -63,11 +36,11 @@
               <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
 
                <div class="row mb-1">
-                 <div class="col-md-3">
+                 <div class="col-md-2">
                    <div class="d-inline-block indicator_select_title">
-                 <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Indicator  </div>
+                 <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Indicator:  </div>
                  </div>
-                 <div class="col-md-9">
+                 <div class="col-md-10">
                     <select class="d-inline-block select2" id="indicators" style="display:inline-block !important" data-style="btn-primary"
                         data-live-search="true" name="indicator_id">
                   {% for item in indicators %}
@@ -96,46 +69,47 @@
 <!--                       </div>-->
 <!--                    {% endif %}-->
             </form>
-               <form action="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}" method="get" id="govform">
-              <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
-              <input type="hidden" name="governorate" value="" id="governorateinput"/>
-                 <input type="hidden" name="indicator_id" id="indicator_id" value="{{ indicator.id }}"/>
-              <div class="row">
-                <div class="col-md-3" >
-                  <div class="d-inline-block indicator_select_title">
-                    <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Governorate
-                  </div>
-                </div>
-                <div class="col-md-9" style="maring-left:-1px">
-                  <div class="dropdown d-inline-block">
-                    <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown"
-                            name="governorate"
-                            id="filter_govs" style="min-width:150px;"
-                            class="mb-2 dropdown-toggle btn btn-outline-primary">{{selected_governorate_name}}
-                    </button>
-                    <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu governorates-drp">
-                      <a class="dropdown-item" data-value="0" href=""> All Governorate</a>
-                      {% for gov in governorates %}
-                      <a value="{{ gov.location_adminlevel_governorate_code }}"
-                         onclick="selectGov('{{gov.location_adminlevel_governorate_code}}')"
-                         {% if gov.location_adminlevel_governorate_code == selected_governorate %} class="dropdown-item active"
-                         {% else %}class="dropdown-item" {% endif %}>
-                        {{ gov.location_adminlevel_governorate }}</a>
-                      {% endfor %}
-                    </div>
-                    <a
-                      href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ indicator.id }}"
-                      title="Cancel"
-                      class="btn btn-light d-inline-block" id="btn_cancel"><i class="fa fa-fw" aria-hidden="true"></i></a>
-                  </div>
-                </div>
-              </div>
-            </form>
+
+<!--               <form action="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}" method="get" id="govform">-->
+<!--              <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>-->
+<!--              <input type="hidden" name="governorate" value="" id="governorateinput"/>-->
+<!--                 <input type="hidden" name="indicator_id" id="indicator_id" value="{{ indicator.id }}"/>-->
+<!--              <div class="row">-->
+<!--                <div class="col-md-3" >-->
+<!--                  <div class="d-inline-block indicator_select_title">-->
+<!--                    <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Governorate-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--                <div class="col-md-9" style="maring-left:-1px">-->
+<!--                  <div class="dropdown d-inline-block">-->
+<!--                    <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown"-->
+<!--                            name="governorate"-->
+<!--                            id="filter_govs" style="min-width:150px;"-->
+<!--                            class="mb-2 dropdown-toggle btn btn-outline-primary">{{selected_governorate_name}}-->
+<!--                    </button>-->
+<!--                    <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu governorates-drp">-->
+<!--                      <a class="dropdown-item" data-value="0" href=""> All Governorate</a>-->
+<!--                      {% for gov in governorates %}-->
+<!--                      <a value="{{ gov.location_adminlevel_governorate_code }}"-->
+<!--                         onclick="selectGov('{{gov.location_adminlevel_governorate_code}}')"-->
+<!--                         {% if gov.location_adminlevel_governorate_code == selected_governorate %} class="dropdown-item active"-->
+<!--                         {% else %}class="dropdown-item" {% endif %}>-->
+<!--                        {{ gov.location_adminlevel_governorate }}</a>-->
+<!--                      {% endfor %}-->
+<!--                    </div>-->
+<!--                    <a-->
+<!--                      href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ indicator.id }}"-->
+<!--                      title="Cancel"-->
+<!--                      class="btn btn-light d-inline-block" id="btn_cancel"><i class="fa fa-fw" aria-hidden="true"></i></a>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </form>-->
              </div>
           <div class="row col-md-12 mb-3 mt-3">
             <div class="table-responsive" id="exporttable1">
             <table  content="Total Results"
-                   data-tableName="Dashboard - {{ database.label }} of {{ current_month }}- {{ database.reporting_year }}"
+                   data-tableName=" ActivityInfo Results by Partners | {{ database.label }} | {{ current_month }} {{ database.reporting_year }}"
                    class="table table-hover table-striped" >
               <thead>
               <tr>
@@ -150,8 +124,8 @@
               </thead>
               <tbody>
                 {% for partner in partners %}
-                {% get_indicator_partner_cumulative indicator  partner.partner_id selected_governorate as cumulative_value %}
-                {% to_display_indicator selected_filters cumulative_value as display_indicator %}
+                 {% get_indicator_partner_cumulative indicator  partner.partner_id  as cumulative_value %}
+                 {% to_display_indicator True cumulative_value as display_indicator %}
                 {% if display_indicator %}
               <tr>
                 <td>{{ partner.partner_label }}</td>
@@ -166,54 +140,16 @@
                 </td>
                 {% for month, month_name in months %}
                 <td class="w-10" >
-                  {% get_indicator_value indicator month partner.partner_id selected_governorate as value %}
+                  {% get_indicator_value indicator month partner.partner_id  as value %}
                   {{ value }}
                 </td>
                 {% endfor %}
               </tr>
-                {% endif %}
+            {% endif %}
               {% endfor %}
               </tbody>
             </table>
           </div>
-          </div>
-          <div class="row col-md-12 mb-3">
-             <div class="table-responsive">
-            <table id="exporttable2"
-                   data-tableName="Dashboard - {{ database.label }} - {{reporting_year}}"
-                   class="table table-striped table-hover" >
-              <thead>
-              <tr>
-                <th content="Governorate">Governorate</th>
-                <th content="Total">Total Results
-                </th>
-                {% for month, month_name in months %}
-                <th content="{{ month_name }}">{{ month_name }}</th>
-                {% endfor %}
-              </tr>
-              </thead>
-              <tbody>
-              {% for gov in governorates %}
-              {% get_indicator_partner_cumulative indicator  partner.partner_id gov.location_adminlevel_governorate_code as cumulative_value %}
-               {% to_display_indicator selected_filters cumulative_value as display_indicator %}
-                {% if display_indicator %}
-              <tr>
-                <td class="w-10" style="text-align:left">{{ gov.location_adminlevel_governorate }}</td>
-                <td class="w-10 text-bold" >
-                  {{ cumulative_value }}
-                </td>
-                {% for month, month_name in months %}
-                <td class="w-10">
-                  {% get_indicator_value indicator month partner.partner_id gov.location_adminlevel_governorate_code as value %}
-                  {{ value }}
-                </td>
-                {% endfor %}
-              </tr>
-              {% endif %}
-              {% endfor %}
-              </tbody>
-            </table>
-             </div>
           </div>
 
 
@@ -312,6 +248,52 @@
           </div>
 
         </div>
+      </div>
+      <div class="main-card mb-3 card">
+         <div class="card-body">
+         <div class="card-title" style="text-transform: none;">
+             The Selected Indicator and Its Activities Were Implemented In The Following Governorates:
+          </div>
+               <div class="row col-md-12 mb-3">
+             <div class="table-responsive">
+            <table id="exporttable2"
+                   data-tableName="Dashboard - {{ database.label }} - {{reporting_year}}"
+                   class="table table-striped table-hover" >
+              <thead>
+              <tr>
+                <th content="Governorate">Governorate</th>
+                <th content="Total">Total Results
+                </th>
+                {% for month, month_name in months %}
+                <th content="{{ month_name }}">{{ month_name }}</th>
+                {% endfor %}
+              </tr>
+              </thead>
+              <tbody>
+              {% for gov in governorates %}
+              {% get_indicator_partner_cumulative indicator  partner.partner_id gov.location_adminlevel_governorate_code as cumulative_value %}
+               {% to_display_indicator selected_filters cumulative_value as display_indicator %}
+                {% if display_indicator %}
+              <tr>
+                <td class="w-10" style="text-align:left">{{ gov.location_adminlevel_governorate }}</td>
+                <td class="w-10 text-bold" >
+                  {{ cumulative_value }}
+                </td>
+                {% for month, month_name in months %}
+                <td class="w-10">
+                  {% get_indicator_value indicator month partner.partner_id gov.location_adminlevel_governorate_code as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+              {% endif %}
+              {% endfor %}
+              </tbody>
+            </table>
+             </div>
+          </div>
+
+         </div>
       </div>
     </div>
   </div>
