@@ -116,8 +116,9 @@ def to_display_indicator(selected_filters, cumulative_result):
 
     return True
 
+
 @register.assignment_tag
-def check_indicators_unit(indicators,cumulative_value):
+def check_indicators_unit(indicators, cumulative_value):
     if not cumulative_value:
         return '0'
     for indicator in indicators:
@@ -128,11 +129,15 @@ def check_indicators_unit(indicators,cumulative_value):
 
     return "{:,}".format(0)
 
+
 @register.assignment_tag
 def get_indicator_unit(indicator, value):
     if not value:
         return '0'
-    if indicator['measurement_type'] == 'percentage' or indicator['measurement_type'] == 'percentage_x':
+    if indicator['measurement_type'] == 'percentage':
+        return '{} {}'.format(round(value, 1), '%')
+
+    if indicator['measurement_type'] == 'percentage_x':
         value = "{:,}".format(round(value * 100, 1))
         return '{} {}'.format(value, '%')
 
@@ -140,7 +145,6 @@ def get_indicator_unit(indicator, value):
         return "{:,}".format(int(value))
 
     return "{:,}".format(round(value, 1))
-
 
 
 @register.assignment_tag
@@ -222,7 +226,7 @@ def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=Non
         value = 0
         cumulative_values = indicator['cumulative_values']
         if partner and gov and month:
-            cumulative_values = cumulative_values.get('partners_govs')
+            cumulative_values = cumulative_values.get('partners_govs')  # @todo variable not used
             for par in partner:
                 for g in gov:
                     for m in month:
@@ -240,7 +244,7 @@ def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=Non
             return get_indicator_unit(indicator, value)
 
         if partner and month and not gov:
-            cumulative_values = cumulative_values.get('partners')
+            cumulative_values = cumulative_values.get('partners')  # @todo variable not used
             if type(partner) == unicode:
                 for m in month:
                     key = "{}-{}".format(m, partner)
@@ -254,7 +258,7 @@ def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=Non
                 return get_indicator_unit(indicator, value)
 
         if gov and month and not partner:
-            cumulative_values = cumulative_values.get('govs')
+            cumulative_values = cumulative_values.get('govs')  # @todo variable not used
             if type(gov) == unicode:
                 for m in month:
                     key = "{}-{}".format(m, gov)
@@ -293,8 +297,9 @@ def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=Non
         return get_indicator_unit(indicator, 0)
 
     except Exception as ex:
-        print('error ' + ex.message)
+        # print('error ' + ex.message)
         return get_indicator_unit(indicator, 0)
+
 
 @register.assignment_tag
 def get_indicator_partner_cumulative(indicator,partner=None,gov=None):
@@ -319,8 +324,9 @@ def get_indicator_partner_cumulative(indicator,partner=None,gov=None):
                 value += cumulative_values[gov]
         return get_indicator_unit(indicator, value)
     except Exception as ex:
-        print('error ' + ex.message)
-    return get_indicator_unit(indicator, 0)
+        # print('error ' + ex.message)
+        return get_indicator_unit(indicator, 0)
+
 
 @register.assignment_tag
 def get_indicators_partner_cumulative(indicator,partner=None,gov=None):
@@ -347,7 +353,8 @@ def get_indicators_partner_cumulative(indicator,partner=None,gov=None):
         return check_indicators_unit(indicator, value)
 
     except Exception as ex:
-        print('error ' + ex.message)
+        # print('error ' + ex.message)
+        return 0
 
 
 @register.assignment_tag
@@ -774,11 +781,12 @@ def get_indicator_hpm_data(ai_id, month=None):
 
         return data
     except Exception as ex:
-        print(ex.message)
+        # print(ex.message)
         return data
 
+
 @register.assignment_tag
-def get_hpm_indicators(db_id,month=None):
+def get_hpm_indicators(db_id, month=None):  # @todo variable month not used
     from internos.activityinfo.models import Indicator ,Database
 
     db_indicators = {}
@@ -813,6 +821,7 @@ def get_display_db(dict_indicators,db_id):
                 else:
                     return False
 
+
 @register.assignment_tag
 def get_hpm_cumulative(indicator, month):
     value = 0
@@ -821,6 +830,7 @@ def get_hpm_cumulative(indicator, month):
             if str(m) in indicator['values']:
                 value += float(indicator['values'][str(m)])
     return get_indicator_unit(indicator, value)
+
 
 @register.assignment_tag
 def get_hpm_cumulative_change(indicator,month):
@@ -837,6 +847,7 @@ def get_hpm_cumulative_change(indicator,month):
 
     change_value = cumulative_value1 - cumulative_value2
     return get_indicator_unit(indicator, change_value)
+
 
 @register.assignment_tag
 def get_sub_indicators_data(ai_id, is_sector=False):
@@ -935,6 +946,7 @@ def get_sub_master_indicators_data(ai_id, is_sector=False):
         # print(ex)
         return indicators
 
+
 @register.assignment_tag
 def get_indicator_value(indicator, month=None, partner=None, gov=None):
     try:
@@ -983,6 +995,7 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
         # print(ex)
         return get_indicator_unit(indicator, 0)
 
+
 @register.assignment_tag
 def get_indicators_value(indicators, month=None, partner=None, gov=None):
     try:
@@ -1027,12 +1040,13 @@ def get_indicators_value(indicators, month=None, partner=None, gov=None):
                 key = "{}-{}".format(month, gov)
                 value += indicator, indicator['values_gov'][key]
             else:
-             value += indicator['values'][str(month)]
+                value += indicator['values'][str(month)]
 
         return check_indicators_unit(indicators, value)
     except Exception as ex:
         # print(ex)
         return check_indicators_unit(indicators, 0)
+
 
 @register.assignment_tag
 def get_indicator_value_sector(indicator, month=None, partner=None, site=None):
