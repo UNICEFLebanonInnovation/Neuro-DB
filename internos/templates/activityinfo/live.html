@@ -7,6 +7,7 @@
 <div class="app-main__inner">
   <div class="app-page-title">
       <div class="page-title-wrapper">
+         <form action="{% url 'activityinfo:live_report' %}" method="get">
         <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
         <div class="page-title-heading" data-step="4" data-intro="Filter options by partner or governorate">
           <div class="page-title-icon">
@@ -30,11 +31,16 @@
             </option>
             {% endfor %}
           </select>
-          <button type="submit" class="btn btn-primary mr-left-5">Search</button>
-          <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"
-             class="btn btn-light d-inline-block">Cancel</a>
+<!--          <button type="submit" class="btn btn-primary mr-left-5">Search</button>-->
+<!--          <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"-->
+<!--             class="btn btn-light d-inline-block">Cancel</a>-->
+
+           <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
+              <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}"title="Cancel"
+                 class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
         </div>
-        <div class="page-title-actions">
+         </form>
+           <div class="page-title-actions">
           <div class="d-inline-block" data-step="5"
                data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
             <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
@@ -62,7 +68,7 @@
     <div class="col-lg-12">
       <div class="main-card mb-3 card">
         <div class="card-body">
-           <div class="text-danger fsize-3 mb-3">
+           <div class="text-danger fsize-1 mb-1 mt-2">
             <i class="fa fa-fw" aria-hidden="true" title=""></i>
           These numbers are only for monitoring purposes, don't use it in any official report.
        </div>
@@ -85,20 +91,13 @@
                 <div tabindex="-1" class="dropdown-divider"></div>
                 <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
                    href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
-                  Sector Results
+                 Raw Data
                 </a>
                 <div tabindex="-1" class="dropdown-divider"></div>
               </div>
             </div>
           </div>
-          <div class="search-wrapper d-inline-block" style="position: absolute;" data-step="8"
-               data-intro="Search for a specific Indicator">
-            <div class="input-holder" id="searchdiv">
-              <input type="text" class="search-input" id="search-input" onkeyup="search()" placeholder="Type to search">
-              <button class="search-icon"><span></span></button>
-            </div>
-            <button class="close" id="close-search"></button>
-          </div>
+
           <div class="table-responsive" style="position: relative;overflow: scroll;height: 600px;">
             <table class="mb-0 table table-striped table-hover" id="exportheader"
                    content="{{ day_number }}_{{ month_number }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard - Live data.csv"
@@ -527,15 +526,15 @@ function search() {
   });
 
  $('#filter_partners').multiselect({
-    buttonWidth : '200px',
+    buttonWidth : '180px',
     includeSelectAllOption : true,
-		nonSelectedText: 'Select multiple partners',
+		nonSelectedText: 'Partners',
 		nSelectedText:'selected partners'
   });
  $('#filter_governorates').multiselect({
-    buttonWidth : '230px',
+    buttonWidth : '200px',
     includeSelectAllOption : true,
-		nonSelectedText: 'Select multiple governorates',
+		nonSelectedText: 'Governorates',
 		nSelectedText:'selected governorates'
   });
 
