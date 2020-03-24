@@ -802,6 +802,8 @@ def get_hpm_indicators(db_id, month=None):  # @todo variable month not used
         'cumulative_values',
         'measurement_type',
         'values',
+        'values_sector',
+        'cumulative_values_sector'
     ).distinct()
     indicators = list(indicators)
     db_indicators[db.ai_id] = []
@@ -831,6 +833,33 @@ def get_hpm_cumulative(indicator, month):
                 value += float(indicator['values'][str(m)])
     return get_indicator_unit(indicator, value)
 
+@register.assignment_tag
+def get_hpm_cumulative_sector(indicator, month):
+    value = 0
+    if month > 1:
+        for m in range(1, month):
+            if indicator['values_sector']:
+                if str(m) in indicator['values_sector']:
+                    value += float(indicator['values_sector'][str(m)])
+    return get_indicator_unit(indicator, value)
+
+@register.assignment_tag
+def get_hpm_cumulative_change_sector(indicator,month):
+    cumulative_value1 = 0
+    cumulative_value2 = 0
+    change_value = 0
+    if month > 1:
+        for m in range(1, month + 1):
+            if indicator['values_sector']:
+                if str(m) in indicator['values_sector']:
+                    cumulative_value1 += float(indicator['values_sector'][str(m)])
+        for m in range(1, month):
+            if indicator['values_sector']:
+                if str(m) in indicator['values_sector']:
+                    cumulative_value2 += float(indicator['values_sector'][str(m)])
+
+    change_value = cumulative_value1 - cumulative_value2
+    return get_indicator_unit(indicator, change_value)
 
 @register.assignment_tag
 def get_hpm_cumulative_change(indicator,month):
@@ -847,7 +876,6 @@ def get_hpm_cumulative_change(indicator,month):
 
     change_value = cumulative_value1 - cumulative_value2
     return get_indicator_unit(indicator, change_value)
-
 
 @register.assignment_tag
 def get_sub_indicators_data(ai_id, is_sector=False):

@@ -9,44 +9,52 @@
     <div class="page-title-wrapper">
        <div class="page-title-heading">
        <div class="page-title-icon">
-       <i class="pe-7s-menu icon-gradient bg-ripe-malin"> </i>
+       <i class="pe-7s-display2 icon-gradient bg-ripe-malin"> </i>
         </i>
       </div>
-      <div>
-        HPM Table – Data as of {{ month_name }} {{reporting_year}}
+      <div style="font-weight:bold">
+        HPM Table – Data as January to {{ month_name }} {{reporting_year}}
+        &nbsp; &nbsp;
+           <ul class="nav navbar-left d-inline-block"  data-step="6"
+                data-intro="Download Dashboard report and raw data">
+              <li class="dropdown">
+                <a id="drop"  class="dropdown-toggle" title="Download report"
+                   data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                  <i class="fa fa-download faa-bounce animated-hover" ></i>
+                  <span class="caret"></span>
+                </a>
+                <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
+                  {% for month, month_name in months %}
+                    <li role="presentation">
+                      <a role="menuitem" class="dropdown-item" tabindex="-1"
+                         href="{% url 'activityinfo:hpm_report' %}?month={{ month }}">
+                        {{ month_name }}
+                      </a>
+                  {% endfor %}
+                </ul>
+              </li>
+            </ul>
       </div>
       <div>
       </div>
   </div>
         <div class="page-title-actions">
-            <ul class="nav navbar-left d-inline-block"  data-step="6" data-intro="Download Dashboard report and raw data">
-              <li class="dropdown">
-                <a id="drop5" href="#"  class="dropdown-toggle" title="Download report"
-                   data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-                            <i class="fa fa-download faa-bounce animated-hover" ></i>
-                  <span class="caret"></span>
-                </a>
-                <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
-                  {% for item in months %}
+    <form action="{% url 'activityinfo:hpm' %}?rep_year={{ database.reporting_year }}" method="get" id="month_form">
+      <input type="hidden" name="month" value="" id="monthinput"/>
 
-                    <li role="presentation"><a role="menuitem" class="dropdown-item" tabindex="-1" href="{% url 'activityinfo:hpm_report' %}?month={{ item.month }}">{{ item.month_name }}</a>
-                  {% endfor %}
-                </ul>
-              </li>
-            </ul>
-         <a class="btn btn-outline-primary dropdown-toggle mb-2 mr-2" href="#" role="button" id="drop4"
-              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="fa fa-table faa-bounce animated-hover" style="font-size: 20px;"></i>
-              Select HPM report
-              <span class="caret"></span>
-            </a>
-            <div   id="menu1" class="dropdown-menu" aria-labelledby="drop5">
-              {% for item in months %}
-                <a class="dropdown-item" href="{% url 'activityinfo:hpm' %}?month={{ item.month }}">
-                  {{ item.month_name }}
-                </a>
-                {% endfor %}
+            <div class="dropdown d-inline-block">
+            <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" name="months" id="filter_month" style="min-width:150px;"
+                    class="mb-2 dropdown-toggle btn btn-outline-primary"> Select month
+            </button>
+            <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu months-drp">
+              <a class="dropdown-item" data-value="0" href=""> Select month</a>
+              {% for month,month_name in months %}
+              <a value="{{ month }}" onclick="selectmonth('{{month}}')" {% if month == selected_month %} class="dropdown-item active" {% else %}class="dropdown-item" {% endif %}>
+                {{ month_name }}</a>
+              {% endfor %}
             </div>
+            </div>
+    </form>
     </div>
   </div>
 </div>
@@ -55,10 +63,10 @@
     <div class="main-card mb-3 card">
         <div class="card-body">
         <div class="table-responsive" style="">
-            <table class="mb-0 table table-striped table-hover" id="hpm_exporttable1" >
+            <table class="mb-0 table table-striped " id="hpm_exporttable1" >
           <thead>
           <tr>
-            <th class="w-150" colspan="2" >SUMMARY OF PROGRAMME RESULTS – {{ month_name }} {{ reporting_year }} SITREP
+            <th class="w-150" colspan="2" >SUMMARY OF PROGRAMME RESULTS –January to {{ month_name }} {{ reporting_year }} SITREP
               – LEBANON
             </th>
             <th class="w-10">Sector Target</th>
@@ -70,654 +78,125 @@
           </tr>
           </thead>
           <tbody>
+
+          {% for db in ai_databases %}
+          {% get_hpm_indicators db.id as dict_indicators %}
+          {% get_display_db dict_indicators db.ai_id as display_db %}
+          {% if display_db %}
           <tr class="hpm-tr-header">
-            <td colspan="8">Education <sup>1</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="No figures are reported yet"></i>
-            </td>
+            <td colspan="8">{{ db.hpm_label }}</td>
           </tr>
+          {% for key , value in dict_indicators.items  %}
+            {% if key == db.ai_id %}
+              {% for indicator in value %}
+              {% if indicator %}
+              {% if db.label == 'Education' %}
+              {% get_indicator_hpm_data indicator.0.id month as value %}
+             {% get_hpm_cumulative_sector indicator.0 month as cumulative_value_sector_1 %}
           <tr>
             <td rowspan="3" width="w-150">
-              {% get_indicator_hpm_data 4325 month as value %}
-              <span style="display: none;">{{ value.id }}</span>
-              # of (Lebanese and non-Lebanese) girls and boys whose registration fees are covered by subsidies for
-              enrolment into formal education (2018/19 scholastic year)
+            {{ indicator.0.name }}
             </td>
             <td>Lebanese</td>
-            <td rowspan="3">497,171</td>
-            <td rowspan="3">n/a</td>
+            <td rowspan="3">{{ indicator.0.target_sector }}</td>
+            <td rowspan="3">{{ cumulative_value_sector_1 }}</td>
             <td>0</td>
-            <td>220,000</td>
-            <td>{{ value.lebanese }}</td>
+            <td>0</td>
+           <td>{{ value.lebanese }}</td>
             <td>{{ value.last_report_changes_lebanese }}</td>
           </tr>
           <tr>
             <td>Non-Lebanese</td>
+            <td>{{ indicator.0.target_sector }}</td>
             <td>0</td>
-            <td>230,000</td>
             <td>{{ value.non_lebanese }}</td>
             <td>{{ value.last_report_changes_non_lebanese }}</td>
           </tr>
           <tr>
             <td>Total</td>
             <td>0</td>
-            <td>450,000</td>
+            <td>{{ indicator.0.target }}</td>
             <td>{{ value.cumulative }}</td>
             <td>{{ value.last_report_changes }}</td>
           </tr>
-
+           {% get_indicator_hpm_data indicator.1.id month as value1 %}
+            {% get_hpm_cumulative_sector indicator.1 month as cumulative_value_sector_2 %}
           <tr>
             <td rowspan="4">
-              {% get_indicator_hpm_data 3985 month as value %}
-              <span style="display: none;">{{ value.id }}</span>
-              # of (Lebanese and non-Lebanese) girls and boys whose registration fees are covered by subsidies for
-              enrolment into non-formal education (NFE)
+            {{ indicator.1.name }}
             </td>
             <td>ALP</td>
-            <td rowspan="4">87,000</td>
-            <td rowspan="4">n/a</td>
+            <td rowspan="4">{{ indicator.1.target_sector }}</td>
+            <td rowspan="4">{{ cumulative_value_sector_2 }}</td>
             <td>0</td>
-            <td>20,000</td>
-            <td>{{ value.alp }}</td>
-            <td>{{ value.last_report_changes_alp }}</td>
+            <td>0</td>
+            <td>{{ value1.alp }}</td>
+            <td>{{ value1.last_report_changes_alp }}</td>
           </tr>
           <tr>
             <td>CB-ECE</td>
             <td>0</td>
-            <td>15,000</td>
-            <td>{{ value.cbece }}</td>
-            <td>{{ value.last_report_changes_cbece }}</td>
+            <td>0</td>
+            <td>{{ value1.cbece }}</td>
+            <td>{{ value1.last_report_changes_cbece }}</td>
           </tr>
           <tr>
             <td>BLN</td>
             <td>0</td>
-            <td>8,000</td>
-            <td>{{ value.bln }}</td>
-            <td>{{ value.last_report_changes_bln }}</td>
+            <td>0</td>
+             <td>{{ value1.bln }}</td>
+            <td>{{ value1.last_report_changes_bln }}</td>
           </tr>
           <tr>
             <td>Total</td>
             <td>0</td>
-            <td>43,000</td>
-            <td>{{ value.cumulative }}</td>
-            <td>{{ value.last_report_changes }}</td>
+            <td>{{ indicator.1.target }}</td>
+            <td>{{ value1.cumulative }}</td>
+            <td>{{ value1.last_report_changes }}</td>
           </tr>
+          {% else %}
+          {% for i in indicator %}
+              {% get_hpm_cumulative i month as cumulative_value %}
+              {% get_hpm_cumulative_change i month as change_value %}
+              {% get_hpm_cumulative_sector i month as cumulative_value_sector %}
+              {% get_hpm_cumulative_change_sector i month as change_value_sector %}
+            <tr>
+              <td colspan="2">{{ i.name }}</td>
+               <td>{{ i.target_sector }}</td>
+               <td>{{ cumulative_value_sector }} </td>
+               <td>{{ change_value_sector }}</td>
+               <td>{{i.target }}</td>
+               <td> {{ cumulative_value }}</td>
+               <td>{{ change_value }}</td>
+             </tr>
+          {% endfor %}
+          {% endif %}
 
-          <tr  class="hpm-tr-header">
-            <td colspan="8">Child Protection</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1789 month as value_1789 %}
-              <span style="display: none;">{{ value_1789.id }}</span>
-              # of girls and boys receiving specialized/focused PSS
-            </td>
-            <td>16,000</td>
-            <td>n/a</td>
-            <td>0</td>
-            <td>10,000</td>
-            <td>{{ value_1789.cumulative }}<sup>1</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Boys: {{ value_1789.male }}%; Girls: {{ value_1789.female }}%"></i>
-            </td>
-            <td>{{ value_1789.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1654 month as value_1654 %}
-              <span style="display: none;">{{ value_1654.id }}</span>
-              # of boys and girls assisted through child protection case management and specialized services
-            </td>
-            <td>8,000</td>
-            <td>n/a</td>
-            <td>0</td>
-            <td>4,400</td>
-            <td>{{ value_1654.cumulative }}<sup>2</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Boys: {{ value_1654.male }}%; Girls: {{ value_1654.female }}%"></i>
-            </td>
-            <td>{{ value_1654.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 2740 month as value_2740 %}
-              <span style="display: none;">{{ value_2740.id }}</span>
-              # women and girls accessing mobile and safe spaces
-            </td>
-            <td>140,000</td>
-            <td>n/a</td>
-            <td>0</td>
-            <td>27,000</td>
-            <td>{{ value_2740.cumulative }}</td>
-            <td>{{ value_2740.last_report_changes }}</td>
-          </tr>
+          {% endif %}
+           {% endfor %}
+          {% endif %}
+          {% endfor %}
+          {% endif %}
 
-          <tr class="hpm-tr-header">
-            <td colspan="8">Water, Sanitation, and Hygiene</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1519 month as value_1519 %}
-              <span style="display: none;">{{ value_1519.id }}</span>
-              # of affected men/women/girls/boys assisted with temporary access to adequate quantity of safe water for
-              drinking and water for domestic use
-            </td>
-            <td>241,500</td>
-            <td>n/a</td>
-            <td>0</td>
-            <td>184,674</td>
-            <td>{{ value_1519.cumulative }}<sup>1</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Boys: {{ value_1519.boys }}%; Girls: {{ value_1519.girls }}%; Females: {{ value_1519.female }}%, Male: {{ value_1519.male }}%"></i>
-            </td>
-            <td>{{ value_1519.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1527 month as value_1527 %}
-              <span style="display: none;">{{ value_1527.id }}</span>
-              # of affected men/women/girls/boys with access to improved safe sanitation in temporary locations
-            </td>
-            <td>262,150</td>
-            <td>n/a</td>
-            <td>0</td>
-            <td>164,338</td>
-            <td>{{ value_1527.cumulative }}<sup>2</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Boys: {{ value_1527.boys }}%; Girls: {{ value_1527.girls }}%; Females: {{ value_1527.female }}%, Male: {{ value_1527.male }}%"></i>
-            </td>
-            <td>{{ value_1527.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1504 month as value_1504 %}
-              <span style="display: none;">{{ value_1504.id }}</span>
-              # of affected men/women/girls/boys assisted with improved access to adequate quantity of safe water for
-              drinking and for domestic use
-            </td>
-            <td>1,146,900</td>
-            <td>n/a</td>
-            <td>0</td>
-            <td>386,191</td>
-            <td>{{ value_1504.cumulative }}<sup>3</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="No figures are reported yet"></i>
-            </td>
-            <td>{{ value_1504.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1535 month as value_1535 %}
-              <span style="display: none;">{{ value_1535.id }}</span>
-              # individuals who have experienced a WASH behaviour change session/activity
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>0</td>
-            <td>77,786</td>
-            <td>{{ value_1535.cumulative }}<sup>4</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Male: {{ value_1535.male }}%; Female: {{ value_1535.female }}%"></i>
-            </td>
-            <td>{{ value_1535.last_report_changes }}</td>
-          </tr>
-
-          <tr class="hpm-tr-header">
-            <td colspan="8">Health & Nutrition <sup>1</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="No figures are reported yet"></i>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 2621 month as value_2621 %}
-              <span style="display: none;">{{ value_2621.id }}</span>
-              # of children under five vaccinated against Penta 1
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>100,000</td>
-            <td>{{ value_2621.cumulative }}</td>
-            <td>{{ value_2621.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 2638 month as value_2638 %}
-              <span style="display: none;">{{ value_2638.id }}</span>
-              # of children under five vaccinated against Penta 3
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>90,000</td>
-            <td>{{ value_2638.cumulative }}</td>
-            <td>{{ value_2638.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 2178 month as value_2178 %}
-              <span style="display: none;">{{ value_2178.id }}</span>
-              # of children under five receiving micro-nutrient supplements
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>254,000</td>
-            <td>{{ value_2178.cumulative }}</td>
-            <td>{{ value_2178.last_report_changes }}</td>
-          </tr>
-
-          <tr class="hpm-tr-header">
-            <td colspan="8">Youth and Adolescents</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 3032 month as value_3032 %}
-              <span style="display: none;">{{ value_3032.id }}</span>
-              # of adolescents and youth (14+) who are supported for regulated NFE under the Youth BLN programme (RACE
-              ii)
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>8,153</td>
-            <td>{{ value_3032.cumulative }}<sup>1</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Male: {{ value_3032.male }}%; Female: {{ value_3032.female }}%"></i>
-            </td>
-            <td>{{ value_3032.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 3071 month as value_3071 %}
-              <span style="display: none;">{{ value_3071.id }}</span>
-              # of adolescents and youth (14+) supported by competency and market based skills training programme
-              (RACEii) (LC2/LC3)
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>24,000</td>
-            <td>{{ value_3071.cumulative }}<sup>2</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Male: {{ value_3071.male }}%; Female: {{ value_3071.female }}%"></i>
-            </td>
-            <td>{{ value_3071.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 3179 month as value_3179 %}
-              <span style="display: none;">{{ value_3179.id }}</span>
-              # of youth supported with employment support services (e.g. business mentorship, internships, on the job
-              training, or apprenticeship)
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>7,000</td>
-            <td>{{ value_3179.cumulative }}<sup>3</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Male: {{ value_3179.male }}%; Female: {{ value_3179.female }}%"></i>
-            </td>
-            <td>{{ value_3179.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 3347 month as value_3347 %}
-              <span style="display: none;">{{ value_3347.id }}</span>
-              # of youth trained on Life Skills
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>19,000</td>
-            <td>{{ value_3347.cumulative }}<sup>4</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Male: {{ value_3347.male }}%; Female: {{ value_3347.female }}%"></i>
-            </td>
-            <td>{{ value_3347.last_report_changes }}</td>
-          </tr>
-
-          <tr class="hpm-tr-header">
-            <td colspan="8">Social Policy, Basic Needs <sup>1</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="No figures are reported yet"></i>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 850 month as value_850 %}
-              <span style="display: none;">{{ value_850.id }}</span>
-              # of affected girls and boys that benefited from humanitarian winter kits (it will be only reported in one
-              shot in December)
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>20,000</td>
-            <td>{{ value_850.cumulative }}</td>
-            <td>{{ value_850.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 783 month as value_783 %}
-              <span style="display: none;">{{ value_783.id }}</span>
-              # of vulnerable non-Lebanese girls and boys that benefited from child-focused social assistance
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>4,000</td>
-            <td>{{ value_783.cumulative }}</td>
-            <td>{{ value_783.last_report_changes }}</td>
-          </tr>
-
-          <tr class="hpm-tr-header">
-            <td colspan="8">Communication for Development</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1396 month as value_1396 %}
-              <span style="display: none;">{{ value_1396.id }}</span>
-              # of men, women and children reached with C4D priority child rights messages
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>10,000</td>
-            <td>{{ value_1396.cumulative }}<sup>1</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="No figures are reported yet"></i>
-            </td>
-            <td>{{ value_1396.last_report_changes }}</td>
-          </tr>
-
-          <tr class="hpm-tr-header">
-            <td colspan="8">Palestinian Programme</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1121 month as value_1121 %}
-              <span style="display: none;">{{ value_1121.id }}</span>
-              # of boys and girls (3-5), including CwDs, provided with access to and enrolment in ECE schools school
-              year 2018/2019
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>3,400</td>
-            <td>{{ value_1121.cumulative }}<sup>1</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Boys: {{ value_1121.male }}%; Girls: {{ value_1121.female }}%"></i>
-            </td>
-            <td>{{ value_1121.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 4507 month as value_4507 %}
-              <span style="display: none;">{{ value_4507.id }}</span>
-              # of boys and girls (3-5), including CWDs, provided with access to and enrolment in ECE schools schoolyear
-              2019/2020
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>3,400</td>
-            <td>{{ value_4507.cumulative }}<sup>1</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Boys: {{ value_4507.male }}%; Girls: {{ value_4507.female }}%"></i>
-            </td>
-            <td>{{ value_4507.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1149 month as value_1149 %}
-              <span style="display: none;">{{ value_1149.id }}</span>
-              # of boys and girls including CWDs provided with learning retention and homework support for school year
-              2018/2019
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>3,200</td>
-            <td>{{ value_1149.cumulative }}<sup>2</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Boys: {{ value_1149.male }}%; Girls: {{ value_1149.female }}%"></i>
-            </td>
-            <td>{{ value_1149.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 4591 month as value_4591 %}
-              <span style="display: none;">{{ value_4591.id }}</span>
-              # of boys and girls including CWDs provided with learning retention and homework support for school year
-              2019/2020
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>3,200</td>
-            <td>{{ value_4591.cumulative }}<sup>2</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Boys: {{ value_4591.male }}%; Girls: {{ value_4591.female }}%"></i>
-            </td>
-            <td>{{ value_4591.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1178 month as value_1178 %}
-              <span style="display: none;">{{ value_1178.id }}</span>
-              # of adolescent boys and girls trained on life skills, conflict resolution and healthy life styles
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>1,000</td>
-            <td>{{ value_1178.cumulative }}<sup>3</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Boys: {{ value_1178.male }}%; Girls: {{ value_1178.female }}%"></i>
-            </td>
-            <td>{{ value_1178.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1195 month as value_1195 %}
-              <span style="display: none;">{{ value_1195.id }}</span>
-              # of girls and boys engaged in community based child protection activities
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>23,042</td>
-            <td>{{ value_1195.cumulative }}<sup>4</sup>
-              <i class="fa fa-info-circle" style="font-size:16px;" data-toggle="tooltip" data-placement="top"
-                 title="Boys: {{ value_1195.male }}%; Girls: {{ value_1195.female }}%"></i>
-            </td>
-            <td>{{ value_1195.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1293 month as value_1293 %}
-              <span style="display: none;">{{ value_1293.id }}</span>
-              # of children U1 receiving vaccination (Penta1)
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>4,000</td>
-            <td>{{ value_1293.cumulative }}</td>
-            <td>{{ value_1293.last_report_changes }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              {% get_indicator_hpm_data 1299 month as value_1299 %}
-              <span style="display: none;">{{ value_1299.id }}</span>
-              # of individuals who have experienced a WASH behavior change session/activity
-            </td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>n/a</td>
-            <td>25,000</td>
-            <td>{{ value_1299.cumulative }}</td>
-            <td>{{ value_1299.last_report_changes }}</td>
-          </tr>
+   {% endfor %}
           <tr class="hpm-tr-header">
             <td colspan="8">Footnotes</td>
           </tr>
           <tr>
             <td colspan="8">
-              <strong>Sector Targets:</strong> All Sector targets are taken from the Lebanon 3RP 2019
+              <strong>Sector Targets:</strong> All Sector targets are taken from the Lebanon 3RP {{ reporting_year}}
             </td>
           </tr>
+           {% for db in ai_databases %}
           <tr>
             <td colspan="2">
-              <strong>Education</strong> (1)
+              <strong>{{ db.hpm_label }}</strong>
             </td>
-            <td colspan="4">No figures are reported yet</td>
+            <td colspan="2"></td>
+              <td colspan="2"></td>
             <td colspan="2"></td>
           </tr>
-
-          <tr>
-            <td colspan="2">
-              <strong>Child protection – CP</strong> (1)
-            </td>
-            <td colspan="2">Boys {{ value_1789.male }}%</td>
-            <td colspan="2">Girls {{ value_1789.female }}%</td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>Child Protection – CP</strong> (2)
-            </td>
-            <td colspan="2">Boys {{ value_1654.male }}%</td>
-            <td colspan="2">Girls {{ value_1654.female }}%</td>
-            <td colspan="2"></td>
-          </tr>
-
-          <tr>
-            <td colspan="2">
-              <strong>WASH</strong> (1)
-            </td>
-            <td colspan="2">Boys {{ value_1519.boys }}, Girls: {{ value_1519.girls }}%</td>
-            <td colspan="2">Females: {{ value_1519.female }}%, Male {{ value_1519.male }}%</td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>WASH</strong> (2)
-            </td>
-            <td colspan="2">Boys {{ value_1527.boys }}, Girls: {{ value_1527.girls }}%</td>
-            <td colspan="2">Females: {{ value_1527.female }}%, Male {{ value_1527.male }}%</td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>WASH</strong> (3)
-            </td>
-            <td colspan="4">No figures are reported yet</td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>WASH</strong> (4)
-            </td>
-            <td colspan="2">Male {{ value_1535.male }}%</td>
-            <td colspan="2">Female {{ value_1535.female }}%</td>
-            <td colspan="2"></td>
-          </tr>
-
-          <tr>
-            <td colspan="2">
-              <strong>Health & Nutrition</strong> (1)
-            </td>
-            <td colspan="4">No figures are reported yet</td>
-            <td colspan="2"></td>
-          </tr>
-
-          <tr>
-            <td colspan="2">
-              <strong>Adolescents & Youth</strong> (1)
-            </td>
-            <td colspan="2">Male {{ value_3032.male }}%</td>
-            <td colspan="2">Female {{ value_3032.female }}%</td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>Adolescents & Youth</strong> (2)
-            </td>
-            <td colspan="2">Male {{ value_3071.male }}%</td>
-            <td colspan="2">Female {{ value_3071.female }}%</td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>Adolescents & Youth</strong> (3)
-            </td>
-            <td colspan="2">Male {{ value_3179.male }}%</td>
-            <td colspan="2">Female {{ value_3179.female }}%</td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>Adolescents & Youth</strong> (4)
-            </td>
-            <td colspan="2">Male {{ value_3347.male }}%</td>
-            <td colspan="2">Female {{ value_3347.female }}%</td>
-            <td colspan="2"></td>
-          </tr>
-
-
-          <tr>
-            <td colspan="2">
-              <strong>Social Policy, Basic Needs</strong> (1)
-            </td>
-            <td colspan="4">No figures are reported yet</td>
-            <td colspan="2"></td>
-          </tr>
-
-          <tr>
-            <td colspan="2">
-              <strong>Communication for development</strong> (1)
-            </td>
-            <td colspan="2">Male {{ value_1396.male }}%</td>
-            <td colspan="2">Female {{ value_1396.female }}%</td>
-            <td colspan="2"></td>
-          </tr>
-
-          <tr>
-            <td colspan="2">
-              <strong> Palestinian Programme</strong> (1)
-            </td>
-            <td colspan="2">Boys {{ value_1121.male }}%</td>
-            <td colspan="2">Girls {{ value_1121.female }}%</td>
-            <td colspan="2">Results were reported in the old AI Database and they represent 2019 Scholastic year</td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>Palestinian Programme</strong> (2)
-            </td>
-            <td colspan="2">Boys {{ value_1149.male }}%</td>
-            <td colspan="2">Girls {{ value_1149.female }}%</td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>Palestinian Programme</strong> (3)
-            </td>
-            <td colspan="2">Boys {{ value_1178.male }}%</td>
-            <td colspan="2">Girls {{ value_1178.female }}%</td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>Palestinian Programme</strong> (4)
-            </td>
-            <td colspan="2">Boys {{ value_1195.male }}%</td>
-            <td colspan="2">Girls {{ value_1195.female }}%</td>
-            <td colspan="2"></td>
-          </tr>
+        {% endfor %}
           </tbody>
         </table>
         </div>
@@ -735,5 +214,10 @@
     var selected_li=$('li#hpm').find('a');
     selected_li.addClass("mm-active");
     });
+
+    function selectmonth(month){
+    $("#month_form #monthinput").val(month);
+    $("#month_form").submit();
+    }
   </script>
 {% endblock %}

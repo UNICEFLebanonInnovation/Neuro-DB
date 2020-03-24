@@ -1347,7 +1347,7 @@ class HPMView(TemplateView):
         month_name = calendar.month_name[month]
         current_year = date.today().year
 
-        databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('label')
+        databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('hpm_sequence')
 
         months = []
         if int(reporting_year) == current_year:
