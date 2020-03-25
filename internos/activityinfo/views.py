@@ -156,6 +156,7 @@ class ReportView(TemplateView):
             'values_partners_live',
             'values_partners_gov_live',
             'cumulative_values_live',
+            'is_cumulative',
         ).distinct()
 
         none_ai_indicators = none_ai_indicators.values(

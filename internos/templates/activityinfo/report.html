@@ -191,7 +191,12 @@
                   {% endif %}
                 </td>
                 <td class="w-10">
+                  {% if item.is_Cumulative %}
                   {{ cumulative_value }}
+                  {% else %}
+                  {% get_indicator_highest_value item as highest_value %}
+                  {{ highest_value }}
+                  {% endif %}
                 </td>
                 <td class="w-10">
                   {% get_indicator_achieved item month selected_partners selected_governorates as achieved %}
@@ -245,7 +250,12 @@
 
                 <td class="w-10">
                   {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
+                  {% get_indicator_highest_value item1 as highest_value %}
+                  {% if item1.is_Cumulative %}
                   {{ cumulative_value }}
+                  {% else %}
+                  {{ highest_value }}
+                  {% endif %}
                 </td>
                 <td class="w-10">
                   {% if item1.master_indicator_sub %}
@@ -280,7 +290,12 @@
                 <td class="w-10"></td>
                 <td class="w-10">
                   {% get_indicator_cumulative_months item2 selected_months selected_partners selected_governorates as cumulative_value %}
+                  {% get_indicator_highest_value item2 as highest_value %}
+                  {% if item2.is_Cumulative %}
                   {{ cumulative_value }}
+                  {% else %}
+                  {{ highest_value }}
+                  {% endif %}
                 </td>
                 <td class="w-10">
 <!--                  {% get_indicator_achieved item2 month selected_partners selected_governorates as achieved %}-->

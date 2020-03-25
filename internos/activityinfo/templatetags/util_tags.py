@@ -94,9 +94,9 @@ def array_value(data, key):
 @register.filter(name='number_format')
 def number_format(value):
     try:
-       return"{:,}".format(int(value))
+        return "{:,}".format(int(value))
     except Exception:
-       return value
+        return value
 
 
 @register.assignment_tag
@@ -107,7 +107,6 @@ def get_current_year():
 
 @register.assignment_tag
 def to_display_indicator(selected_filters, cumulative_result):
-
     if not selected_filters:
         return True
 
@@ -302,7 +301,7 @@ def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=Non
 
 
 @register.assignment_tag
-def get_indicator_partner_cumulative(indicator,partner=None,gov=None):
+def get_indicator_partner_cumulative(indicator, partner=None, gov=None):
     try:
         value = 0
         cumulative_values = indicator['cumulative_values']
@@ -329,8 +328,7 @@ def get_indicator_partner_cumulative(indicator,partner=None,gov=None):
 
 
 @register.assignment_tag
-def get_indicators_partner_cumulative(indicator,partner=None,gov=None):
-
+def get_indicators_partner_cumulative(indicator, partner=None, gov=None):
     value = 0
     try:
         for ind in indicator:
@@ -787,7 +785,7 @@ def get_indicator_hpm_data(ai_id, month=None):
 
 @register.assignment_tag
 def get_hpm_indicators(db_id, month=None):  # @todo variable month not used
-    from internos.activityinfo.models import Indicator ,Database
+    from internos.activityinfo.models import Indicator, Database
 
     db_indicators = {}
     db = Database.objects.get(id=db_id)
@@ -813,8 +811,7 @@ def get_hpm_indicators(db_id, month=None):  # @todo variable month not used
 
 
 @register.assignment_tag
-def get_display_db(dict_indicators,db_id):
-
+def get_display_db(dict_indicators, db_id):
     for key, value in dict_indicators.items():
         if key == db_id:
             for indicator in value:
@@ -833,6 +830,7 @@ def get_hpm_cumulative(indicator, month):
                 value += float(indicator['values'][str(m)])
     return get_indicator_unit(indicator, value)
 
+
 @register.assignment_tag
 def get_hpm_cumulative_sector(indicator, month):
     value = 0
@@ -843,8 +841,9 @@ def get_hpm_cumulative_sector(indicator, month):
                     value += float(indicator['values_sector'][str(m)])
     return get_indicator_unit(indicator, value)
 
+
 @register.assignment_tag
-def get_hpm_cumulative_change_sector(indicator,month):
+def get_hpm_cumulative_change_sector(indicator, month):
     cumulative_value1 = 0
     cumulative_value2 = 0
     change_value = 0
@@ -861,8 +860,9 @@ def get_hpm_cumulative_change_sector(indicator,month):
     change_value = cumulative_value1 - cumulative_value2
     return get_indicator_unit(indicator, change_value)
 
+
 @register.assignment_tag
-def get_hpm_cumulative_change(indicator,month):
+def get_hpm_cumulative_change(indicator, month):
     cumulative_value1 = 0
     cumulative_value2 = 0
     change_value = 0
@@ -876,6 +876,7 @@ def get_hpm_cumulative_change(indicator,month):
 
     change_value = cumulative_value1 - cumulative_value2
     return get_indicator_unit(indicator, change_value)
+
 
 @register.assignment_tag
 def get_sub_indicators_data(ai_id, is_sector=False):
@@ -931,7 +932,7 @@ def get_sub_master_indicators_data(ai_id, is_sector=False):
     from internos.activityinfo.models import Indicator
     indicators = {}
     try:
-        indicators = Indicator.objects.filter(sub_indicators=ai_id,master_indicator_sub=True).values(
+        indicators = Indicator.objects.filter(sub_indicators=ai_id, master_indicator_sub=True).values(
             'id',
             'ai_id',
             'name',
@@ -1169,6 +1170,19 @@ def get_indicator_live_value(indicator, month=None, partner=None, gov=None):
         return get_indicator_unit(indicator, indicator['values_live'][str(month)])
     except Exception as ex:
         return get_indicator_unit(indicator, 0)
+
+
+@register.assignment_tag
+def get_indicator_highest_value(indicator):
+    value = 0
+    if indicator:
+        all_values = indicator['values'].values()
+        if all_values:
+            max_value = max(all_values)
+            return get_indicator_unit(indicator, max_value)
+
+    return value
+
 
 
 @register.assignment_tag
