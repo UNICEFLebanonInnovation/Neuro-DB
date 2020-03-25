@@ -129,7 +129,7 @@
             </div>
 
           </div>
-          <div class="table-responsive" style="position: relative;overflow: scroll;height: 600px;">
+          <div class="table-responsive">
             <table class="mb-0 table table-striped table-hover" id="exportheader"
                    content="{{ database.label }}_Dashboard_ {{ current_month_name}}_{{ database.reporting_year.name }}.csv"
                    data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.name }}">
@@ -161,7 +161,6 @@
               <tr itemid="{{ item.id }}"
                   {% if item.master_indicator %}class="level1 master_indicator"
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
-                <!--<td>{{ item.id }}</td>-->
                 {% if item.master_indicator %}
                 <td class="w-150">
                   {{ item.name }}
@@ -274,31 +273,9 @@
               {% for item2 in sub_indicators1 %}
               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
               <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
-                  {% if item.individual_indicator %} class="individual" style="background-color: red;" {% endif %}
+                  {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                   itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
-                <!--<td>{{ item2.id }}</td>-->
-                {% if item2.master_indicator_sub_sub %}
-                <td class="w-150" colspan="1">
-                  {{ item2.name }}
-                  {% if item2.explication %}
-                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
-                     data-placement="top" title="{{ item2.explication }}"></i>
-                  {% endif %}
-
-                </td>
-                {% else %}
-                <!--       <td class="w-100">{{ item2.ai_id }}</td>-->
-                <td class="w-150">
-                  {{ item2.name }}
-                  {% if item2.explication %}
-                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
-                     data-placement="top" title="{{ item2.explication }}"></i>
-                  {% endif %}
-
-                </td>
-
-                {% endif %}
-                <!--<td>Site</td>-->
+                <td class="w-150">{{ item2.name }}</td>
                 <td class="w-10">{{ item2.awp_code }}</td>
                 <td class="w-10"></td>
                 <td class="w-10">
@@ -310,7 +287,6 @@
 <!--                  {{ achieved }}%-->
                 </td>
                 <td class="w-10">
-                  <div></div>
 
                 </td>
                 {% for month, month_name in months %}
@@ -325,42 +301,6 @@
               {% endfor %}
               {% endif %}
               {% endfor %}
-              <!--                <tr style="background-color:#6ad0f9; color: white;">-->
-              <!--                  <td colspan="19">-->
-              <!--                    UNICEF Sections - 2020 Internal Reporting-->
-              <!--                  </td>-->
-              <!--                </tr>-->
-              <!--                {% for no_item in none_ai_indicators %}-->
-              <!--                <tr>-->
-              <!--                  <td class="w-100">{{ no_item.ai_id }}</td>-->
-              <!--                  <td class="w-400">-->
-              <!--                    {{ no_item.name }}-->
-              <!--                    {% if no_item.explication %}-->
-              <!--                    <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"-->
-              <!--                      data-placement="top" title="{{ no_item.explication }}"></i>-->
-              <!--                    {% endif %}-->
-              <!--                  </td>-->
-              <!--                  &lt;!&ndash;<td>Site</td>&ndash;&gt;-->
-              <!--                  <td class="w-100">{{ no_item.awp_code }}</td>-->
-              <!--                  <td class="w-100">{{ no_item.target|number_format }}</td>-->
-              <!--                  <td class="w-130">-->
-              <!--                    {% get_indicator_cumulative no_item month selected_partners selected_governorates as cumulative_value %}-->
-              <!--                    {{ cumulative_value }}-->
-              <!--                  </td>-->
-              <!--                  <td class="w-130">-->
-              <!--                    {% get_indicator_achieved no_item month selected_partners selected_governorates as achieved %}-->
-              <!--                    {{ achieved }}%-->
-              <!--                  </td>-->
-              <!--                  <td class="w-70" > <div class='badge {{ no_item.status_color }}'>{{ no_item.status }}</div>-->
-              <!--                    </td>-->
-              <!--                  {% for month, month_name in months %}-->
-              <!--                  <td class="w-70">-->
-              <!--                    {% get_indicator_value no_item month selected_partners selected_governorates as value %}-->
-              <!--                    {{ value }}-->
-              <!--                  </td>-->
-              <!--                  {% endfor %}-->
-              <!--                </tr>-->
-              <!--                {% endfor %}-->
               </tbody>
             </table>
           </div>

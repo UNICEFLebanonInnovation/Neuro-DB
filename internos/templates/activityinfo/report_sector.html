@@ -113,10 +113,10 @@
             </div>
 
           </div>
-          <div class="table-responsive" style="position: relative;overflow: scroll;height: 600px;">
+          <div class="table-responsive">
             <table class="mb-0 table table-striped table-hover" id="exportheader"
                    content="{{ database.label }}_Dashboard_{{ database.reporting_year.name }}.csv"
-                   data-tableName="Dashboard - {{ database.label }} - 2020">
+                   data-tableName="Dashboard - {{ database.label }} - {{ reporting_year }}">
               <thead>
               <tr>
                 <th content="Indicator Name"> Indicator Name</th>
@@ -146,30 +146,14 @@
               <tr itemid="{{ item.id }}"
                   {% if item.master_indicator %}class="level1 master_indicator"
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
-
-                {% if item.master_indicator %}
                 <td class="w-150">
                   {{ item.name }}
-                  <a
-                    href="{% url 'activityinfo:report_partner_sector' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info" data-intro="View Results by Partner"  data-toggle="tooltip"
-                 data-placement="top" title="View Results by Partner">
-<!--                    <i class="fa fa-link" aria-hidden="true" title=""></i>-->
+<!--                  <a href="{% url 'activityinfo:report_partner_sector' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"-->
+<!--                    target="_blank" class="text-info" data-intro="View Results by Partner" data-toggle="tooltip"-->
+<!--                 data-placement="top" title="View Results by Partner">-->
+<!--                   <i class="fa fa-users" aria-hidden="true" title=""></i>-->
                   </a>
                 </td>
-                {% else %}
-
-                <td class="w-150">
-                  {{ item.name }}
-                  <a
-                    href="{% url 'activityinfo:report_partner_sector' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info" data-intro="View Results by Partner" data-toggle="tooltip"
-                 data-placement="top" title="View Results by Partner">
-<!--                  <i class="fa fa-link" aria-hidden="true" title=""></i>-->
-                  </a>
-                </td>
-                {% endif %}
-                <!--<td>Site</td>-->
                 <td class="w-10">{{ item.awp_sector_code }}</td>
                 <td class="w-10">
                   {% if item.measurement_type == 'percentage' %}
@@ -203,51 +187,33 @@
                   {% if item1.master_indicator_sub %}style="background-color: #ca292940;"
                   {% elif item.individual_indicator %}style="background-color:#2d2d2d;" {% endif %}>
 
-                <!--<td>{{ item1.id }}</td>-->
-                {% if item1.master_indicator_sub %}
                 <td class="w-150">
                   {{ item1.name }}
-                  {% if item1.explication %}
-                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
-                     data-placement="top" title="{{ item1.explication }}"></i>
-                  {% endif %}
-                  <a
-                    href="{% url 'activityinfo:report_partner_sector' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                    target="_blank" class="text-info" data-intro="View Results by Partner" data-toggle="tooltip"
-                 data-placement="top" title="View Results by Partner">
-<!--                     <i class="fa fa-link" aria-hidden="true" title=""></i>-->
-                  </a>
+                   {% if item1.master_indicator_sub %}
+<!--                  <a-->
+<!--                    href="{% url 'activityinfo:report_partner_sector' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"-->
+<!--                    target="_blank" class="text-info" data-intro="View Results by Partner" data-toggle="tooltip"-->
+<!--                 data-placement="top" title="View Results by Partner">-->
+<!--                     <i class="fa fa-users" aria-hidden="true" title=""></i>-->
+<!--                  </a>-->
+                     {% endif %}
                 </td>
-                {% else %}
-                <!-- <td class="w-100">{{ item1.ai_id }}</td>-->
-                <td class="w-150">
-                  {{ item1.name }}
-                  {% if item1.explication %}
-                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
-                     data-placement="top" title="{{ item1.explication }}"></i>
-                  {% endif %}
-                  <a
-                    href="{% url 'activityinfo:report_partner_sector' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                    target="_blank" class="text-info"data-intro="View Results by Partner" data-toggle="tooltip"
-                 data-placement="top" title="View Results by Partner">
-<!--                 <i class="fa fa-link" aria-hidden="true" title=""></i>-->
-                  </a>
-                </td>
-                {% endif %}
-                <!--<td>Site</td>-->
                 <td class="w-10">{{ item1.awp_sector_code }}</td>
-                <td class="w-10">{{ item1.target_sector|number_format }}</td>
+                <td class="w-10">   {% if item1.master_indicator_sub %}{{ item1.target_sector|number_format }} {% endif %}</td>
                 <td class="w-10">
                   {% get_indicator_cumulative_sector item1 selected_months selected_partners selected_cadastral as cumulative_value %}
                   {{ cumulative_value }}
                 </td>
                 <td class="w-10">
+                    {% if item1.master_indicator_sub %}
                   {% get_indicator_achieved_sector item1 month selected_partners selected_cadastral as achieved %}
                   {{ achieved }}%
+                   {% endif %}
                 </td>
                 <td class="w-10">
+                   {% if item1.master_indicator_sub %}
                   <div class='badge {{ item1.status_color_sector }}'>{{ item1.status_sector }}</div>
-
+                   {% endif %}
                 </td>
                 {% for month, month_name in months %}
                 <td class="w-10">
@@ -260,39 +226,16 @@
               {% for item2 in sub_indicators1 %}
               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
               <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
-                  {% if item.individual_indicator %} class="individual" style="background-color: red;" {% endif %}
+                  {% if item.individual_indicator %}  style="background-color: #dedede;" {% endif %}
                   itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
-                <!--<td>{{ item2.id }}</td>-->
-                {% if item2.master_indicator_sub_sub %}
-                <td class="w-150" colspan="1">
-                  {{ item2.name }}
-                  {% if item2.explication %}
-                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
-                     data-placement="top" title="{{ item2.explication }}"></i>
-                  {% endif %}
-                  <a
-                    href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
-                    target="_blank" class="text-info">
-<!--                      <i class="fa fa-link" aria-hidden="true" title=""></i>-->
-                  </a>
-                </td>
-                {% else %}
-
                 <td class="w-150">
                   {{ item2.name }}
-                  {% if item2.explication %}
-                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip"
-                     data-placement="top" title="{{ item2.explication }}"></i>
-                  {% endif %}
-                  <a
-                    href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"
-                    target="_blank" class="text-info">
-                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
-                  </a>
+<!--                  <a-->
+<!--                    href="{% url 'activityinfo:report_partner_sector' %}?ai_id={{ database.ai_id }}&indicator_id={{ item2.id }}"-->
+<!--                    target="_blank" class="text-info">-->
+<!--                    <i class="fa fa-fw" aria-hidden="true" title=""></i>-->
+<!--                  </a>-->
                 </td>
-
-                {% endif %}
-                <!--<td>Site</td>-->
                 <td class="w-10">{{ item2.awp_sector_code }}</td>
                 <td class="w-10">{{ item2.target_sector|number_format }}</td>
                 <td class="w-10">
@@ -300,12 +243,11 @@
                   {{ cumulative_value }}
                 </td>
                 <td class="w-10">
-                   {% get_indicator_achieved_sector item2 month selected_partners selected_cadastral as achieved %}
-                  {{ achieved }}%
+<!--                   {% get_indicator_achieved_sector item2 month selected_partners selected_cadastral as achieved %}-->
+<!--                  {{ achieved }}%-->
                 </td>
                 <td class="w-10">
-                  <div class='badge {{ item1.status_color }}'>{{ item1.status }}</div>
-
+<!--                  <div class='badge {{ item1.status_color }}'>{{ item2.status }}</div>-->
                 </td>
                 {% for month, month_name in months %}
                 <td class="w-10">
