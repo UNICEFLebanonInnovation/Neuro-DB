@@ -156,11 +156,9 @@
 
 
           <div class="row col-md-12 mb-3" style="display:none;">
-
                <table  content="Total Results"
                       data-tableName="Dashboard - {{ database.label }} of {{ current_month }}- {{ database.reporting_year }}"
                    class="table table-hover table-striped table_to_export" >
-
               <thead>
               <tr>
                 <th content="">Indicator</th>
@@ -202,10 +200,8 @@
             </table>
             {% for gov in governorates %}
 
-              <table class="table_to_export" id="table_{{  gov.location_adminlevel_governorate_code }}" content="{{ gov.location_adminlevel_governorate }}"
-                   data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year }}"
-                   class="table table-hover table-striped" >
-
+              <table class="table_to_export table table-hover table-striped" id="table_{{  gov.location_adminlevel_governorate_code }}" content="{{ gov.location_adminlevel_governorate }}"
+                   data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year }}">
               <thead>
               <tr>
                  <th content="" >Indicator</th>
@@ -253,7 +249,7 @@
       </div>
       <div class="main-card mb-3 card">
          <div class="card-body">
-         <div class="card-title" style="text-transform: none;">
+         <div class="card-title mt-3"  style="text-transform: none;">
              The Selected Indicator and Its Activities Were Implemented In The Following Governorates:
           </div>
                <div class="row col-md-12 mb-3">

@@ -12,12 +12,10 @@ padding: 0px 10px 5px !important;
 margin-bottom:7px;
 margin-left: 5px;
 }
-.app-page-title .page-title-icon{
-margin-right:10px;
-}
+
 .app-page-title{
-padding: 10px 30px !important;
-margin-bottom:5px !important;
+padding: 10px 30px 0px !important;
+margin: -30px -15px 5px;
 }
 .mr-left-5{
 margin-left:5px;
@@ -37,9 +35,7 @@ font-size:20px;
   ##Device = Desktops
 */
 @media only screen and (max-width:1899px){
-.card-body .table-responsive{
-    max-width : 1100px !important;
-}
+
  .tag-widget{
       width:45%;
     }
@@ -51,9 +47,7 @@ font-size:20px;
   ##Device = Laptops, Desktops
 */
 @media only screen and (min-width: 1025px) and (max-width: 1280px) {
-   .card-body .table-responsive{
-   max-width:900px !important;
-    }
+
  .select2{
       width:500px
       }
@@ -62,9 +56,7 @@ font-size:20px;
   ##Device = Tablets, Ipads (portrait)
 */
 @media only screen and (min-width: 768px) and (max-width: 1024px) {
-.card-body .table-responsive{
-   max-width:900px !important;
-    }
+
      .select2{
       width:400px
       }
@@ -72,9 +64,6 @@ font-size:20px;
 
 /* Device = Tablets, Ipads (landscape) */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-.card-body .table-responsive{
-   max-width:900px !important;
-    }
      .select2{
       width:400px
       }
@@ -410,11 +399,10 @@ font-size:20px !important;
   z-index: 1;
   margin: auto;
   overflow: auto;
-  height: 550px;
+
 }
 .table-scroll table {
   width: 100%;
-  min-width: 900px;
   margin: auto;
   border-collapse: separate;
   border-spacing: 0;
@@ -428,36 +416,34 @@ font-size:20px !important;
   vertical-align: center;
 }
 
-
 .table-scroll thead th {
   position: -webkit-sticky;
   position: sticky;
   top: 0;
    background: white;
-	 box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 	 text-align:center;
 	 vertical-align:middle;
 }
+.table-scroll thead tr:first-child th {
+  border-right:2px solid #e9ecef;
 
+}
+.table-scroll  thead tr:last-child th{
+  top: 38px;
+  z-index: 3;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
 .table-scroll th:first-child {
   position: -webkit-sticky;
   position: sticky;
   left: 0;
   z-index: 2;
 }
-.table-scroll  thead tr:first-child th , thead tr:last-child th
+.table-scroll  thead tr th:first-child
  {
-  z-index: 5;
+  z-index: 4;
  }
-.table-scroll  thead tr:last-child th{
-   position: sticky;
-  top: 40px;
-  background: white;
-	 box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-	 text-align:center;
-	 vertical-align:middle;
-  z-index: 5;
-}
+
 .table-scroll table tbody tr th ,.table-scroll table tbody tr td {
     background-color: #e0f3ff !important;
     border-bottom:1px solid #fff;
@@ -471,4 +457,96 @@ width:160px !important;
 }
 .card-title{
 text-transform:none !important;
+}
+
+
+body{
+  font-size:0.8rem !important;
+}
+
+
+.card-body{
+  padding: 0px 15px ;
+}
+.card-title{
+  margin-bottom: 0px;
+}
+
+.app-page-title .page-title-icon{
+  width:45px;
+  height:45px;
+  padding:0 !important;
+  margin-right:10px;
+}
+
+.app-header{
+  height:52px !important;
+}
+.fixed-header .app-main{
+  padding-top:52px ;
+}
+
+/**todo make the content size 100% **/
+.fixed-sidebar .app-main .app-main__outer{
+    width: 100%;
+}
+
+
+/**todo for
+    <div class="table-responsive" style="position: relative;overflow: scroll;height: 600px;">
+    1- replace overflow scroll with auto
+    2- replace height 600px with max-height 600px
+    **/
+
+/**todo add some bottom padding under the table in cards**/
+.card-body .table-responsive{
+    padding-bottom: 15px;
+    position: relative;
+    overflow: auto;
+    max-height: 600px
+}
+
+/**todo make menu smaller
+    by:
+    **/
+/**1 Overide style: make content padding left smaller**/
+.fixed-sidebar .app-main .app-main__outer{
+    padding-left: 220px;
+}
+/**2 Overide style: make menu width smaller**/
+.app-sidebar {
+    width: 220px;
+    display: flex;
+    z-index: 11;
+    overflow: hidden;
+    min-width: 220px;
+    position: relative;
+    flex: 0 0 220px;
+    margin-top: -60px;
+    padding-top: 60px;
+    transition: all .2s;
+}
+.closed-sidebar .app-sidebar:hover{
+    flex: 0 0 220px !important;
+    width: 220px !important;
+}
+/** Overide style: make sure when the menu is collapsed it stays 80px**/
+.closed-sidebar.fixed-sidebar .app-main__outer {
+    padding-left: 80px;
+}
+.app-sidebar .app-sidebar__inner{
+    padding: 2px .5rem .5rem;
+}
+.vertical-nav-menu ul>li>a{
+padding: 0 .5rem 0;
+}
+.vertical-nav-menu li a{
+    margin: .1rem .1rem;
+}
+.app-main .app-main__inner{
+    padding: 30px 15px 0;
+}
+.app-header__logo{
+  padding: 0 0.5rem;
+  width: 220px;
 }
