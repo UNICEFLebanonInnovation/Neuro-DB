@@ -826,8 +826,9 @@ def get_hpm_cumulative(indicator, month):
     value = 0
     if month > 1:
         for m in range(1, month):
-            if str(m) in indicator['values']:
-                value += float(indicator['values'][str(m)])
+            if indicator['values']:
+                if str(m) in indicator['values']:
+                    value += float(indicator['values'][str(m)])
     return get_indicator_unit(indicator, value)
 
 
