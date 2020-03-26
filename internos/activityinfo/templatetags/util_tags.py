@@ -823,60 +823,73 @@ def get_display_db(dict_indicators, db_id):
 
 @register.assignment_tag
 def get_hpm_cumulative(indicator, month):
-    value = 0
-    if month > 1:
-        for m in range(1, month):
-            if indicator['values']:
-                if str(m) in indicator['values']:
-                    value += float(indicator['values'][str(m)])
-    return get_indicator_unit(indicator, value)
+    try:
+        value = 0
+        if month > 1:
+            for m in range(1, month):
+                if indicator['values']:
+                    if str(m) in indicator['values']:
+                        value += float(indicator['values'][str(m)])
+        return get_indicator_unit(indicator, value)
+    except Exception as ex:
+        return get_indicator_unit(indicator, value)
 
 
 @register.assignment_tag
 def get_hpm_cumulative_sector(indicator, month):
     value = 0
-    if month > 1:
-        for m in range(1, month):
-            if indicator['values_sector']:
-                if str(m) in indicator['values_sector']:
-                    value += float(indicator['values_sector'][str(m)])
-    return get_indicator_unit(indicator, value)
-
+    try:
+        if month > 1:
+            for m in range(1, month):
+                if indicator['values_sector']:
+                    if str(m) in indicator['values_sector']:
+                        value += float(indicator['values_sector'][str(m)])
+        return get_indicator_unit(indicator, value)
+    except Exception as ex:
+        return get_indicator_unit(indicator, value)
 
 @register.assignment_tag
 def get_hpm_cumulative_change_sector(indicator, month):
     cumulative_value1 = 0
     cumulative_value2 = 0
     change_value = 0
-    if month > 1:
-        for m in range(1, month + 1):
-            if indicator['values_sector']:
-                if str(m) in indicator['values_sector']:
-                    cumulative_value1 += float(indicator['values_sector'][str(m)])
-        for m in range(1, month):
-            if indicator['values_sector']:
-                if str(m) in indicator['values_sector']:
-                    cumulative_value2 += float(indicator['values_sector'][str(m)])
+    try:
+        if month > 1:
+            for m in range(1, month + 1):
+                if indicator['values_sector']:
+                    if str(m) in indicator['values_sector']:
+                        cumulative_value1 += float(indicator['values_sector'][str(m)])
+            for m in range(1, month):
+                if indicator['values_sector']:
+                    if str(m) in indicator['values_sector']:
+                        cumulative_value2 += float(indicator['values_sector'][str(m)])
 
-    change_value = cumulative_value1 - cumulative_value2
-    return get_indicator_unit(indicator, change_value)
+        change_value = cumulative_value1 - cumulative_value2
+        return get_indicator_unit(indicator, change_value)
+    except Exception as ex:
+        return get_indicator_unit(indicator, change_value)
 
 
 @register.assignment_tag
 def get_hpm_cumulative_change(indicator, month):
+
     cumulative_value1 = 0
     cumulative_value2 = 0
     change_value = 0
-    if month > 1:
-        for m in range(1, month + 1):
-            if str(m) in indicator['values']:
-                cumulative_value1 += float(indicator['values'][str(m)])
-        for m in range(1, month):
-            if str(m) in indicator['values']:
-                cumulative_value2 += float(indicator['values'][str(m)])
+    try:
+        if month > 1:
+            for m in range(1, month + 1):
+                if str(m) in indicator['values']:
+                    cumulative_value1 += float(indicator['values'][str(m)])
+            for m in range(1, month):
+                if str(m) in indicator['values']:
+                    cumulative_value2 += float(indicator['values'][str(m)])
 
-    change_value = cumulative_value1 - cumulative_value2
-    return get_indicator_unit(indicator, change_value)
+        change_value = cumulative_value1 - cumulative_value2
+        return get_indicator_unit(indicator, change_value)
+    except Exception as ex:
+        return get_indicator_unit(indicator, change_value)
+
 
 
 @register.assignment_tag
