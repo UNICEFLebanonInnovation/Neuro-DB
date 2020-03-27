@@ -1189,13 +1189,15 @@ def get_indicator_live_value(indicator, month=None, partner=None, gov=None):
 @register.assignment_tag
 def get_indicator_highest_value(indicator):
     value = 0
-    if indicator and 'values' in indicator:
-        all_values = indicator['values'].values()
-        if all_values:
-            max_value = max(all_values)
-            return get_indicator_unit(indicator, max_value)
-
-    return value
+    try:
+        if indicator:
+            all_values = indicator['values'].values()
+            if all_values:
+                max_value = max(all_values)
+                return get_indicator_unit(indicator, max_value)
+        return value
+    except Exception as ex:
+        return value
 
 
 @register.assignment_tag

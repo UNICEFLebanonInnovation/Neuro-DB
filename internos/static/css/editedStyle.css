@@ -34,12 +34,12 @@ font-size:20px;
 /*
   ##Device = Desktops
 */
-@media only screen and (max-width:1899px){
+@media only screen   and (min-width: 1280px) and (max-width:1899px){
 
  .tag-widget{
       width:45%;
     }
-    .select2{
+ .select2{
       width:600px
       }
 }
@@ -47,10 +47,7 @@ font-size:20px;
   ##Device = Laptops, Desktops
 */
 @media only screen and (min-width: 1025px) and (max-width: 1280px) {
-
- .select2{
-      width:500px
-      }
+ .select2{  width:500px;  }
 }
 /*
   ##Device = Tablets, Ipads (portrait)
@@ -63,11 +60,18 @@ font-size:20px;
 }
 
 /* Device = Tablets, Ipads (landscape) */
-@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+@media (min-width: 768px) and (max-width: 1024px)  {
      .select2{
       width:400px
       }
 }
+@media screen and (max-width: 600px) {
+    .select2{
+      width:300px
+      }
+
+}
+
 .dropdown-menu {
 border-radius: 0;
 }
@@ -385,8 +389,7 @@ padding-right:0px;
 padding-left:10px;
 }
 #indicator_form .col-md-10 ,#govform .col-md-9{
-padding-right:0px;
-padding-left:0px;
+
 
 }
 .fontS_20{
@@ -549,4 +552,8 @@ padding: 0 .5rem 0;
 .app-header__logo{
   padding: 0 0.5rem;
   width: 220px;
+}
+@media (min-width: 576px)
+.modal-dialog{
+    margin: 3.75rem auto;
 }
