@@ -412,6 +412,7 @@ class Indicator(models.Model):
     tag_disability = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_programme = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     hpm_indicator = models.BooleanField(default=False)
+    hpm_comment = models.CharField(max_length=254, blank=True, null=True)
     separator_indicator = models.BooleanField(default=False)
     none_ai_indicator = models.BooleanField(default=False)
     sequence = models.IntegerField(blank=True, null=True)
