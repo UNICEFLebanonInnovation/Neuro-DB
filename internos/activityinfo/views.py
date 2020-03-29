@@ -8,8 +8,9 @@ from django.db.models import Q, Sum
 from django.views.generic import ListView, TemplateView
 from django.http import HttpResponse, JsonResponse
 from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner, IndicatorTag, ReportingYear
-
+from django.shortcuts import render
 from datetime import date
+from django.http import HttpResponseRedirect
 
 
 class IndexView(TemplateView):
@@ -1338,7 +1339,6 @@ class HPMView(TemplateView):
 
     def get_context_data(self, **kwargs):
 
-
         current_month = date.today().month
         month = int(self.request.GET.get('month', 0))
         if month == 0:
@@ -1368,6 +1368,16 @@ class HPMView(TemplateView):
             'months': months,
             'reporting_year': reporting_year
         }
+
+    def post(self, request, *args, **kwargs):
+
+        indicator_id = self.request.POST.get('indicator', 0)
+        comment = self.request.POST.get('comment',"")
+        indicator = Indicator.objects.get(id=indicator_id)
+        if indicator:
+            indicator.hpm_comment = comment
+            indicator.save()
+        return HttpResponseRedirect('/activityinfo/HPM/')
 
 
 class HPMExportViewSet(ListView):
@@ -1464,3 +1474,8 @@ class ExportViewSet(ListView):
             response = HttpResponse(f.read(), content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename=%s;' % filename
         return response
+
+
+
+
+
