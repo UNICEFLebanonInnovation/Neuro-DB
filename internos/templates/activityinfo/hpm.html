@@ -78,10 +78,12 @@
           <tbody>
 
           {% for db in ai_databases %}
-          {% get_hpm_indicators db.id as dict_indicators %}
+          {% get_hpm_indicators db.ai_id as dict_indicators %}
           {% get_display_db dict_indicators db.ai_id as display_db %}
-
           {% if display_db %}
+          {% if db.label == 'SGBV' %}
+
+          {% else %}
           <tr class="hpm-tr-header">
             <td colspan="8">{{ db.hpm_label }}</td>
           </tr>
@@ -203,8 +205,50 @@
             <td>{{ Third_2_data.last_report_changes }}</td>
           </tr>
            {% endwith %}
+           {% elif db.label == 'Child Protection' %}
+            {% for i in indicator %}
+            {% get_hpm_indicator_data_new i month  as data %}
+            <tr>
+              <td colspan="2">{{ data.hpm_label }}</td>
+               <td>{{ data.target_sector }}</td>
+               <td>{{ data.sector_cumulative }} </td>
+               <td>{{ data.sector_change }}</td>
+               <td>{{data.target }}</td>
+               <td>
+                 {{ data.cumulative }}
+                {% if data.has_hpm_note %}
+                <sup style="position:unset">({{ forloop.counter  }})</sup>
+              {% endif %}
+               </td>
+               <td>{{ data.report_change }}</td>
+            </tr>
+            {% endfor %}
 
-         {% else %}
+          {% get_hpm_indicators 20209 as SGBV_indicators %}
+            {% for key , value in SGBV_indicators.items  %}
+              {% for indicators in value %}
+                {% if indicators %}
+                 {% for i in indicators %}
+                  {% get_hpm_indicator_data_new i month  as data %}
+                    <tr>
+              <td colspan="2">{{ data.hpm_label }}</td>
+               <td>{{ data.target_sector }}</td>
+               <td>{{ data.sector_cumulative }} </td>
+               <td>{{ data.sector_change }}</td>
+               <td>{{data.target }}</td>
+               <td>
+                 {{ data.cumulative }}
+                {% if data.has_hpm_note %}
+                <sup style="position:unset">(3)</sup>
+              {% endif %}
+               </td>
+               <td>{{ data.report_change }}</td>
+            </tr>
+                  {% endfor %}
+               {% endif %}
+            {% endfor %}
+           {% endfor %}
+          {% else %}
           {% for i in indicator %}
             {% get_hpm_indicator_data_new i month  as data %}
             <tr>
@@ -228,8 +272,8 @@
           {% endif %}
           {% endfor %}
           {% endif %}
-
-   {% endfor %}
+          {% endif %}
+          {% endfor %}
           <tr class="hpm-tr-header">
             <td colspan="8">Footnotes</td>
           </tr>
@@ -240,13 +284,14 @@
             </td>
           </tr>
            {% for db in ai_databases %}
-          {% get_hpm_indicators db.id as dict_indicators %}
+          {% get_hpm_indicators db.ai_id as dict_indicators %}
           {% get_display_db dict_indicators db.ai_id as display_db %}
           {% if display_db %}
           {% for key , value in dict_indicators.items  %}
           {% if key == db.ai_id %}
           {% for indicators in value %}
           {% if indicators %}
+
           {% if db.label == 'Education' %}
           {% get_hpm_indicator_data_new indicators.0 month as main_data %}
               {% get_hpm_sub_indicators indicators.0.id as sub_list1 %}
@@ -397,7 +442,6 @@
             </td>
           </tr>
           {% endif %}
-
            {% if main_2_data.has_hpm_note %}
           {% increment num as num %}
           <tr>
@@ -421,6 +465,63 @@
           </tr>
           {% endif %}
           {% endwith %}
+          {% elif db.label == 'Child Protection' %}
+
+          {% for i in indicators %}
+          {% get_hpm_indicator_data_new i month  as item %}
+          {% if i.has_hpm_note %}
+          <tr>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} ({{ forloop.counter }})</strong>
+            </td>
+             <td class="w-10" colspan="1">Boys {{ item.male }}% </td>
+             <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
+            <td colspan="5">
+              {% if i.hpm_comment %}
+              <a class="edit_model" style="cursor: pointer;"  data-toggle="modal" data-id="{{ i.id }}" data-comment="{{ i.hpm_comment }}"
+                 data-target="#myModal">{{ i.hpm_comment }}</a>
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+              style="position: unset !important;"  data-id="{{ i.id }}" data-target="#myModal"  title="Add comment">
+                <i class="fa fa-plus-circle"> </i>
+                </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+          {% get_hpm_indicators 20209 as SGBV_indicators %}
+            {% for key , value in SGBV_indicators.items  %}
+              {% for indicators in value %}
+                {% if indicators %}
+                 {% for i in indicators %}
+                  {% get_hpm_indicator_data_new i month  as data %}
+                    {% if i.has_hpm_note %}
+                      <tr>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} (3)</strong>
+            </td>
+             <td class="w-10" colspan="1">Boys {{ item.male }}% </td>
+             <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
+            <td colspan="5">
+              {% if i.hpm_comment %}
+              <a class="edit_model" style="cursor: pointer;"  data-toggle="modal" data-id="{{ i.id }}" data-comment="{{ i.hpm_comment }}"
+                 data-target="#myModal">{{ i.hpm_comment }}</a>
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+              style="position: unset !important;"  data-id="{{ i.id }}" data-target="#myModal"  title="Add comment">
+                <i class="fa fa-plus-circle"> </i>
+                </button>
+              {% endif %}
+            </td>
+          </tr>
+                    {% endif %}
+                   {% endfor %}
+                  {% endif %}
+                 {% endfor %}
+              {% endfor %}
+
+          {% elif db.label == 'SGBV' %}
 
           {% else %}
           {% for i in indicators %}
@@ -430,17 +531,18 @@
             <td colspan="1">
               <strong>{{ db.hpm_label }} ({{ forloop.counter }})</strong>
             </td>
-            {% if db.label == 'Child Protection' or db.label == 'Palestinian Programme' %}
-             <td class="w-10" colspan="1">Boys {{ item.male }}% </td>
-             <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
+            {% if   db.label == 'Youth and Adolescents' or db.label == 'Comms. 4 Development' %}
+             <td class="w-10" colspan="1">Males {{ item.male }}% </td>
+             <td class="w-10" colspan="1"> Females {{ item.female }}%</td>
             {% elif db.label == 'Water Sector' %}
             <td class="w-10" colspan="1">Boys {{ item.boys }}% , Girls {{ item.girls }}%</td>
-            <td  class="w-10" colspan="1">Females {{ item.female }}% , Male {{ item.male }}%</td>
-             {% elif db.label == 'Youth and Adolescents' or db.label == 'Comms. 4 Development' %}
-              <td class="w-10" colspan="1">Boys {{ item.male }}% </td>
-              <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
+            <td  class="w-10" colspan="1">Females {{ item.female }}% , Males {{ item.male }}%</td>
+
             {% else %}
-            <td colspan="2"></td>
+
+               <td class="w-10" colspan="1">Boys {{ item.male }}% </td>
+             <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
+
             {%  endif %}
             <td colspan="5">
               {% if i.hpm_comment %}
