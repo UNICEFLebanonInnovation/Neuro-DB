@@ -560,3 +560,6 @@ padding: 0 .5rem 0;
 sup{
   position :unset;
   }
+.edit_model{
+cursor: pointer;
+}

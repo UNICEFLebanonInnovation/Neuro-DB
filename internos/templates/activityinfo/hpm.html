@@ -13,8 +13,7 @@
         </i>
       </div>
       <div style="font-weight:bold">
-        HPM Table – Data as January to {{ month_name }} {{reporting_year}}
-        &nbsp; &nbsp;
+        HPM Table – Data as January to {{ month_name }} {{reporting_year}}&nbsp; &nbsp;
            <ul class="nav navbar-left d-inline-block"  data-step="6"
                 data-intro="Download Dashboard report and raw data">
               <li class="dropdown">
@@ -23,7 +22,7 @@
                   <i class="fa fa-download faa-bounce animated-hover" ></i>
                   <span class="caret"></span>
                 </a>
-                <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
+                <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5">
                   {% for month, month_name in months %}
                     <li role="presentation">
                       <a role="menuitem" class="dropdown-item" tabindex="-1"
@@ -61,7 +60,7 @@
   <div class="row col-md-12">
     <div class="main-card mb-3 card">
         <div class="card-body">
-        <div class="table-responsive" style="">
+        <div class="table-responsive">
             <table class="mb-0 table table-striped " id="hpm_exporttable1" >
           <thead>
           <tr>
@@ -204,6 +203,7 @@
             <td>{{ Third_2_data.last_report_changes }}</td>
           </tr>
            {% endwith %}
+
          {% else %}
           {% for i in indicator %}
             {% get_hpm_indicator_data_new i month  as data %}
@@ -261,12 +261,14 @@
             <td class="w-10" colspan="1"> Girls {{ first_data.female }}%</td>
             <td colspan="5">
               {% if first_data.hpm_comment %}
-              {{ first_data.hpm_comment }}
+               <a class="edit_model"  data-toggle="modal" data-id="{{ first_data.id }}" data-comment="{{ first_data.hpm_comment }}"
+                 data-target="#myModal"> {{ first_data.hpm_comment }}
+              </a>
               {% else %}
               <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                       style="position: unset !important;" data-id="{{ first_data.id }}" data-target="#myModal"
                       title="Add comment">
-                <i class="pe-7s-plus"> </i>
+                 <i class="fa fa-plus-circle"> </i>
               </button>
               {% endif %}
             </td>
@@ -282,12 +284,15 @@
             <td class="w-10" colspan="1"> Girls {{ second_data.female }}%</td>
             <td colspan="5">
               {% if second_data.hpm_comment %}
-              {{ second_data.hpm_comment }}
+               <a class="edit_model"  data-toggle="modal" data-id="{{ second_data.id }}" data-comment="{{ second_data.hpm_comment }}"
+                 data-target="#myModal">{{ second_data.hpm_comment }}
+              </a>
+
               {% else %}
               <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                       style="position: unset !important;" data-id="{{ second_data.id }}" data-target="#myModal"
                       title="Add comment">
-                <i class="pe-7s-plus"> </i>
+                  <i class="fa fa-plus-circle"> </i>
               </button>
               {% endif %}
             </td>
@@ -302,12 +307,15 @@
             <td class="w-10" colspan="1"> Girls {{ main_data.female }}%</td>
             <td colspan="5">
               {% if main_data.hpm_comment %}
-              {{ main_data.hpm_comment }}
+              <a class="edit_model"  data-toggle="modal" data-id="{{ main_data.id }}" data-comment="{{ main_data.hpm_comment }}"
+                 data-target="#myModal">    {{ main_data.hpm_comment }}
+              </a>
+
               {% else %}
               <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                       style="position: unset !important;" data-id="{{ main_data.id }}" data-target="#myModal"
                       title="Add comment">
-                <i class="pe-7s-plus"> </i>
+                 <i class="fa fa-plus-circle"> </i>
               </button>
               {% endif %}
             </td>
@@ -326,12 +334,15 @@
             <td class="w-10" colspan="1"> Girls {{ first_1_data.female }}%</td>
             <td colspan="5">
               {% if first_1_data.hpm_comment %}
-              {{ first_1_data.hpm_comment }}
+              <a class="edit_model"  data-toggle="modal" data-id="{{ first_1_data.id }}" data-comment="{{ first_1_data.hpm_comment }}"
+                 data-target="#myModal">  {{ first_1_data.hpm_comment }}
+              </a>
+
               {% else %}
               <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                       style="position: unset !important;" data-id="{{ second_data.id }}" data-target="#myModal"
                       title="Add comment">
-                <i class="pe-7s-plus"> </i>
+                  <i class="fa fa-plus-circle"> </i>
               </button>
               {% endif %}
             </td>
@@ -348,12 +359,15 @@
             <td class="w-10" colspan="1"> Girls {{ second_1_data.female }}%</td>
             <td colspan="5">
               {% if second_1_data.hpm_comment %}
-              {{ second_1_data.hpm_comment }}
+                <a class="edit_model"  data-toggle="modal" data-id="{{ second_1_data.id }}" data-comment="{{ second_1_data.hpm_comment }}"
+                 data-target="#myModal">  {{ second_1_data.hpm_comment }}
+              </a>
+
               {% else %}
               <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                       style="position: unset !important;" data-id="{{ second_data.id }}" data-target="#myModal"
                       title="Add comment">
-                <i class="pe-7s-plus"> </i>
+                 <i class="fa fa-plus-circle"> </i>
               </button>
               {% endif %}
             </td>
@@ -369,12 +383,15 @@
             <td class="w-10" colspan="1"> Girls {{ Third_1_data.female }}%</td>
             <td colspan="5">
               {% if Third_1_data.hpm_comment %}
-              {{ Third_1_data.hpm_comment }}
+              <a class="edit_model"  data-toggle="modal" data-id="{{ Third_1_data.id }}" data-comment="{{ Third_1_data.hpm_comment }}"
+                 data-target="#myModal"> {{ Third_1_data.hpm_comment }}
+              </a>
+
               {% else %}
               <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                       style="position: unset !important;" data-id="{{ second_data.id }}" data-target="#myModal"
                       title="Add comment">
-                <i class="pe-7s-plus"> </i>
+                 <i class="fa fa-plus-circle"> </i>
               </button>
               {% endif %}
             </td>
@@ -390,12 +407,14 @@
             <td class="w-10" colspan="1"> Girls {{ main_2_data.female }}%</td>
             <td colspan="5">
               {% if main_2_data.hpm_comment %}
-              {{ main_2_data.hpm_comment }}
+              <a class="edit_model"   data-toggle="modal" data-id="{{ main_2_data.id }}" data-comment="{{ main_2_data.hpm_comment }}"
+                 data-target="#myModal"> {{ main_2_data.hpm_comment }}
+              </a>
               {% else %}
               <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                       style="position: unset !important;" data-id="{{ main_2_data.id }}" data-target="#myModal"
                       title="Add comment">
-                <i class="pe-7s-plus"> </i>
+                <i class="fa fa-plus-circle"> </i>
               </button>
               {% endif %}
             </td>
@@ -425,11 +444,12 @@
             {%  endif %}
             <td colspan="5">
               {% if i.hpm_comment %}
-              {{ i.hpm_comment }}
+              <a class="edit_model" style="cursor: pointer;"  data-toggle="modal" data-id="{{ i.id }}" data-comment="{{ i.hpm_comment }}"
+                 data-target="#myModal">{{ i.hpm_comment }}</a>
               {% else %}
               <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
-              style="position: unset !important;"   data-id="{{ i.id }}" data-target="#myModal"  title="Add comment">
-                <i class="pe-7s-plus"> </i>
+              style="position: unset !important;"  data-id="{{ i.id }}" data-target="#myModal"  title="Add comment">
+                <i class="fa fa-plus-circle"> </i>
                 </button>
               {% endif %}
             </td>
@@ -454,16 +474,26 @@
 {% endblock content %}
 
 {% block extra_js %}
+
 <script>
 
   $(document).ready(function () {
+
     var selected_li=$('li#hpm').find('a');
     selected_li.addClass("mm-active");
-        $('.show_model').click(function(){
-           var id = $(this).data('id');
-            $('#indicator_id').val(id);
-        });
+
+    $('.show_model').click(function(){
+       var id = $(this).data('id');
+        $('#indicator_id').val(id);
     });
+     $('.edit_model').click(function(){
+       var id = $(this).data('id');
+        $('#indicator_id').val(id);
+        var comment = $(this).data('comment');
+        $('#comment').html(comment);
+        $('#exampleModalLabel').html('Edit Comment');
+    });
+  });
 
     function selectmonth(month){
     $("#month_form #monthinput").val(month);
@@ -485,7 +515,8 @@
            <form action = "{% url 'activityinfo:hpm' %}?rep_year={{ reporting_year }}" method="post" novalidate>
             <div class="modal-body">
 
-               <div class="position-relative form-group"><label for="comment" class="">Comment</label>
+               <div class="position-relative form-group">
+                 <label for="comment" class="">Comment</label>
                 <input type="hidden" name="indicator" id="indicator_id" >
                  <textarea  name="comment" id="comment" class="form-control"></textarea>
                </div>
