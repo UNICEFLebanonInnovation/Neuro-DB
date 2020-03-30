@@ -355,6 +355,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         #'sequence',
         'master_indicator',
         'hpm_indicator',
+        'has_hpm_note',
         'list_header',
         'category',
         'sequence',
@@ -374,6 +375,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         #'sequence',
         'master_indicator',
         'hpm_indicator',
+        'has_hpm_note',
         'list_header',
         'category',
         'sequence',
@@ -429,7 +431,9 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'tag_disability',
                 'tag_programme',
                 'hpm_indicator',
-                'target_hpm'
+                'target_hpm',
+                'hpm_comment',
+                'has_hpm_note'
             ]
         }),
         ('Sub indicators', {

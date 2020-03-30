@@ -4,6 +4,7 @@ from django import template
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import Group
 from django.db.models import Sum
+from datetime import date
 
 register = template.Library()
 
@@ -638,7 +639,8 @@ def get_indicator_hpm_data(ai_id, month=None):
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
         last_month_number = int(last_month.strftime("%m"))
-        last_month_number = 12
+
+        # last_month_number = 12
 
         cumulative = 0
         if str(month) == str(last_month_number):
@@ -650,8 +652,9 @@ def get_indicator_hpm_data(ai_id, month=None):
         previous_month = int(month) - 1
         last_month_value = 0
 
-        if str(previous_month) in indicator.cumulative_values_hpm['months']:
-            last_month_value = indicator.cumulative_values_hpm['months'][str(previous_month)]
+        if 'months' in indicator.cumulative_values_hpm:
+            if str(previous_month) in indicator.cumulative_values_hpm['months']:
+                last_month_value = indicator.cumulative_values_hpm['months'][str(previous_month)]
 
         if 'months' in cumulative_values:
             month = str(month)
@@ -776,7 +779,6 @@ def get_indicator_hpm_data(ai_id, month=None):
                                                                   + last_report_changes_prs + last_report_changes_prl
                                                                   + last_report_changes_oth)).replace('.0', ''),
         }
-
         return data
     except Exception as ex:
         # print(ex.message)
@@ -784,12 +786,12 @@ def get_indicator_hpm_data(ai_id, month=None):
 
 
 @register.assignment_tag
-def get_hpm_indicators(db_id, month=None):  # @todo variable month not used
+def get_hpm_indicators(db_id):
     from internos.activityinfo.models import Indicator, Database
-
     db_indicators = {}
-    db = Database.objects.get(id=db_id)
-    indicators = Indicator.objects.filter(activity__database=db, hpm_indicator=True).order_by('sequence')
+    db = Database.objects.get(ai_id=db_id)
+    indicators = Indicator.objects.filter(activity__database=db, hpm_indicator=True, master_indicator=True).order_by(
+        'sequence')
     indicators = indicators.values(
         'id',
         'ai_id',
@@ -801,7 +803,12 @@ def get_hpm_indicators(db_id, month=None):  # @todo variable month not used
         'measurement_type',
         'values',
         'values_sector',
-        'cumulative_values_sector'
+        'values_tags',
+        'cumulative_values_sector',
+        'hpm_comment',
+        'hpm_label',
+        'has_hpm_note',
+        'target_hpm',
     ).distinct()
     indicators = list(indicators)
     db_indicators[db.ai_id] = []
@@ -822,74 +829,136 @@ def get_display_db(dict_indicators, db_id):
 
 
 @register.assignment_tag
-def get_hpm_cumulative(indicator, month):
+def get_hpm_indicator_data_new(indicator, month):
+    data = {
+        'id': 0,
+        'name': 0,
+        'hpm_label': 0,
+        'cumulative': 0,
+        'target': 0,
+        'target_sector': 0,
+        'report_change': 0,
+        'sector_cumulative': 0,
+        'sector_change': 0,
+        'hpm_comment': 0,
+        'has_hpm_note': 0,
+        'boys': 0,
+        'girls': 0,
+        'male': 0,
+        'female': 0,
+    }
     try:
         value = 0
-        if month > 1:
-            for m in range(1, month):
+        sector_value = 0
+        cumulative = 0
+        cumulative_sector = 0
+        current_month = date.today().month
+
+        if int(month) == current_month:
+            if indicator['cumulative_values']:
+                if 'months' in indicator['cumulative_values']:
+                    if indicator['cumulative_values']['months']:
+                        value = indicator['cumulative_values']['months']
+
+            if indicator['cumulative_values_sector']:
+                if 'months' in indicator['cumulative_values_sector']:
+                    if indicator['cumulative_values_sector']['months']:
+                        sector_value = indicator['cumulative_values_sector']['months']
+
+        else:
+            for m in range(1, month + 1):
                 if indicator['values']:
                     if str(m) in indicator['values']:
                         value += float(indicator['values'][str(m)])
-        return get_indicator_unit(indicator, value)
-    except Exception as ex:
-        return get_indicator_unit(indicator, value)
 
-
-@register.assignment_tag
-def get_hpm_cumulative_sector(indicator, month):
-    value = 0
-    try:
-        if month > 1:
-            for m in range(1, month):
                 if indicator['values_sector']:
                     if str(m) in indicator['values_sector']:
-                        value += float(indicator['values_sector'][str(m)])
-        return get_indicator_unit(indicator, value)
-    except Exception as ex:
-        return get_indicator_unit(indicator, value)
+                        sector_value += float(indicator['values_sector'][str(m)])
 
-@register.assignment_tag
-def get_hpm_cumulative_change_sector(indicator, month):
-    cumulative_value1 = 0
-    cumulative_value2 = 0
-    change_value = 0
-    try:
-        if month > 1:
-            for m in range(1, month + 1):
-                if indicator['values_sector']:
-                    if str(m) in indicator['values_sector']:
-                        cumulative_value1 += float(indicator['values_sector'][str(m)])
-            for m in range(1, month):
-                if indicator['values_sector']:
-                    if str(m) in indicator['values_sector']:
-                        cumulative_value2 += float(indicator['values_sector'][str(m)])
+        previous_sector_values = 0
+        for m in range(1, month):
+            if indicator['values_sector']:
+                if str(m) in indicator['values_sector']:
+                    previous_sector_values += indicator['values_sector'][str(m)]
 
-        change_value = cumulative_value1 - cumulative_value2
-        return get_indicator_unit(indicator, change_value)
-    except Exception as ex:
-        return get_indicator_unit(indicator, change_value)
-
-
-@register.assignment_tag
-def get_hpm_cumulative_change(indicator, month):
-
-    cumulative_value1 = 0
-    cumulative_value2 = 0
-    change_value = 0
-    try:
-        if month > 1:
-            for m in range(1, month + 1):
+        previous_values = 0
+        for m in range(1, month):
+            if indicator['values']:
                 if str(m) in indicator['values']:
-                    cumulative_value1 += float(indicator['values'][str(m)])
-            for m in range(1, month):
-                if str(m) in indicator['values']:
-                    cumulative_value2 += float(indicator['values'][str(m)])
+                    previous_values += indicator['values'][str(m)]
 
-        change_value = cumulative_value1 - cumulative_value2
-        return get_indicator_unit(indicator, change_value)
+        if int(month) == 1:
+            report_change = 0
+            sector_change = 0
+        else:
+            report_change = get_indicator_unit(indicator, (int(value) - previous_values))
+            sector_change = get_indicator_unit(indicator, (sector_value - previous_sector_values))
+
+        cumulative = "{:,}".format(round(value), 1)
+        cumulative = cumulative.replace('.0', '')
+
+        sector_cumulative = "{:,}".format(round(sector_value), 1)
+        sector_cumulative = sector_cumulative.replace('.0', '')
+
+        target = 0
+        if indicator['target_hpm'] == 0:
+            target = indicator['target']
+        else:
+            target = indicator['target_hpm']
+
+        data = {
+            'id': indicator['id'],
+            'name': indicator['name'],
+            'target': "{:,}".format(target),
+            'target_sector': "{:,}".format(indicator['target_sector']),
+            'cumulative': cumulative,
+            'sector_cumulative': sector_cumulative,
+            'report_change': report_change,
+            'sector_change': sector_change,
+            'hpm_comment': indicator['hpm_comment'],
+            'has_hpm_note': indicator['has_hpm_note'],
+            'hpm_label': indicator['hpm_label'],
+            'boys': str(round(indicator['values_tags']['boys'])).replace('.0',
+                                                                         '') if 'boys' in indicator['values_tags'] else 0,
+            'girls': str(round(indicator['values_tags']['girls'])).replace('.0',
+                                                                           '') if 'girls' in indicator[
+                'values_tags'] else 0,
+            'male': str(round(indicator['values_tags']['male'])).replace('.0',
+                                                                         '') if 'male' in indicator['values_tags'] else 0,
+            'female': str(round(indicator['values_tags']['female'])).replace('.0',
+                                                                             '') if 'female' in indicator[
+                'values_tags'] else 0, }
+        return data
     except Exception as ex:
-        return get_indicator_unit(indicator, change_value)
+        return data
 
+# function to get sub-indicators added from admin used in education database
+@register.assignment_tag
+def get_hpm_sub_indicators(indicator_id):
+    from internos.activityinfo.models import Indicator
+    list = []
+    indicator = Indicator.objects.get(id=indicator_id)
+    if indicator:
+        list = Indicator.objects.filter(hpm_indicator=True, master_indicator=False,
+                                        activity=indicator.activity).order_by('sequence').values(
+            'id',
+            'ai_id',
+            'name',
+            'hpm_label',
+            'measurement_type',
+            'units',
+            'target',
+            'target_hpm',
+            'target_sector',
+            'cumulative_values',
+            'values',
+            'hpm_comment',
+            'has_hpm_note',
+            'values_tags',
+            'cumulative_values_sector',
+            'values_sector',
+        ).distinct()
+    return list
 
 
 @register.assignment_tag
@@ -1275,3 +1344,8 @@ def get_databases(is_sector=False):
     except Exception as ex:
         # print(ex)
         return []
+
+@register.assignment_tag
+def increment(counter):
+    counter = counter + 1
+    return counter

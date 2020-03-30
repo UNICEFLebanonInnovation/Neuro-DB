@@ -13,8 +13,7 @@
         </i>
       </div>
       <div style="font-weight:bold">
-        HPM Table – Data as January to {{ month_name }} {{reporting_year}}
-        &nbsp; &nbsp;
+        HPM Table – Data as January to {{ month_name }} {{reporting_year}}&nbsp; &nbsp;
            <ul class="nav navbar-left d-inline-block"  data-step="6"
                 data-intro="Download Dashboard report and raw data">
               <li class="dropdown">
@@ -23,7 +22,7 @@
                   <i class="fa fa-download faa-bounce animated-hover" ></i>
                   <span class="caret"></span>
                 </a>
-                <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5" style="z-index: 3000;">
+                <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5">
                   {% for month, month_name in months %}
                     <li role="presentation">
                       <a role="menuitem" class="dropdown-item" tabindex="-1"
@@ -58,18 +57,17 @@
     </div>
   </div>
 </div>
-  <div class="row">
-
+  <div class="row col-md-12">
     <div class="main-card mb-3 card">
         <div class="card-body">
-        <div class="table-responsive" style="">
+        <div class="table-responsive">
             <table class="mb-0 table table-striped " id="hpm_exporttable1" >
           <thead>
           <tr>
             <th class="w-150" colspan="2" >SUMMARY OF PROGRAMME RESULTS –January to {{ month_name }} {{ reporting_year }} SITREP
               – LEBANON
             </th>
-            <th class="w-10">Sector Target</th>
+            <th class="w-10">Sector Target*</th>
             <th class="w-10">Sector Result</th>
             <th class="w-10">Change since last report</th>
             <th class="w-10">UNICEF Target ({{ reporting_year }})</th>
@@ -80,9 +78,12 @@
           <tbody>
 
           {% for db in ai_databases %}
-          {% get_hpm_indicators db.id as dict_indicators %}
+          {% get_hpm_indicators db.ai_id as dict_indicators %}
           {% get_display_db dict_indicators db.ai_id as display_db %}
           {% if display_db %}
+          {% if db.label == 'SGBV' %}
+
+          {% else %}
           <tr class="hpm-tr-header">
             <td colspan="8">{{ db.hpm_label }}</td>
           </tr>
@@ -91,111 +92,478 @@
               {% for indicator in value %}
               {% if indicator %}
               {% if db.label == 'Education' %}
-              {% get_indicator_hpm_data indicator.0.id month as value %}
-             {% get_hpm_cumulative_sector indicator.0 month as cumulative_value_sector_1 %}
+              {% get_hpm_indicator_data_new indicator.0 month as main_data %}
+              {% get_hpm_sub_indicators indicator.0.id as sub_list1 %}
+              {% get_hpm_indicator_data_new sub_list1.0 month as first_data %}
+           <!--  Education First indicator and its sub indicators  -->
+           {% with num=0 %}
           <tr>
             <td rowspan="3" width="w-150">
-            {{ indicator.0.name }}
+            {{ main_data.hpm_label }}
             </td>
-            <td>Lebanese</td>
-            <td rowspan="3">{{ indicator.0.target_sector }}</td>
-            <td rowspan="3">{{ cumulative_value_sector_1 }}</td>
+            <td style="text-align:left">{{ first_data.hpm_label }}</td>
+             <td >{{ first_data.target_sector }}</td>
+            <td rowspan="3">{{ main_data.sector_cumulative }}</td>
             <td>0</td>
-            <td>0</td>
-           <td>{{ value.lebanese }}</td>
-            <td>{{ value.last_report_changes_lebanese }}</td>
+            <td>{{ first_data.target }}</td>
+            <td>{{  first_data.cumulative }}
+              {% if first_data.has_hpm_note %}
+                {% increment num as num %}
+                  <sup> ({{ num }}) </sup>
+              {% endif %}
+            </td>
+            <td>{{ first_data.report_change }}</td>
           </tr>
+            {% get_hpm_indicator_data_new sub_list1.1 month as Second_data %}
           <tr>
-            <td>Non-Lebanese</td>
-            <td>{{ indicator.0.target_sector }}</td>
+            <td style="text-align:left">{{ Second_data.hpm_label }}</td>
+             <td>{{ Second_data.target_sector }}</td>
             <td>0</td>
-            <td>{{ value.non_lebanese }}</td>
-            <td>{{ value.last_report_changes_non_lebanese }}</td>
+            <td>{{ Second_data.target }}</td>
+            <td>{{  Second_data.cumulative }}
+               {% if first_data.has_hpm_note %}
+                {% increment num as num %}
+                  <sup>({{ num }})</sup>
+              {% endif %}
+            </td>
+            <td>{{ Second_data.report_change }}</td>
           </tr>
           <tr>
             <td>Total</td>
+             <td >{{ main_data.target_sector }}</td>
             <td>0</td>
-            <td>{{ indicator.0.target }}</td>
-            <td>{{ value.cumulative }}</td>
-            <td>{{ value.last_report_changes }}</td>
+            <td>{{ main_data.target }}</td>
+            <td>{{  main_data.cumulative }}
+              {% if first_data.has_hpm_note %}
+                {% increment num as num %}
+                  <sup>({{ num }})</sup>
+              {% endif %}
+            </td>
+            <td>{{ main_data.report_change }}</td>
           </tr>
-           {% get_indicator_hpm_data indicator.1.id month as value1 %}
-            {% get_hpm_cumulative_sector indicator.1 month as cumulative_value_sector_2 %}
+          <!--  Education Second indicator and its sub indicators  -->
+
+          {% get_hpm_indicator_data_new indicator.1 month as main_2_data %}
+          {% get_hpm_sub_indicators indicator.1.id as sub_list2 %}
+          {% get_hpm_indicator_data_new sub_list2.0 month as first_2_data %}
           <tr>
             <td rowspan="4">
-            {{ indicator.1.name }}
+            {{ main_2_data.hpm_label }}
             </td>
-            <td>ALP</td>
-            <td rowspan="4">{{ indicator.1.target_sector }}</td>
-            <td rowspan="4">{{ cumulative_value_sector_2 }}</td>
+            <td style="text-align:left">{{ first_2_data.hpm_label }}</td>
+            <td>{{ first_2_data.target_sector }}</td>
+            <td rowspan="4">{{ main_2_data.sector_cumulative }}</td>
             <td>0</td>
-            <td>0</td>
-            <td>{{ value1.alp }}</td>
-            <td>{{ value1.last_report_changes_alp }}</td>
+            <td>{{ first_2_data.target }}</td>
+            <td>{{ first_2_data.cumulative }}
+             {% if first_data.has_hpm_note %}
+                {% increment num as num %}
+                  <sup> ({{ num }}) </sup>
+              {% endif %}
+            </td>
+            <td>{{ first_2_data.report_change }}</td>
           </tr>
+          {% get_hpm_indicator_data_new sub_list2.1 month as Second_2_data %}
           <tr>
-            <td>CB-ECE</td>
+            <td style="text-align:left">{{ Second_2_data.hpm_label }}</td>
+             <td>{{ Second_2_data.target_sector }}</td>
             <td>0</td>
-            <td>0</td>
-            <td>{{ value1.cbece }}</td>
-            <td>{{ value1.last_report_changes_cbece }}</td>
+             <td>{{ Second_2_data.target }}</td>
+            <td>{{ Second_2_data.cumulative }}
+             {% if first_data.has_hpm_note %}
+                {% increment num as num %}
+                  <sup> ({{ num }}) </sup>
+              {% endif %}
+            </td>
+            <td>{{ Second_2_data.report_change }}</td>
           </tr>
+          {% get_hpm_indicator_data_new sub_list2.2 month as Third_2_data %}
           <tr>
-            <td>BLN</td>
+             <td style="text-align:left">{{ Third_2_data.hpm_label }}</td>
+            <td>{{ Third_2_data.target_sector }}</td>
             <td>0</td>
-            <td>0</td>
-             <td>{{ value1.bln }}</td>
-            <td>{{ value1.last_report_changes_bln }}</td>
+            <td>{{ Third_2_data.target }}</td>
+             <td>{{ Third_2_data.cumulative }}
+              {% if first_data.has_hpm_note %}
+                {% increment num as num %}
+                  <sup> ({{ num }}) </sup>
+              {% endif %}
+             </td>
+            <td>{{ Third_2_data.report_change }}</td>
           </tr>
           <tr>
             <td>Total</td>
+               <td>{{ Third_2_data.target_sector }}</td>
             <td>0</td>
-            <td>{{ indicator.1.target }}</td>
-            <td>{{ value1.cumulative }}</td>
-            <td>{{ value1.last_report_changes }}</td>
+            <td>{{ Third_2_data.target }}</td>
+            <td>{{ Third_2_data.cumulative }}
+             {% if first_data.has_hpm_note %}
+                {% increment num as num %}
+                  <sup> ({{ num }}) </sup>
+              {% endif %}
+            </td>
+            <td>{{ Third_2_data.last_report_changes }}</td>
           </tr>
+           {% endwith %}
+           {% elif db.label == 'Child Protection' %}
+            {% for i in indicator %}
+            {% get_hpm_indicator_data_new i month  as data %}
+            <tr>
+              <td colspan="2">{{ data.hpm_label }}</td>
+               <td>{{ data.target_sector }}</td>
+               <td>{{ data.sector_cumulative }} </td>
+               <td>{{ data.sector_change }}</td>
+               <td>{{data.target }}</td>
+               <td>
+                 {{ data.cumulative }}
+                {% if data.has_hpm_note %}
+                <sup style="position:unset">({{ forloop.counter  }})</sup>
+              {% endif %}
+               </td>
+               <td>{{ data.report_change }}</td>
+            </tr>
+            {% endfor %}
+
+          {% get_hpm_indicators 20209 as SGBV_indicators %}
+            {% for key , value in SGBV_indicators.items  %}
+              {% for indicators in value %}
+                {% if indicators %}
+                 {% for i in indicators %}
+                  {% get_hpm_indicator_data_new i month  as data %}
+                    <tr>
+              <td colspan="2">{{ data.hpm_label }}</td>
+               <td>{{ data.target_sector }}</td>
+               <td>{{ data.sector_cumulative }} </td>
+               <td>{{ data.sector_change }}</td>
+               <td>{{data.target }}</td>
+               <td>
+                 {{ data.cumulative }}
+                {% if data.has_hpm_note %}
+                <sup style="position:unset">(3)</sup>
+              {% endif %}
+               </td>
+               <td>{{ data.report_change }}</td>
+            </tr>
+                  {% endfor %}
+               {% endif %}
+            {% endfor %}
+           {% endfor %}
           {% else %}
           {% for i in indicator %}
-              {% get_hpm_cumulative i month as cumulative_value %}
-              {% get_hpm_cumulative_change i month as change_value %}
-              {% get_hpm_cumulative_sector i month as cumulative_value_sector %}
-              {% get_hpm_cumulative_change_sector i month as change_value_sector %}
+            {% get_hpm_indicator_data_new i month  as data %}
             <tr>
-              <td colspan="2">{{ i.name }}</td>
-               <td>{{ i.target_sector }}</td>
-               <td>{{ cumulative_value_sector }} </td>
-               <td>{{ change_value_sector }}</td>
-               <td>{{i.target }}</td>
-               <td> {{ cumulative_value }}</td>
-               <td>{{ change_value }}</td>
-             </tr>
+              <td colspan="2">{{ data.hpm_label }}</td>
+               <td>{{ data.target_sector }}</td>
+               <td>{{ data.sector_cumulative }} </td>
+               <td>{{ data.sector_change }}</td>
+               <td>{{data.target }}</td>
+               <td>
+                 {{ data.cumulative }}
+                {% if data.has_hpm_note %}
+                <sup style="position:unset">({{ forloop.counter  }})</sup>
+              {% endif %}
+               </td>
+               <td>{{ data.report_change }}</td>
+            </tr>
           {% endfor %}
           {% endif %}
-
           {% endif %}
            {% endfor %}
           {% endif %}
           {% endfor %}
           {% endif %}
-
-   {% endfor %}
+          {% endif %}
+          {% endfor %}
           <tr class="hpm-tr-header">
             <td colspan="8">Footnotes</td>
           </tr>
           <tr>
             <td colspan="8">
-              <strong>Sector Targets:</strong> All Sector targets are taken from the Lebanon 3RP {{ reporting_year}}
+              <strong>*Sector Targets:</strong>
+              All Sector targets are based on the {{ reporting_year}} Regional Refugee and Resilience Plan Lebanon country chapter.
             </td>
           </tr>
            {% for db in ai_databases %}
+          {% get_hpm_indicators db.ai_id as dict_indicators %}
+          {% get_display_db dict_indicators db.ai_id as display_db %}
+          {% if display_db %}
+          {% for key , value in dict_indicators.items  %}
+          {% if key == db.ai_id %}
+          {% for indicators in value %}
+          {% if indicators %}
+
+          {% if db.label == 'Education' %}
+          {% get_hpm_indicator_data_new indicators.0 month as main_data %}
+              {% get_hpm_sub_indicators indicators.0.id as sub_list1 %}
+                {% get_hpm_indicator_data_new sub_list1.0 month as first_data %}
+          {% with num=0 %}
+          {% if first_data.has_hpm_note %}
+           {% increment num as num %}
           <tr>
-            <td colspan="2">
-              <strong>{{ db.hpm_label }}</strong>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} ({{ num }})</strong>
+            <td class="w-10" colspan="1">Boys {{ first_data.male }}%</td>
+            <td class="w-10" colspan="1"> Girls {{ first_data.female }}%</td>
+            <td colspan="5">
+              {% if first_data.hpm_comment %}
+               <a class="edit_model"  data-toggle="modal" data-id="{{ first_data.id }}" data-comment="{{ first_data.hpm_comment }}"
+                 data-target="#myModal"> {{ first_data.hpm_comment }}
+              </a>
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+                      style="position: unset !important;" data-id="{{ first_data.id }}" data-target="#myModal"
+                      title="Add comment">
+                 <i class="fa fa-plus-circle"> </i>
+              </button>
+              {% endif %}
             </td>
-            <td colspan="2"></td>
-              <td colspan="2"></td>
-            <td colspan="2"></td>
           </tr>
+          {% endif %}
+          {% get_hpm_indicator_data_new sub_list1.1 month as second_data %}
+          {% if second_data.has_hpm_note %}
+          {% increment num as num %}
+          <tr>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} ({{ num }})</strong>
+            <td class="w-10" colspan="1">Boys {{ second_data.male }}%</td>
+            <td class="w-10" colspan="1"> Girls {{ second_data.female }}%</td>
+            <td colspan="5">
+              {% if second_data.hpm_comment %}
+               <a class="edit_model"  data-toggle="modal" data-id="{{ second_data.id }}" data-comment="{{ second_data.hpm_comment }}"
+                 data-target="#myModal">{{ second_data.hpm_comment }}
+              </a>
+
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+                      style="position: unset !important;" data-id="{{ second_data.id }}" data-target="#myModal"
+                      title="Add comment">
+                  <i class="fa fa-plus-circle"> </i>
+              </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+          {% if main_data.has_hpm_note %}
+          {% increment num as num %}
+          <tr>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} ({{ num }})</strong>
+            <td class="w-10" colspan="1">Boys {{ main_data.male }}%</td>
+            <td class="w-10" colspan="1"> Girls {{ main_data.female }}%</td>
+            <td colspan="5">
+              {% if main_data.hpm_comment %}
+              <a class="edit_model"  data-toggle="modal" data-id="{{ main_data.id }}" data-comment="{{ main_data.hpm_comment }}"
+                 data-target="#myModal">    {{ main_data.hpm_comment }}
+              </a>
+
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+                      style="position: unset !important;" data-id="{{ main_data.id }}" data-target="#myModal"
+                      title="Add comment">
+                 <i class="fa fa-plus-circle"> </i>
+              </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+
+          {% get_hpm_indicator_data_new indicators.1 month as main_2_data %}
+          {% get_hpm_sub_indicators indicators.1.id as sub_list2 %}
+          {% get_hpm_indicator_data_new sub_list2.0 month as first_1_data %}
+          {% if first_1_data.has_hpm_note %}
+          {% increment num as num %}
+          <tr>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} ({{ num }})</strong>
+            <td class="w-10" colspan="1">Boys {{ first_1_data.male }}%</td>
+            <td class="w-10" colspan="1"> Girls {{ first_1_data.female }}%</td>
+            <td colspan="5">
+              {% if first_1_data.hpm_comment %}
+              <a class="edit_model"  data-toggle="modal" data-id="{{ first_1_data.id }}" data-comment="{{ first_1_data.hpm_comment }}"
+                 data-target="#myModal">  {{ first_1_data.hpm_comment }}
+              </a>
+
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+                      style="position: unset !important;" data-id="{{ second_data.id }}" data-target="#myModal"
+                      title="Add comment">
+                  <i class="fa fa-plus-circle"> </i>
+              </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+
+          {% get_hpm_indicator_data_new sub_list2.1 month as second_1_data %}
+          {% if second_1_data.has_hpm_note %}
+          {% increment num as num %}
+          <tr>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} ({{ num }})</strong>
+            <td class="w-10" colspan="1">Boys {{ second_1_data.male }}%</td>
+            <td class="w-10" colspan="1"> Girls {{ second_1_data.female }}%</td>
+            <td colspan="5">
+              {% if second_1_data.hpm_comment %}
+                <a class="edit_model"  data-toggle="modal" data-id="{{ second_1_data.id }}" data-comment="{{ second_1_data.hpm_comment }}"
+                 data-target="#myModal">  {{ second_1_data.hpm_comment }}
+              </a>
+
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+                      style="position: unset !important;" data-id="{{ second_data.id }}" data-target="#myModal"
+                      title="Add comment">
+                 <i class="fa fa-plus-circle"> </i>
+              </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+          {% get_hpm_indicator_data_new sub_list2.2 month as Third_1_data %}
+          {% if Third_1_data.has_hpm_note %}
+          {% increment num as num %}
+          <tr>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} ({{ num }})</strong>
+            <td class="w-10" colspan="1">Boys {{ Third_1_data.male }}%</td>
+            <td class="w-10" colspan="1"> Girls {{ Third_1_data.female }}%</td>
+            <td colspan="5">
+              {% if Third_1_data.hpm_comment %}
+              <a class="edit_model"  data-toggle="modal" data-id="{{ Third_1_data.id }}" data-comment="{{ Third_1_data.hpm_comment }}"
+                 data-target="#myModal"> {{ Third_1_data.hpm_comment }}
+              </a>
+
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+                      style="position: unset !important;" data-id="{{ second_data.id }}" data-target="#myModal"
+                      title="Add comment">
+                 <i class="fa fa-plus-circle"> </i>
+              </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+           {% if main_2_data.has_hpm_note %}
+          {% increment num as num %}
+          <tr>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} ({{ num }})</strong>
+            <td class="w-10" colspan="1">Boys {{ main_2_data.male }}%</td>
+            <td class="w-10" colspan="1"> Girls {{ main_2_data.female }}%</td>
+            <td colspan="5">
+              {% if main_2_data.hpm_comment %}
+              <a class="edit_model"   data-toggle="modal" data-id="{{ main_2_data.id }}" data-comment="{{ main_2_data.hpm_comment }}"
+                 data-target="#myModal"> {{ main_2_data.hpm_comment }}
+              </a>
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+                      style="position: unset !important;" data-id="{{ main_2_data.id }}" data-target="#myModal"
+                      title="Add comment">
+                <i class="fa fa-plus-circle"> </i>
+              </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+          {% endwith %}
+          {% elif db.label == 'Child Protection' %}
+
+          {% for i in indicators %}
+          {% get_hpm_indicator_data_new i month  as item %}
+          {% if i.has_hpm_note %}
+          <tr>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} ({{ forloop.counter }})</strong>
+            </td>
+             <td class="w-10" colspan="1">Boys {{ item.male }}% </td>
+             <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
+            <td colspan="5">
+              {% if i.hpm_comment %}
+              <a class="edit_model" style="cursor: pointer;"  data-toggle="modal" data-id="{{ i.id }}" data-comment="{{ i.hpm_comment }}"
+                 data-target="#myModal">{{ i.hpm_comment }}</a>
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+              style="position: unset !important;"  data-id="{{ i.id }}" data-target="#myModal"  title="Add comment">
+                <i class="fa fa-plus-circle"> </i>
+                </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+          {% get_hpm_indicators 20209 as SGBV_indicators %}
+            {% for key , value in SGBV_indicators.items  %}
+              {% for indicators in value %}
+                {% if indicators %}
+                 {% for i in indicators %}
+                  {% get_hpm_indicator_data_new i month  as data %}
+                    {% if i.has_hpm_note %}
+                      <tr>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} (3)</strong>
+            </td>
+             <td class="w-10" colspan="1">Boys {{ item.male }}% </td>
+             <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
+            <td colspan="5">
+              {% if i.hpm_comment %}
+              <a class="edit_model" style="cursor: pointer;"  data-toggle="modal" data-id="{{ i.id }}" data-comment="{{ i.hpm_comment }}"
+                 data-target="#myModal">{{ i.hpm_comment }}</a>
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+              style="position: unset !important;"  data-id="{{ i.id }}" data-target="#myModal"  title="Add comment">
+                <i class="fa fa-plus-circle"> </i>
+                </button>
+              {% endif %}
+            </td>
+          </tr>
+                    {% endif %}
+                   {% endfor %}
+                  {% endif %}
+                 {% endfor %}
+              {% endfor %}
+
+          {% elif db.label == 'SGBV' %}
+
+          {% else %}
+          {% for i in indicators %}
+          {% get_hpm_indicator_data_new i month  as item %}
+          {% if i.has_hpm_note %}
+          <tr>
+            <td colspan="1">
+              <strong>{{ db.hpm_label }} ({{ forloop.counter }})</strong>
+            </td>
+            {% if   db.label == 'Youth and Adolescents' or db.label == 'Comms. 4 Development' %}
+             <td class="w-10" colspan="1">Males {{ item.male }}% </td>
+             <td class="w-10" colspan="1"> Females {{ item.female }}%</td>
+            {% elif db.label == 'Water Sector' %}
+            <td class="w-10" colspan="1">Boys {{ item.boys }}% , Girls {{ item.girls }}%</td>
+            <td  class="w-10" colspan="1">Females {{ item.female }}% , Males {{ item.male }}%</td>
+
+            {% else %}
+
+               <td class="w-10" colspan="1">Boys {{ item.male }}% </td>
+             <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
+
+            {%  endif %}
+            <td colspan="5">
+              {% if i.hpm_comment %}
+              <a class="edit_model" style="cursor: pointer;"  data-toggle="modal" data-id="{{ i.id }}" data-comment="{{ i.hpm_comment }}"
+                 data-target="#myModal">{{ i.hpm_comment }}</a>
+              {% else %}
+              <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
+              style="position: unset !important;"  data-id="{{ i.id }}" data-target="#myModal"  title="Add comment">
+                <i class="fa fa-plus-circle"> </i>
+                </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+            {% endif %}
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+          {% endfor %}
+          {% endif %}
         {% endfor %}
           </tbody>
         </table>
@@ -208,16 +576,60 @@
 {% endblock content %}
 
 {% block extra_js %}
+
 <script>
 
   $(document).ready(function () {
+
     var selected_li=$('li#hpm').find('a');
     selected_li.addClass("mm-active");
+
+    $('.show_model').click(function(){
+       var id = $(this).data('id');
+        $('#indicator_id').val(id);
     });
+     $('.edit_model').click(function(){
+       var id = $(this).data('id');
+        $('#indicator_id').val(id);
+        var comment = $(this).data('comment');
+        $('#comment').html(comment);
+        $('#exampleModalLabel').html('Edit Comment');
+    });
+  });
 
     function selectmonth(month){
     $("#month_form #monthinput").val(month);
     $("#month_form").submit();
     }
+
   </script>
+{% endblock %}
+{% block modal %}
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Comment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+           <form action = "{% url 'activityinfo:hpm' %}?rep_year={{ reporting_year }}" method="post" novalidate>
+            <div class="modal-body">
+
+               <div class="position-relative form-group">
+                 <label for="comment" class="">Comment</label>
+                <input type="hidden" name="indicator" id="indicator_id" >
+                 <textarea  name="comment" id="comment" class="form-control"></textarea>
+               </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save </button>
+            </div>
+              {% csrf_token %}
+           </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
