@@ -1340,13 +1340,20 @@ class HPMView(TemplateView):
     def get_context_data(self, **kwargs):
 
         current_month = date.today().month
+        current_year = date.today().year
+        is_current_year= True
         month = int(self.request.GET.get('month', 0))
         if month == 0:
             month = current_month
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
-        month_name = calendar.month_name[month]
-        current_year = date.today().year
+
+        if int(reporting_year) == current_year:
+            month_name = calendar.month_name[month]
+        else:
+            month = 12
+            month_name ='December'
+            is_current_year = False
 
         databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('hpm_sequence')
 
@@ -1357,16 +1364,18 @@ class HPMView(TemplateView):
             if current_month > 2:
                 for i in range(1, current_month + 1):
                     months.append((i, datetime.date(2008, i, 1).strftime('%B')))
-        else:
-            for i in range(1, 13):
-                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
+        path = os.path.dirname(os.path.abspath(__file__))
+        path2file = path + '/AIReports/HPM_Table_Jan_to_Dec_2019.pdf'
 
         return {
             'ai_databases': databases,
             'month_name': month_name,
             'month': month,
             'months': months,
-            'reporting_year': reporting_year
+            'reporting_year': reporting_year,
+            'is_current_year':is_current_year,
+            'path2file':path2file
         }
 
     def post(self, request, *args, **kwargs):
@@ -1377,7 +1386,7 @@ class HPMView(TemplateView):
         if indicator:
             indicator.hpm_comment = comment
             indicator.save()
-        return HttpResponseRedirect('/activityinfo/HPM/')
+        return HttpResponseRedirect('/activityinfo/HPM/?rep_year=2020')
 
 
 class HPMExportViewSet(ListView):
@@ -1388,6 +1397,8 @@ class HPMExportViewSet(ListView):
         from .utils import update_hpm_table_docx
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
+        if reporting_year is None:
+            reporting_year= year
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
