@@ -101,9 +101,9 @@
             {% for indicator in value %}
             {% if indicator %}
             {% if db.label == 'Education' %}
-            {% get_hpm_indicator_data_new indicator.0 month as main_data %}
+            {% get_hpm_indicator_data_new indicator.0.id month as main_data %}
             {% get_hpm_sub_indicators indicator.0.id as sub_list1 %}
-            {% get_hpm_indicator_data_new sub_list1.0 month as first_data %}
+            {% get_hpm_indicator_data_new sub_list1.0.id month as first_data %}
             <!--  Education First indicator and its sub indicators  -->
             {% with num=0 %}
             <tr>
@@ -123,7 +123,7 @@
               </td>
               <td>{{ first_data.report_change }}</td>
             </tr>
-            {% get_hpm_indicator_data_new sub_list1.1 month as Second_data %}
+            {% get_hpm_indicator_data_new sub_list1.1.id month as Second_data %}
             <tr>
               <td style="text-align:left">{{ Second_data.hpm_label }}</td>
               <td>{{ Second_data.target_sector }}</td>
@@ -152,9 +152,9 @@
             </tr>
             <!--  Education Second indicator and its sub indicators  -->
 
-            {% get_hpm_indicator_data_new indicator.1 month as main_2_data %}
+            {% get_hpm_indicator_data_new indicator.1.id month as main_2_data %}
             {% get_hpm_sub_indicators indicator.1.id as sub_list2 %}
-            {% get_hpm_indicator_data_new sub_list2.0 month as first_2_data %}
+            {% get_hpm_indicator_data_new sub_list2.0.id month as first_2_data %}
             <tr>
               <td rowspan="4">
                 {{ main_2_data.hpm_label }}
@@ -172,7 +172,7 @@
               </td>
               <td>{{ first_2_data.report_change }}</td>
             </tr>
-            {% get_hpm_indicator_data_new sub_list2.1 month as Second_2_data %}
+            {% get_hpm_indicator_data_new sub_list2.1.id month as Second_2_data %}
             <tr>
               <td style="text-align:left">{{ Second_2_data.hpm_label }}</td>
               <td>{{ Second_2_data.target_sector }}</td>
@@ -186,7 +186,7 @@
               </td>
               <td>{{ Second_2_data.report_change }}</td>
             </tr>
-            {% get_hpm_indicator_data_new sub_list2.2 month as Third_2_data %}
+            {% get_hpm_indicator_data_new sub_list2.2.id month as Third_2_data %}
             <tr>
               <td style="text-align:left">{{ Third_2_data.hpm_label }}</td>
               <td>{{ Third_2_data.target_sector }}</td>
@@ -202,21 +202,21 @@
             </tr>
             <tr>
               <td>Total</td>
-              <td>{{ Third_2_data.target_sector }}</td>
+              <td>{{ main_2_data.target_sector }}</td>
               <td>0</td>
-              <td>{{ Third_2_data.target }}</td>
-              <td>{{ Third_2_data.cumulative }}
-                {% if first_data.has_hpm_note %}
+              <td>{{ main_2_data.target }}</td>
+              <td>{{ main_2_data.cumulative }}
+                {% if main_2_data.has_hpm_note %}
                 {% increment num as num %}
                 <sup> ({{ num }}) </sup>
                 {% endif %}
               </td>
-              <td>{{ Third_2_data.last_report_changes }}</td>
+              <td>{{ main_2_data.report_change }}</td>
             </tr>
             {% endwith %}
             {% elif db.label == 'Child Protection' %}
             {% for i in indicator %}
-            {% get_hpm_indicator_data_new i month as data %}
+            {% get_hpm_indicator_data_new i.id month as data %}
             <tr>
               <td colspan="2">{{ data.hpm_label }}</td>
               <td>{{ data.target_sector }}</td>
@@ -238,7 +238,7 @@
             {% for indicators in value %}
             {% if indicators %}
             {% for i in indicators %}
-            {% get_hpm_indicator_data_new i month as data %}
+            {% get_hpm_indicator_data_new i.id month as data %}
             <tr>
               <td colspan="2">{{ data.hpm_label }}</td>
               <td>{{ data.target_sector }}</td>
@@ -259,7 +259,7 @@
             {% endfor %}
             {% else %}
             {% for i in indicator %}
-            {% get_hpm_indicator_data_new i month as data %}
+            {% get_hpm_indicator_data_new i.id month as data %}
             <tr>
               <td colspan="2">{{ data.hpm_label }}</td>
               <td>{{ data.target_sector }}</td>
@@ -303,9 +303,9 @@
             {% if indicators %}
 
             {% if db.label == 'Education' %}
-            {% get_hpm_indicator_data_new indicators.0 month as main_data %}
+            {% get_hpm_indicator_data_new indicators.0.id month as main_data %}
             {% get_hpm_sub_indicators indicators.0.id as sub_list1 %}
-            {% get_hpm_indicator_data_new sub_list1.0 month as first_data %}
+            {% get_hpm_indicator_data_new sub_list1.0.id month as first_data %}
             {% with num=0 %}
             {% if first_data.has_hpm_note %}
             {% increment num as num %}
@@ -330,7 +330,7 @@
               </td>
             </tr>
             {% endif %}
-            {% get_hpm_indicator_data_new sub_list1.1 month as second_data %}
+            {% get_hpm_indicator_data_new sub_list1.1.id month as second_data %}
             {% if second_data.has_hpm_note %}
             {% increment num as num %}
             <tr>
@@ -380,9 +380,9 @@
             </tr>
             {% endif %}
 
-            {% get_hpm_indicator_data_new indicators.1 month as main_2_data %}
+            {% get_hpm_indicator_data_new indicators.1.id month as main_2_data %}
             {% get_hpm_sub_indicators indicators.1.id as sub_list2 %}
-            {% get_hpm_indicator_data_new sub_list2.0 month as first_1_data %}
+            {% get_hpm_indicator_data_new sub_list2.0.id month as first_1_data %}
             {% if first_1_data.has_hpm_note %}
             {% increment num as num %}
             <tr>
@@ -408,7 +408,7 @@
             </tr>
             {% endif %}
 
-            {% get_hpm_indicator_data_new sub_list2.1 month as second_1_data %}
+            {% get_hpm_indicator_data_new sub_list2.1.id month as second_1_data %}
             {% if second_1_data.has_hpm_note %}
             {% increment num as num %}
             <tr>
@@ -433,7 +433,7 @@
               </td>
             </tr>
             {% endif %}
-            {% get_hpm_indicator_data_new sub_list2.2 month as Third_1_data %}
+            {% get_hpm_indicator_data_new sub_list2.2.id month as Third_1_data %}
             {% if Third_1_data.has_hpm_note %}
             {% increment num as num %}
             <tr>
@@ -485,7 +485,7 @@
             {% elif db.label == 'Child Protection' %}
 
             {% for i in indicators %}
-            {% get_hpm_indicator_data_new i month as item %}
+            {% get_hpm_indicator_data_new i.id month as item %}
             {% if i.has_hpm_note %}
             <tr>
               <td colspan="1">
@@ -514,7 +514,7 @@
             {% for indicators in value %}
             {% if indicators %}
             {% for i in indicators %}
-            {% get_hpm_indicator_data_new i month as data %}
+            {% get_hpm_indicator_data_new i.id month as data %}
             {% if i.has_hpm_note %}
             <tr>
               <td colspan="1">
@@ -546,7 +546,7 @@
 
             {% else %}
             {% for i in indicators %}
-            {% get_hpm_indicator_data_new i month as item %}
+            {% get_hpm_indicator_data_new i.id month as item %}
             {% if i.has_hpm_note %}
             <tr>
               <td colspan="1">
@@ -596,9 +596,10 @@
   </div>
   {% else %}
   <div class="col-md-12">
-   <object  data="{{ path2file }}" type="application/pdf" width="100%" height="100%">
-    Example fallback content: This browser does not support PDFs. Please download the PDF to view it: Download PDF.
-</object>
+    <iframe src="https://docs.google.com/gview?embedded=true&url={{ path2file }}"
+          type="application/pdf"  width="100%" height="100%">
+    </iframe>
+
   {% endif %}
 </div>
 
