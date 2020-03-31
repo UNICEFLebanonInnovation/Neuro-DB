@@ -1364,10 +1364,6 @@ class HPMView(TemplateView):
             if current_month > 2:
                 for i in range(1, current_month + 1):
                     months.append((i, datetime.date(2008, i, 1).strftime('%B')))
-
-        path = os.path.dirname(os.path.abspath(__file__))
-        path2file = path + '/AIReports/HPM_Table_Jan_to_Dec_2019.pdf'
-
         return {
             'ai_databases': databases,
             'month_name': month_name,
@@ -1375,7 +1371,6 @@ class HPMView(TemplateView):
             'months': months,
             'reporting_year': reporting_year,
             'is_current_year':is_current_year,
-            'path2file':path2file
         }
 
     def post(self, request, *args, **kwargs):
