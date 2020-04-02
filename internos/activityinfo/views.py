@@ -784,8 +784,6 @@ class ReportDisabilityView(TemplateView):
         ).distinct()
 
         support_disabilities = master_indicators.filter(support_disability=True)
-        print (support_disabilities)
-
         disability_calculation = {}
         for item in master_indicators:
             for tag in tags_disability:
@@ -1364,6 +1362,12 @@ class HPMView(TemplateView):
 
         databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('hpm_sequence')
 
+        SGBV_db = [x for x in databases if x.label == 'SGBV']
+        if SGBV_db is None:
+            SGBV_db_id=0
+        else:
+            SGBV_db_id = SGBV_db[0].ai_id
+
         if month == 1:
             title = '{} {}'.format('HPM Table | Data of January |', str(reporting_year))
         else:
@@ -1389,6 +1393,7 @@ class HPMView(TemplateView):
             'reporting_year': reporting_year,
             'is_current_year': is_current_year,
             'title': title,
+            'SGBV_db': SGBV_db_id
         }
 
     def post(self, request, *args, **kwargs):

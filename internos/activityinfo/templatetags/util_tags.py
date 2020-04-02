@@ -790,7 +790,7 @@ def get_indicator_hpm_data(ai_id, month=None):
 def get_hpm_indicators(db_id):
     from internos.activityinfo.models import Indicator, Database
     db_indicators = {}
-    db = Database.objects.get(ai_id=db_id)
+    db = Database.objects.get(ai_id=int(db_id))
     indicators = Indicator.objects.filter(activity__database=db, hpm_indicator=True, master_indicator=True).order_by(
         'sequence')
     indicators = indicators.values(

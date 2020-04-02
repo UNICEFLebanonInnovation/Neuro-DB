@@ -12,7 +12,7 @@
           <i class="pe-7s-display2 icon-gradient bg-ripe-malin"> </i>
           </i>
         </div>
-        <div style="font-weight:bold">
+        <div style="font-weight:bold ; padding-top:5px">
               {{ title }}
             {% if is_current_year %}
           <ul class="nav navbar-left d-inline-block" data-step="6"
@@ -44,10 +44,10 @@
         <form action="{% url 'activityinfo:hpm' %}" method="get" id="month_form">
           <input type="hidden" name="month" value="" id="monthinput"/>
           <input type="hidden" name="rep_year" value="{{ reporting_year }}">
-          <div class="dropdown d-inline-block">
+          <div class="dropdown d-inline-block mr-4 mt-1">
             <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" name="months"
                     id="filter_month" style="min-width:150px;"
-                    class="mb-2 dropdown-toggle btn btn-outline-primary"> Select month
+                    class="dropdown-toggle btn btn-outline-primary"> Select month
             </button>
             <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu months-drp">
               <a class="dropdown-item" data-value="0" href=""> Select month</a>
@@ -59,7 +59,6 @@
             </div>
           </div>
         </form>
-
 
         {% endif %}
       </div>
@@ -235,7 +234,7 @@
             </tr>
             {% endfor %}
 
-            {% get_hpm_indicators 20209 as SGBV_indicators %}
+            {% get_hpm_indicators SGBV_db as SGBV_indicators %}
             {% for key , value in SGBV_indicators.items %}
             {% for indicators in value %}
             {% if indicators %}
@@ -320,7 +319,7 @@
                 {% if first_data.hpm_comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ first_data.id }}"
                    data-comment="{{ first_data.hpm_comment }}"
-                   data-target="#myModal"> {{ first_data.hpm_comment }}
+                   data-target="#myModal" title="Click to Edit Comment"> {{ first_data.hpm_comment }}
                 </a>
                 {% else %}
                 <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
@@ -344,7 +343,7 @@
                 {% if second_data.hpm_comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ second_data.id }}"
                    data-comment="{{ second_data.hpm_comment }}"
-                   data-target="#myModal">{{ second_data.hpm_comment }}
+                   data-target="#myModal" title="Click to Edit Comment">{{ second_data.hpm_comment }}
                 </a>
 
                 {% else %}
@@ -368,7 +367,7 @@
                 {% if main_data.hpm_comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ main_data.id }}"
                    data-comment="{{ main_data.hpm_comment }}"
-                   data-target="#myModal"> {{ main_data.hpm_comment }}
+                   data-target="#myModal" title="Click to Edit Comment"> {{ main_data.hpm_comment }}
                 </a>
 
                 {% else %}
@@ -396,7 +395,7 @@
                 {% if first_1_data.hpm_comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ first_1_data.id }}"
                    data-comment="{{ first_1_data.hpm_comment }}"
-                   data-target="#myModal"> {{ first_1_data.hpm_comment }}
+                   data-target="#myModal" title="Click to Edit Comment"> {{ first_1_data.hpm_comment }}
                 </a>
 
                 {% else %}
@@ -422,7 +421,7 @@
                 {% if second_1_data.hpm_comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ second_1_data.id }}"
                    data-comment="{{ second_1_data.hpm_comment }}"
-                   data-target="#myModal"> {{ second_1_data.hpm_comment }}
+                   data-target="#myModal" title="Click to Edit Comment"> {{ second_1_data.hpm_comment }}
                 </a>
 
                 {% else %}
@@ -447,7 +446,7 @@
                 {% if Third_1_data.hpm_comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ Third_1_data.id }}"
                    data-comment="{{ Third_1_data.hpm_comment }}"
-                   data-target="#myModal"> {{ Third_1_data.hpm_comment }}
+                   data-target="#myModal" title="Click to Edit Comment"> {{ Third_1_data.hpm_comment }}
                 </a>
 
                 {% else %}
@@ -471,7 +470,7 @@
                 {% if main_2_data.hpm_comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ main_2_data.id }}"
                    data-comment="{{ main_2_data.hpm_comment }}"
-                   data-target="#myModal"> {{ main_2_data.hpm_comment }}
+                   data-target="#myModal" title="Click to Edit Comment"> {{ main_2_data.hpm_comment }}
                 </a>
                 {% else %}
                 <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
@@ -499,7 +498,7 @@
                 {% if i.hpm_comment %}
                 <a class="edit_model" style="cursor: pointer;" data-toggle="modal" data-id="{{ i.id }}"
                    data-comment="{{ i.hpm_comment }}"
-                   data-target="#myModal">{{ i.hpm_comment }}</a>
+                   data-target="#myModal"  title="Click to Edit Comment">{{ i.hpm_comment }}</a>
                 {% else %}
                 <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                         style="position: unset !important;" data-id="{{ i.id }}" data-target="#myModal"
@@ -511,7 +510,7 @@
             </tr>
             {% endif %}
             {% endfor %}
-            {% get_hpm_indicators 20209 as SGBV_indicators %}
+            {% get_hpm_indicators SGBV_db as SGBV_indicators %}
             {% for key , value in SGBV_indicators.items %}
             {% for indicators in value %}
             {% if indicators %}
@@ -528,7 +527,7 @@
                 {% if i.hpm_comment %}
                 <a class="edit_model" style="cursor: pointer;" data-toggle="modal" data-id="{{ i.id }}"
                    data-comment="{{ i.hpm_comment }}"
-                   data-target="#myModal">{{ i.hpm_comment }}</a>
+                   data-target="#myModal" title="Click to Edit Comment">{{ i.hpm_comment }}</a>
                 {% else %}
                 <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                         style="position: unset !important;" data-id="{{ i.id }}" data-target="#myModal"
@@ -568,7 +567,7 @@
                 {% if i.hpm_comment %}
                 <a class="edit_model" style="cursor: pointer;" data-toggle="modal" data-id="{{ i.id }}"
                    data-comment="{{ i.hpm_comment }}"
-                   data-target="#myModal">{{ i.hpm_comment }}</a>
+                   data-target="#myModal" title="Click to Edit Comment">{{ i.hpm_comment }}</a>
                 {% else %}
                 <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                         style="position: unset !important;" data-id="{{ i.id }}" data-target="#myModal"
