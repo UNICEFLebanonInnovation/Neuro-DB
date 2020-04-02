@@ -13,7 +13,7 @@
           </i>
         </div>
         <div style="font-weight:bold">
-          HPM Table – Data as January to {{ month_name }} {{reporting_year}}&nbsp; &nbsp;
+              {{ title }}
             {% if is_current_year %}
           <ul class="nav navbar-left d-inline-block" data-step="6"
               data-intro="Download Dashboard report and raw data">
@@ -130,10 +130,12 @@
               <td>0</td>
               <td>{{ Second_data.target }}</td>
               <td>{{ Second_data.cumulative }}
+                {% if main_data.cumulative %}
                 {% if first_data.has_hpm_note %}
                 {% increment num as num %}
                 <sup>({{ num }})</sup>
                 {% endif %}
+                 {% endif %}
               </td>
               <td>{{ Second_data.report_change }}</td>
             </tr>
@@ -558,12 +560,9 @@
               {% elif db.label == 'Water Sector' %}
               <td class="w-10" colspan="1">Boys {{ item.boys }}% , Girls {{ item.girls }}%</td>
               <td class="w-10" colspan="1">Females {{ item.female }}% , Males {{ item.male }}%</td>
-
               {% else %}
-
               <td class="w-10" colspan="1">Boys {{ item.male }}%</td>
               <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
-
               {% endif %}
               <td colspan="5">
                 {% if i.hpm_comment %}

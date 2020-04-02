@@ -841,7 +841,7 @@ def get_hpm_indicator_data_new(indicator_id, month=None):
         'report_change': 0,
         'sector_cumulative': 0,
         'sector_change': 0,
-        'hpm_comment': 0,
+        'hpm_comment': "",
         'has_hpm_note': 0,
         'boys': 0,
         'girls': 0,
@@ -918,7 +918,10 @@ def get_hpm_indicator_data_new(indicator_id, month=None):
         target = indicator.target
     else:
         target = indicator.target_hpm
-
+    if indicator.hpm_comment is not None:
+        hpm_comment = indicator.hpm_comment
+    else:
+        hpm_comment= ""
     data = {
         'id': indicator.id,
         'name': indicator.name,
@@ -928,7 +931,7 @@ def get_hpm_indicator_data_new(indicator_id, month=None):
         'sector_cumulative': sector_cumulative,
         'report_change': report_change,
         'sector_change': sector_change,
-        'hpm_comment': indicator.hpm_comment,
+        'hpm_comment': hpm_comment,
         'has_hpm_note': indicator.has_hpm_note,
         'hpm_label': indicator.hpm_label,
         'boys': str(round(indicator.values_tags['boys'])).replace('.0',

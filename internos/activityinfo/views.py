@@ -742,9 +742,9 @@ class ReportDisabilityView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
-        month_number = '12'
-        month = 12
-        month_name = 'December'
+        # month_number = '12'
+        # month = 12
+        # month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -769,6 +769,7 @@ class ReportDisabilityView(TemplateView):
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
             'sequence')
+
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
 
@@ -783,6 +784,7 @@ class ReportDisabilityView(TemplateView):
         ).distinct()
 
         support_disabilities = master_indicators.filter(support_disability=True)
+        print (support_disabilities)
 
         disability_calculation = {}
         for item in master_indicators:
@@ -1341,36 +1343,52 @@ class HPMView(TemplateView):
 
         current_month = date.today().month
         current_year = date.today().year
-        is_current_year= True
+        is_current_year = True
+        title=""
         month = int(self.request.GET.get('month', 0))
+        today = datetime.date.today()
+        day_number = int(today.strftime("%d"))
+
         if month == 0:
-            month = current_month
+            if day_number > 15:
+                month = current_month - 1
+            else:
+                month = current_month - 2
+
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
+        month_name = calendar.month_name[month]
 
-        if int(reporting_year) == current_year:
-            month_name = calendar.month_name[month]
-        else:
-            month = 12
-            month_name ='December'
+        if int(reporting_year) != current_year:
             is_current_year = False
 
         databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('hpm_sequence')
+
+        if month == 1:
+            title = '{} {}'.format('HPM Table | Data of January |', str(reporting_year))
+        else:
+            title = '{} {} {} {}'.format('HPM Table | Data of January to ', str(month_name),'|', str(reporting_year))
 
         months = []
         if int(reporting_year) == current_year:
             if current_month == 1:
                 months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
             if current_month > 2:
-                for i in range(1, current_month + 1):
-                    months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                if day_number > 15:
+                    for i in range(1, current_month):
+                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                else:
+                    for i in range(1, current_month-1):
+                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
         return {
             'ai_databases': databases,
             'month_name': month_name,
             'month': month,
             'months': months,
             'reporting_year': reporting_year,
-            'is_current_year':is_current_year,
+            'is_current_year': is_current_year,
+            'title': title,
         }
 
     def post(self, request, *args, **kwargs):
@@ -1393,23 +1411,24 @@ class HPMExportViewSet(ListView):
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
         if reporting_year is None:
-            reporting_year= year
+            reporting_year = year
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
         day_number = int(today.strftime("%d"))
         month = int(self.request.GET.get('month', last_month.strftime("%m")))
+
         # month = int(self.request.GET.get('month', int(today.strftime("%m")) - 1))
         # month = 12
-        if day_number < 15:
-            month = month - 1
+        # if day_number < 15:
+        #     month = month - 1
 
         months = []
         for i in range(1, 13):
             months.append((datetime.date(2008, i, 1).strftime('%B')))
 
-        filename = "HPM Table {} {}.docx".format(months[month], reporting_year)
-        new_file = update_hpm_table_docx(self.queryset, month, months[month], filename,reporting_year)
+        filename = "HPM Table {} {}.docx".format(months[month-1], reporting_year)
+        new_file = update_hpm_table_docx(self.queryset, month, months[month-1], filename,reporting_year)
 
         # new_file = update_hpm_table_docx(self.queryset, month, 'December', filename)
 
