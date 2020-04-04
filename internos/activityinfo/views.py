@@ -249,10 +249,6 @@ class ReportPartnerView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
-        month_number = '12'
-        month = 12
-        month_name = 'December'
-
         selected_indicator = int(self.request.GET.get('indicator_id', 0))
         selected_sub_indicator = self.request.GET.getlist('sub_indicator_id', [])
         selected_governorate = self.request.GET.get('governorate', 0)
@@ -262,7 +258,6 @@ class ReportPartnerView(TemplateView):
             selected_filters = True
 
         ai_id = int(self.request.GET.get('ai_id', 0))
-
         database = Database.objects.get(ai_id=ai_id)
         reporting_year = database.reporting_year.name
         selected_sub_indicator = [int(x) for x in selected_sub_indicator]
@@ -298,7 +293,6 @@ class ReportPartnerView(TemplateView):
             'values_partners': indicator.values_partners,
             'values_gov': indicator.values_gov,
             'values': indicator.values,
-            'reporting_year': str(reporting_year),
         }
 
         report = ActivityReport.objects.filter(database_id=database.ai_id)
@@ -406,7 +400,8 @@ class ReportPartnerView(TemplateView):
             'list_selected_sub': list_selected_sub,
             'locations': locations,
             'selected_filters': selected_filters,
-            'current_month': datetime.datetime.now().strftime("%B")
+            'current_month': datetime.datetime.now().strftime("%B"),
+            'reporting_year': str(reporting_year),
 
         }
 
@@ -920,9 +915,9 @@ class ReportSectorView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
-        month_number = '12'
-        month = 12
-        month_name = 'December'
+        # month_number = '12'
+        # month = 12
+        # month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -1342,7 +1337,7 @@ class HPMView(TemplateView):
         current_month = date.today().month
         current_year = date.today().year
         is_current_year = True
-        title=""
+        title = ""
         month = int(self.request.GET.get('month', 0))
         today = datetime.date.today()
         day_number = int(today.strftime("%d"))
@@ -1355,6 +1350,7 @@ class HPMView(TemplateView):
 
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
+
         month_name = calendar.month_name[month]
 
         if int(reporting_year) != current_year:
