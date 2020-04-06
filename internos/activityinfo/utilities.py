@@ -7,7 +7,8 @@ import copy
 
 def import_data_v4(ai_db):
     client = ActivityInfoClient(ai_db.username, ai_db.password)
-    main_db_id = ReportingYear.objects.get(current=True).database_id
+    # main_db_id = ReportingYear.objects.get(current=True).database_id
+    main_db_id = ai_db.reporting_year.database_id
     db_info = client.get_databases_v4(main_db_id)
     resources = db_info['resources']
     new_data = {}
@@ -123,6 +124,7 @@ def get_list_indicators_v4(ai_db, form_id):
             ai_sub_indicator.awp_code = get_awp_code(sub_indicator['label'])
             ai_sub_indicator.category = ''
             ai_sub_indicator.save()
+
 
 #
 # def get_indicators_v4(ai_db, form_id):
