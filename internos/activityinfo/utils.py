@@ -2262,76 +2262,35 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     # education_ids = [7019,7020,7021,6959,6958,6955,6960]
     # Education 1
     row_num = 2
-    indicator1 = get_hpm_indicator_data_new(education_ids[0], month)
-    document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(indicator1['target_sector'])
-    document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(indicator1['target'])
-    document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(indicator1['cumulative'])
-    document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(indicator1['report_change'])
-
-    indicator2 = get_hpm_indicator_data_new(education_ids[1], month)
-    row_num = row_num + 1
-    document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(indicator2['target_sector'])
-    document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(indicator2['target'])
-    document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(indicator2['cumulative'])
-    document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(indicator2['report_change'])
-
-    indicator3 = get_hpm_indicator_data_new(education_ids[2], month)
-    row_num = row_num + 1
-    document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(indicator3['target_sector'])
-    document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(indicator3['target'])
-    document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(indicator3['cumulative'])
-    document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(indicator3['report_change'])
-
-    # # Education 2
-    indicator4 = get_hpm_indicator_data_new(education_ids[3], month)
-    row_num = row_num + 1
-    document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(indicator4['target_sector'])
-    document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(indicator4['target'])
-    document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(indicator4['cumulative'])
-    document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(indicator4['report_change'])
-
-    indicator5 = get_hpm_indicator_data_new(education_ids[4], month)
-    row_num = row_num + 1
-    document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(indicator5['target_sector'])
-    document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(indicator5['target'])
-    document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(indicator5['cumulative'])
-    document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(indicator5['report_change'])
-
-    indicator6 = get_hpm_indicator_data_new(education_ids[5], month)
-    row_num = row_num + 1
-    document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(indicator6['target_sector'])
-    document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(indicator6['target'])
-    document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(indicator6['cumulative'])
-    document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(indicator6['report_change'])
-
-    indicator7 = get_hpm_indicator_data_new(education_ids[7], month)
-    row_num = row_num + 1
-    document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(indicator7['target_sector'])
-    document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(indicator7['target'])
-    document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(indicator7['cumulative'])
-    document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(indicator7['report_change'])
+    for id in education_ids:
+        indicator1 = get_hpm_indicator_data_new(id, month)
+        document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(indicator1['target_sector'])
+        document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(indicator1['target'])
+        document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(indicator1['cumulative'])
+        document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(indicator1['report_change'])
+        row_num = row_num + 1
 
     ## CP
     Child_indicators = Indicator.objects.filter(activity__database=databases[1], hpm_indicator=True,master_indicator=True).order_by('sequence')
+
     row_num = row_num + 1
     # #child_protection_ids = [6972, 6990, 6946]
     for indicator in Child_indicators:
         Child_1 = get_hpm_indicator_data_new(indicator.id, month)
-        row_num = row_num + 1
-        print (row_num)
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(Child_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(Child_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(Child_1['cumulative'])
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(Child_1['report_change'])
+        row_num = row_num + 1
 
     SVBG_indicators = Indicator.objects.filter(activity__database=databases[8], hpm_indicator=True, master_indicator=True).order_by('sequence')
     for indicator in SVBG_indicators:
-        row_num = row_num + 1
         Child_3 = get_hpm_indicator_data_new(indicator.id, month)
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(Child_3['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(Child_3['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(Child_3['cumulative'])
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(Child_3['report_change'])
+        row_num = row_num + 1
 
 
    #  #
@@ -2341,12 +2300,12 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     row_num = row_num + 1
     # wash_ids = [6995, 6996, 6999,6997]
     for indicator in Wash_indicators:
-        row_num = row_num + 1
         wash_1 = get_hpm_indicator_data_new(indicator.id, month)
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(wash_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(wash_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(wash_1['cumulative'])
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(wash_1['report_change'])
+        row_num = row_num + 1
 
    #  # # H&N
     health_indicators = Indicator.objects.filter(activity__database=databases[3], hpm_indicator=True,
@@ -2354,12 +2313,12 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     row_num = row_num + 1
     # health_ids = [6941,6942,6940]
     for indicator in health_indicators:
-        row_num = row_num + 1
         health_1 = get_hpm_indicator_data_new(indicator.id, month)
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(health_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(health_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(health_1['cumulative'])
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(health_1['report_change'])
+        row_num = row_num + 1
 
    #  # # Y&A
    #  youth_ids = [6902,6904,6922,6928]
@@ -2367,12 +2326,12 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                                                 master_indicator=True).order_by('sequence')
     row_num = row_num + 1
     for indicator in youth_indicators:
-        row_num = row_num + 1
         youth_1 = get_hpm_indicator_data_new(indicator.id, month)
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(youth_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(youth_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(youth_1['cumulative'])
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(youth_1['report_change'])
+        row_num = row_num + 1
 
    #  # # SP
     # sp_ids = [6910,6911]
@@ -2380,12 +2339,12 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                                                 master_indicator=True).order_by('sequence')
     row_num = row_num + 1
     for indicator in sp_indicators:
-        row_num = row_num + 1
         sp_1 = get_hpm_indicator_data_new(indicator.id, month)
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(sp_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(sp_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(sp_1['cumulative'])
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(sp_1['report_change'])
+        row_num = row_num + 1
 
    #  # # C4D
 
@@ -2394,12 +2353,12 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                                              master_indicator=True).order_by('sequence')
     row_num = row_num + 1
     for indicator in C4D_indicators:
-        row_num = row_num + 1
         C4D_1 = get_hpm_indicator_data_new(indicator.id, month)
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(C4D_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(C4D_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(C4D_1['cumulative'])
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(C4D_1['report_change'])
+        row_num = row_num + 1
 
    #  # # PPL
    #
@@ -2408,110 +2367,102 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                                               master_indicator=True).order_by('sequence')
     row_num = row_num + 1
     for indicator in PPL_indicators:
-        row_num = row_num + 1
         PPL_1 = get_hpm_indicator_data_new(indicator.id, month)
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(PPL_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(PPL_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(PPL_1['cumulative'])
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(PPL_1['report_change'])
-
+        row_num = row_num + 1
    #  # # Footnotes
 
-    row_num = row_num + 2
-   # ## Education
-
-    if indicator1['cumulative'] != "0":
-        document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format('Boys', indicator1['male'] ,'Girls', indicator1['female']) , indicator1['hpm_comment']
-    else :
-        document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
-
     row_num = row_num + 1
-    if indicator2['cumulative'] != "0":
-        document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format('Boys',indicator2['male'],  'Girls',  indicator2['female']),  indicator2['hpm_comment']
-    else:
-        document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
+    # last_row = document.tables[0].rows[row_num]
+    # table = document.add_table(1, 2)
+    # table.add_row()
 
-    row_num = row_num + 1
-    if indicator3['cumulative'] != "0":
-        document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format('Boys', indicator3['male'], 'Girls', indicator3['female']), indicator3['hpm_comment']
-    else:
-        document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
-
-    row_num = row_num + 1
-    if indicator4['cumulative'] != "0":
-        document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format('Boys', indicator4['male'], 'Girls', indicator4['female']), indicator4['hpm_comment']
-    else:
-        document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
-
-    row_num = row_num + 1
-    if indicator5['cumulative'] != "0":
-        document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format('Boys',  indicator5[ 'male'], 'Girls',  indicator5['female']),indicator5['hpm_comment']
-    else:
-        document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
-
-#cp
-    for indicator in Child_indicators:
+   ### Education
+    for id in education_ids:
         row_num = row_num + 1
-        Child_1= get_hpm_indicator_data_new(indicator.id,month)
-        if Child_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format('Boys',Child_1['male'], 'Girls',Child_1[ 'female']), Child_1['hpm_comment']
+        indicator_1 = get_hpm_indicator_data_new(id, month)
+        if indicator_1['cumulative'] != "0":
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format(
+                'Boys', indicator_1['male'], 'Girls', indicator_1['female']), indicator_1['hpm_comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
-    #SVBG merged with CP
+    ### cp
+    for indicator in Child_indicators:
+        row_num = row_num + 1
+        Child_1 = get_hpm_indicator_data_new(indicator.id, month)
+        if Child_1['cumulative'] != "0":
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format(
+                'Boys', Child_1['male'], 'Girls', Child_1['female']), Child_1['hpm_comment']
+        else:
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
+
+    # SVBG merged with CP
     SVBG_indicators = Indicator.objects.filter(activity__database=databases[8], hpm_indicator=True,
                                                master_indicator=True).order_by('sequence')
     for indicator in SVBG_indicators:
         row_num = row_num + 1
         Child_3 = get_hpm_indicator_data_new(indicator.id, month)
         if Child_3['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format('Boys',Child_3['male'], 'Girls',Child_3['female']), Child_3['hpm_comment']
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format(
+                'Boys', Child_3['male'], 'Girls', Child_3['female']), Child_3['hpm_comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     #  # #  WASH
     for indicator in Wash_indicators:
         row_num = row_num + 1
-        wash_1= get_hpm_indicator_data_new(indicator.id,month)
+        wash_1 = get_hpm_indicator_data_new(indicator.id, month)
         if wash_1['cumulative'] != "0":
-             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% ,{}: {}% , {}: {}% , {}: {}%  . '.format('Boys', wash_1['boys'] ,'Girls', wash_1['girls'],'Female', wash_1['female'] ,'Male', wash_1['male']),wash_1['hpm_comment']
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[
+                0].text = '{}: {}% ,{}: {}% , {}: {}% , {}: {}%  . '.format('Boys', wash_1['boys'], 'Girls',
+                                                                            wash_1['girls'], 'Female',
+                                                                            wash_1['female'], 'Male',
+                                                                            wash_1['male']), wash_1['hpm_comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
-   #  # Health
+    #  # Health
     for indicator in health_indicators:
         row_num = row_num + 1
-        health_1= get_hpm_indicator_data_new(indicator.id,month)
+        health_1 = get_hpm_indicator_data_new(indicator.id, month)
         if health_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% ,{}: {}%  . '.format('Male',health_1['male'], 'Female',  health_1['female']), health_1['hpm_comment']
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% ,{}: {}%  . '.format(
+                'Male', health_1['male'], 'Female', health_1['female']), health_1['hpm_comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
-   #  # #  Y&A
+    #  # #  Y&A
     for indicator in youth_indicators:
         row_num = row_num + 1
         youth_1 = get_hpm_indicator_data_new(indicator.id, month)
         if youth_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% ,{}: {}%  . '.format('Male', youth_1['male'] ,'Female', youth_1['female']), youth_1['hpm_comment']
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% ,{}: {}%  . '.format(
+                'Male', youth_1['male'], 'Female', youth_1['female']), youth_1['hpm_comment']
         else:
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text ="No figures are reported yet"
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
-## Social Policy
+    ## Social Policy
 
     for indicator in sp_indicators:
         row_num = row_num + 1
         sp_1 = get_hpm_indicator_data_new(indicator.id, month)
         if sp_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% , {}: {}% . '.format('Boys',sp_1['male'], 'Girls',  sp_1[ 'female']),  sp_1['hpm_comment']
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% , {}: {}% . '.format(
+                'Boys', sp_1['male'], 'Girls', sp_1['female']), sp_1['hpm_comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
-   ## C4D
+    ## C4D
     for indicator in C4D_indicators:
         row_num = row_num + 1
         C4D_1 = get_hpm_indicator_data_new(indicator.id, month)
         if C4D_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% , {}: {}% . '.format('Boys', C4D_1[ 'male'], 'Girls', C4D_1['female']), C4D_1['hpm_comment']
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% , {}: {}% . '.format(
+                'Boys', C4D_1['male'], 'Girls', C4D_1['female']), C4D_1['hpm_comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
@@ -2519,10 +2470,11 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     for indicator in PPL_indicators:
         row_num = row_num + 1
         PPL_1 = get_hpm_indicator_data_new(indicator.id, month)
-        if PPL_1['cumulative'] != "0" :
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% , {}: {}% . '.format('Boys', PPL_1['male'] ,'Girls', PPL_1['female']),PPL_1['hpm_comment']
+        if PPL_1['cumulative'] != "0":
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% , {}: {}% . '.format(
+                'Boys', PPL_1['male'], 'Girls', PPL_1['female']), PPL_1['hpm_comment']
         else:
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text ="No figures are reported yet"
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     path2file2 = '{}/{}/{}'.format(path, 'AIReports', filename)
     document.save(path2file2)

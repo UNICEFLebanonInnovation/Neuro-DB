@@ -155,51 +155,65 @@
 
             {% get_hpm_indicator_data_new indicator.1.id month as main_2_data %}
             {% get_hpm_sub_indicators indicator.1.id as sub_list2 %}
-            {% get_hpm_indicator_data_new sub_list2.0.id month as first_2_data %}
+            {% get_hpm_indicator_data_new sub_list2.0.id month as ALP_data %}
             <tr>
-              <td rowspan="4">
+              <td rowspan="5">
                 {{ main_2_data.hpm_label }}
               </td>
-              <td style="text-align:left">{{ first_2_data.hpm_label }}</td>
-              <td>{{ first_2_data.target_sector }}</td>
-              <td rowspan="4">{{ main_2_data.sector_cumulative }}</td>
+              <td style="text-align:left">{{ ALP_data.hpm_label }}</td>
+              <td>{{ ALP_data.target_sector }}</td>
+              <td rowspan="5">{{ ALP_data.sector_cumulative }}</td>
               <td>0</td>
-              <td>{{ first_2_data.target }}</td>
-              <td>{{ first_2_data.cumulative }}
-                {% if first_data.has_hpm_note %}
+              <td>{{ ALP_data.target }}</td>
+              <td>{{ ALP_data.cumulative }}
+                {% if ALP_data.has_hpm_note %}
                 {% increment num as num %}
                 <sup> ({{ num }}) </sup>
                 {% endif %}
               </td>
-              <td>{{ first_2_data.report_change }}</td>
+              <td>{{ ALP_data.report_change }}</td>
             </tr>
-            {% get_hpm_indicator_data_new sub_list2.1.id month as Second_2_data %}
+            {% get_hpm_indicator_data_new sub_list2.1.id month as CBECE_data %}
             <tr>
-              <td style="text-align:left">{{ Second_2_data.hpm_label }}</td>
-              <td>{{ Second_2_data.target_sector }}</td>
+              <td style="text-align:left">{{ CBECE_data.hpm_label }}</td>
+              <td>{{ CBECE_data.target_sector }}</td>
               <td>0</td>
-              <td>{{ Second_2_data.target }}</td>
-              <td>{{ Second_2_data.cumulative }}
-                {% if first_data.has_hpm_note %}
+              <td>{{ CBECE_data.target }}</td>
+              <td>{{ CBECE_data.cumulative }}
+                {% if CBECE_data.has_hpm_note %}
                 {% increment num as num %}
                 <sup> ({{ num }}) </sup>
                 {% endif %}
               </td>
-              <td>{{ Second_2_data.report_change }}</td>
+              <td>{{ CBECE_data.report_change }}</td>
             </tr>
-            {% get_hpm_indicator_data_new sub_list2.2.id month as Third_2_data %}
+            {% get_hpm_indicator_data_new sub_list2.2.id month as BLN_data %}
             <tr>
-              <td style="text-align:left">{{ Third_2_data.hpm_label }}</td>
-              <td>{{ Third_2_data.target_sector }}</td>
+              <td style="text-align:left">{{ BLN_data.hpm_label }}</td>
+              <td>{{ BLN_data.target_sector }}</td>
               <td>0</td>
-              <td>{{ Third_2_data.target }}</td>
-              <td>{{ Third_2_data.cumulative }}
-                {% if first_data.has_hpm_note %}
+              <td>{{ BLN_data.target }}</td>
+              <td>{{ BLN_data.cumulative }}
+                {% if BLN_data.has_hpm_note %}
                 {% increment num as num %}
                 <sup> ({{ num }}) </sup>
                 {% endif %}
               </td>
-              <td>{{ Third_2_data.report_change }}</td>
+              <td>{{ BLN_data.report_change }}</td>
+            </tr>
+            {% get_hpm_indicator_data_new sub_list2.3.id month as ABLN_data %}
+            <tr>
+              <td style="text-align:left">{{ ABLN_data.hpm_label }}</td>
+              <td>{{ ABLN_data.target_sector }}</td>
+              <td>0</td>
+              <td>{{ ABLN_data.target }}</td>
+              <td>{{ ABLN_data.cumulative }}
+                {% if ABLN_data.has_hpm_note %}
+                {% increment num as num %}
+                <sup> ({{ num }}) </sup>
+                {% endif %}
+              </td>
+              <td>{{ ABLN_data.report_change }}</td>
             </tr>
             <tr>
               <td>Total</td>
