@@ -232,6 +232,23 @@ class ReportView(TemplateView):
             'current_month_name':  datetime.datetime.now().strftime("%B")
         }
 
+class ReportCrisisView(TemplateView):
+    template_name = 'activityinfo/report_crisis.html'
+
+    def get_context_data(self, **kwargs):
+
+        ai_id = int(self.request.GET.get('ai_id', 0))
+        database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year.name
+        report = ActivityReport.objects.filter(database_id=database.ai_id)
+
+        return {
+
+            'reports': report.order_by('id'),
+            'database': database,
+            'reporting_year': str(reporting_year),
+            'current_month_name':  datetime.datetime.now().strftime("%B")
+        }
 
 class ReportPartnerView(TemplateView):
     template_name = 'activityinfo/report_partner.html'
