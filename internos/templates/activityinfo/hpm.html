@@ -282,12 +282,23 @@
               <td>{{ data.sector_change }}</td>
               <td>{{data.target }}</td>
               <td>
+
+                 {% if data.is_cumulative %}
                 {{ data.cumulative }}
+                {% else %}
+                {{ data.highest }}
+                {% endif %}
                 {% if data.has_hpm_note %}
                 <sup style="position:unset">({{ forloop.counter }})</sup>
                 {% endif %}
               </td>
-              <td>{{ data.report_change }}</td>
+              <td>
+                 {% if data.is_cumulative %}
+                {{ data.report_change }}
+                {% else %}
+                {{ data.highest_change }}
+                {% endif %}
+               </td>
             </tr>
             {% endfor %}
             {% endif %}

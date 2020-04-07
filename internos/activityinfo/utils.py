@@ -2363,10 +2363,13 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         sp_1 = get_hpm_indicator_data_new(indicator.id, month)
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(sp_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(sp_1['target'])
-        document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(sp_1['cumulative'])
-        document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(sp_1['report_change'])
+        if sp_1['is_cumulative']:
+            document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(sp_1['cumulative'])
+            document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(sp_1['report_change'])
+        else:
+            document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(sp_1['highest'])
+            document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(sp_1['highest_change'])
         row_num = row_num + 1
-
    #  # # C4D
 
     # C4D_ids = [6917]
