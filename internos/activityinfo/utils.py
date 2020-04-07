@@ -2242,7 +2242,28 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
 
     document = Document(path2file)
     # month = month - 1
-    document.paragraphs[0].runs[1].text = month_name
+    # document.paragraphs[0].runs[1].text = month_name
+    replacements = {
+        'month_name': month_name ,
+    }
+    #
+    # for paragraph in document.paragraphs:
+    #     for key in replacements:
+    #         paragraph.text = paragraph.text.replace(key, replacements[key])
+    # document.paragraphs[0].runs[0].style
+    #
+    # for paragraph in document.tables[0].rows[0].cells[1].paragraphs:
+    #     for key in replacements:
+    #         paragraph.text = paragraph.text.replace(key, replacements[key])
+    if month == 1:
+        document.paragraphs[0].add_run('{} {} {} {}'.format('HPM Table | Data of ', month_name ,'|',reporting_year))
+
+        document.tables[0].rows[0].cells[1].paragraphs[0].runs[0].text='{} {} {} {} {}'.format('SUMMARY OF PROGRAMME RESULTS |', month_name,'|' ,reporting_year,' SITREP - LEBANON')
+    else:
+        document.paragraphs[0].add_run('{} {} {} {}'.format('HPM Table | Data of  Janurary to ', month_name, '|', reporting_year))
+
+        document.tables[0].rows[0].cells[1].paragraphs[0].runs[0].text = '{} {} {} {} {}'.format('SUMMARY OF PROGRAMME RESULTS | January to', month_name, '|', reporting_year, ' SITREP - LEBANON')
+
     databases = Database.objects.filter(reporting_year__name=reporting_year).order_by('hpm_sequence')
 
     edu_list=[]
@@ -2342,10 +2363,13 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         sp_1 = get_hpm_indicator_data_new(indicator.id, month)
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(sp_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(sp_1['target'])
-        document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(sp_1['cumulative'])
-        document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(sp_1['report_change'])
+        if sp_1['is_cumulative']:
+            document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(sp_1['cumulative'])
+            document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(sp_1['report_change'])
+        else:
+            document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(sp_1['highest'])
+            document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(sp_1['highest_change'])
         row_num = row_num + 1
-
    #  # # C4D
 
     # C4D_ids = [6917]

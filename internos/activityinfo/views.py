@@ -754,10 +754,6 @@ class ReportDisabilityView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
-        # month_number = '12'
-        # month = 12
-        # month_name = 'December'
-
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         database = Database.objects.get(ai_id=ai_id)
@@ -1355,6 +1351,7 @@ class HPMView(TemplateView):
         current_year = date.today().year
         is_current_year = True
         title = ""
+        table_title=""
         month = int(self.request.GET.get('month', 0))
         today = datetime.date.today()
         day_number = int(today.strftime("%d"))
@@ -1383,8 +1380,10 @@ class HPMView(TemplateView):
 
         if month == 1:
             title = '{} {}'.format('HPM Table | Data of January |', str(reporting_year))
+            table_title='{} {} {}'.format('SUMMARY OF PROGRAMME RESULTS | January | ',str(reporting_year),'SITREP-LEBANON')
         else:
             title = '{} {} {} {}'.format('HPM Table | Data of January to ', str(month_name),'|', str(reporting_year))
+            table_title='{} {} {} {} {}'.format('SUMMARY OF PROGRAMME RESULTS | January to',  month_name , '|',  reporting_year,'SITREP-LEBANON')
 
         months = []
         if int(reporting_year) == current_year:
@@ -1406,7 +1405,8 @@ class HPMView(TemplateView):
             'reporting_year': reporting_year,
             'is_current_year': is_current_year,
             'title': title,
-            'SGBV_db': SGBV_db_id
+            'SGBV_db': SGBV_db_id,
+            'table_title':table_title
         }
 
     def post(self, request, *args, **kwargs):

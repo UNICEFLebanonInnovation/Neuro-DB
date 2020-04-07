@@ -72,8 +72,8 @@
           <table class="mb-0 table table-striped " id="hpm_exporttable1">
             <thead>
             <tr>
-              <th class="w-150" colspan="2">SUMMARY OF PROGRAMME RESULTS –January to {{ month_name }} {{ reporting_year}} SITREP
-                – LEBANON
+              <th class="w-150" colspan="2">
+                {{ table_title }}
               </th>
               <th class="w-10">Sector Target*</th>
               <th class="w-10">Sector Result</th>
@@ -130,7 +130,7 @@
               <td>{{ Second_data.target }}</td>
               <td>{{ Second_data.cumulative }}
                 {% if main_data.cumulative %}
-                {% if first_data.has_hpm_note %}
+                {% if Second_data.has_hpm_note %}
                 {% increment num as num %}
                 <sup>({{ num }})</sup>
                 {% endif %}
@@ -144,7 +144,7 @@
               <td>0</td>
               <td>{{ main_data.target }}</td>
               <td>{{ main_data.cumulative }}
-                {% if first_data.has_hpm_note %}
+                {% if main_data.has_hpm_note %}
                 {% increment num as num %}
                 <sup>({{ num }})</sup>
                 {% endif %}
@@ -282,12 +282,23 @@
               <td>{{ data.sector_change }}</td>
               <td>{{data.target }}</td>
               <td>
+
+                 {% if data.is_cumulative %}
                 {{ data.cumulative }}
+                {% else %}
+                {{ data.highest }}
+                {% endif %}
                 {% if data.has_hpm_note %}
                 <sup style="position:unset">({{ forloop.counter }})</sup>
                 {% endif %}
               </td>
-              <td>{{ data.report_change }}</td>
+              <td>
+                 {% if data.is_cumulative %}
+                {{ data.report_change }}
+                {% else %}
+                {{ data.highest_change }}
+                {% endif %}
+               </td>
             </tr>
             {% endfor %}
             {% endif %}
