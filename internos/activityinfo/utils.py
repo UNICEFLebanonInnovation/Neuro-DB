@@ -110,7 +110,7 @@ def add_rows(ai_db=None, model=None):
             except Exception:
                 indicator_value = 0
 
-            funded_by = row['funded_by.funded_by'] if 'funded_by.funded_by' in row else ''
+            funded_by = unicode(row['funded_by.funded_by'], errors='replace' ) if 'funded_by.funded_by' in row else ''
             partner_label = unicode(row['partner.name'], errors='ignore') if 'partner.name' in row else ''
 
             if partner_label == 'UNICEF':

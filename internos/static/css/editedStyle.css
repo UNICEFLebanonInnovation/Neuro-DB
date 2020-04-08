@@ -199,10 +199,10 @@ background-color:#e0f3ff;
   #hpm_exporttable1 tr td:not(:first-child){
   text-align:center;
   }
-    #hpm_exporttable1 tr td:last-child{
+  #hpm_exporttable1 tr td:last-child{
       text-align:left;
-     }
-  .dashboard_icons{
+   }
+ .dashboard_icons{
  margin: 5px;
   }
 .dashboard_icons a{
