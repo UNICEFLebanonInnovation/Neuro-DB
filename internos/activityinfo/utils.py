@@ -16,7 +16,8 @@ def r_script_command_line(script_name, ai_db):
     path = os.path.dirname(__file__)
     path2script = os.path.join(path, 'RScripts')
     path2script = os.path.join(path2script, script_name)
-    cmd = [command, path2script, ai_db.username, ai_db.password, str(ai_db.db_id), str(ai_db.ai_id)]
+    main_db_id = ai_db.reporting_year.database_id
+    cmd = [command, path2script, ai_db.username, ai_db.password, str(ai_db.db_id), str(ai_db.ai_id), str(main_db_id)]
     try:
         subprocess.check_output(cmd, universal_newlines=True)
     except subprocess.CalledProcessError as e:
