@@ -195,11 +195,11 @@ class ReportView(TemplateView):
                 display_live = True
                 if current_month == 1:
                     months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
-                if current_month == 2:
-                    for i in range(1, 3):
+                if current_month == 2 or current_month == 3 or current_month == 4:
+                    for i in range(1, current_month):
                         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
-                if current_month > 2:
-                    for i in range(current_month - 2, current_month + 1):
+                if current_month > 4 :
+                    for i in range(current_month - 3, current_month):
                         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
             else:
                 display_live = False
@@ -232,6 +232,7 @@ class ReportView(TemplateView):
             'current_month_name':  datetime.datetime.now().strftime("%B")
         }
 
+
 class ReportCrisisView(TemplateView):
     template_name = 'activityinfo/report_crisis.html'
 
@@ -239,7 +240,7 @@ class ReportCrisisView(TemplateView):
 
         ai_id = int(self.request.GET.get('ai_id', 0))
         database = Database.objects.get(ai_id=ai_id)
-        reporting_year = database.reporting_year.name
+        reporting_year = date.today().year
         report = ActivityReport.objects.filter(database_id=database.ai_id)
 
         return {
@@ -249,6 +250,22 @@ class ReportCrisisView(TemplateView):
             'reporting_year': str(reporting_year),
             'current_month_name':  datetime.datetime.now().strftime("%B")
         }
+
+class ReportInternalView(TemplateView):
+    template_name = 'activityinfo/report_internal.html'
+
+    def get_context_data(self, **kwargs):
+        ai_id = int(self.request.GET.get('ai_id', 0))
+        database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year.name
+        report = ActivityReport.objects.filter(database_id=database.ai_id)
+        return {
+            'reports': report.order_by('id'),
+            'database': database,
+            'reporting_year': str(reporting_year),
+            'current_month_name': datetime.datetime.now().strftime("%B")
+        }
+
 
 class ReportPartnerView(TemplateView):
     template_name = 'activityinfo/report_partner.html'
