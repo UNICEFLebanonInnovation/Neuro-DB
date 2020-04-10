@@ -19,7 +19,8 @@ def r_script_command_line(script_name, ai_db):
     main_db_id = ai_db.reporting_year.database_id
     cmd = [command, path2script, ai_db.username, ai_db.password, str(ai_db.db_id), str(ai_db.ai_id), str(main_db_id)]
     try:
-        subprocess.check_output(cmd, universal_newlines=True)
+         subprocess.check_output(cmd, universal_newlines=True)
+        # subprocess.check_output(['type', cmd], shell=True)
     except subprocess.CalledProcessError as e:
         print("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
         return 0
@@ -113,6 +114,7 @@ def add_rows(ai_db=None, model=None):
 
             funded_by = unicode(row['funded_by.funded_by'], errors='replace' ) if 'funded_by.funded_by' in row else ''
             partner_label = unicode(row['partner.name'], errors='ignore') if 'partner.name' in row else ''
+            partner_label = partner_label.replace('-', '_')
 
             if partner_label == 'UNICEF':
                 funded_by = 'UNICEF'
@@ -134,7 +136,7 @@ def add_rows(ai_db=None, model=None):
                 indicator_name=unicode(row['Quantity.Field'], errors='replace'),
                 indicator_awp_code=get_awp_code(unicode(row['Quantity.Field'], errors='replace')),
                 month_name=row['month'] if 'month' in row else '',
-                partner_label=partner_label.replace('-','_'),
+                partner_label=partner_label,
                 location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
                 location_adminlevel_caza=unicode(row['caza.name'], errors='replace') if 'caza.name' in row else '',
                 form=unicode(row['Form'], errors='replace') if 'Form' in row else '',
@@ -169,6 +171,7 @@ def add_rows(ai_db=None, model=None):
                 # lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
                 # indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
             )
+
     return ctr
 
 
