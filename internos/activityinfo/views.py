@@ -5,9 +5,10 @@ import json
 import datetime
 import calendar
 from django.db.models import Q, Sum
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, FormView
 from django.http import HttpResponse, JsonResponse
-from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner, IndicatorTag, ReportingYear
+from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner, IndicatorTag, ReportingYear, \
+    Activity
 from django.shortcuts import render
 from datetime import date
 from django.http import HttpResponseRedirect
@@ -251,6 +252,7 @@ class ReportCrisisView(TemplateView):
             'current_month_name':  datetime.datetime.now().strftime("%B")
         }
 
+
 class ReportInternalView(TemplateView):
     template_name = 'activityinfo/report_internal.html'
 
@@ -259,12 +261,117 @@ class ReportInternalView(TemplateView):
         database = Database.objects.get(ai_id=ai_id)
         reporting_year = database.reporting_year.name
         report = ActivityReport.objects.filter(database_id=database.ai_id)
+        none_ai_indicators = Indicator.objects.filter(none_ai_indicator=True,activity__database=database)
         return {
             'reports': report.order_by('id'),
             'database': database,
             'reporting_year': str(reporting_year),
-            'current_month_name': datetime.datetime.now().strftime("%B")
+            'current_month_name': datetime.datetime.now().strftime("%B"),
+            'list_indicators':none_ai_indicators
+
         }
+
+
+
+
+
+
+
+class ReportInternalFormView(TemplateView):
+    template_name = 'activityinfo/report_internal_form.html'
+
+    def get_context_data(self, **kwargs):
+
+        indicator_id = self.request.GET.get('id', 0)
+        ai_id = self.request.GET.get('ai_id', 0)
+        step= int(self.request.GET.get('step', 0))
+        database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year.name
+        activities = Activity.objects.filter(database=database.id)
+        report = ActivityReport.objects.filter(database_id=database.ai_id)
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
+
+        if indicator_id != 0:
+            indicator = Indicator.objects.get(id=indicator_id)
+        else:
+            step=1
+            indicator = None
+
+        return {
+            'reports': report.order_by('id'),
+            'database': database,
+            'reporting_year': str(reporting_year),
+            'current_month_name': datetime.datetime.now().strftime("%B"),
+            'activities':activities,
+            'governorates':governorates,
+            'indicator':indicator,
+            'step':step
+        }
+
+    def post(self, request, *args, **kwargs):
+        form_name= self.request.POST.get('form_name', 0)
+        indicator_id = self.request.POST.get('id', 0)
+        ai_id = self.request.POST.get('ai_id', 0)
+        step = 0
+
+        if indicator_id:
+            indicator = Indicator.objects.get(id=indicator_id)
+        else:
+            step = 2
+            indicator = Indicator(ai_indicator=None)
+
+        if form_name == 'valuesform':
+            row_values = self.request.POST.get('row_values', "")
+            for row in row_values:
+                if 'Governorate' in row:
+                    gov = row['Governorate']
+                if 'Month' in row:
+                    month= row['Month']
+                if  "Value" in row:
+                    value= row["value"]
+
+            print (row_values)
+
+        if form_name == 'indicatorform':
+
+            name = self.request.POST.get('name', "")
+            activity_id = self.request.POST.get('activity', "")
+            awp_code = self.request.POST.get('awp_code',"")
+            target = self.request.POST.get('target',0)
+            qualitative_target = self.request.POST.get('qualitative_target',0)
+            unit = self.request.POST.get('unit',"")
+            level = self.request.POST.get('level',"")
+            type = self.request.POST.get('type',"")
+            measurement= self.request.POST.get('measurement',"")
+            activity = Activity.objects.get(id=activity_id)
+
+
+            if level == 'master_indicator':
+                master_indicator = True
+            else:
+                master_indicator = False
+
+            if level == 'sub_master_indicator':
+                sub_master_indicator = True
+            else:
+                sub_master_indicator = False
+
+            indicator.label = name
+            indicator.name = name
+            indicator.type = type
+            indicator.activity = activity
+            indicator.units = unit
+            indicator.master_indicator = master_indicator
+            indicator.awp_code = awp_code
+            indicator.master_indicator_sub = sub_master_indicator
+            indicator.none_ai_indicator = True
+            indicator.target = target
+            indicator.qualitative_target = qualitative_target
+            indicator.measurement_type = measurement
+            indicator.save()
+
+        return HttpResponseRedirect('/activityinfo/report-internal-form/?rep_year=2020&ai_id='+str(ai_id)+'&id='+str(indicator.id)+'&step='+str(step))
 
 
 class ReportPartnerView(TemplateView):

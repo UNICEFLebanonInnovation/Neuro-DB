@@ -32,6 +32,16 @@ urlpatterns = [
         name='report'
     ),
     url(
+        regex=r'^report-internal/$',
+        view=views.ReportInternalView.as_view(),
+        name='report_internal'
+    ),
+    url(
+        regex=r'^report-internal-form/$',
+        view=views.ReportInternalFormView.as_view(),
+        name='report_internal_form'
+    ),
+    url(
         regex=r'^report-crisis/$',
         view=views.ReportCrisisView.as_view(),
         name='report_crisis'
