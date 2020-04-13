@@ -1,0 +1,482 @@
+{% extends "base2.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}{% endblock %}
+
+{% block content %}
+<div class="app-main__inner">
+  <div class="app-page-title">
+    <div class="page-title-wrapper">
+      <div class="page-title-heading">
+        <div class="page-title-icon">
+          <i class="fa fa-fw icon-gradient bg-happy-fisher" aria-hidden="true"></i>
+        </div>
+        <div> Internal Reporting Form | {{ database.label }} | {{ reporting_year}}
+          <div class="page-title-subheading">
+          </div>
+        </div>
+      </div>
+      <div class="page-title-actions">
+      </div>
+    </div>
+  </div>
+  <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+    <li class="nav-item">
+
+       <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
+        <span>General Information</span>
+      </a>
+
+    </li>
+    <li class="nav-item">
+
+      <a role="tab"  class="nav-link " id="tab-1" data-toggle="tab" href="#tab-content-1">
+        <span>Values</span>
+      </a>
+
+    </li>
+
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane tabs-animation active show" id="tab-content-0" role="tabpanel">
+      <form method="post" id="indicatorform" action="{% url 'activityinfo:report_internal_form' %}?rep_year={{ reporting_year }}">
+        <input type="hidden" name="ai_id" value="{{ database.ai_id }}">
+        <input type="hidden" name="id" value="{{ indicator.id }}">
+        <input type="hidden" name="form_name" value="indicatorform">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="main-card mb-3 card">
+              <div class="card-body">
+                <h5 class="card-title">Basic</h5>
+                <div class="position-relative form-group">
+                  <label for="indicator_name" class="">Name</label>
+                  <textarea id="indicator_name" name="name" class="form-control form-control-sm">{{ indicator.name }}</textarea>
+                </div>
+                <div class="position-relative form-group">
+                  <label for="code" class="">AWP Code</label>
+                  <input name="awp_code" id="code" type="text" value="{{ indicator.awp_code }}" class="form-control form-control-sm">
+                </div>
+                <div class="position-relative form-group">
+                  <label for="activity_id" class="">Select Activity</label>
+                  <select name="activity" id="activity_id" class="custom-select">
+                    {% for activity in activities %}
+                    <option value="{{ activity.id }}"{% if indicator.activity  == activity %}selected{% endif %}>{{ activity.name }}</option>
+                    {% endfor %}
+                  </select></div>
+
+                <div class="position-relative form-group">
+                  <label for="unit" class="">Select Unit</label>
+                  <select name="unit" id="unit" class="custom-select" data-value="{{ indicator.units }}">
+                    <option value="Children">Children</option>
+                    <option value="Individuals">Individuals</option>
+                    <option value="Adolescents & Youth">Adolescents & Youth</option>
+                    <option value="Caregivers">Caregivers</option>
+                    <option value="Households">Households</option>
+                    <option value="Platforms">Platforms</option>
+                    <option value="Locations">Locations</option>
+                    <option value="Community Centers"> Community Centers</option>
+                    <option value="m2">M2 (Meter square)</option>
+                    <option value="m3"> M3 (Meter Cube)</option>
+                  </select>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="main-card mb-2 card">
+              <div class="card-body">
+                <h5 class="card-title"> Choose Types</h5>
+                <div class="position-relative form-group">
+                  <div>
+                    <div class="custom-check custom-control">
+                      <input type="checkbox" id="master_indicator" value="master_indicator"  name="level" class="custom-control-input" {% if indicator.master_indicator %} checked {% endif %}>
+                      <label class="custom-control-label" for="master_indicator" >
+                        Master Indicator</label>
+                    </div>
+                    <div class="custom-check custom-control">
+                      <input type="checkbox" id="sub_master_indicator" value="sub_master_indicator" name="level"  class="custom-control-input" {% if indicator.master_indicator_sub %} checked {% endif %}>
+                      <label class="custom-control-label" for="sub_master_indicator">Sub Master Indicator</label>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="position-relative form-group">
+                  <div>
+                    <div class="custom-check custom-control">
+                      {% if indicator.measurement_type == 'percentage' %}
+                      <input type="checkbox" id="percentage" value="percentage" name="measurement"  class="custom-control-input" checked>
+                    {% else %}
+                      <input type="checkbox" id="percentage" value="percentage" name="measurement"  class="custom-control-input">
+                      {% endif %}
+                      <label class="custom-control-label" for="percentage">Percentage</label></div>
+                    <div class="custom-check custom-control">
+                       {% if indicator.measurement_type == 'numeric' %}
+                      <input type="checkbox" id="numeric" value="numeric" name="measurement" class="custom-control-input" checked>
+                      {% else %}
+                      <input type="checkbox" id="numeric" value="numeric" name="measurement" class="custom-control-input" >
+                      {% endif %}
+                      <label class="custom-control-label" for="numeric">Numeric</label>
+                    </div>
+                  </div>
+                </div>
+                 <div class="position-relative form-group">
+                  <div>
+
+                    <div class="custom-check custom-control">
+
+                      {% if indicator.type == 'quantity' %}
+                      <input type="checkbox" id="quantity" value="quantity" name="type" class="custom-control-input" checked>
+                    {% else %}
+                      <input type="checkbox" id="quantity" value="quantity" name="type" class="custom-control-input" >
+                    {% endif %}
+                       <label class="custom-control-label" for="quantity">Quantitative</label></div>
+                    <div class="custom-check custom-control">
+                      {% if indicator.type == 'quality' %}
+                      <input type="checkbox" id="quality" value="quality" name="type" class="custom-control-input" checked>
+                      {% else %}
+                       <input type="checkbox" id="quality" value="quality" name="type" class="custom-control-input" >
+                     {% endif %}
+                      <label class="custom-control-label" for="quality">Qualitative</label></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% if step == 1 %}
+             <div class="main-card mb-2 card" id="indicator_quality" style="display:none">
+            <div class="card-body">
+                <h5 class="card-title">Qualitative Target </h5>
+                <div class="position-relative form-group">
+                  <div>
+                     <div class="position-relative form-group">
+                  <label for="qualitative_target" class="">Target</label>
+                  <input name="qualitative_target" id="qualitative_target" type="text" value="{{ indicator.qualitative_target }}" class="form-control form-control-sm">
+                </div>
+                  </div>
+                </div>
+             </div>
+            </div>
+
+             <div class="main-card mb-2 card" id="indicator_quantity" style="display:none">
+              <div class="card-body">
+                <h5 class="card-title"> Quantitative Target</h5>
+                <div class="position-relative form-group">
+                  <div>
+                    <div class="position-relative form-group">
+                  <label for="target" class="">Target</label>
+                  <input name="target" id="target" type="number" value="{{ indicator.target }}" class="form-control form-control-sm">
+                </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            {% else %}
+            {% if indicator.type == 'quantity' %}
+            <div class="main-card mb-2 card" id="indicator_quantity" >
+              <div class="card-body">
+                <h5 class="card-title"> Quantitative Target</h5>
+                <div class="position-relative form-group">
+                  <div>
+                    <div class="position-relative form-group">
+                  <label for="target" class="">Target</label>
+                  <input name="target" id="target" type="number" value="{{ indicator.target }}" class="form-control form-control-sm">
+                </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            {% endif %}
+            {% if indicator.type == 'quality' %}
+        <div class="main-card mb-2 card" id="indicator_quality">
+            <div class="card-body">
+                <h5 class="card-title">Qualitative Target </h5>
+                <div class="position-relative form-group">
+                  <div>
+                     <div class="position-relative form-group">
+                  <label for="qualitative_target" class="">Target</label>
+                  <input name="qualitative_target" id="qualitative_target" type="text" value="{{ indicator.qualitative_target }}" class="form-control form-control-sm">
+                </div>
+                  </div>
+                </div>
+             </div>
+            </div>
+            {% endif %}
+         {% endif %}
+            <button type="submit" id="submit_form"  class="btn btn-outline-primary">Save</button>
+          </div>
+        </div>
+         {% csrf_token %}
+      </form>
+    </div>
+    <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
+      <div class="row">
+         <div class="col-md-6">
+      <div class="main-card mb-3 card">
+        <div class="card-body">
+          <h5 class="card-title">Add value per Governorate per month</h5>
+          <div class="position-relative form-group">
+            <label for="filter_governorates" class="" style="display:block">Select Governorate</label>
+            <select class="custom-select" id="filter_governorates"
+                    name="governorates" style="display:block">
+              {% for gov in governorates %}
+              <option value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code == selected_governorates %}selected{% endif %}>
+                {{ gov.location_adminlevel_governorate }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="position-relative form-group">
+            <label for="month" class="" style="display:block">Month</label>
+            <input type="month" id="month" class="form-control form-control-sm" min="2020-01" max="2020-12">
+          </div>
+          <div class="position-relative form-group">
+            <label for="value" class="" style="display:block">Value</label>
+            <input type="number" id="value" class="form-control form-control-sm">
+          </div>
+          <div>
+              <input type="button" class="btn btn-outline-primary" id="add_gov" value="Add Row">
+          </div>
+        </div>
+      </div>
+       </div>
+         <div class="col-md-6">
+      <div class="main-card mb-3 card">
+        <div class="card-body">
+          <h5 class="card-title">Added Values </h5>
+         <form method="Post" id="valuesform" action="{% url 'activityinfo:report_internal_form' %}?rep_year={{ reporting_year }}">
+           <input type="hidden" name="form_name" value="valuesform">
+           <input type="hidden" id="row_values" name="row_values" value="">
+            <input type="hidden" name="ai_id" value="{{ database.ai_id }}">
+            <input type="hidden" name="id" value="{{ indicator.id }}">
+         <table id="table_values" class="table table-striped table-bordered">
+           <thead>
+           <tr>
+             <th>#</th>
+             <th>Governorate</th>
+             <th>Month</th>
+             <th>Value</th>
+           </tr>
+           </thead>
+           <tbody></tbody>
+         </table>
+           <button type="submit" id="save_values" class="btn btn-outline-primary">Save</button>
+          <button type="button" id="delete_gov" class="btn btn-outline-light">Delete Row</button>
+           {% csrf_token %}
+          </form>
+
+        </div>
+      </div>
+       </div>
+      </div>
+      {% if indicator.type == 'quality' %}
+      <div class="row">
+         <div class="col-md-6">
+      <div class="main-card mb-3 card">
+        <div class="card-body">
+          <h5 class="card-title">Add result and status per month</h5>
+           <div class="position-relative form-group">
+            <label for="result" class="" style="display:block">Result</label>
+            <input type="text" id="result" class="form-control form-control-sm">
+          </div>
+           <div class="position-relative form-group">
+            <label for="status" class="" style="display:block">Status</label>
+            <select id="status" class="form-control form-control-sm">
+              <option value="On Track">ON TRACK</option>
+              <option value="Off Track">OFF TRACK</option>
+              <option value="Over Track">OVER TRACK</option>
+            </select>
+          </div>
+          <div class="position-relative form-group">
+            <label for="month_2" class="" style="display:block">Month</label>
+            <input type="month" id="month_2" class="form-control form-control-sm" min="2020-01" max="2020-12">
+          </div>
+
+          <div>
+              <input type="button" class="btn btn-outline-primary" id="add_result" value="Add Row">
+          </div>
+        </div>
+      </div>
+       </div>
+         <div class="col-md-6">
+      <div class="main-card mb-3 card">
+        <div class="card-body">
+          <h5 class="card-title">Added Results </h5>
+
+         <table id="table_result" class="table table-striped table-bordered">
+           <thead>
+           <tr>
+             <th>#</th>
+             <th>Result</th>
+             <th>Status</th>
+             <th>Month</th>
+           </tr>
+           </thead>
+           <tbody></tbody>
+         </table>
+           <button id="save_results" class="btn btn-outline-primary">Save</button>
+          <button type="button" class="btn btn-outline-light" id="delete_result">Delete Row</button>
+        </div>
+      </div>
+       </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+
+</div>
+
+
+{% endblock content %}
+{% block extra_js %}
+
+<script>
+$(document).ready(function () {
+
+      $("#add_gov").click(function(){
+             var selectedvalue = $("#filter_governorates").val();
+             var gov = $("#filter_governorates").find("option:selected").text();
+            var month = $("#month").val();
+             var value = $("#value").val();
+            var markup = "<tr><td><input type='checkbox' name='record'></td><td data-value="+ selectedvalue +">"+ gov +"</td><td data-value="+ month +">"+month+"</td><td data-value="+ value + ">"+value+"</td></tr>";
+            $("#table_values  tbody").append(markup);
+        });
+
+        // Find and remove selected table rows
+        $("#delete_gov").click(function(){
+            $("#table_values  tbody").find('input[name="record"]').each(function(){
+                if($(this).is(":checked")){
+                    $(this).parents("tr").remove();
+                }
+            });
+        });
+      $("#add_result").click(function(){
+             var selectedvalue = $("#status").val();
+             var status = $("#status").find("option:selected").text();
+            var month = $("#month_2").val();
+             var result = $("#result").val();
+            var markup = "<tr><td><input type='checkbox' name='record'></td><td>" + result + "</td><td>" + status + "</td><td>" + month + "</td></tr>";
+            $("#table_result  tbody").append(markup);
+
+        });
+
+        // Find and remove selected table rows
+        $("#delete_result").click(function(){
+            $("#table_result tbody").find('input[name="record"]').each(function(){
+                if($(this).is(":checked")){
+                    $(this).parents("tr").remove();
+                }
+            });
+        });
+      function CreateJson() {
+        var myRows = [];
+        var $headers = $("#table_values thead tr").find("th");
+        var $rows = $("#table_values tbody tr").each(function(index) {
+        $cells = $(this).find("td");
+        myRows[index] = {};
+        $cells.each(function(cellIndex) {
+        if(cellIndex >0){
+        myRows[index][$($headers[cellIndex]).html()] = $(this).data("value");}
+        });
+      });
+      // Put this an object to convert to JSON
+        var myObj = {};
+        myObj.myrows = myRows;
+        alert(JSON.stringify(myObj));
+        $('#row_values').val(JSON.stringify(myObj));
+    }
+
+        $().ready(function() {
+
+        $("#save_values").click(function() {
+                CreateJson();
+            });
+        });
+
+        $('#master_indicator').change(function(){
+          if($(this).is(':checked')){
+            $('#sub_master_indicator').attr('checked', false);
+          }
+        });
+
+         $('#sub_master_indicator').change(function(){
+          if($(this).is(':checked')){
+            $('#master_indicator').attr('checked', false);
+          }
+        });
+
+        $('#quantity').change(function(){
+           $('#indicator_quantity').toggle(this.checked);
+          if($(this).is(':checked')){
+            $('#quality').attr('checked', false);
+            $('#indicator_quality').hide("slow");
+          }
+        });
+
+         $('#quality').change(function(){
+          $('#indicator_quality').toggle(this.checked);
+          if($(this).is(':checked')){
+            $('#quantity').attr('checked', false);
+            $('#indicator_quantity').hide("slow");
+          }
+
+        });
+
+         $('#numeric').change(function(){
+          if($(this).is(':checked')){
+            $('#percentage').attr('checked', false);
+          }
+        });
+
+         $('#percentage').change(function(){
+          if($(this).is(':checked')){
+            $('#numeric').attr('checked', false);
+          }
+        });
+        var selected = $("#unit").data("value");
+        $("#unit").val(selected);
+
+
+      var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+    var id = getUrlParameter('step');
+    if ( id == 2){
+    var active_item = $("#tab-0");
+    active_item.removeClass("active");
+    var href = $(active_item).attr('href');
+    $(href).removeClass("active show");
+    $(href).addClass("fade");
+
+    var item = $("#tab-1");
+    item.removeClass("disabled");
+    item.addClass("active");
+    var href2 = $(item).attr('href');
+    $(href2).removeClass("fade");
+    $(href2).addClass("active show");
+   }
+   if ( id == 1){
+    var item = $("#tab-1");
+    item.addClass("disabled");
+   }
+});
+
+
+</script>
+{% endblock  %}
