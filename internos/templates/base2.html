@@ -318,7 +318,7 @@
                                     {% get_databases True as databases %}
                                     {% for db in databases %}
                                     <li id="sector_{{ db.ai_id }}">
-                                        <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">{{ db.label }}
+                                        <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">{{ db.sector_label }}
                                             <i class="metismenu-icon"></i>
                                         </a>
                                     </li>

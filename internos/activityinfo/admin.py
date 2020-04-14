@@ -827,6 +827,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'db_id',
                 'name',
                 'label',
+                'sector_label',
                 'hpm_label',
                 'hpm_sequence',
                 'username',

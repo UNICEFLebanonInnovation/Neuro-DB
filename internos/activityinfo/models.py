@@ -38,6 +38,7 @@ class Database(models.Model):
                              verbose_name='ActivityInfo ID'
                              )
     name = models.CharField(max_length=254)
+    sector_label = models.CharField(max_length=254,blank=True,null=True)
     label = models.CharField(max_length=254, null=True, blank=True)
     hpm_label = models.CharField(max_length=254, null=True, blank=True)
     hpm_sequence = models.PositiveIntegerField(default=0)
