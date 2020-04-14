@@ -119,7 +119,8 @@ class ReportView(TemplateView):
 
         s_months = []
         if int(reporting_year) == current_year:
-            for i in range(1, current_month+1):
+
+            for i in range(1, current_month):
                 s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         else:
             for i in range(1, 13):
@@ -270,11 +271,6 @@ class ReportInternalView(TemplateView):
             'list_indicators':none_ai_indicators
 
         }
-
-
-
-
-
 
 
 class ReportInternalFormView(TemplateView):
@@ -1082,7 +1078,7 @@ class ReportSectorView(TemplateView):
                                    'location_adminlevel_cadastral_area').distinct()
         s_months = []
         if int(reporting_year) == current_year:
-            for i in range(1, current_month + 1):
+            for i in range(1, current_month):
                 s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         else:
             for i in range(1, 13):
@@ -1187,9 +1183,9 @@ class ReportTagView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
-        month_number = '12'
-        month = 12
-        month_name = 'December'
+        # month_number = '12'
+        # month = 12
+        # month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
         tags = IndicatorTag.objects.all().order_by('sequence')
@@ -1209,7 +1205,7 @@ class ReportTagView(TemplateView):
 
         s_months = []
         if int(reporting_year) == current_year:
-            for i in range(1, current_month+1):
+            for i in range(1, current_month):
                 s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         else:
             for i in range(1, 13):
