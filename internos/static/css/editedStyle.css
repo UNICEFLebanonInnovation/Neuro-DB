@@ -163,7 +163,7 @@ li.dropdown-item.active,li.dropdown-item:active {
 	 box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 	 text-align:center;
 	 vertical-align:middle;
-	 font-size:15px;
+	 font-size:13px;
  }
 
 .widget-content .widget-content-left .widget-heading{
@@ -185,7 +185,7 @@ text-decoration:none !important;
 	 top: 0;
 	 box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 	 vertical-align:middle;
-	 font-size:14px;
+	 font-size:13px;
 }
 #hpm_exporttable1{
   border-collapse: collapse; }
@@ -193,7 +193,7 @@ text-decoration:none !important;
 #hpm_exporttable1 .hpm-tr-header{
 background-color:#e0f3ff;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 13px;
   text-align:left !important;
   }
   #hpm_exporttable1 tr td:not(:first-child){
@@ -215,13 +215,13 @@ text-decoration:none;
 table tbody tr.master_indicator{
 background-color:#e0f3ff !important;
 font-weight: bold;
-font-size: 14px;
+font-size: 13px;
 border-bottom:2px solid #fff;
 }
 table tbody tr.individual_indicator{
 background-color:#dadada !important;
 font-weight: bold;
-font-size: 14px;
+font-size: 13px;
 border-bottom:2px solid #fff;
 }
 
@@ -353,7 +353,7 @@ a:hover{ text-decoration:none !important;}
 	 box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 	 vertical-align:middle;
 	 text-align:center;
-	 font-size:14px;
+	 font-size:13px;
 }
   #exporttable1 tr td{
   text-align:center;
@@ -472,10 +472,7 @@ body{
 
 
 .card-body{
-  padding: 0px 15px ;
-}
-.card-title{
-  margin-bottom: 0px;
+  padding: 15px 15px ;
 }
 
 .app-page-title .page-title-icon{
@@ -496,13 +493,6 @@ body{
 .fixed-sidebar .app-main .app-main__outer{
     width: 100%;
 }
-
-
-/**todo for
-    <div class="table-responsive" style="position: relative;overflow: scroll;height: 600px;">
-    1- replace overflow scroll with auto
-    2- replace height 600px with max-height 600px
-    **/
 
 /**todo add some bottom padding under the table in cards**/
 .card-body .table-responsive{
@@ -582,4 +572,7 @@ text-align:left;
   left: 0;
   top:5px;
   margin: 2px 10px;
+}
+.app-page-title+.body-tabs-layout{
+margin-top:-10px  !important;
 }
