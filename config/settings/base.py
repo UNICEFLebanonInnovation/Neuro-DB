@@ -11,6 +11,17 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 
 import environ
+import os
+if os.name == 'nt':
+    import platform
+    OSGEO4W = r"C:\OSGeo4W"
+    if '64' in platform.architecture()[0]:
+        OSGEO4W += "64"
+    assert os.path.isdir(OSGEO4W), "Directory does not exist: " + OSGEO4W
+    os.environ['OSGEO4W_ROOT'] = OSGEO4W
+    os.environ['GDAL_DATA'] = OSGEO4W + r"\share\gdal"
+    os.environ['PROJ_LIB'] = OSGEO4W + r"\share\proj"
+    os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH']
 
 ROOT_DIR = environ.Path(__file__) - 3  # (internos/config/settings/base.py - 3 = internos/)
 APPS_DIR = ROOT_DIR.path('internos')
@@ -83,6 +94,7 @@ LOCAL_APPS = [
     'internos.etools',
     'internos.locations',
     'internos.databook',
+    'internos.survey',
     # Your stuff: custom apps go here
 ]
 
@@ -390,64 +402,3 @@ LOGGING = {
         },
     }
 }
-
-
-# JET_THEMES = [
-#     {
-#         'theme': 'default', # theme folder name
-#         'color': '#47bac1', # color of the theme's button in user menu
-#         'title': 'Default' # theme title
-#     },
-#     {
-#         'theme': 'green',
-#         'color': '#44b78b',
-#         'title': 'Green'
-#     },
-#     {
-#         'theme': 'light-green',
-#         'color': '#2faa60',
-#         'title': 'Light Green'
-#     },
-#     {
-#         'theme': 'light-violet',
-#         'color': '#a464c4',
-#         'title': 'Light Violet'
-#     },
-#     {
-#         'theme': 'light-blue',
-#         'color': '#5EADDE',
-#         'title': 'Light Blue'
-#     },
-#     {
-#         'theme': 'light-gray',
-#         'color': '#222',
-#         'title': 'Light Gray'
-#     }
-# ]
-#
-# JET_DEFAULT_THEME = 'default'
-# JET_SIDE_MENU_COMPACT = False
-# JET_CHANGE_FORM_SIBLING_LINKS = True
-# JET_INDEX_DASHBOARD = 'jet.dashboard.dashboard.DefaultIndexDashboard'
-# JET_APP_INDEX_DASHBOARD = 'jet.dashboard.dashboard.DefaultAppIndexDashboard'
-# JET_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
-
-# JET_SIDE_MENU_ITEMS = [
-#     {'label': 'General', 'app_label': 'core', 'items': [
-#         {'name': 'help.question'},
-#         {'name': 'pages.page', 'label': _('Static page')},
-#         {'name': 'city'},
-#         {'name': 'validationcode'},
-#         {'label': 'Analytics', 'url': 'http://example.com', 'url_blank': True},
-#     ]},
-#     {'label': 'Users', 'items': [
-#         {'name': 'core.user'},
-#         {'name': 'auth.group'},
-#         {'name': 'core.userprofile', 'permissions': ['core.user']},
-#     ]},
-#     {'app_label': 'banners', 'items': [
-#         {'name': 'banner'},
-#         {'name': 'bannertype'},
-#     ]},
-# ]
-
