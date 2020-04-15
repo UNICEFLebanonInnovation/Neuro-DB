@@ -57,8 +57,8 @@ DJANGO_APPS = [
 
     # Admin
     'internos.apps.SuitConfig',
-    #'jet',
-    #'jet.dashboard',
+    # 'jet',
+    # 'jet.dashboard',
     'django.contrib.admin',
     'django.contrib.gis',
     'django_json_widget',
@@ -94,6 +94,7 @@ LOCAL_APPS = [
     'internos.etools',
     'internos.locations',
     'internos.databook',
+    'internos.survey',
     # Your stuff: custom apps go here
 ]
 
@@ -147,21 +148,21 @@ MANAGERS = ADMINS
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-#DATABASES = {
-#    'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
-    # 'default': env.db('DATABASE_URL', default='postgres://postgres:password1@localhost:5432/internos'),
-#}
-
 DATABASES = {
-     'default': {
-         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-         'NAME': 'neurodb',
-         'USER': 'postgres',
-         'PASSWORD': 'ILOVEunicef990',
-         'HOST': 'localhost',
-         'PORT': '5432',
-     }
+    'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
+    # 'default': env.db('DATABASE_URL', default='postgres://postgres:password1@localhost:5432/internos'),
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'neurodb',
+#         'USER': 'postgres',
+#         'PASSWORD': 'ILOVEunicef990',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 # DATABASES = {
 #     'default': {
@@ -401,6 +402,3 @@ LOGGING = {
         },
     }
 }
-
-
-
