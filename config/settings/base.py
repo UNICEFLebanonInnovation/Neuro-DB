@@ -82,6 +82,7 @@ THIRD_PARTY_APPS = [
     'rest_framework.authtoken',
     'django_db_logger',
     'tellme',
+    'djmoney',
 ]
 
 # Apps specific for this project go here.
@@ -402,3 +403,7 @@ LOGGING = {
         },
     }
 }
+
+
+CURRENCIES = ('USD', 'LBP')
+CURRENCY_CHOICES = [('USD', 'USD'), ('LBP', 'LBP')]
