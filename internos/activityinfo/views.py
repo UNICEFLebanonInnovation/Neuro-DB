@@ -326,22 +326,19 @@ class ReportInternalFormView(TemplateView):
                     month= row['Month']
                 if  "Value" in row:
                     value= row["value"]
-
             print (row_values)
-
         if form_name == 'indicatorform':
 
             name = self.request.POST.get('name', "")
             activity_id = self.request.POST.get('activity', "")
             awp_code = self.request.POST.get('awp_code',"")
-            target = self.request.POST.get('target',0)
-            qualitative_target = self.request.POST.get('qualitative_target',0)
+            target = self.request.POST.get('target',default=0)
+            qualitative_target = self.request.POST.get('qualitative_target',"")
             unit = self.request.POST.get('unit',"")
             level = self.request.POST.get('level',"")
             type = self.request.POST.get('type',"")
             measurement= self.request.POST.get('measurement',"")
             activity = Activity.objects.get(id=activity_id)
-
 
             if level == 'master_indicator':
                 master_indicator = True
@@ -1534,10 +1531,16 @@ class HPMView(TemplateView):
         indicator_id = self.request.POST.get('indicator', 0)
         comment = self.request.POST.get('comment',"")
         indicator = Indicator.objects.get(id=indicator_id)
+        month = self.request.POST.get('month',0)
         if indicator:
-            indicator.hpm_comment = comment
-            indicator.save()
-        return HttpResponseRedirect('/activityinfo/HPM/?rep_year=2020')
+            comments_list = indicator.comment
+            if comments_list is None:
+                comments_list = {}
+            if month > 0:
+                comments_list[month] = comment
+                indicator.comment = comments_list
+                indicator.save()
+        return HttpResponseRedirect('/activityinfo/HPM/?rep_year=2020&month='+month)
 
 
 class HPMExportViewSet(ListView):
