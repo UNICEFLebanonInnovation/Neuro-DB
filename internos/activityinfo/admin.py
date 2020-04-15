@@ -433,7 +433,8 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'hpm_indicator',
                 'target_hpm',
                 'hpm_comment',
-                'has_hpm_note'
+                'has_hpm_note',
+                'hpm_additional_cumulative'
             ]
         }),
         ('Sub indicators', {

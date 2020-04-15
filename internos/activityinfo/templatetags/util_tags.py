@@ -806,10 +806,11 @@ def get_hpm_indicators(db_id):
         'values_sector',
         'values_tags',
         'cumulative_values_sector',
-        'hpm_comment',
+        'comment',
         'hpm_label',
         'has_hpm_note',
         'target_hpm',
+        'hpm_additional_cumulative',
     ).distinct()
     indicators = list(indicators)
     db_indicators[db.ai_id] = []
@@ -841,7 +842,7 @@ def get_hpm_indicator_data_new(indicator_id, month=None):
         'report_change': 0,
         'sector_cumulative': 0,
         'sector_change': 0,
-        'hpm_comment': "",
+        'comment': "",
         'has_hpm_note': 0,
         'highest': 0,
         'highest_change': 0,
@@ -851,132 +852,144 @@ def get_hpm_indicator_data_new(indicator_id, month=None):
         'male': 0,
         'female': 0,
     }
+    # try:
+    value = 0
+    sector_value = 0
+    cumulative = 0
+    cumulative_sector = 0
+    max_value = 0
+    max_value_pre = 0
+    current_month = date.today().month
+
+    if month is None:
+        month = current_month
+
     try:
-        value = 0
-        sector_value = 0
-        cumulative = 0
-        cumulative_sector = 0
-        max_value = 0
-        max_value_pre = 0
-        current_month = date.today().month
-
-        if month is None:
-            month = current_month
-
-        try:
-            indicator = Indicator.objects.get(id=int(indicator_id))
-        except Exception as ex:
-            return data
-
-        if indicator.is_cumulative == False:
-            all_values = indicator.values
-            if all_values:
-                max_value = all_values['1']
-                max_value_pre = all_values['1']
-                for key in all_values.keys():
-                    if key <= str(month):
-                        item_value = all_values[key]
-                        if item_value > max_value:
-                            max_value = item_value
-
-                    if key <= str(month - 1):
-                        item_value_pre = all_values[key]
-                        if item_value_pre > max_value_pre:
-                            max_value_pre = item_value_pre
-
-        if int(month) == current_month:
-                 if indicator.cumulative_values:
-                     if 'months' in indicator.cumulative_values:
-                       if indicator.cumulative_values['months']:
-                        value = indicator.cumulative_values['months']
-
-                 if indicator.cumulative_values_sector:
-                    if 'months' in indicator.cumulative_values_sector:
-                        if indicator.cumulative_values_sector['months']:
-                         sector_value = indicator.cumulative_values_sector['months']
-
-        else:
-            for m in range(1, month + 1):
-                if indicator.values:
-                    if str(m) in indicator.values:
-                        value += float(indicator.values[str(m)])
-
-                if indicator.values_sector:
-                    if str(m) in indicator.values_sector:
-                        sector_value += float(indicator.values_sector[str(m)])
-
-        previous_sector_values = 0
-        for m in range(1, month):
-            if indicator.values_sector:
-                if str(m) in indicator.values_sector:
-                    previous_sector_values += indicator.values_sector[str(m)]
-
-        previous_values = 0
-        for m in range(1, month):
-            if indicator.values:
-                if str(m) in indicator.values:
-                    previous_values += indicator.values[str(m)]
-
-        if int(month) == 1:
-            report_change = 0
-            sector_change = 0
-            highest_change = 0
-        else:
-
-            report_change = "{:,}".format(round((value - previous_values), 1))
-            report_change = report_change.replace('.0', '')
-
-            highest_change = "{:,}".format(round((max_value - max_value_pre), 1))
-            highest_change = highest_change.replace('.0', '')
-
-            sector_change = "{:,}".format(round((sector_value - previous_sector_values), 1))
-            sector_change = sector_change.replace('.0', '')
-
-        cumulative = "{:,}".format(round(value), 1)
-        cumulative = cumulative.replace('.0', '')
-
-        max_value = "{:,}".format(round(max_value), 1)
-        max_value = max_value.replace('.0', '')
-
-        sector_cumulative = "{:,}".format(round(sector_value), 1)
-        sector_cumulative = sector_cumulative.replace('.0', '')
-
-        target = 0
-        if indicator.target_hpm == 0:
-            target = indicator.target
-        else:
-            target = indicator.target_hpm
-        if indicator.hpm_comment is not None:
-            hpm_comment = indicator.hpm_comment
-        else:
-            hpm_comment= ""
-        data = {
-            'id': indicator.id,
-            'name': indicator.name,
-            'target': "{:,}".format(target),
-            'target_sector': "{:,}".format(indicator.target_sector),
-            'cumulative': cumulative,
-            'sector_cumulative': sector_cumulative,
-            'report_change': report_change,
-            'sector_change': sector_change,
-            'hpm_comment': hpm_comment,
-            'has_hpm_note': indicator.has_hpm_note,
-            'hpm_label': indicator.hpm_label,
-            'highest': max_value,
-            'highest_change': highest_change,
-            'is_cumulative': indicator.is_cumulative,
-            'boys': str(round(indicator.values_tags['boys'])).replace('.0',
-                                                                         '') if 'boys' in indicator.values_tags else 0,
-            'girls': str(round(indicator.values_tags['girls'])).replace('.0',
-                                                                           '') if 'girls' in indicator.values_tags else 0,
-            'male': str(round(indicator.values_tags['male'])).replace('.0',
-                                                                         '') if 'male' in indicator.values_tags else 0,
-            'female': str(round(indicator.values_tags['female'])).replace('.0',
-                                                                             '') if 'female' in indicator.values_tags else 0, }
-
-        return data
+        indicator = Indicator.objects.get(id=int(indicator_id))
     except Exception as ex:
         return data
+
+    if indicator.is_cumulative == False:
+        all_values = indicator.values
+        if all_values:
+            max_value = all_values['1']
+            max_value_pre = all_values['1']
+            for key in all_values.keys():
+                if key <= str(month):
+                    item_value = all_values[key]
+                    if item_value > max_value:
+                        max_value = item_value
+
+                if key <= str(month - 1):
+                    item_value_pre = all_values[key]
+                    if item_value_pre > max_value_pre:
+                        max_value_pre = item_value_pre
+
+    additional_cumulative = indicator.hpm_additional_cumulative
+    # get additional cumulative for indicators of PPL that starts last year at month 8 to be added to current year
+
+    if int(month) == current_month:
+             if indicator.cumulative_values:
+                 if 'months' in indicator.cumulative_values:
+                   if indicator.cumulative_values['months']:
+                    value = indicator.cumulative_values['months']
+
+
+             if indicator.cumulative_values_sector:
+                if 'months' in indicator.cumulative_values_sector:
+                    if indicator.cumulative_values_sector['months']:
+                     sector_value = indicator.cumulative_values_sector['months']
+
+    else:
+        for m in range(1, month + 1):
+            if indicator.values:
+                if str(m) in indicator.values:
+                    value += float(indicator.values[str(m)])
+
+
+            if indicator.values_sector:
+                if str(m) in indicator.values_sector:
+                    sector_value += float(indicator.values_sector[str(m)])
+
+    previous_sector_values = 0
+    for m in range(1, month):
+        if indicator.values_sector:
+            if str(m) in indicator.values_sector:
+                previous_sector_values += indicator.values_sector[str(m)]
+
+    previous_values = 0
+    for m in range(1, month):
+        if indicator.values:
+            if str(m) in indicator.values:
+                previous_values += indicator.values[str(m)]
+
+    value = value + additional_cumulative
+    previous_values = previous_values+additional_cumulative
+
+    if int(month) == 1:
+        report_change = 0
+        sector_change = 0
+        highest_change = 0
+    else:
+
+        report_change = "{:,}".format(round((value - previous_values), 1))
+        report_change = report_change.replace('.0', '')
+
+        highest_change = "{:,}".format(round((max_value - max_value_pre), 1))
+        highest_change = highest_change.replace('.0', '')
+
+        sector_change = "{:,}".format(round((sector_value - previous_sector_values), 1))
+        sector_change = sector_change.replace('.0', '')
+
+    cumulative = "{:,}".format(round(value), 1)
+    cumulative = cumulative.replace('.0', '')
+
+
+
+
+    max_value = "{:,}".format(round(max_value), 1)
+    max_value = max_value.replace('.0', '')
+
+    sector_cumulative = "{:,}".format(round(sector_value), 1)
+    sector_cumulative = sector_cumulative.replace('.0', '')
+
+    target = 0
+    if indicator.target_hpm == 0:
+        target = indicator.target
+    else:
+        target = indicator.target_hpm
+    comment = ""
+
+    if indicator.comment is not None:
+         if str(month) in indicator.comment:
+            comment = indicator.comment[str(month)]
+    data = {
+        'id': indicator.id,
+        'name': indicator.name,
+        'target': "{:,}".format(target),
+        'target_sector': "{:,}".format(indicator.target_sector),
+        'cumulative': cumulative,
+        'sector_cumulative': sector_cumulative,
+        'report_change': report_change,
+        'sector_change': sector_change,
+        'comment': comment,
+        'has_hpm_note': indicator.has_hpm_note,
+        'hpm_label': indicator.hpm_label,
+        'highest': max_value,
+        'highest_change': highest_change,
+        'is_cumulative': indicator.is_cumulative,
+        'boys': str(round(indicator.values_tags['boys'])).replace('.0',
+                                                                     '') if 'boys' in indicator.values_tags else 0,
+        'girls': str(round(indicator.values_tags['girls'])).replace('.0',
+                                                                       '') if 'girls' in indicator.values_tags else 0,
+        'male': str(round(indicator.values_tags['male'])).replace('.0',
+                                                                     '') if 'male' in indicator.values_tags else 0,
+        'female': str(round(indicator.values_tags['female'])).replace('.0',
+                                                                         '') if 'female' in indicator.values_tags else 0, }
+
+    return data
+    # except Exception as ex:
+    #     return data
 
 # function to get sub-indicators added from admin used in education database
 @register.assignment_tag
@@ -998,7 +1011,7 @@ def get_hpm_sub_indicators(indicator_id):
             'target_sector',
             'cumulative_values',
             'values',
-            'hpm_comment',
+            'comment',
             'has_hpm_note',
             'values_tags',
             'cumulative_values_sector',

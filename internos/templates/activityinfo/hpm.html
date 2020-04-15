@@ -329,9 +329,11 @@
             {% if indicators %}
 
             {% if db.label == 'Education' %}
+
             {% get_hpm_indicator_data_new indicators.0.id month as main_data %}
             {% get_hpm_sub_indicators indicators.0.id as sub_list1 %}
             {% get_hpm_indicator_data_new sub_list1.0.id month as first_data %}
+
             {% with num=0 %}
             {% if first_data.has_hpm_note %}
             {% increment num as num %}
@@ -341,18 +343,18 @@
               <td class="w-10" colspan="1">Boys {{ first_data.male }}%</td>
               <td class="w-10" colspan="1"> Girls {{ first_data.female }}%</td>
               <td colspan="5">
-                {% if first_data.hpm_comment %}
+              {% if first_data.comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ first_data.id }}"
-                   data-comment="{{ first_data.hpm_comment }}"
-                   data-target="#myModal" title="Click to Edit Comment"> {{ first_data.hpm_comment }}
+                   data-comment="{{ first_data.comment }}"
+                   data-target="#myModal" title="Click to Edit Comment"> {{ first_data.comment }}
                 </a>
-                {% else %}
+              {% else %}
                 <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                         style="position: unset !important;" data-id="{{ first_data.id }}" data-target="#myModal"
                         title="Add comment">
                   <i class="fa fa-plus-circle"> </i>
                 </button>
-                {% endif %}
+              {% endif %}
               </td>
             </tr>
             {% endif %}
@@ -365,10 +367,10 @@
               <td class="w-10" colspan="1">Boys {{ second_data.male }}%</td>
               <td class="w-10" colspan="1"> Girls {{ second_data.female }}%</td>
               <td colspan="5">
-                {% if second_data.hpm_comment %}
+                {% if second_data.comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ second_data.id }}"
-                   data-comment="{{ second_data.hpm_comment }}"
-                   data-target="#myModal" title="Click to Edit Comment">{{ second_data.hpm_comment }}
+                   data-comment="{{ second_data.comment }}"
+                   data-target="#myModal" title="Click to Edit Comment">{{ second_data.comment }}
                 </a>
 
                 {% else %}
@@ -389,10 +391,10 @@
               <td class="w-10" colspan="1">Boys {{ main_data.male }}%</td>
               <td class="w-10" colspan="1"> Girls {{ main_data.female }}%</td>
               <td colspan="5">
-                {% if main_data.hpm_comment %}
+                {% if main_data.comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ main_data.id }}"
-                   data-comment="{{ main_data.hpm_comment }}"
-                   data-target="#myModal" title="Click to Edit Comment"> {{ main_data.hpm_comment }}
+                   data-comment="{{ main_data.comment }}"
+                   data-target="#myModal" title="Click to Edit Comment"> {{ main_data.comment }}
                 </a>
 
                 {% else %}
@@ -417,10 +419,10 @@
               <td class="w-10" colspan="1">Boys {{ first_1_data.male }}%</td>
               <td class="w-10" colspan="1"> Girls {{ first_1_data.female }}%</td>
               <td colspan="5">
-                {% if first_1_data.hpm_comment %}
+                {% if first_1_data.comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ first_1_data.id }}"
-                   data-comment="{{ first_1_data.hpm_comment }}"
-                   data-target="#myModal" title="Click to Edit Comment"> {{ first_1_data.hpm_comment }}
+                   data-comment="{{ first_1_data.comment }}"
+                   data-target="#myModal" title="Click to Edit Comment"> {{ first_1_data.comment }}
                 </a>
 
                 {% else %}
@@ -443,10 +445,10 @@
               <td class="w-10" colspan="1">Boys {{ second_1_data.male }}%</td>
               <td class="w-10" colspan="1"> Girls {{ second_1_data.female }}%</td>
               <td colspan="5">
-                {% if second_1_data.hpm_comment %}
+                {% if second_1_data.comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ second_1_data.id }}"
-                   data-comment="{{ second_1_data.hpm_comment }}"
-                   data-target="#myModal" title="Click to Edit Comment"> {{ second_1_data.hpm_comment }}
+                   data-comment="{{ second_1_data.comment }}"
+                   data-target="#myModal" title="Click to Edit Comment"> {{ second_1_data.comment }}
                 </a>
 
                 {% else %}
@@ -468,10 +470,10 @@
               <td class="w-10" colspan="1">Boys {{ Third_1_data.male }}%</td>
               <td class="w-10" colspan="1"> Girls {{ Third_1_data.female }}%</td>
               <td colspan="5">
-                {% if Third_1_data.hpm_comment %}
+                {% if Third_1_data.comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ Third_1_data.id }}"
-                   data-comment="{{ Third_1_data.hpm_comment }}"
-                   data-target="#myModal" title="Click to Edit Comment"> {{ Third_1_data.hpm_comment }}
+                   data-comment="{{ Third_1_data.comment }}"
+                   data-target="#myModal" title="Click to Edit Comment"> {{ Third_1_data.comment }}
                 </a>
 
                 {% else %}
@@ -492,10 +494,10 @@
               <td class="w-10" colspan="1">Boys {{ main_2_data.male }}%</td>
               <td class="w-10" colspan="1"> Girls {{ main_2_data.female }}%</td>
               <td colspan="5">
-                {% if main_2_data.hpm_comment %}
+                {% if main_2_data.comment %}
                 <a class="edit_model" data-toggle="modal" data-id="{{ main_2_data.id }}"
-                   data-comment="{{ main_2_data.hpm_comment }}"
-                   data-target="#myModal" title="Click to Edit Comment"> {{ main_2_data.hpm_comment }}
+                   data-comment="{{ main_2_data.comment }}"
+                   data-target="#myModal" title="Click to Edit Comment"> {{ main_2_data.comment }}
                 </a>
                 {% else %}
                 <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
@@ -520,10 +522,10 @@
               <td class="w-10" colspan="1">Boys {{ item.male }}%</td>
               <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
               <td colspan="5">
-                {% if i.hpm_comment %}
+                {% if item.comment %}
                 <a class="edit_model" style="cursor: pointer;" data-toggle="modal" data-id="{{ i.id }}"
-                   data-comment="{{ i.hpm_comment }}"
-                   data-target="#myModal"  title="Click to Edit Comment">{{ i.hpm_comment }}</a>
+                   data-comment="{{ item.comment }}"
+                   data-target="#myModal"  title="Click to Edit Comment">{{ item.comment }}</a>
                 {% else %}
                 <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
                         style="position: unset !important;" data-id="{{ i.id }}" data-target="#myModal"
@@ -549,13 +551,13 @@
               <td class="w-10" colspan="1">Boys {{ item.male }}%</td>
               <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
               <td colspan="5">
-                {% if i.hpm_comment %}
-                <a class="edit_model" style="cursor: pointer;" data-toggle="modal" data-id="{{ i.id }}"
-                   data-comment="{{ i.hpm_comment }}"
-                   data-target="#myModal" title="Click to Edit Comment">{{ i.hpm_comment }}</a>
+                {% if item.comment %}
+                <a class="edit_model" style="cursor: pointer;" data-toggle="modal" data-id="{{ item.id }}"
+                   data-comment="{{ item.comment }}"
+                   data-target="#myModal" title="Click to Edit Comment">{{ item.comment }}</a>
                 {% else %}
                 <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
-                        style="position: unset !important;" data-id="{{ i.id }}" data-target="#myModal"
+                        style="position: unset !important;" data-id="{{ item.id }}" data-target="#myModal"
                         title="Add comment">
                   <i class="fa fa-plus-circle"> </i>
                 </button>
@@ -581,7 +583,7 @@
               {% if db.label == 'Youth and Adolescents' or db.label == 'Comms. 4 Development' %}
               <td class="w-10" colspan="1">Males {{ item.male }}%</td>
               <td class="w-10" colspan="1"> Females {{ item.female }}%</td>
-              {% elif db.label == 'Water Sector' %}
+              {% elif db.label == 'WASH' %}
               <td class="w-10" colspan="1">Boys {{ item.boys }}% , Girls {{ item.girls }}%</td>
               <td class="w-10" colspan="1">Females {{ item.female }}% , Males {{ item.male }}%</td>
               {% else %}
@@ -589,13 +591,13 @@
               <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
               {% endif %}
               <td colspan="5">
-                {% if i.hpm_comment %}
-                <a class="edit_model" style="cursor: pointer;" data-toggle="modal" data-id="{{ i.id }}"
-                   data-comment="{{ i.hpm_comment }}"
-                   data-target="#myModal" title="Click to Edit Comment">{{ i.hpm_comment }}</a>
+                {% if item.comment %}
+                <a class="edit_model" style="cursor: pointer;" data-toggle="modal" data-id="{{ item.id }}"
+                   data-comment="{{ item.comment }}"
+                   data-target="#myModal" title="Click to Edit Comment">{{ item.comment }}</a>
                 {% else %}
                 <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
-                        style="position: unset !important;" data-id="{{ i.id }}" data-target="#myModal"
+                        style="position: unset !important;" data-id="{{ item.id }}" data-target="#myModal"
                         title="Add comment">
                   <i class="fa fa-plus-circle"> </i>
                 </button>
@@ -625,7 +627,7 @@
   {% endif %}
 </div>
 
-{% endblock content %}
+  {% endblock content %}
 
 {% block extra_js %}
 
@@ -638,6 +640,7 @@
 
     $('.show_model').click(function(){
        var id = $(this).data('id');
+       alert(id);
         $('#indicator_id').val(id);
     });
      $('.edit_model').click(function(){
@@ -673,6 +676,8 @@
           <div class="position-relative form-group">
             <label for="comment" class="">Comment</label>
             <input type="hidden" name="indicator" id="indicator_id">
+            <input type="hidden" name="month" value="{{ month }}">
+
             <textarea name="comment" id="comment" class="form-control"></textarea>
           </div>
         </div>
