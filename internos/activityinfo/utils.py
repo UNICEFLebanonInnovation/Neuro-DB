@@ -696,10 +696,10 @@ def calculate_indicators_cumulative_hpm():
     return indicators.count()
 
 
-def calculate_indicators_tags_hpm():
+def calculate_indicators_tags_hpm(ai_db):
     from internos.activityinfo.models import Indicator
 
-    indicators = Indicator.objects.filter(hpm_indicator=True)
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).filter(hpm_indicator=True)
 
     for indicator in indicators.iterator():
         m_value = indicator.cumulative_values['months']
