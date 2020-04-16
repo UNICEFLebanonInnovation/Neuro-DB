@@ -794,11 +794,11 @@ def calculate_indicators_tags_hpm():
     return indicators.count()
 
 
-def calculate_indicators_tags():
+def calculate_indicators_tags(ai_db):
     from internos.activityinfo.models import Indicator, IndicatorTag
 
     # indicators = Indicator.objects.filter(hpm_indicator=True)
-    indicators = Indicator.objects.filter(Q(master_indicator=True) | Q(hpm_indicator=True))
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).filter(Q(master_indicator=True) | Q(hpm_indicator=True))
     tags_gender = IndicatorTag.objects.filter(type='gender').only('id', 'name')
     tags_age = IndicatorTag.objects.filter(type='age').only('id', 'name')
     tags_nationality = IndicatorTag.objects.filter(type='nationality').only('id', 'name')
@@ -832,11 +832,13 @@ def calculate_indicators_tags():
 
                 value += float(c_value)
 
+            tag_name_per = '{}_per'.format(tag.name)
             try:
-                # indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                indicator.values_tags[tag_name_per] = float(value) * 100 / float(m_value)
                 indicator.values_tags[tag.name] = value
             except Exception as ex:
                 # print(ex.message)
+                indicator.values_tags[tag_name_per] = 0
                 indicator.values_tags[tag.name] = 0
 
         for tag in tags_age.iterator():
@@ -853,11 +855,13 @@ def calculate_indicators_tags():
 
                 value += float(c_value)
 
+            tag_name_per = '{}_per'.format(tag.name)
             try:
-                # indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                indicator.values_tags[tag_name_per] = float(value) * 100 / float(m_value)
                 indicator.values_tags[tag.name] = value
             except Exception as ex:
                 # print(ex.message)
+                indicator.values_tags[tag_name_per] = 0
                 indicator.values_tags[tag.name] = 0
 
         for tag in tags_nationality.iterator():
@@ -874,11 +878,13 @@ def calculate_indicators_tags():
 
                 value += float(c_value)
 
+            tag_name_per = '{}_per'.format(tag.name)
             try:
-                # indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                indicator.values_tags[tag_name_per] = float(value) * 100 / float(m_value)
                 indicator.values_tags[tag.name] = value
             except Exception as ex:
                 # print(ex.message)
+                indicator.values_tags[tag_name_per] = 0
                 indicator.values_tags[tag.name] = 0
 
         for tag in tags_programme.iterator():
@@ -895,11 +901,13 @@ def calculate_indicators_tags():
 
                 value += float(c_value)
 
+            tag_name_per = '{}_per'.format(tag.name)
             try:
-                # indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                indicator.values_tags[tag_name_per] = float(value) * 100 / float(m_value)
                 indicator.values_tags[tag.name] = value
             except Exception as ex:
                 # print(ex.message)
+                indicator.values_tags[tag_name_per] = 0
                 indicator.values_tags[tag.name] = 0
 
         for tag in tags_disability.iterator():
@@ -916,11 +924,13 @@ def calculate_indicators_tags():
 
                 value += float(c_value)
 
+            tag_name_per = '{}_per'.format(tag.name)
             try:
-                # indicator.values_tags[tag.name] = float(value) * 100 / float(m_value)
+                indicator.values_tags[tag_name_per] = float(value) * 100 / float(m_value)
                 indicator.values_tags[tag.name] = value
             except Exception as ex:
                 # print(ex.message)
+                indicator.values_tags[tag_name_per] = 0
                 indicator.values_tags[tag.name] = 0
 
         indicator.save()
@@ -928,7 +938,7 @@ def calculate_indicators_tags():
     return indicators.count()
 
 
-def calculate_indicators_monthly_tags():
+def calculate_indicators_monthly_tags(ai_db):
     from internos.activityinfo.models import Indicator, IndicatorTag
 
     # indicators = Indicator.objects.filter(hpm_indicator=True)
