@@ -24,13 +24,11 @@ margin-left:5px;
  font-size:16px;
  padding-right:5px;
 }
-.card-header, .card-title .select2 , .select2-selection__rendered{
+ .card-title .select2 , .select2-selection__rendered{
 font-weight:normal;
 font-size:13px !important;
 }
-.card-title #drop5{
-font-size:20px;
-}
+
 /*
   ##Device = Desktops
 */
@@ -172,9 +170,10 @@ font-size:15px;
 .btn-link:hover{
 text-decoration:none !important;
 }
-
+.w-5 { width: 8%; text-align:center; min-width:58px;}
 .w-10 { width: 10%; text-align:center; min-width:85px;}
 .w-20 { width: 25%; text-align:center; min-width:105px;}
+.w-100 { width: 30% ; min-width:120px;}
 .w-150 { width: 50% ; min-width:180px;}
 
 #hpm_exporttable1 th{
@@ -575,4 +574,17 @@ text-align:left;
 }
 .app-page-title+.body-tabs-layout{
 margin-top:-10px  !important;
+}
+.crisis_link b {
+  color:#ef6283;
+}
+.crisis_link b i {
+opacity:1 !important;
+color:#ef6283;
+}
+.card-header .header-icon{
+font-size:1.2rem;
+}
+.card-header .dropdown #drop5{
+font-size:20px;
 }

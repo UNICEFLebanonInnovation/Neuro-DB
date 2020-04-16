@@ -1410,3 +1410,13 @@ def get_databases(is_sector=False):
 def increment(counter):
     counter = counter + 1
     return counter
+
+@register.assignment_tag
+def get_Crisis_db():
+    from internos.activityinfo.models import Database
+    try:
+        databases = Database.objects.filter(reporting_year__name='2020_Crisis').order_by('label')
+        return databases
+    except Exception as ex:
+        # print(ex)
+        return []
