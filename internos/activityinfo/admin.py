@@ -430,7 +430,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'tag_nationality',
                 'tag_disability',
                 'tag_programme',
-                'tag_focus'
+                'tag_focus',
                 'hpm_indicator',
                 'target_hpm',
                 'hpm_comment',
