@@ -415,6 +415,7 @@ class Indicator(models.Model):
     tag_nationality = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_disability = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_programme = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
+    tag_focus = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     hpm_indicator = models.BooleanField(default=False)
     hpm_comment = models.CharField(max_length=1000, blank=True, null=True)
     comment = JSONField(blank=True, null=True)
