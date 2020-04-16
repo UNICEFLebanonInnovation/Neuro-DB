@@ -1053,11 +1053,12 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     calculate_indicators_cumulative_hpm.short_description = 'Step 2: Calculate HPM cumulative values'
 
     def calculate_indicators_tags_hpm(self, request, queryset):
-        reports = calculate_indicators_tags_hpm()
-        self.message_user(
-            request,
-            "{} indicators values Tag HPM for database".format(reports)
-        )
+        for db in queryset:
+            reports = calculate_indicators_tags_hpm(db)
+            self.message_user(
+                request,
+                "{} indicators values Tag HPM for database".format(reports)
+            )
 
     calculate_indicators_tags_hpm.short_description = 'Step 3: Calculate HPM indicators percentages'
 
