@@ -14881,7 +14881,7 @@ a.badge-alternate:hover,a.badge-alternate:focus {
     text-transform: uppercase;
     color: rgba(13,27,62,0.7);
     font-weight: bold;
-    font-size:1.1rem
+    font-size:.88rem
 }
 
 .card-header {

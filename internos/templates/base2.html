@@ -274,15 +274,19 @@
                 <div class="scrollbar-sidebar">
                     <div class="app-sidebar__inner" data-step="2" data-intro="Navigation menu for other sections">
                         <ul class="vertical-nav-menu">
-                           <li class="app-sidebar__heading text-danger">Outbreak</li>
-                            <li>
-                            <a href="{% url 'activityinfo:report_crisis' %}?ai_id=202020">
-                              <b style="color:#ef6283"> <i class="metismenu-icon pe-7s-settings" style="opacity:1 ;color:#ef6283"></i>
-<!--                              <span class="covid-icon"></span>-->
-                             COVID-19 Response</b>
+                           <li class="app-sidebar__heading text-danger">Crisis Response</li>
+
+                              {% get_Crisis_db as databases %}
+                              {% for db in databases %}
+                           <li id="{{ db.ai_id }}">
+                            <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ db.ai_id }}" class="crisis_link">
+                              <b>
+                                <i class="metismenu-icon pe-7s-settings"></i>
+                              {{ db.name }}
+                              </b>
                             </a>
                             </li>
-
+                          {% endfor %}
                             <li class="app-sidebar__heading">Activity Info Results</li>
                             <li>
                                 <a href="/">

@@ -542,7 +542,7 @@
             {% for indicators in value %}
             {% if indicators %}
             {% for i in indicators %}
-            {% get_hpm_indicator_data_new i.id month as data %}
+            {% get_hpm_indicator_data_new i.id month as item %}
             {% if i.has_hpm_note %}
             <tr>
               <td colspan="1">
@@ -552,12 +552,12 @@
               <td class="w-10" colspan="1"> Girls {{ item.female }}%</td>
               <td colspan="5">
                 {% if item.comment %}
-                <a class="edit_model" style="cursor: pointer;" data-toggle="modal" data-id="{{ item.id }}"
+                <a class="edit_model" style="cursor: pointer;" data-toggle="modal" data-id="{{ i.id }}"
                    data-comment="{{ item.comment }}"
                    data-target="#myModal" title="Click to Edit Comment">{{ item.comment }}</a>
                 {% else %}
                 <button type="button" class="btn btn-outline-primary show_model" data-toggle="modal"
-                        style="position: unset !important;" data-id="{{ item.id }}" data-target="#myModal"
+                        style="position: unset !important;" data-id="{{ i.id }}" data-target="#myModal"
                         title="Add comment">
                   <i class="fa fa-plus-circle"> </i>
                 </button>
@@ -640,7 +640,6 @@
 
     $('.show_model').click(function(){
        var id = $(this).data('id');
-       alert(id);
         $('#indicator_id').val(id);
     });
      $('.edit_model').click(function(){
