@@ -57,16 +57,12 @@ DJANGO_APPS = [
 
     # Admin
     'internos.apps.SuitConfig',
-    # 'jet',
-    # 'jet.dashboard',
     'django.contrib.admin',
     'django.contrib.gis',
     'django_json_widget',
     'prettyjson',
     'leaflet',
     'mptt',
-    'newsletter',
-    'watson',
 ]
 THIRD_PARTY_APPS = [
     # 'django_mysql',
@@ -80,9 +76,6 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'rest_framework.authtoken',
-    'django_db_logger',
-    'tellme',
-    'djmoney',
 ]
 
 # Apps specific for this project go here.
@@ -95,7 +88,6 @@ LOCAL_APPS = [
     'internos.etools',
     'internos.locations',
     'internos.databook',
-    'internos.survey',
     # Your stuff: custom apps go here
 ]
 
@@ -149,21 +141,21 @@ MANAGERS = ADMINS
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
+#DATABASES = {
+#    'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
     # 'default': env.db('DATABASE_URL', default='postgres://postgres:password1@localhost:5432/internos'),
-}
+#}
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'neurodb',
-#         'USER': 'postgres',
-#         'PASSWORD': 'ILOVEunicef990',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
+DATABASES = {
+     'default': {
+         'ENGINE': 'django.contrib.gis.db.backends.postgis',
+         'NAME': 'neurodb',
+         'USER': 'postgres',
+         'PASSWORD': 'ILOVEunicef990',
+         'HOST': 'localhost',
+         'PORT': '5432',
+     }
+}
 
 # DATABASES = {
 #     'default': {
@@ -373,37 +365,3 @@ SWAGGER_SETTINGS = {
     'is_authenticated': True,
     'is_superuser': True,
 }
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(asctime)s %(message)s'
-        },
-    },
-    'handlers': {
-        'db': {
-            'level': 'INFO',
-            'class': 'django_db_logger.db_log_handler.DatabaseLogHandler'
-        },
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'level': 'INFO',
-            'handlers': ['db', 'console'],
-            'propagate': True,
-        },
-    }
-}
-
-
-CURRENCIES = ('USD', 'LBP')
-CURRENCY_CHOICES = [('USD', 'USD'), ('LBP', 'LBP')]

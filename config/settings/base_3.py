@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+-*- coding: utf-8 -*-
 """
 Django settings for Internos project.
 
@@ -56,9 +56,9 @@ DJANGO_APPS = [
     # 'django.contrib.humanize',
 
     # Admin
-    'internos.apps.SuitConfig',
-    # 'jet',
-    # 'jet.dashboard',
+    # 'internos.apps.SuitConfig',
+    'jet',
+    'jet.dashboard',
     'django.contrib.admin',
     'django.contrib.gis',
     'django_json_widget',
@@ -82,7 +82,6 @@ THIRD_PARTY_APPS = [
     'rest_framework.authtoken',
     'django_db_logger',
     'tellme',
-    'djmoney',
 ]
 
 # Apps specific for this project go here.
@@ -95,7 +94,6 @@ LOCAL_APPS = [
     'internos.etools',
     'internos.locations',
     'internos.databook',
-    'internos.survey',
     # Your stuff: custom apps go here
 ]
 
@@ -149,21 +147,21 @@ MANAGERS = ADMINS
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
+#DATABASES = {
+#    'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
     # 'default': env.db('DATABASE_URL', default='postgres://postgres:password1@localhost:5432/internos'),
-}
+#}
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'neurodb',
-#         'USER': 'postgres',
-#         'PASSWORD': 'ILOVEunicef990',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
+DATABASES = {
+     'default': {
+         'ENGINE': 'django.contrib.gis.db.backends.postgis',
+         'NAME': 'neurodb',
+         'USER': 'postgres',
+         'PASSWORD': 'ILOVEunicef990',
+         'HOST': 'localhost',
+         'PORT': '5432',
+     }
+}
 
 # DATABASES = {
 #     'default': {
@@ -405,5 +403,60 @@ LOGGING = {
 }
 
 
-CURRENCIES = ('USD', 'LBP')
-CURRENCY_CHOICES = [('USD', 'USD'), ('LBP', 'LBP')]
+JET_THEMES = [
+    {
+        'theme': 'default', # theme folder name
+        'color': '#47bac1', # color of the theme's button in user menu
+        'title': 'Default' # theme title
+    },
+    {
+        'theme': 'green',
+        'color': '#44b78b',
+        'title': 'Green'
+    },
+    {
+        'theme': 'light-green',
+        'color': '#2faa60',
+        'title': 'Light Green'
+    },
+    {
+        'theme': 'light-violet',
+        'color': '#a464c4',
+        'title': 'Light Violet'
+    },
+    {
+        'theme': 'light-blue',
+        'color': '#5EADDE',
+        'title': 'Light Blue'
+    },
+    {
+        'theme': 'light-gray',
+        'color': '#222',
+        'title': 'Light Gray'
+    }
+]
+
+JET_DEFAULT_THEME = 'default'
+JET_SIDE_MENU_COMPACT = False
+JET_CHANGE_FORM_SIBLING_LINKS = True
+JET_INDEX_DASHBOARD = 'jet.dashboard.dashboard.DefaultIndexDashboard'
+JET_APP_INDEX_DASHBOARD = 'jet.dashboard.dashboard.DefaultAppIndexDashboard'
+
+# JET_SIDE_MENU_ITEMS = [
+#     {'label': 'General', 'app_label': 'core', 'items': [
+#         {'name': 'help.question'},
+#         {'name': 'pages.page', 'label': _('Static page')},
+#         {'name': 'city'},
+#         {'name': 'validationcode'},
+#         {'label': 'Analytics', 'url': 'http://example.com', 'url_blank': True},
+#     ]},
+#     {'label': 'Users', 'items': [
+#         {'name': 'core.user'},
+#         {'name': 'auth.group'},
+#         {'name': 'core.userprofile', 'permissions': ['core.user']},
+#     ]},
+#     {'app_label': 'banners', 'items': [
+#         {'name': 'banner'},
+#         {'name': 'bannertype'},
+#     ]},
+# ]
