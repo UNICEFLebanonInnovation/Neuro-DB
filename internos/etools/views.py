@@ -21,6 +21,15 @@ from internos.users.models import Section, Office
 from internos.activityinfo.models import Database
 
 
+class PartnershipView(TemplateView):
+
+    template_name = 'etools/partnerships.html'
+
+    def get_context_data(self, **kwargs):
+
+        return {}
+
+
 class PartnerProfileView(TemplateView):
 
     template_name = 'etools/partner_profile.html'

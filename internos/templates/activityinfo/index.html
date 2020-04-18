@@ -47,6 +47,37 @@
 <!--                        </a>-->
                   </div>
               </div>
+                <div class="card-footer d-inline-block dashboard_icons" style="margin: 0px; padding: 7px;">
+
+                        <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
+                           data-placement="top" title="Live Data Monitoring" class="text-danger"
+                           data-step="9" data-intro="Open live ActivityInfo Dashboard">
+                          <i class="fa fa-rss faa-flash "></i>
+                        </a>
+                        <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
+                           data-placement="top" title="Indicators Data Disaggregated" class="text-info">
+                          <i class="fa fa-tags animated"></i>
+                        </a>
+                        <a class="disabled" href="#" data-toggle="tooltip" data-placement="top"
+                           title="Reported indicators on map"
+                           style=" color:currentColor;cursor: not-allowed; opacity: 0.5;text-decoration: none;"
+                           data-step="15" data-intro="Reported Indicators on Map">
+                          <i class="fa fa-map"></i>
+                        </a>
+                        <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
+                           data-placement="top" title="Disability Report" class="text-warning"
+                           data-step="16" data-intro="Disability report">
+                          <i class="fa fa-wheelchair"></i>
+                        </a>
+
+                        <a href="{% url 'activityinfo:export' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
+                           data-placement="top" title="Row data" class="text-warning"
+                           data-step="16" data-intro="Row data">
+                          <i class="fa fa-download"></i>
+                        </a>
+
+                </div>
+
               </a>
           </div>
       </div>

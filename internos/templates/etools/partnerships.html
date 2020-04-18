@@ -1,0 +1,13 @@
+{% extends "base2.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}{% endblock %}
+
+{% block content %}
+
+<iframe id="encoder_iframe" height="800px" width="100%" style="border: 0px; height: 800px; width: 100%;" src="{% url 'etools:partner_profile' %}">
+</iframe>
+
+{% endblock content %}
