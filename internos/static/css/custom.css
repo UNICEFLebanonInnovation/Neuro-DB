@@ -4223,12 +4223,12 @@ a {
     height: 50px;
 }
 
-/*.card-header, .card-title {
+.card-header, .card-title {
     text-transform: uppercase;
     color: rgba(13,27,62,0.7);
     font-weight: bold;
-    font-size: .88rem;
-}*/
+    font-size: 15px;
+}
 
 .card-header {
     padding: 20px;
@@ -4290,8 +4290,8 @@ a {
 }
 
 .app-page-title .page-title-icon {
-    width: 45px;
-    height: 45px;
+    width: 90px;
+    height: 90px;
     padding: 0 !important;
     margin-right: 10px;
 }
@@ -4347,7 +4347,12 @@ a {
     border-color: #eee;
 }
 
+.top_filters button {
+  color: #3f6ad8;
+}
+
 .top_filters li button {
+    color: #3f6ad8;
     border: 0px;
     border-top: 1px solid #eee;
     width: 100%;
@@ -4355,7 +4360,103 @@ a {
     border-radius: 0px;
 }
 .top_filters li button:hover {
-    border-top: 1px solid #eee;
+    background-color: #3f6ad8;
+    color: #fff;
+}
+
+.top_filters button.dropdown-filter {
+  border-radius: 3px !important;
+  border-color: #3f6ad8;
+  width: 180px;
+  max-width: 180px;
+  margin-right: 15px;
+}
+
+.top_filters button.dropdown-filter:hover {
+    background-color: #3f6ad8;
+    color: #fff;
+}
+.top_filters button.dropdown-filter:selected {
+    background-color: #3f6ad8;
+    color: #fff;
+}
+
+.shadow {
+    box-shadow: 0 5px 10px rgba(0,0,0,0.15) !important;
+}
+.fa-lightbulb:before {
+    content: "\f0eb"
+}
+
+.btn-outline-warning {
+    color: #f7b924;
+    border-color: #f7b924;
+}
+
+.btn-outline-warning:hover {
+    color: #212529;
+    background-color: #f7b924;
+    border-color: #f7b924
+}
+
+.btn-outline-warning:focus,.btn-outline-warning.focus {
+    box-shadow: 0 0 0 0 rgba(247,185,36,0.5)
+}
+
+.btn-outline-warning.disabled,.btn-outline-warning:disabled {
+    color: #f7b924;
+    background-color: transparent
+}
+
+.label-primary {
+    background-color: #3f6ad8 !important;
+}
+
+.panel-body .fa {
+    color: #3f6ad8 !important;
+}
+
+.panel-title .fa-external-link {
+    float: right;
+    font-size: 20px !important;
+}
+
+.rating .fa-star-o {
+    color: #fff !important;
+    font-weight: bold;
+}
+
+.rating {
+    border-radius: 0px 10px 0px 0;
+    opacity: 0.9;
+}
+
+.rating.Low {
+
+}
+
+.panel-heading {
+    border-radius: 0 5px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.15) !important;
+}
+
+.panel {
+    border: none;
+    margin-bottom: 15px;
+    background-color: none;
+}
+
+.panel-collapse {
+    border: 1px solid #eee;
+}
+
+.panel-heading {
+    color: #343a40 !important;
+    opacity: 0.9;
+}
+
+.panel-title {
+    font-weight: normal;
 }
 
 /*

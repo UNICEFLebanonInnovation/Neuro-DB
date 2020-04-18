@@ -62,17 +62,20 @@
 <div class="app-page-title">
       <div class="page-title-wrapper">
         <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
-          <div class="page-title-icon">
-            <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
 
+          <div class="page-title-icon">
+            <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title=""></i>
           </div>
+
           <div style="width:100%; margin-top:12px">
             <div class="row">
+
       <div class="top_filters" style="position: relative;">
-        <div class="btn-group" role="group" aria-label="" style="padding-left: 15px;" data-step="6" data-intro="Filter partners">
+
+        <div class="btn-group" role="group" aria-label="" style="padding-left: 15px; top: -15px;" data-step="6" data-intro="">
 
           <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button type="button" class="btn btn-default dropdown-toggle dropdown-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Sections
                 <span class="caret"></span>
               </button>
@@ -88,7 +91,7 @@
           </div>
 
           <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button type="button" class="btn btn-default dropdown-toggle dropdown-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Donors
                 <span class="caret"></span>
               </button>
@@ -103,13 +106,8 @@
               </ul>
           </div>
 
-          <button type="button" itemref="micro-assessments" class="btn btn-default btn-filter">
-            <span class="label label-primary">{{ nbr_micro_assessments }}</span>
-            Micro Assessments
-          </button>
-
           <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button type="button" class="btn btn-default dropdown-toggle dropdown-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="label label-primary">{{ nbr_interventions }}</span> Interventions
                 <span class="caret"></span>
               </button>
@@ -156,7 +154,7 @@
           </div>
 
           <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button type="button" class="btn btn-default dropdown-toggle dropdown-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="label label-primary">{{ programmatic_visits }}</span> Programmatic Visits
                 <span class="caret"></span>
               </button>
@@ -194,28 +192,62 @@
               </ul>
           </div>
 
-          <button type="button" itemref="spot-checks" class="btn btn-default btn-filter">
+        </div>
+
+        <div class="btn-group" role="group" aria-label="" style="padding-left: 15px; top: 4px;" data-step="6" data-intro="Filter partners">
+
+          <button type="button" itemref="micro-assessments" class="btn btn-default dropdown-filter btn-filter">
+            <span class="label label-primary">{{ nbr_micro_assessments }}</span>
+            Micro Assessments
+          </button>
+
+          <button type="button" itemref="spot-checks" class="btn btn-default dropdown-filter btn-filter">
             <span class="label label-primary">{{ nbr_spot_checks }}</span>
             Spot Checks
           </button>
-          <button type="button" itemref="audits" class="btn btn-default btn-filter">
+          <button type="button" itemref="audits" class="btn btn-default dropdown-filter btn-filter">
             <span class="label label-primary">{{ nbr_audits }}</span>
             Audits
           </button>
-          <button type="button" itemref="special-visits" class="btn btn-default btn-filter">
+          <button type="button" itemref="special-visits" class="btn btn-default dropdown-filter btn-filter">
             <span class="label label-primary">{{ nbr_special_audits }}</span>
             Special Audits
           </button>
+
         </div>
 
         <a itemref="all" title="Cancel" class="btn btn-light d-inline-block btn-filter-no" style="margin-bottom: 0px; margin-right: 15px;"><i class="fa fa-fw" aria-hidden="true"></i></a>
 
-        <ul class="nav nav-pills" role="tablist" style="position: fixed; right: 20px; top: 35px; z-index: 99999;" data-step="7" data-intro="Total partners">
-          <li role="presentation" class="active"><a><span class="badge" id="total-partners">{{ nbr_partners }}</span> Partners</a></li>
-        </ul>
+<!--<a class="btn shadow btn-outline-warning print-page" href="javascript:void(0);" data-toggle="tooltip" data-placement="bottom" title="Print this page" data-original-title="Print this page">-->
+              <!--<i class="fa fa-print" aria-hidden="true"></i>-->
+            <!--</a>-->
+
+        <!--<ul class="nav nav-pills" role="tablist" style="position: fixed; right: 20px; top: 35px; z-index: 99999;" data-step="7" data-intro="Total partners">-->
+          <!--<li role="presentation" class="active"><a><span class="badge" id="total-partners">{{ nbr_partners }}</span> Partners</a></li>-->
+        <!--</ul>-->
+
+              <div class="col-lg-2 col-sm-12" style="padding:0; float: right;" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+
+              <!--<button type="button" data-toggle="tooltip" title="" data-placement="bottom" data-html="true" class="btn-shadow  btn btn-outline-primary" data-original-title="Database focal point: Sahar Al Amine-->
+            <!--<br />-->
+            <!--email: salamine@unicef.org ">-->
+              <!--<i class="fa fa-user"></i>-->
+            <!--</button>-->
+
+            <!--<a class="btn shadow  btn-outline-dark" href="mailto:salamine@unicef.org?subject=ActivityInfo: Inquiry about Basic Assistance database" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Send email to the database focal point">-->
+              <!--<i class="fa fa-envelope"></i>-->
+            <!--</a>-->
+
+            <a class="btn shadow btn-outline-warning" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Show me some tips">
+              <i class="fa fa-lightbulb" aria-hidden="true"></i>
+            </a>
+            </div>
+
       </div>
+
             </div>
           </div>
+
         </div>
       </div>
   </div>
@@ -224,23 +256,15 @@
 
       <div class="card-header">
           <span data-step="4" data-intro="Collapse / Expand Partners info">
-            <a class="collapse-all" style="font-size: 25px;"><i class="fa fa-th-large"></i></a>
-            <a class="expanded-all active" style="font-size: 25px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
+            <a class="collapse-all" style="font-size: 20px;"><i class="fa fa-th-large"></i></a>
+            <a class="expanded-all active" style="font-size: 20px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
           </span>
-          Partner Profile
-          <input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."
-                 autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
-                 aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"
-                 style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;"
-                 data-step="5" data-intro="Search for a specific Partner by name">
-        <a class="" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom"
-             title="Show me some tips" style="padding-left: 20px;">
-          <i class="fa fa-lightbulb-o" style="font-size: 30px; color: #0089d2"></i>
-        </a>
-        <a class="print-page" href="javascript:void(0);" data-toggle="tooltip" data-placement="bottom"
-             title="Print page" style="padding-left: 20px;">
-          <i class="fa fa-print" style="font-size: 30px; color: #0089d2"></i>
-        </a>
+        <span class="card-title">Partner Profile</span>
+          <!--<input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."-->
+                 <!--autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"-->
+                 <!--aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"-->
+                 <!--style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;"-->
+                 <!--data-step="5" data-intro="Search for a specific Partner by name">-->
         <ul class="nav navbar-right panel_toolbox">
           <li><a class="collapse-link"></a></li>
         </ul>
@@ -269,19 +293,18 @@
            programmatic-visits-approved="{{ partner.programmatic_visits_approved|length }}"
            programmatic-visits-completed="{{ partner.programmatic_visits_completed|length }}">
 
+          <span class="label label-default rating {{ partner.rating }}"><i class="fa fa-star-o" style="color: #fff;"></i> {{ partner.rating }}</span>
           <div class="panel-heading">
             <h3 class="panel-title">
               <a data-toggle="collapse" href="#collapse{{ partner.id }}">
-                <i class="fa fa-star-o" style="color: #0089d2;"></i>
-                <span class="label label-default">{{ partner.rating }}</span>
                 <span>{{ partner.name }} - {{ partner.vendor_number }}</span>
                   <a href="https://etools.unicef.org/pmp/partners/{{ partner.id }}/details" target="_blank">
                     <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
                   </a>
-                  <a href="{% url 'etools:partner_profile_map' %}?partner_id={{ partner.db_id }}" data-toggle="tooltip"
-                     data-placement="top" title="Display Partner Interventions on the map" style="padding-left: 20px;">
-                    <i class="fa fa-map-o" style="font-size: 16px; color: #0089d2;"></i>
-                  </a>
+                  <!--<a href="{% url 'etools:partner_profile_map' %}?partner_id={{ partner.db_id }}" data-toggle="tooltip"-->
+                     <!--data-placement="top" title="Display Partner Interventions on the map" style="padding-left: 20px;">-->
+                    <!--<i class="fa fa-map-o" style="font-size: 16px; color: #0089d2;"></i>-->
+                  <!--</a>-->
               </a>
             </h3>
             <h2>{{ partner.type }}</h2>
@@ -837,6 +860,35 @@ function update_data_server(url, data)
         }
     });
 }
+
+function search() {
+  $('input#search-input').quicksearch('div#partner_profile div.partner-profile', {
+    'delay': 300,
+    'selector': 'span',
+    <!--'stripeRows': ['odd', 'even'],-->
+    'loader': 'span.loading',
+    'bind': 'keyup click input',
+    'prepareQuery': function (val) {
+      return new RegExp(val, "i");
+    },
+    'testQuery': function (query, txt, _row) {
+      return query.test(txt);
+    }
+});
+}
+
+  $('#close-search').click(function(e) {
+  $("#searchdiv").triggerHandler("focus");
+      $('input#search-input').val('').focus();
+      search();
+       $('.level1').addClass('collapsed');
+      $('.level2').addClass('collapsed');
+      $('.level3').addClass('collapsed');
+
+      $('.level2').hide();
+      $('.level3').hide();
+  });
+
 
 </script>
 
