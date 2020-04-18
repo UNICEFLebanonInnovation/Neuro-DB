@@ -1,10 +1,98 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% load staticfiles i18n %}
+
+<div class="btn-group dropdown" placement="bottom" id="calendar_btn">
+                        <button aria-haspopup="true" class="btn btn-link p-0 mr-2" type="button" aria-expanded="true">
+                            <div class="font-icon-wrapper">
+                                <i class="fa fa-fw" aria-hidden="true" title="Click to Calendar"></i>
+                            </div>
+                        </button>
+                        <div class="dropdown-menu-xl dropdown-menu" x-placement="bottom"
+                            style="top: 0px; left: 0px; position: absolute; transform: translate(-300px, 46px);">
+                            <div class="dropdown-menu-header">
+                                <div class="dropdown-menu-header-inner bg-plum-plate">
+                                    <div class="menu-header-image dd-header-bg-1"></div>
+                                    <div class="menu-header-content text-white">
+                                        <h5 class="menu-header-title">Dashboard Calendar</h5>
+                                        <h6 class="menu-header-subtitle">Change Reporting Year</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid-menu grid-menu-xl grid-menu-3col">
+                                <div class="no-gutters row">
+                                    <div class="col-sm-6 col-xl-6">
+                                        <a class="btn-icon-vertical btn-square btn  " id="2019" href="/?rep_year=2019">
+                                            <i class="fa fa-fw icon-gradient bg-plum-plate btn-icon-wrapper btn-icon-lg mb-3"
+                                                aria-hidden="true"></i>
+                                            2019
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-6">
+                                        <a class="btn-icon-vertical btn-square  btn" id="2020" href="/">
+                                            <i
+                                                class="fa fa-fw  icon-gradient bg-plum-plate btn-icon-wrapper btn-icon-lg mb-3"></i>
+                                            2020
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-6">
+                                        <a class="btn-icon-vertical btn-square  btn  disabled">
+                                            <i
+                                                class="fa fa-fw icon-gradient bg-plum-plate btn-icon-wrapper btn-icon-lg mb-3"></i>
+                                            2021
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-6">
+                                        <a class="btn-icon-vertical btn-square btn disabled ">
+                                            <i
+                                                class="fa fa-fw icon-gradient bg-plum-plate btn-icon-wrapper btn-icon-lg mb-3"></i>
+                                            2022
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+<script src="{% static 'vendors/jquery/dist/jquery.min.js' %}"></script>
+<script>
+
+        $(document).ready(function () {
+            $('#calendar_btn').click(function () {
+                $('.dropdown-menu-xl').slideToggle("fast");
+            });
+
+            var getUrlParameter = function getUrlParameter(sParam) {
+                var sPageURL = window.location.search.substring(1),
+                    sURLVariables = sPageURL.split('&'),
+                    sParameterName,
+                    i;
+
+                for (i = 0; i < sURLVariables.length; i++) {
+                    sParameterName = sURLVariables[i].split('=');
+
+                    if (sParameterName[0] === sParam) {
+                        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                    }
+                }
+            };
+            var id = getUrlParameter('rep_year');
+             var selected_year = "";
+             if (id == null || undefined) {
+                var currentYear = (new Date).getFullYear();
+                var  rep_year = $('#reporting_year').val();
+                 if (rep_year == currentYear) {
+                    selected_year = $('a#' + currentYear);
+                    }
+                  else {
+                    selected_year = $('a#' + rep_year);
+                  }
+            } else {
+                selected_year = $('a#' + id);
+            }
+            selected_year.addClass("active");
+
+        });
+
+</script>

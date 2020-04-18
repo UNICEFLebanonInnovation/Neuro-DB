@@ -2,6 +2,10 @@
 {% load staticfiles i18n %}
 {% block project_title %}{% endblock %}
 
+{% block filter %}
+  {% include "activityinfo/filter_calendar.html" %}
+{% endblock filter %}
+
 {% block content %}
 <div class="app-main__inner">
    <div class="app-page-title">

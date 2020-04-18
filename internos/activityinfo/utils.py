@@ -2105,7 +2105,7 @@ def assign_support_disability_master_indicator():
         sub_indicators.update(support_disability=indicator.support_disability)
 
 
-def load_reporting_map(ai_id, partner=None, governorate=None, caza=None, donor=None, indicator=None):
+def load_reporting_map(partner=None, governorate=None, caza=None, donor=None, indicator=None, ai_id=None):
     from django.db import connection
 
     params = [str(ai_id), ]
