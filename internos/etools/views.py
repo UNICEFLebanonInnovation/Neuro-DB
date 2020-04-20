@@ -119,7 +119,8 @@ class PartnerProfileView(TemplateView):
             for donor in item['donors']:
                 donors[donor] = donor
 
-        engagements = Engagement.objects.filter(start_date__year=now.year).exclude(status=Engagement.CANCELLED)
+        # engagements = Engagement.objects.filter(start_date__year=now.year).exclude(status=Engagement.CANCELLED)
+        engagements = Engagement.objects.exclude(status=Engagement.CANCELLED)
         spot_checks = engagements.filter(engagement_type='sc')
         audits = engagements.filter(engagement_type='audit')
         micro_assessments = engagements.filter(engagement_type='ma')

@@ -7,6 +7,14 @@
 
 {% block content %}
 
+<style>
+  #mapView {
+    height: 500px;
+    border: 1px solid;
+  }
+</style>
+
+
 <div class="app-main__inner">
   <div class="app-page-title">
     <form action="{% url 'activityinfo:report' %}" method="get">
@@ -52,7 +60,7 @@
             </a>
             </div>
           </div>
-          
+
           </div>
 
         </div>
@@ -64,15 +72,30 @@
       <div class="main-card mb-3 card">
            <div class="card-header">
 
-            <div class="d-inline-block dashboard_icons">
+          <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
+              <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
+              <a href="#" class="expanded-all"><i
+                class="fa fa-bars"></i></a>
+            </span> </i>
+
+            Donor mapping
+              <!--<div class="d-inline-block dashboard_icons">-->
+<!---->
+              <!--</div>-->
 
             </div>
+          <div class="card-body">
+              <div class="table-responsive">
+                <div id="mapView" class="col-lg-3"></div>
+                <div id="activities" class="col-lg-3">
+                  <h2 class="card-title">Programmes, Activities & results</h2>
+                  <div class="card-content">
 
-            </div>
-
+                  </div>
+                </div>
+              </div>
+          </div>
       </div>
-        <div class="card-body">
-        </div>
       </div>
   </div>
 
@@ -139,5 +162,226 @@ $(document).ready(function () {
 
 
 </script>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.11/"></script>
+  <script type="text/javascript" src="{% static 'js/indexedDB.js' %}"></script>
+
+<script>
+    var user_token = '{{ user_token }}';
+    var href_full_path = '{{ request.build_absolute_uri }}';
+    var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
+    var points = '{{ locations|safe }}';
+    points = JSON.parse(points);
+
+    var symbol = {
+      style: "square",
+      color: "blue",
+      size: "8px",  // pixels
+      outline: {  // autocasts as new SimpleLineSymbol()
+        color: [ 255, 255, 0 ],
+        width: 3  // points
+      }
+    };
+
+    var symbol_icon = {
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    var markerSymbol = {
+      type: "picture-marker", // autocasts as new SimpleMarkerSymbol()
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    var view = null;
+    var pointGraphic = null;
+
+    var oTable = null;
+    var db = null;
+
+    $(document).ready(function(){
+
+        createStores();
+
+        $('ul.child_menu').hide();
+
+        require([
+          "esri/Map",
+          "esri/views/MapView",
+          "esri/symbols/SimpleMarkerSymbol",
+          "esri/symbols/PictureMarkerSymbol",
+          "esri/geometry/Point",
+          "esri/Graphic",
+        ], function(Map, MapView, SimpleMarkerSymbol, PictureMarkerSymbol, Point, Graphic) {
+
+          var map = new Map({
+              basemap: "topo-vector"
+          });
+
+          view = new MapView({
+            container: "mapView",
+            map: map,
+            center: [35.8411, 33.6513],
+            zoom: 8
+          });
+
+          <!--pointGraphic = new Graphic({-->
+            <!--geometry: {-->
+              <!--type: "point",-->
+              <!--longitude: 0,-->
+              <!--latitude: 0-->
+            <!--},-->
+            <!--symbol: markerSymbol,-->
+            <!--attributes: {},-->
+            <!--popupTemplate: {-->
+              <!--title: "",-->
+              <!--content: ""-->
+            <!--}-->
+          <!--});-->
+
+          return true;
+          view.graphics.removeAll();
+
+          setTimeout(function(){
+
+             $(points).each(function(i, item){
+
+                setTimeout(function(){
+
+                    var lineAtt = {
+                      Name: item.location_name,
+                      Caza: item.caza,
+                      Cadastral: item.cadastral,
+                      Governorate: item.governorate,
+                    };
+
+                    var content = '<p>{Governorate} - {Cadastral} - {Caza}</p>';
+                    content = content + '<div class="list-group"><a href="#" class="list-group-item active"><strong>Indicators</a></strong>';
+                    $(item.indicators).each(function(j, item1){
+                        content = content + '<a href="#" class="list-group-item">'+item1.indicator_name+' <span class="label label-primary">'+item1.cumulative_value+'</span> <span class="label label-primary">'+item1.indicator_units+'</span> ('+item1.partner_label+')</a>';
+                    });
+                    content = content + '</div>';
+
+                    var pointGraphic = new Graphic({
+                      geometry: {
+                        type: "point",
+                        longitude: item.location_longitude,
+                        latitude: item.location_latitude
+                      },
+                      symbol: markerSymbol,
+                      attributes: lineAtt,
+                      popupTemplate: {
+                        title: "{Name}",
+                        content: content
+                      }
+                    });
+
+                    view.graphics.add(pointGraphic);
+
+                }, 3000);
+
+            });
+
+          }, 9000);
+
+
+        });
+    });
+
+function createStores()
+{
+    var request = indexedDB.open("mapping", 1);
+    request.onupgradeneeded = function() {
+        // The database did not previously exist, so create object stores and indexes.
+        db = request.result;
+        var flag = false;
+        try {
+            if(!db.objectStoreNames().contains('mapping')) {
+                flag = true;
+            }
+        }catch(err) {
+            flag = true;
+        }
+        if(flag){
+            var store = db.createObjectStore("mapping", {keyPath: "id", autoIncrement:true});
+            store.createIndex('cadastral', 'cadastral');
+            store.createIndex('caza', 'caza');
+            store.createIndex('governorate', 'governorate');
+            <!--store.createIndex('classroomAndSection', ['classroom', 'section']);-->
+        }
+    };
+    request.onsuccess = function() {
+        db = request.result;
+        $(".loader").show();
+        load_map();
+        setTimeout(function(){
+            $(".loader").hide();
+        }, 5000);
+    };
+}
+
+function load_map()
+{
+    $(points).each(function(i, item){
+        var store = getStoreByName('mapping');
+        store.add(item);
+    });
+    <!--draw_map();-->
+}
+
+function draw_map()
+{
+          <!--view.graphics.removeAll();-->
+
+          setTimeout(function(){
+
+             $(points).each(function(i, item){
+
+                setTimeout(function(){
+
+                    var lineAtt = {
+                      Name: item.location_name,
+                      Caza: item.caza,
+                      Cadastral: item.cadastral,
+                      Governorate: item.governorate,
+                    };
+
+                    var content = '<p>{Governorate} - {Cadastral} - {Caza}</p>';
+                    content = content + '<div class="list-group"><a href="#" class="list-group-item active"><strong>Indicators</a></strong>';
+                    $(item.indicators).each(function(j, item1){
+                        content = content + '<a href="#" class="list-group-item">'+item1.indicator_name+' <span class="label label-primary">'+item1.cumulative_value+'</span> <span class="label label-primary">'+item1.indicator_units+'</span> ('+item1.partner_label+')</a>';
+                    });
+                    content = content + '</div>';
+
+                    var pointGraphic = new Graphic({
+                      geometry: {
+                        type: "point",
+                        longitude: item.location_longitude,
+                        latitude: item.location_latitude
+                      },
+                      symbol: markerSymbol,
+                      attributes: lineAtt,
+                      popupTemplate: {
+                        title: "{Name}",
+                        content: content
+                      }
+                    });
+
+                    view.graphics.add(pointGraphic);
+
+                }, 3000);
+
+            });
+
+          }, 9000);
+}
+
+
+</script>
+
 
 {% endblock %}
