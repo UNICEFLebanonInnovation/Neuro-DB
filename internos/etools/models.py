@@ -1327,3 +1327,29 @@ class ActionPoint(TimeStampedModel):
 
     def __str__(self):
         return self.reference_number
+
+
+class DonorFunding(models.Model):
+
+    donor = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
+    grant = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
+
+    total_contribution = models.FloatField(blank=True, null=True)
+    programmable = models.FloatField(blank=True, null=True)
+    section = models.ForeignKey(
+        'users.Section', null=True, blank=True, related_name='+'
+    )
+    total = models.FloatField(blank=True, null=True)
+    comment = models.CharField(
+        max_length=1500,
+        blank=True,
+        null=True
+    )
