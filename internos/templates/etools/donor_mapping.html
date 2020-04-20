@@ -7,6 +7,7 @@
 
 {% block content %}
 
+<link href="{% static 'css/tail.select-default.css' %}" rel="stylesheet">
 <style>
   #mapView {
     height: 500px;
@@ -105,7 +106,8 @@
 
 {% block extra_js %}
 <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
-<script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>
+<!--<script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>-->
+<script src="{% static 'js/tail.select.min.js' %}"></script>
 <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
 <script>
@@ -133,30 +135,44 @@ $(document).ready(function () {
     parent.addClass("mm-active");
     selected_li.addClass("mm-active");
 
+tail.select("#filter_partners", {
+    search: true,
+    placeholder: "Partners",
+});
 
-    $('#filter_partners').multiselect({
-        buttonWidth : '180px',
-        includeSelectAllOption : true,
-        nonSelectedText: 'Partners',
-        nSelectedText:'selected partners',
-        numberDisplayed:1
-    });
+tail.select("#filter_governorates", {
+    search: true,
+    placeholder: "Governorates",
+});
 
-    $('#filter_governorates').multiselect({
-        buttonWidth : '190px',
-        includeSelectAllOption : true,
-        nonSelectedText: 'Governorates',
-        nSelectedText:'selected governorates',
-        numberDisplayed:1
-      });
+tail.select("#filter_donors", {
+    search: true,
+    placeholder: "Donors",
+});
 
-    $('#filter_donors').multiselect({
-        buttonWidth : '180px',
-        includeSelectAllOption : true,
-        nonSelectedText: 'Donors',
-        nSelectedText:'selected donors',
-        numberDisplayed:1
-    });
+    <!--$('#filter_partners').multiselect({-->
+        <!--buttonWidth : '180px',-->
+        <!--includeSelectAllOption : true,-->
+        <!--nonSelectedText: 'Partners',-->
+        <!--nSelectedText:'selected partners',-->
+        <!--numberDisplayed:1-->
+    <!--});-->
+<!---->
+    <!--$('#filter_governorates').multiselect({-->
+        <!--buttonWidth : '190px',-->
+        <!--includeSelectAllOption : true,-->
+        <!--nonSelectedText: 'Governorates',-->
+        <!--nSelectedText:'selected governorates',-->
+        <!--numberDisplayed:1-->
+      <!--});-->
+<!---->
+    <!--$('#filter_donors').multiselect({-->
+        <!--buttonWidth : '180px',-->
+        <!--includeSelectAllOption : true,-->
+        <!--nonSelectedText: 'Donors',-->
+        <!--nSelectedText:'selected donors',-->
+        <!--numberDisplayed:1-->
+    <!--});-->
 
 });
 
