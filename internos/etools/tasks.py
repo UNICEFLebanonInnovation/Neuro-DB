@@ -352,7 +352,7 @@ def sync_audit_individual_data(instance):
 @app.task
 def sync_trip_data():
     from internos.etools.models import Engagement, PartnerOrganization, Travel
-    for page in range(320, 350):
+    for page in range(320, 500):
 
         try:
             api_func = '/api/t2f/travels/?page={}&page_size={}'.format(page, 100)
@@ -375,6 +375,7 @@ def sync_trip_data():
                 instance.save()
         except Exception as ex:
             print(ex.message)
+            print(item)
             continue
 
 

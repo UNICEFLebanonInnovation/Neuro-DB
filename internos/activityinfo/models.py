@@ -576,6 +576,8 @@ class ActivityReport(TimeStampedModel):
     location_caza = models.ForeignKey('activityinfo.AdminLevelEntities', blank=True, null=True, related_name='+')
     location_governorate = models.ForeignKey('activityinfo.AdminLevels', blank=True, null=True, related_name='+')
 
+    programme_document = models.ForeignKey('etools.pca', blank=True, null=True, related_name='+')
+
 
 class ActivityReportLive(ActivityReport):
 
