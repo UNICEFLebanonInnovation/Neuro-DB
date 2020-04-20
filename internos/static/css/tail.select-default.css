@@ -36,7 +36,7 @@
 }
 .tail-select mark{
     color: white;
-    background-color: #0088CC;
+    background-color: #3f6ad8;
 }
 .tail-select button{
     outline: none;
@@ -117,8 +117,8 @@
     background-color: transparent;
 }
 .tail-select input[type="text"]:focus{
-    color: #0088CC;
-    border-color: #0088CC;
+    color: #3f6ad8;
+    border-color: #3f6ad8;
     background-color: transparent;
 }
 .tail-select.disabled input[type="text"]{
@@ -146,7 +146,7 @@
     line-height: 16px;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
     vertical-align: top;
-    background-color: #0088CC;
+    background-color: #3f6ad8;
     border-width: 0;
     border-style: solid;
     border-color: transparent;
@@ -166,7 +166,7 @@
 /* @start LABEL */
 .tail-select .select-label{
     cursor: pointer;
-    color: #343A40;
+    color: #3f6ad8;
     width: 100%;
     margin: 0;
     padding: 0 30px 0 0;
@@ -180,13 +180,13 @@
     background-size: 8px 10px;
     border-width: 1px;
     border-style: solid;
-    border-color: #CCCCCC;
+    border-color: #3f6ad8;
     border-radius: 3px;
     transition: border 142ms linear, background 142ms linear, box-shadow 142ms linear;
     -webkit-transition: border 142ms linear, background 142ms linear, box-shadow 142ms linear;
 }
 .tail-select .select-label:hover{
-    color: #343A40;
+    color: #3f6ad8;
     border-color: #b9b9b9;
     background-color: #ececec;
 }
@@ -209,7 +209,7 @@
     text-shadow: none;
     white-space: nowrap;
     border-radius: 0.25rem;
-    background-color: #343A40;
+    background-color: #3f6ad8;
 }
 .tail-select .select-label .label-inner{
     margin: 0;
@@ -220,8 +220,8 @@
     text-overflow: ellipsis;
 }
 .tail-select.active .select-label{
-    color: #343A40;
-    border-color: #0088CC;
+    color: #3f6ad8;
+    border-color: #3f6ad8;
     background-color: #ececec;
     box-shadow: 0 0 0 0.2rem rgba(0, 136, 204, 0.35);
     -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 136, 204, 0.35);
@@ -368,7 +368,7 @@
 }
 /* Selected */
 .tail-select .select-dropdown ul li.dropdown-option.selected{
-    color: #0088CC;
+    color: #3f6ad8;
     background-color: transparent;
 }
 .tail-select .select-dropdown ul li.dropdown-option.selected:before{

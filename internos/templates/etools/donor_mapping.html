@@ -26,7 +26,7 @@
           </div>
           <div style="width:100%; margin-top:12px">
             <div class="row">
-              <div class="col-lg-10 col-sm-12">
+              <div class="col-lg-10 col-sm-12" style="height: 40px;">
                 <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
                 {% for partner in partners %}
                 <option class="dropdown-item" value="{{ partner.partner_id }}"
@@ -48,8 +48,8 @@
                 </option>
                 {% endfor %}
               </select>
-            <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
-              <a href="" title="Cancel"
+            <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search" style="margin-top: -22px;"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
+              <a href="" title="Cancel" style="margin-top: -22px;"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
 
             </div>
