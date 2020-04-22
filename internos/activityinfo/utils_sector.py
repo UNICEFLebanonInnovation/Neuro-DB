@@ -665,7 +665,7 @@ def calculate_indicators_status(database):
     year_days = 365
     today = datetime.datetime.now()
     reporting_year = database.reporting_year
-    beginning_year = datetime.datetime(int(reporting_year.name), 01, 01)
+    beginning_year = datetime.datetime(int(reporting_year.year), 01, 01)
     delta = today - beginning_year
     total_days = delta.days + 1
     days_passed_per = (total_days * 100) / year_days
