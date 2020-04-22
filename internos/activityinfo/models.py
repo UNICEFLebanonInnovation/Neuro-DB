@@ -22,6 +22,9 @@ class ReportingYear(models.Model):
     database_id = models.CharField(max_length=254, null=True) #general id to call 2020 databases from activityinfo
     form_id = models.CharField(max_length=254, null=True)#form id to call 2020 partners from activityinfo
 
+    class Meta:
+        ordering = ['name']
+
     def __unicode__(self):
         return self.name
 
@@ -266,6 +269,9 @@ class Database(models.Model):
             #                 if created:
             #                     reports += 1
         return reports
+
+    class Meta:
+        ordering = ['name']
 
 
 class Partner(models.Model):
