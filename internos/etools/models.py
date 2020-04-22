@@ -476,11 +476,11 @@ class PCA(models.Model):
         help_text=u'Which result structure does this partnership report under?'
     )
     number = models.CharField(
-        max_length=45L,
+        max_length=45,
         blank=True, null=True,
         verbose_name=u'Reference Number'
     )
-    title = models.CharField(max_length=256L)
+    title = models.CharField(max_length=256)
     project_type = models.CharField(
         max_length=20,
         blank=True, null=True,

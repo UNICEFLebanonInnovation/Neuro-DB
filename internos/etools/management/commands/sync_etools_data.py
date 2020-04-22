@@ -15,6 +15,8 @@ from internos.etools.tasks import (
     sync_action_points_data
 )
 
+from internos.activityinfo.utils import link_etools_partners, link_etools_partnerships
+
 
 class Command(BaseCommand):
     help = 'sync_etools_data'
@@ -42,3 +44,7 @@ class Command(BaseCommand):
         sync_audit_data()
         print('sync_action_points_data')
         sync_action_points_data()
+        print('link_etools_partners')
+        link_etools_partners()
+        print('link_etools_partnerships')
+        link_etools_partnerships()

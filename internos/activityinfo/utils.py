@@ -34,12 +34,15 @@ def read_data_from_file(ai_db, forced=False, report_type=None):
     if report_type == 'live':
         model = LiveActivityReport.objects.none()
         LiveActivityReport.objects.filter(database_id=ai_db.ai_id).delete()
-        return add_rows(ai_db=ai_db, model=model)
+        result = add_rows(ai_db=ai_db, model=model)
 
     if forced:
         model = ActivityReport.objects.none()
         ActivityReport.objects.filter(database_id=ai_db.ai_id).delete()
-        return add_rows(ai_db=ai_db, model=model)
+        result = add_rows(ai_db=ai_db, model=model)
+
+    link_ai_partners(report_type)
+    return result
 
 
 def import_data_via_r_script(ai_db, report_type=None):
@@ -399,6 +402,22 @@ def link_etools_partners():
             continue
 
         ai_partners.update(partner_etools=partner)
+
+
+def link_etools_partnerships():
+    from internos.activityinfo.models import ActivityReport
+    from internos.etools.models import PCA
+
+    programmes = PCA.objects.all()
+    ai_reports = ActivityReport.objects.filter(project_label__isnull=False)
+
+    for programme in programmes:
+        reports = ai_reports.filter(project_label=programme.number)
+
+        if not reports.count():
+            continue
+
+        reports.update(programme_document=programme)
 
 
 def reset_indicators_values(ai_id, report_type=None):
@@ -2105,7 +2124,7 @@ def assign_support_disability_master_indicator():
         sub_indicators.update(support_disability=indicator.support_disability)
 
 
-def load_reporting_map(ai_id, partner=None, governorate=None, caza=None, donor=None, indicator=None):
+def load_reporting_map(partner=None, governorate=None, caza=None, donor=None, indicator=None, ai_id=None):
     from django.db import connection
 
     params = [str(ai_id), ]
