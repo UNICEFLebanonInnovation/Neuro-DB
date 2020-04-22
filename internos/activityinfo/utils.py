@@ -31,6 +31,8 @@ def r_script_command_line(script_name, ai_db):
 def read_data_from_file(ai_db, forced=False, report_type=None):
     from internos.activityinfo.models import Database, ActivityReport, LiveActivityReport
 
+    result = 0
+
     if report_type == 'live':
         model = LiveActivityReport.objects.none()
         LiveActivityReport.objects.filter(database_id=ai_db.ai_id).delete()
@@ -49,6 +51,7 @@ def import_data_via_r_script(ai_db, report_type=None):
     r_script_command_line('ai_generate_excel.R', ai_db)
     total = read_data_from_file(ai_db, True, report_type)
     return total
+
 
 def get_awp_code(name):
     try:
@@ -127,6 +130,8 @@ def add_rows(ai_db=None, model=None):
                 start_date = '{}-01'.format(row['month'])
             if 'month.' in row and row['month.'] and not row['month.'] == 'NA':
                 start_date = '{}-01'.format(row['month.'])
+            if 'date' in row and row['date'] and not row['date'] == 'NA':
+                start_date = row['date']
 
             model.create(
                 month=month,
@@ -2008,7 +2013,8 @@ def calculate_indicators_status(database):
     year_days = 365
     today = datetime.datetime.now()
     reporting_year = database.reporting_year
-    beginning_year = datetime.datetime(int(reporting_year.name), 01, 01)
+    beginning_year = datetime.datetime(int(reporting_year.year), 01, 01)
+    # datetime.datetime(int(reporting_year.name), 01, 01)
     delta = today - beginning_year
     total_days = delta.days + 1
     days_passed_per = (total_days * 100) / year_days

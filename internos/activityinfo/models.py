@@ -17,8 +17,9 @@ from .client import ActivityInfoClient
 
 class ReportingYear(models.Model):
     name = models.CharField(max_length=254)
+    year = models.CharField(max_length=254, null=True)
     current = models.BooleanField(default=False)
-    database_id = models.CharField(max_length=254,null=True) #general id to call 2020 databases from activityinfo
+    database_id = models.CharField(max_length=254, null=True) #general id to call 2020 databases from activityinfo
     form_id = models.CharField(max_length=254, null=True)#form id to call 2020 partners from activityinfo
 
     def __unicode__(self):
