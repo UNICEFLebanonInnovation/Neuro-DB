@@ -84,7 +84,7 @@
             {{ database.label }}
           <div class="btn-actions-pane-right">
 <!--            {% url 'activityinfo:report_internal' %}?rep_year=2020&ai_id={{ database.ai_id }}-->
-            <a href="#" class="link">
+            <a href="{% url 'activityinfo:report_internal' %}?rep_year=2020&ai_id={{ database.ai_id }}" class="link">
              <i class="nav-link-icon fa fa-fw"></i>
              <span>Internal Reporting</span>
             </a>
