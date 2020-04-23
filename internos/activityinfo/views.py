@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 import os
 import json
-from datetime import datetime
+import datetime
 import calendar
 from django.db.models import Q, Sum
 from django.views.generic import ListView, TemplateView, FormView
@@ -232,7 +232,7 @@ class ReportView(TemplateView):
             'reporting_year': str(reporting_year),
             'display_live': display_live,
             'current_month': current_month,
-            'current_month_name':  datetime.now().strftime("%B")
+            'current_month_name':  datetime.datetime.now().strftime("%B")
         }
 
 
@@ -352,7 +352,7 @@ class ReportCrisisView(TemplateView):
             'reports': report.order_by('id'),
             'database': database,
             'reporting_year': str(reporting_year),
-            'current_month_name':  datetime.now().strftime("%B"),
+            'current_month_name':  datetime.datetime.now().strftime("%B"),
             'months': months,
             'partners': partners,
             'governorates': governorates,
@@ -397,7 +397,7 @@ class ReportInternalView(TemplateView):
             'reports': report.order_by('id'),
             'database': database,
             'reporting_year': str(reporting_year),
-            'current_month_name': datetime.now().strftime("%B"),
+            'current_month_name': datetime.datetime.now().strftime("%B"),
             'list_indicators':none_ai_indicators,
             'months':months,
 
@@ -448,7 +448,7 @@ class ReportInternalFormView(TemplateView):
             'reports': report.order_by('id'),
             'database': database,
             'reporting_year': str(reporting_year),
-            'current_month_name': datetime.now().strftime("%B"),
+            'current_month_name': datetime.datetime.now().strftime("%B"),
             'activities':activities,
             'governorates':governorates,
             'indicator':indicator,
@@ -506,7 +506,7 @@ class ReportInternalFormView(TemplateView):
                     if num == gov:
                         gov_name=name
 
-                date = datetime.strptime(month, "%Y-%m")
+                date = datetime.datetime.strptime(month, "%Y-%m")
                 date = date.replace(day=01)
 
                 report = ActivityReport()
@@ -553,7 +553,7 @@ class ReportInternalFormView(TemplateView):
                     indicator.result_status = results_list
                     indicator.save()
 
-            # return HttpResponseRedirect('/activityinfo/report-internal/?rep_year=2020&ai_id=' + str(ai_id))
+            return HttpResponseRedirect('/activityinfo/report-internal/?rep_year=2020&ai_id=' + str(ai_id))
 
         if form_name == 'indicatorform':
             name = self.request.POST.get('name', "")
@@ -598,7 +598,7 @@ class ReportInternalFormView(TemplateView):
             indicator.funded_by = 'UNICEF'
             indicator.save()
 
-        return HttpResponseRedirect('/activityinfo/report-internal-form/?rep_year=2020&ai_id='+str(ai_id)+'&id='+str(indicator.id)+'&step='+str(step))
+            return HttpResponseRedirect('/activityinfo/report-internal-form/?rep_year=2020&ai_id='+str(ai_id)+'&id='+str(indicator.id)+'&step='+str(step))
 
 
 class ReportPartnerView(TemplateView):
@@ -768,7 +768,7 @@ class ReportPartnerView(TemplateView):
             'list_selected_sub': list_selected_sub,
             'locations': locations,
             'selected_filters': selected_filters,
-            'current_month': datetime.now().strftime("%B"),
+            'current_month': datetime.datetime.now().strftime("%B"),
             'reporting_year': str(reporting_year),
 
         }
@@ -1588,7 +1588,7 @@ class ReportTagView(TemplateView):
             'disability_keys': json.dumps(disability_calculation.keys()),
             'age_keys': json.dumps(age_calculation.keys()),
             'reporting_year': str(reporting_year),
-            'current_month_name': datetime.now().strftime("%B")
+            'current_month_name': datetime.datetime.now().strftime("%B")
         }
 
 
