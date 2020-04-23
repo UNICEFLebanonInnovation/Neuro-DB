@@ -1341,7 +1341,7 @@ class DonorFunding(models.Model):
         blank=True,
         null=True
     )
-
+    year = models.CharField(max_length=255, blank=True, null=True)
     total_contribution = models.FloatField(blank=True, null=True)
     programmable = models.FloatField(blank=True, null=True)
     section = models.ForeignKey(
