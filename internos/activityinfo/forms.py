@@ -34,7 +34,10 @@ class IndicatorForm(forms.ModelForm):
         required=False,
         queryset=IndicatorTag.objects.filter(type='nationality')
     )
-
+    tag_focus = forms.ModelChoiceField(
+        required=False,
+        queryset=IndicatorTag.objects.filter(type='focus')
+    )
     tag_disability = forms.ModelChoiceField(
         required=False,
         queryset=IndicatorTag.objects.filter(type='disability')
