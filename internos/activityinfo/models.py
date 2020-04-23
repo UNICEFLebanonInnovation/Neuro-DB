@@ -9,6 +9,7 @@ from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from django.contrib.postgres.fields import ArrayField, JSONField
 # from django_mysql import models as mysql_model
+from smart_selects.db_fields import ChainedForeignKey
 
 from internos.users.models import Section
 from internos.etools.models import PartnerOrganization
@@ -367,7 +368,17 @@ class IndicatorCategory(models.Model):
 class Indicator(models.Model):
 
     ai_id = models.PositiveIntegerField(blank=True, null=True)
-    activity = models.ForeignKey(Activity)
+    database = models.ForeignKey(Database, blank=True, null=True)
+    # activity = models.ForeignKey(Activity)
+    activity = ChainedForeignKey(
+        Activity,
+        chained_field="database",
+        chained_model_field="database",
+        show_all=False,
+        auto_choose=False,
+        null=True, blank=True,
+        verbose_name='Database',
+    )
     name = models.CharField(max_length=5000)
     label = models.CharField(max_length=5000, blank=True, null=True)
     hpm_label = models.CharField(max_length=5000, blank=True, null=True)

@@ -59,12 +59,12 @@ class IndicatorForm(forms.ModelForm):
         queryset=Indicator.objects.none(),
         widget=FilteredSelectMultiple('indicator', is_stacked=False)
     )
-    activity = forms.ModelChoiceField(
-        required=False,
-        queryset=Activity.objects.filter(database__reporting_year__year=datetime.datetime.now().year),
+    # activity = forms.ModelChoiceField(
+    #     required=False,
+    #     queryset=Activity.objects.filter(database__reporting_year__year=datetime.datetime.now().year),
         # queryset=Activity.objects.none(),
-        widget=widgets.Select(attrs={'style': 'height:200px;', 'size': '100px;'})
-    )
+        # widget=widgets.Select(attrs={'style': 'height:200px;', 'size': '100px;'})
+    # )
     # denominator_summation = forms.ModelMultipleChoiceField(
     #     required=False,
     #     queryset=Indicator.objects.all(),
