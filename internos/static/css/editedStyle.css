@@ -211,6 +211,12 @@ font-size:18px;
 .dashboard_icons a:hover{
 text-decoration:none;
 }
+.card-footer.dashboard_icons a {
+    font-size: 15px;
+}
+.card-footer.dashboard_icons {
+    margin: 0px; padding: 7px;
+}
 table tbody tr.master_indicator{
 background-color:#e0f3ff !important;
 font-weight: bold;

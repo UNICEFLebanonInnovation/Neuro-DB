@@ -12,6 +12,16 @@ urlpatterns = [
         name='partner_profile'
     ),
     url(
+        regex=r'^partnership/$',
+        view=views.PartnershipView.as_view(),
+        name='partnership'
+    ),
+    url(
+        regex=r'^donor-mapping/$',
+        view=views.DonorMappingView.as_view(),
+        name='donor_mapping'
+    ),
+    url(
         regex=r'^partner-profile-map/$',
         view=views.PartnerProfileMapView.as_view(),
         name='partner_profile_map'

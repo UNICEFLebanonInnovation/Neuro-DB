@@ -98,6 +98,7 @@ def import_partners(ai_db):
         partner.save()
     return len(db_info)
 
+
 def get_list_indicators_v4(ai_db, form_id):
     from .utils import get_awp_code
     client = ActivityInfoClient(ai_db.username, ai_db.password)

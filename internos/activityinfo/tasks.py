@@ -78,11 +78,14 @@ def import_activity_data():
 
 
 @app.task
-def import_data_and_generate_monthly_report():
+def import_data_and_generate_monthly_report(database):
     from internos.activityinfo.models import Database
     from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values, calculate_indicators_tags
 
     databases = Database.objects.filter(reporting_year__current=True)
+    if database:
+        databases = Database.objects.filter(ai_id=database)
+
     for db in databases:
         logger.info('1. Import report: '+db.name)
         import_data_via_r_script(db)
@@ -90,7 +93,7 @@ def import_data_and_generate_monthly_report():
         link_indicators_data(db)
         logger.info('3. Calculate indicator values')
         calculate_indicators_values(db)
-    calculate_indicators_tags()
+        calculate_indicators_tags(db)
 
 
 @app.task

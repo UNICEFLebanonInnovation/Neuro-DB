@@ -18,7 +18,90 @@ from .models import PartnerOrganization, PCA, Engagement, Travel, TravelType, Tr
 from .utils import get_partner_profile_details, get_trip_details, get_interventions_details
 from .serializers import PartnerOrganizationSerializer
 from internos.users.models import Section, Office
-from internos.activityinfo.models import Database
+from internos.activityinfo.utils import load_reporting_map
+from internos.activityinfo.models import ActivityReport
+
+
+class PartnershipView(TemplateView):
+
+    template_name = 'etools/partnerships.html'
+
+    def get_context_data(self, **kwargs):
+
+        return {}
+
+
+class DonorMappingView(TemplateView):
+
+    template_name = 'etools/donor_mapping.html'
+
+    def get_context_data(self, **kwargs):
+
+        now = datetime.datetime.now()
+        selected_partners = self.request.GET.get('partners', 0)
+        selected_governorates = self.request.GET.get('governorates', 0)
+        selected_donors = self.request.GET.get('donors', 0)
+
+        report = ActivityReport.objects.filter()
+
+        rows = load_reporting_map(partner=selected_partners, governorate=selected_governorates,
+                                  donor=selected_donors)
+
+        rows = []
+        locations = {}
+        ctr = 0
+        for item in rows:
+            if not item[2] or not item[3]:
+                continue
+            if item[0] not in locations:
+                ctr += 1
+                locations[item[0]] = {
+                    'location_name': item[1],
+                    'location_longitude': item[2],
+                    'location_latitude': item[3],
+                    'governorate': item[5],
+                    'caza': '{}-{}'.format(item[6], item[7]),
+                    'cadastral': '{}-{}'.format(item[8], item[9]),
+                    'indicators': []
+                }
+
+            try:
+                cumulative_value = "{:,}".format(round(float(item[12]), 1))
+            except Exception:
+                cumulative_value = 0
+
+            locations[item[0]]['indicators'].append({
+                'indicator_units': item[4].upper(),
+                'partner_label': item[10],
+                'indicator_name': item[11],
+                'cumulative_value': cumulative_value,
+            })
+
+        locations = json.dumps(locations.values())
+
+        partners = report.values('partner_label', 'partner_id').distinct()
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').distinct()
+
+        donors_set = PCA.objects.filter(end__year=now.year,
+                                        donors__isnull=False,
+                                        donors__len__gt=0).values('number', 'donors').distinct()
+
+        donors = {}
+        for item in donors_set:
+            for donor in item['donors']:
+                donors[donor] = donor
+
+        return {
+            'selected_partners': selected_partners,
+            'selected_governorates': selected_governorates,
+            'selected_donors': selected_donors,
+            'partners': partners,
+            'governorates': governorates,
+            'donors': donors,
+            'locations': locations,
+            'locations_count': ctr
+        }
 
 
 class PartnerProfileView(TemplateView):
@@ -36,7 +119,8 @@ class PartnerProfileView(TemplateView):
             for donor in item['donors']:
                 donors[donor] = donor
 
-        engagements = Engagement.objects.filter(start_date__year=now.year).exclude(status=Engagement.CANCELLED)
+        # engagements = Engagement.objects.filter(start_date__year=now.year).exclude(status=Engagement.CANCELLED)
+        engagements = Engagement.objects.exclude(status=Engagement.CANCELLED)
         spot_checks = engagements.filter(engagement_type='sc')
         audits = engagements.filter(engagement_type='audit')
         micro_assessments = engagements.filter(engagement_type='ma')
