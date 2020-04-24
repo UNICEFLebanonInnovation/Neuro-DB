@@ -31,6 +31,8 @@ def r_script_command_line(script_name, ai_db):
 def read_data_from_file(ai_db, forced=False, report_type=None):
     from internos.activityinfo.models import Database, ActivityReport, LiveActivityReport
 
+    result = 0
+
     if report_type == 'live':
         model = LiveActivityReport.objects.none()
         LiveActivityReport.objects.filter(database_id=ai_db.ai_id).delete()
@@ -49,6 +51,7 @@ def import_data_via_r_script(ai_db, report_type=None):
     r_script_command_line('ai_generate_excel.R', ai_db)
     total = read_data_from_file(ai_db, True, report_type)
     return total
+
 
 def get_awp_code(name):
     try:
@@ -127,6 +130,8 @@ def add_rows(ai_db=None, model=None):
                 start_date = '{}-01'.format(row['month'])
             if 'month.' in row and row['month.'] and not row['month.'] == 'NA':
                 start_date = '{}-01'.format(row['month.'])
+            if 'date' in row and row['date'] and not row['date'] == 'NA':
+                start_date = row['date']
 
             model.create(
                 month=month,
@@ -2008,7 +2013,8 @@ def calculate_indicators_status(database):
     year_days = 365
     today = datetime.datetime.now()
     reporting_year = database.reporting_year
-    beginning_year = datetime.datetime(int(reporting_year.name), 01, 01)
+    beginning_year = datetime.datetime(int(reporting_year.year), 01, 01)
+    # datetime.datetime(int(reporting_year.name), 01, 01)
     delta = today - beginning_year
     total_days = delta.days + 1
     days_passed_per = (total_days * 100) / year_days
@@ -2601,3 +2607,175 @@ def update_hpm_table_docx1(indicators, month, filename):
     path2file2 = '{}/{}/{}'.format(path, 'AIReports', filename)
     document.save(path2file2)
     return path2file2
+
+
+def calculate_internal_indicators_values(ai_db,indicator_id):
+    from django.db import connection
+    from internos.activityinfo.models import Indicator
+
+    # last_month = int(datetime.datetime.now().strftime("%m"))
+    last_month = 13
+
+    indicators = Indicator.objects.filter(id=indicator_id).only(
+        'ai_indicator',
+        'values',
+        'values_gov',
+        'values_partners',
+        'values_partners_gov'
+    )
+    rows_months = {}
+    rows_partners = {}
+    rows_govs = {}
+    rows_partners_govs = {}
+
+    cursor = connection.cursor()
+    for month in range(1, last_month):
+        month = str(month)
+        cursor.execute(
+            "SELECT indicator_id, SUM(indicator_value) as indicator_value "
+            "FROM activityinfo_activityreport "
+            "WHERE  date_part('month', start_date) = %s AND database_id = %s "
+            "GROUP BY indicator_id",
+            [month, ai_db])
+
+        rows = cursor.fetchall()
+        if rows:
+            for row in rows:
+                if row[0] not in rows_months:
+                    rows_months[row[0]] = {}
+                rows_months[row[0]][month] = row[1]
+
+        cursor.execute(
+            "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
+            "FROM activityinfo_activityreport "
+            "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+            "GROUP BY indicator_id, location_adminlevel_governorate_code",
+            [month, ai_db, 'UNICEF'])
+        rows = cursor.fetchall()
+
+        for row in rows:
+            if row[0] not in rows_govs:
+                rows_govs[row[0]] = {}
+            key = "{}-{}".format(month, row[2])
+            rows_govs[row[0]][key] = row[1]
+
+        cursor.execute(
+            "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
+            "FROM activityinfo_activityreport "
+            "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+            "GROUP BY indicator_id, partner_id",
+            [month, ai_db, 'UNICEF'])
+        rows = cursor.fetchall()
+
+        for row in rows:
+            if row[0] not in rows_partners:
+                rows_partners[row[0]] = {}
+            key = "{}-{}".format(month, row[2])
+            rows_partners[row[0]][key] = row[1]
+
+
+        cursor.execute(
+            "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
+            "FROM activityinfo_activityreport "
+            "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+            "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
+            [month, ai_db, 'UNICEF'])
+
+        rows = cursor.fetchall()
+
+        for row in rows:
+            if row[0] not in rows_partners_govs:
+                rows_partners_govs[row[0]] = {}
+            key = "{}-{}-{}".format(month, row[2], row[3])
+            rows_partners_govs[row[0]][key] = row[1]
+
+    for indicator in indicators.iterator():
+        if str(indicator.id) in rows_months:
+            indicator.values = rows_months[str(indicator.id)]
+            indicator.values_gov = rows_govs[str(indicator.id)]
+            indicator.values_partners = rows_partners[str(indicator.id)]
+            indicator.values_partners_gov = rows_partners_govs[str(indicator.id)]
+
+        indicator.save()
+
+def calculate_internal_cumulative_results(ai_db,indicator_id):
+    from django.db import connection
+    from internos.activityinfo.models import Indicator
+
+    indicators = Indicator.objects.filter(id=indicator_id).only(
+        'id',
+        'values',
+        'values_gov',
+        'values_partners',
+        'values_partners_gov',
+        'cumulative_values',
+    )
+
+    rows_data = {}
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT distinct ai.id, ai.ai_indicator, aa.id, aa.name, ai.values, ai.values_gov , ai.values_partners, "
+        "ai.values_partners_gov ,ai.none_ai_indicator"
+        " FROM public.activityinfo_indicator ai, public.activityinfo_activity aa "
+        "WHERE ai.activity_id = aa.id AND ai.none_ai_indicator='True' AND aa.database_id = %s",[ai_db])
+
+    rows = cursor.fetchall()
+
+    for row in rows:
+        rows_data[row[0]] = row
+
+    for indicator in indicators.iterator():
+
+        values_month = {}
+        values_partners = {}
+        values_gov = {}
+        values_partners_gov = {}
+
+        if indicator.id in rows_data:
+
+            indicator_values = rows_data[indicator.id]
+            values = indicator_values[4]  # values
+            values1 = indicator_values[5]  # values_gov
+            values2 = indicator_values[6]  # values_partners
+            values3 = indicator_values[7]  # values_partners_gov
+
+            c_value = 0
+            for key, value in values.items():
+                c_value += value
+                values_month = c_value
+
+            for key, value in values1.items():
+                keys = key.split('-')
+                gov = keys[1]
+                if gov in values_gov:
+                    values_gov[gov] = values_gov[gov] + value
+                else:
+                    values_gov[gov] = value
+
+            for key, value in values2.items():
+                keys = key.split('-')
+                partner = keys[1]
+                if partner in values_partners:
+                    values_partners[partner] = values_partners[partner] + value
+                else:
+                    values_partners[partner] = value
+
+
+            for key, value in values3.items():
+                keys = key.split('-')
+                gov_partner = '{}-{}'.format(keys[1], keys[2])
+                if gov_partner in values_partners_gov:
+                    values_partners_gov[gov_partner] = values_partners_gov[gov_partner] + value
+                else:
+                    values_partners_gov[gov_partner] = value
+
+            indicator.cumulative_values = {
+                'months': values_month,
+                'govs': values_gov,
+                'partners':values_partners,
+                'partners_govs': values_partners_gov
+
+            }
+            indicator.save()
+
+    return indicators.count()

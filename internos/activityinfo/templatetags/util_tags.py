@@ -1,3 +1,4 @@
+import calendar
 import json
 import datetime
 from django import template
@@ -1121,7 +1122,7 @@ def get_sub_master_indicators_data(ai_id, is_sector=False):
 
 @register.assignment_tag
 def get_indicator_value(indicator, month=None, partner=None, gov=None):
-    try:
+     try:
         value = 0
         if partner and gov and not gov == '0':
             if type(partner) == unicode:
@@ -1161,9 +1162,11 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
         if gov and not gov == '0':
             key = "{}-{}".format(month, gov)
             return get_indicator_unit(indicator, indicator['values_gov'][key])
-
-        return get_indicator_unit(indicator, indicator['values'][str(month)])
-    except Exception as ex:
+        if str(month) in indicator['values']:
+            return get_indicator_unit(indicator, indicator['values'][str(month)])
+        else:
+             return get_indicator_unit(indicator, 0)
+     except Exception as ex:
         # print(ex)
         return get_indicator_unit(indicator, 0)
 
@@ -1420,3 +1423,22 @@ def get_Crisis_db():
     except Exception as ex:
         # print(ex)
         return []
+@register.assignment_tag
+def split_results(key,value):
+    d = dict()
+    month = calendar.month_abbr[int(key)]
+    result = value.split('-')[0]
+    status = value.split('-')[1]
+    color=""
+    if status == 'Off_Track':
+        color = 'badge-danger'
+    elif status == 'Over_Track':
+        color = 'badge-warning'
+    elif status == 'On_Track':
+        color = 'badge-success'
+
+    d['month'] = month
+    d['result'] = result
+    d['status'] = status
+    d['color'] = color
+    return d

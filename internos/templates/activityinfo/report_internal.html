@@ -13,7 +13,6 @@
         <div class="page-title-heading">
             <div class="page-title-icon">
               <i class="fa fa-fw icon-gradient bg-happy-fisher" aria-hidden="true"></i>
-
             </div>
             <div>  Reporting on Section's Indicators | {{ database.label }} | {{ reporting_year}}
                 <div class="page-title-subheading">
@@ -39,24 +38,32 @@
               <thead>
               <tr>
                 <th content=""> Indicator Name</th>
-                <th content="">RWP Code</th>
-                <th content="">Target</th>
-                <th content="">Status</th>
-
-                <th></th>
+                <th content="">Cumulative</th>
+                {% for month, month_name in months %}
+                <th content="{{ month_name }}">{{ month_name }}</th>
+                {% endfor %}
               </tr>
               </thead>
               <tbody>
               {% for indicator in list_indicators %}
               <tr>
                 <td class="w-150">
-                {{ indicator.name }}
-                </td>
-                  <td>{{ indicator.awp_code }}</td>
-                  <td>{{ indicator.target }}</td>
-                  <td>{{ indicator.status }}</td>
+                  <a href="{% url 'activityinfo:report_internal_form' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&id={{ indicator.id }}">
+                    {{ indicator.name }}
+                </a>
 
-                  <td> <a href="{% url 'activityinfo:report_internal_form' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&id={{ indicator.id }}" class="btn btn-outline-primary">Edit</a> </td>
+                </td>
+                  <td class="w-5">
+                      {% get_indicator_cumulative_months indicator  as cumulative_value %}
+                  {{ cumulative_value }}
+                </td>
+                {% for month, month_name in months %}
+                <td class="w-5">
+                  {% get_indicator_value indicator month  as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+
               </tr>
               {% endfor %}
               </tbody>

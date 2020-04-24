@@ -7,11 +7,12 @@ import calendar
 from django.db.models import Q, Sum
 from django.views.generic import ListView, TemplateView, FormView
 from django.http import HttpResponse, JsonResponse
-from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner, IndicatorTag, ReportingYear, \
-    Activity
+from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner, IndicatorTag, ReportingYear, Activity
 from django.shortcuts import render
 from datetime import date
 from django.http import HttpResponseRedirect
+
+from .utils import calculate_internal_indicators_values, calculate_internal_cumulative_results
 
 
 class IndexView(TemplateView):
@@ -31,8 +32,8 @@ class DashboardView(TemplateView):
     template_name = 'activityinfo/dashboard.html'
 
     def get_context_data(self, **kwargs):
-        month = int(self.request.GET.get('month', int(datetime.datetime.now().strftime("%m")) - 1))
-        month_name = self.request.GET.get('month', datetime.datetime.now().strftime("%B"))
+        month = int(self.request.GET.get('month', int(datetime.now().strftime("%m")) - 1))
+        month_name = self.request.GET.get('month', datetime.now().strftime("%B"))
         ai_id = int(self.request.GET.get('ai_id', 0))
 
         year = date.today().year
@@ -352,16 +353,13 @@ class ReportCrisisView(TemplateView):
             'database': database,
             'reporting_year': str(reporting_year),
             'current_month_name':  datetime.datetime.now().strftime("%B"),
-            'reports': report.order_by('id'),
             'months': months,
-            'database': database,
             'partners': partners,
             'governorates': governorates,
             'master_indicators': master_indicators,
             'selected_filter': selected_filter,
             'none_ai_indicators': none_ai_indicators,
-            'reporting_year': str(reporting_year),
-            'current_month_name': datetime.datetime.now().strftime("%B")
+
         }
 
 
@@ -373,13 +371,35 @@ class ReportInternalView(TemplateView):
         database = Database.objects.get(ai_id=ai_id)
         reporting_year = database.reporting_year.name
         report = ActivityReport.objects.filter(database_id=database.ai_id)
-        none_ai_indicators = Indicator.objects.filter(none_ai_indicator=True,activity__database=database)
+        none_ai_indicators = Indicator.objects.filter(none_ai_indicator=True,activity__database=database).values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'is_cumulative',
+        ).distinct()
+        months = []
+        for i in range(1, 13):
+            months.append((i, calendar.month_abbr[i]))
         return {
             'reports': report.order_by('id'),
             'database': database,
             'reporting_year': str(reporting_year),
             'current_month_name': datetime.datetime.now().strftime("%B"),
-            'list_indicators':none_ai_indicators
+            'list_indicators':none_ai_indicators,
+            'months':months,
 
         }
 
@@ -391,19 +411,38 @@ class ReportInternalFormView(TemplateView):
 
         indicator_id = self.request.GET.get('id', 0)
         ai_id = self.request.GET.get('ai_id', 0)
-        step= int(self.request.GET.get('step', 0))
+        step = int(self.request.GET.get('step', 0))
         database = Database.objects.get(ai_id=ai_id)
         reporting_year = database.reporting_year.name
         activities = Activity.objects.filter(database=database.id)
-        report = ActivityReport.objects.filter(database_id=database.ai_id)
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
-
+        report = ActivityReport.objects.filter(database_id=database.ai_id,indicator_id=indicator_id).values(
+            'indicator_id',
+            'indicator_name',
+            'indicator_units',
+            'indicator_value',
+            'location_adminlevel_governorate_code',
+            'location_adminlevel_governorate',
+            'database_id',
+            'start_date',
+            'month'
+            )
+        governorates=[]
+        governorates.append((2,'Akkar'))
+        governorates.append((3,' Baalbek_Hermel'))
+        governorates.append((4,'North'))
+        governorates.append((5,'Mount Lebanon'))
+        governorates.append((6,'Bekaa'))
+        governorates.append((7,'Beirut'))
+        governorates.append((8,'South'))
+        governorates.append((9,'Nabatiye'))
         if indicator_id != 0:
             indicator = Indicator.objects.get(id=indicator_id)
         else:
             step=1
             indicator = None
+        months =[]
+        for i in range(1,13):
+            months.append((i,calendar.month_abbr[i]))
 
         return {
             'reports': report.order_by('id'),
@@ -413,13 +452,15 @@ class ReportInternalFormView(TemplateView):
             'activities':activities,
             'governorates':governorates,
             'indicator':indicator,
-            'step':step
+            'step':step,
+            'months':months
         }
 
     def post(self, request, *args, **kwargs):
-        form_name= self.request.POST.get('form_name', 0)
+        form_name = self.request.POST.get('form_name', 0)
         indicator_id = self.request.POST.get('id', 0)
         ai_id = self.request.POST.get('ai_id', 0)
+        database = Database.objects.get(ai_id=ai_id)
         step = 0
 
         if indicator_id:
@@ -427,29 +468,109 @@ class ReportInternalFormView(TemplateView):
         else:
             step = 2
             indicator = Indicator(ai_indicator=None)
+        gov = ""
+        value = 0
+        month = 0
+        governorates = []
+        governorates.append((2, 'Akkar'))
+        governorates.append((3, ' Baalbek_Hermel'))
+        governorates.append((4, 'North'))
+        governorates.append((5, 'Mount Lebanon'))
+        governorates.append((6, 'Bekaa'))
+        governorates.append((7, 'Beirut'))
+        governorates.append((8, 'South'))
+        governorates.append((9, 'Nabatiye'))
 
         if form_name == 'valuesform':
             row_values = self.request.POST.get('row_values', "")
-            for row in row_values:
+            json_string = json.loads(row_values)
+            if 'myrows' in json_string:
+                 ActivityReport.objects.filter(database_id=ai_id, indicator_id=indicator_id).delete()
+                 indicator.values = {}
+                 indicator.values_gov = {}
+                 indicator.values_partners = {}
+                 indicator.values_partners_gov = {}
+                 indicator.cumulative_values = {}
+            indicator.save()
+
+            for row in json_string['myrows']:
                 if 'Governorate' in row:
                     gov = row['Governorate']
                 if 'Month' in row:
-                    month= row['Month']
-                if  "Value" in row:
-                    value= row["value"]
-            print (row_values)
-        if form_name == 'indicatorform':
+                    month = row['Month']
+                if "Value" in row:
+                    value = row['Value']
 
+                gov_name=""
+                for num , name in governorates:
+                    if num == gov:
+                        gov_name=name
+
+                date = datetime.datetime.strptime(month, "%Y-%m")
+                date = date.replace(day=01)
+
+                report = ActivityReport()
+                report.indicator_name = indicator.name
+                report.indicator_id = indicator.id
+                report.database_id = ai_id
+                report.master_indicator = indicator.master_indicator
+                report.master_indicator_sub = indicator.master_indicator_sub
+                report.month = month
+                report.start_date = date
+                report.location_adminlevel_governorate_code = gov
+                report.location_adminlevel_governorate = gov_name
+                report.indicator_value = value
+                report.indicator_units = indicator.units
+                report.partner_label = 'UNICEF'
+                report.partner_id = 'UNICEF'
+                report.funded_by = 'UNICEF'
+                report.save()
+
+            calculate_internal_indicators_values(ai_id,indicator_id)
+            if database:
+                calculate_internal_cumulative_results(database.id,indicator_id)
+
+            return HttpResponseRedirect('/activityinfo/report-internal/?rep_year=2020&ai_id=' + str(ai_id))
+
+        if form_name == 'resultsform':
+            row_results = self.request.POST.get('row_results', "")
+            json_string = json.loads(row_results)
+            result=""
+            status=""
+            indicator.result_status = {}
+            indicator.save()
+            if 'myrows' in json_string:
+                for row in json_string['myrows']:
+                    if 'Result' in row:
+                        result = row['Result']
+                    if 'Month' in row:
+                        month = row['Month']
+                    if "Status" in row:
+                        status = row['Status']
+
+                    results_list = indicator.result_status
+                    results_list[month] = '{}-{}'.format(result,status)
+                    indicator.result_status = results_list
+                    indicator.save()
+
+            return HttpResponseRedirect('/activityinfo/report-internal/?rep_year=2020&ai_id=' + str(ai_id))
+
+        if form_name == 'indicatorform':
             name = self.request.POST.get('name', "")
             activity_id = self.request.POST.get('activity', "")
             awp_code = self.request.POST.get('awp_code',"")
-            target = self.request.POST.get('target',default=0)
+
             qualitative_target = self.request.POST.get('qualitative_target',"")
             unit = self.request.POST.get('unit',"")
             level = self.request.POST.get('level',"")
             type = self.request.POST.get('type',"")
             measurement= self.request.POST.get('measurement',"")
             activity = Activity.objects.get(id=activity_id)
+
+            if self.request.POST.get('target'):
+                target = self.request.POST.get('target', default=0)
+            else:
+                target=0
 
             if level == 'master_indicator':
                 master_indicator = True
@@ -460,6 +581,7 @@ class ReportInternalFormView(TemplateView):
                 sub_master_indicator = True
             else:
                 sub_master_indicator = False
+
 
             indicator.label = name
             indicator.name = name
@@ -473,9 +595,10 @@ class ReportInternalFormView(TemplateView):
             indicator.target = target
             indicator.qualitative_target = qualitative_target
             indicator.measurement_type = measurement
+            indicator.funded_by = 'UNICEF'
             indicator.save()
 
-        return HttpResponseRedirect('/activityinfo/report-internal-form/?rep_year=2020&ai_id='+str(ai_id)+'&id='+str(indicator.id)+'&step='+str(step))
+            return HttpResponseRedirect('/activityinfo/report-internal-form/?rep_year=2020&ai_id='+str(ai_id)+'&id='+str(indicator.id)+'&step='+str(step))
 
 
 class ReportPartnerView(TemplateView):
@@ -660,7 +783,7 @@ class ReportMapView(TemplateView):
         from internos.activityinfo.templatetags.util_tags import number_format
         from internos.activityinfo.utils import load_reporting_map
 
-        now = datetime.datetime.now()
+        now = datetime.now()
         selected_partner = self.request.GET.get('partner', 0)
         selected_governorate = self.request.GET.get('governorate', 0)
         selected_caza = self.request.GET.get('caza', 0)
@@ -864,7 +987,7 @@ class ReportMapSectorView(TemplateView):
         from django.db import connection
         from internos.activityinfo.utils import load_reporting_map
 
-        now = datetime.datetime.now()
+        now = datetime.now()
         cursor = connection.cursor()
         selected_filter = False
         partner = None
@@ -1700,7 +1823,7 @@ class ExportViewSet1(ListView):
     def get(self, request, *args, **kwargs):
 
         ai_id = self.request.GET.get('ai_id', 0)
-        month = int(self.request.GET.get('month', int(datetime.datetime.now().strftime("%m")) - 1))
+        month = int(self.request.GET.get('month', int(datetime.now().strftime("%m")) - 1))
         report_format = self.request.GET.get('format', 0)
 
         instance = Database.objects.get(ai_id=ai_id)

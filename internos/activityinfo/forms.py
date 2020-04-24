@@ -1,3 +1,4 @@
+import datetime
 from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.contrib.admin.widgets import FilteredSelectMultiple, RelatedFieldWidgetWrapper
@@ -33,7 +34,10 @@ class IndicatorForm(forms.ModelForm):
         required=False,
         queryset=IndicatorTag.objects.filter(type='nationality')
     )
-
+    tag_focus = forms.ModelChoiceField(
+        required=False,
+        queryset=IndicatorTag.objects.filter(type='focus')
+    )
     tag_disability = forms.ModelChoiceField(
         required=False,
         queryset=IndicatorTag.objects.filter(type='disability')
@@ -60,7 +64,7 @@ class IndicatorForm(forms.ModelForm):
     )
     activity = forms.ModelChoiceField(
         required=False,
-        queryset=Activity.objects.filter(database__reporting_year__current=True),
+        queryset=Activity.objects.filter(database__reporting_year__year=datetime.datetime.now().year),
         # queryset=Activity.objects.none(),
         widget=widgets.Select(attrs={'style': 'height:200px;', 'size': '100px;'})
     )
