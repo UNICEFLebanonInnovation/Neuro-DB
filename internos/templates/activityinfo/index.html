@@ -7,6 +7,26 @@
 {% endblock filter %}
 
 {% block content %}
+<style>
+  .dashboard_icons i {
+    font-size: 15px;
+    opacity: 0.7;
+  }
+
+  .dashboard_icons {
+    display: none;
+    position: absolute;
+    left: -6px;
+    border-radius: 7px;
+    background-color: #FEFEFE;
+    font-size: 13px;
+    width: 188px;
+    box-shadow: 4px 0px 5px 2px #DBDEE1;
+    bottom: -5px;
+    border: 1px solid #ccc;
+    }
+
+</style>
 <div class="app-main__inner">
    <div class="app-page-title">
      <div class="page-title-wrapper">
@@ -27,9 +47,9 @@
   <div class="row">
     {% for db in ai_databases %}
       <div class="col-md-6 col-xl-4">
-          <div class="card mb-2">
+          <div class="card mb-2 card-block collapse-icons" style="position: relative;">
               <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="widget-content">
-              <div class="widget-content-wrapper">
+                <div class="widget-content-wrapper">
                   <div class="widget-content-left">
                       <div class="widget-heading">
                         <span class="app-sidebar__heading">{{ db.section.code }}</span>
@@ -51,7 +71,8 @@
 <!--                        </a>-->
                   </div>
               </div>
-                <div class="card-footer d-inline-block dashboard_icons">
+              </a>
+              <div class="dashboard_icons" style="">
 
                         <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
                            data-placement="top" title="Live Data Monitoring" class="text-danger"
@@ -81,12 +102,32 @@
                         </a>
 
                 </div>
-
-              </a>
           </div>
       </div>
      {% endfor %}
   </div>
 </div>
 
+<script>
+    $(document).ready(function () {
+        $('.widget-content').mouseover(function () {
+            <!--$(this).removeClass('collapse-icons');-->
+            <!--if($(this).hasClass('expanded-icons')) {-->
+                <!--return false;-->
+            <!--}-->
+            $(this).parent().find('div.dashboard_icons').fadeIn( "slow", function() {
+                // Animation complete
+            });
+            <!--$(this).addClass('expanded-icons');-->
+        });
+        $('.widget-content').mouseover(function () {
+            console.log('KO');
+            <!--$(this).addClass('collapse-icons');-->
+            <!--$(this).removeClass('expanded-icons');-->
+            <!--$('div.dashboard_icons').fadeOut( "slow", function() {-->
+            <!--});-->
+        });
+    });
+
+</script>
 {% endblock content %}
