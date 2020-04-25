@@ -453,6 +453,7 @@ class Indicator(models.Model):
     is_section = models.BooleanField(default=False)
     is_cumulative = models.BooleanField(default=True)
     support_disability = models.BooleanField(default=False)
+    support_COVID = models.BooleanField(default=False)
     values_sector = JSONField(blank=True, null=True)
     values_tags_sector = JSONField(blank=True, null=True, default={})
     values_sites_sector = JSONField(blank=True, null=True)

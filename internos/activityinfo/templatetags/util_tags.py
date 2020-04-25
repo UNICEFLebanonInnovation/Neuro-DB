@@ -1426,7 +1426,7 @@ def get_Crisis_db():
 @register.assignment_tag
 def split_results(key,value):
     d = dict()
-    month = calendar.month_abbr[int(key)]
+    month = calendar.month_name[int(key)]
     result = value.split('-')[0]
     status = value.split('-')[1]
     color=""
@@ -1442,3 +1442,18 @@ def split_results(key,value):
     d['status'] = status
     d['color'] = color
     return d
+
+
+@register.assignment_tag
+def get_database_by_activity(activity_id):
+    from internos.activityinfo.models import Activity, Database
+    databasename = ""
+    activity = Activity.objects.get(id=activity_id)
+    if activity:
+        database = Database.objects.get(id=activity.database.id)
+        if database:
+            databasename= database.label
+
+
+    return databasename
+
