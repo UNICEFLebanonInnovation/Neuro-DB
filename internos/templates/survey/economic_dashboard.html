@@ -7,8 +7,10 @@
 <style>
 
 .highcharts-figure, .highcharts-data-table table {
-    min-width: 360px;
-    max-width: 800px;
+    min-width: 500px;
+    max-width: 1200px;
+    min-height: 400px;
+    border: 1px solid #eee;
 }
 
 .highcharts-data-table table {
@@ -426,6 +428,74 @@ Highcharts.chart('food_chart', {
     }
 
 });
+
+
+Highcharts.chart('fuel_chart', {
+
+    title: {
+        text: 'Price of fuel'
+    },
+
+    subtitle: {
+        text: 'Source: Ministry of Energy & Water'
+    },
+
+    yAxis: {
+        title: {
+            text: 'Price in LBP'
+        }
+    },
+    xAxis: {
+        type: 'datetime',
+        dateTimeLabelFormats: {
+            month: '%e. %b',
+            year: '%b'
+        },
+        title: {
+            text: 'Date'
+        }
+    },
+    tooltip: {
+        headerFormat: '<b>{series.name}</b><br>',
+        pointFormat: '{point.x:%e. %b}: {point.y:.2f} LBP'
+    },
+
+    <!--legend: {-->
+        <!--layout: 'vertical',-->
+        <!--align: 'right',-->
+        <!--verticalAlign: 'middle'-->
+    <!--},-->
+
+    plotOptions: {
+        series: {
+            label: {
+                connectorAllowed: false
+            },
+           marker: {
+                enabled: true
+            },
+        }
+    },
+
+    series: fuel_series,
+
+    responsive: {
+        rules: [{
+            condition: {
+                maxWidth: 500
+            },
+            chartOptions: {
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom'
+                }
+            }
+        }]
+    }
+
+});
+
 
 </script>
 

@@ -48,12 +48,28 @@ class EconomicDashboardView(TemplateView):
                     'data': []
                 }
 
-            # food_data[item.item_id]['data'].append((item.reporting_date.strftime("%Y/%m/%d"), float(item.item_price.amount)))
             food_data[item.item_id]['data'].append((
                 item.reporting_date.year,
                 item.reporting_date.month,
                 item.reporting_date.day,
-                # item.reporting_date.strftime("%Y/%m/%d"),
+                float(item.item_price.amount))
+            )
+
+        fuel_data = {}
+        fuel_category = EconomicReporting.objects.filter(category_id=3).order_by('reporting_date')
+
+        for item in fuel_category:
+            if item.item_id not in fuel_data:
+                fuel_data[item.item_id] = {}
+                fuel_data[item.item_id] = {
+                    'name': item.item.name,
+                    'data': []
+                }
+
+            fuel_data[item.item_id]['data'].append((
+                item.reporting_date.year,
+                item.reporting_date.month,
+                item.reporting_date.day,
                 float(item.item_price.amount))
             )
 
@@ -70,4 +86,5 @@ class EconomicDashboardView(TemplateView):
             'bdl_rate_per': bdl_rate_per,
             'bdl_percentage_status': bdl_percentage_status,
             'food_data': json.dumps(food_data.values()),
+            'fuel_data': json.dumps(fuel_data.values()),
         }
