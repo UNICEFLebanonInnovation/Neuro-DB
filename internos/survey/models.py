@@ -5,6 +5,7 @@ from djmoney.models.fields import MoneyField
 from django.db import models
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
+from smart_selects.db_fields import ChainedForeignKey
 from django.contrib.postgres.fields import ArrayField, JSONField
 
 
@@ -47,10 +48,19 @@ class EconomicReporting(models.Model):
         blank=False, null=False,
         related_name='+',
     )
-    item = models.ForeignKey(
+    # item = models.ForeignKey(
+    #     Item,
+    #     blank=False, null=False,
+    #     related_name='+',
+    # )
+    item = ChainedForeignKey(
         Item,
-        blank=False, null=False,
-        related_name='+',
+        chained_field="category",
+        chained_model_field="category",
+        show_all=False,
+        auto_choose=False,
+        null=True, blank=True,
+        # verbose_name='Partnership/Reference Number',
     )
 
     year = models.CharField(

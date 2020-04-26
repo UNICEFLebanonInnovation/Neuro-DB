@@ -37,6 +37,26 @@ class EconomicDashboardView(TemplateView):
         bdl_rate_per = round((bdl_rate.amount - bdl_rate_prev.amount) / bdl_rate.amount * 100, 2)
         bdl_percentage_status = True if bdl_rate_per > 0 else False
 
+        food_data = {}
+        food_category = EconomicReporting.objects.filter(category_id=2).order_by('reporting_date')
+
+        for item in food_category:
+            if item.item_id not in food_data:
+                food_data[item.item_id] = {}
+                food_data[item.item_id] = {
+                    'name': item.item.name,
+                    'data': []
+                }
+
+            # food_data[item.item_id]['data'].append((item.reporting_date.strftime("%Y/%m/%d"), float(item.item_price.amount)))
+            food_data[item.item_id]['data'].append((
+                item.reporting_date.year,
+                item.reporting_date.month,
+                item.reporting_date.day,
+                # item.reporting_date.strftime("%Y/%m/%d"),
+                float(item.item_price.amount))
+            )
+
         return {
             'official_rate': official_rate,
             'official_rate_prev': official_rate_prev,
@@ -48,5 +68,6 @@ class EconomicDashboardView(TemplateView):
             'bdl_rate': bdl_rate,
             'bdl_rate_prev': bdl_rate_prev,
             'bdl_rate_per': bdl_rate_per,
-            'bdl_percentage_status': bdl_percentage_status
+            'bdl_percentage_status': bdl_percentage_status,
+            'food_data': json.dumps(food_data.values()),
         }

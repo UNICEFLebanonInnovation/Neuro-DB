@@ -9,7 +9,6 @@
 .highcharts-figure, .highcharts-data-table table {
     min-width: 360px;
     max-width: 800px;
-    margin: 1em auto;
 }
 
 .highcharts-data-table table {
@@ -293,19 +292,20 @@ icon-wrapper {
           <div class="card-body">
               <div class="table-responsive">
 
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/series-label.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
-
 <figure class="highcharts-figure">
-    <div id="container"></div>
+    <div id="food_chart"></div>
     <p class="highcharts-description">
 
     </p>
 </figure>
 
+
+<figure class="highcharts-figure">
+    <div id="fuel_chart"></div>
+    <p class="highcharts-description">
+
+    </p>
+</figure>
 
               </div>
           </div>
@@ -319,8 +319,49 @@ icon-wrapper {
 
     {% block extra_js %}
 
-    <script>
-Highcharts.chart('container', {
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script>
+
+    var food_data = '{{ food_data|safe }}';
+    food_data = JSON.parse(food_data);
+
+    var food_series = [];
+    $(food_data).each(function(i, item){
+        new_data = []
+        $(item.data).each(function(j, item1){
+            new_data[j] = [Date.UTC(item1[0], item1[1], item1[2]), item1[3]]
+        });
+
+        food_series[i] = {
+          name: item.name,
+          data: new_data
+        }
+    });
+
+
+    var fuel_data = '{{ fuel_data|safe }}';
+    fuel_data = JSON.parse(fuel_data);
+
+    var fuel_series = [];
+    $(fuel_data).each(function(i, item){
+        new_data = []
+        $(item.data).each(function(j, item1){
+            new_data[j] = [Date.UTC(item1[0], item1[1], item1[2]), item1[3]]
+        });
+
+        fuel_series[i] = {
+          name: item.name,
+          data: new_data
+        }
+    });
+
+
+Highcharts.chart('food_chart', {
 
     title: {
         text: 'Price of essential food in WFP contracted shops'
@@ -350,11 +391,11 @@ Highcharts.chart('container', {
         pointFormat: '{point.x:%e. %b}: {point.y:.2f} LBP'
     },
 
-    legend: {
-        layout: 'vertical',
-        align: 'right',
-        verticalAlign: 'middle'
-    },
+    <!--legend: {-->
+        <!--layout: 'vertical',-->
+        <!--align: 'right',-->
+        <!--verticalAlign: 'middle'-->
+    <!--},-->
 
     plotOptions: {
         series: {
@@ -367,74 +408,7 @@ Highcharts.chart('container', {
         }
     },
 
-    series: [{
-        name: 'Basket',
-        data: [
-            [Date.UTC(new Date('10/16/2019').getFullYear(), new Date('10/16/2019').getMonth() +1, new Date('10/16/2019').getDate()), 36907],
-            [Date.UTC(new Date('10/31/2019').getFullYear(), new Date('10/31/2019').getMonth() +1, new Date('10/31/2019').getDate()), 39940],
-            [Date.UTC(new Date('11/30/2019').getFullYear(), new Date('11/30/2019').getMonth() +1, new Date('11/30/2019').getDate()), 41666],
-            [Date.UTC(new Date('12/31/2019').getFullYear(), new Date('12/31/2019').getMonth() +1, new Date('12/31/2019').getDate()), 44320],
-            [Date.UTC(new Date('01/31/2020').getFullYear(), new Date('01/31/2020').getMonth() +1, new Date('01/31/2020').getDate()), 45125],
-            [Date.UTC(new Date('02/30/2020').getFullYear(), new Date('02/30/2020').getMonth() +1, new Date('02/30/2020').getDate()), 45922],
-            [Date.UTC(new Date('03/28/2020').getFullYear(), new Date('03/28/2020').getMonth() +1, new Date('03/28/2020').getDate()), 47409],
-          ]
-    <!--}-->
-    <!--, {-->
-        <!--name: 'Beef meat (canned - 200g)',-->
-        <!--data: [-->
-            <!--[Date('10/16/2019'), 0],-->
-            <!--[Date('10/31/2019'), 1895.66],-->
-            <!--[Date('11/30/2019'), 1973.97],-->
-            <!--[Date('12/31/2019'), 2167.82],-->
-            <!--[Date('01/31/2020'), 21823],-->
-            <!--[Date('02/30/2020'), 25066],-->
-            <!--[Date('03/28/2020'), 25735],-->
-          <!--]-->
-    <!--}, {-->
-        <!--name: 'Chicken meat (whole chicken per kg)',-->
-        <!--data: [-->
-            <!--[Date('10/16/2019'), 0],-->
-            <!--[Date('10/31/2019'), 5750.11],-->
-            <!--[Date('11/30/2019'), 5603],-->
-            <!--[Date('12/31/2019'), 5874.14],-->
-            <!--[Date('01/31/2020'), 5981],-->
-            <!--[Date('02/30/2020'), 6100],-->
-            <!--[Date('03/28/2020'), 7500],-->
-          <!--]-->
-    <!--}, {-->
-        <!--name: 'Eggs (30 pcs)',-->
-        <!--data: [-->
-            <!--[Date('10/16/2019'), 0],-->
-            <!--[Date('10/31/2019'), 5111.74],-->
-            <!--[Date('11/30/2019'), 5495.18],-->
-            <!--[Date('12/31/2019'), 6271.54],-->
-            <!--[Date('01/31/2020'), 8500],-->
-            <!--[Date('02/30/2020'), 10250],-->
-            <!--[Date('03/28/2020'), 13000],-->
-          <!--]-->
-    <!--}, {-->
-        <!--name: 'Spinach (per kg)',-->
-        <!--data: [-->
-            <!--[Date('10/16/2019'), 0],-->
-            <!--[Date('10/31/2019'), 1515.63],-->
-            <!--[Date('11/30/2019'), 1632.58],-->
-            <!--[Date('12/31/2019'), 1945.31],-->
-            <!--[Date('01/31/2020'), 1960],-->
-            <!--[Date('02/30/2020'), 1995],-->
-            <!--[Date('03/28/2020'), 2100],-->
-          <!--]-->
-    <!--}, {-->
-        <!--name: 'Tomato (per 1.3kg)',-->
-        <!--data: [-->
-            <!--[Date('10/16/2019'), 0],-->
-            <!--[Date('10/31/2019'), 3477.16],-->
-            <!--[Date('11/30/2019'), 3624.41],-->
-            <!--[Date('12/31/2019'), 3671.14],-->
-            <!--[Date('01/31/2020'), 3723],-->
-            <!--[Date('02/30/2020'), 3967.8],-->
-            <!--[Date('03/28/2020'), 3900],-->
-          <!--]-->
-    }],
+    series: food_series,
 
     responsive: {
         rules: [{
@@ -454,5 +428,15 @@ Highcharts.chart('container', {
 });
 
 </script>
+
+            <!--[Date.UTC(new Date('10/16/2019').getFullYear(), new Date('10/16/2019').getMonth() +1, new Date('10/16/2019').getDate()), 36907],-->
+            <!--[Date.UTC(new Date('10/31/2019').getFullYear(), new Date('10/31/2019').getMonth() +1, new Date('10/31/2019').getDate()), 39940],-->
+            <!--[Date.UTC(new Date('11/30/2019').getFullYear(), new Date('11/30/2019').getMonth() +1, new Date('11/30/2019').getDate()), 41666],-->
+            <!--[Date.UTC(new Date('12/31/2019').getFullYear(), new Date('12/31/2019').getMonth() +1, new Date('12/31/2019').getDate()), 44320],-->
+            <!--[Date.UTC(new Date('01/31/2020').getFullYear(), new Date('01/31/2020').getMonth() +1, new Date('01/31/2020').getDate()), 45125],-->
+            <!--[Date.UTC(new Date('02/30/2020').getFullYear(), new Date('02/30/2020').getMonth() +1, new Date('02/30/2020').getDate()), 45922],-->
+            <!--[Date.UTC(new Date('03/28/2020').getFullYear(), new Date('03/28/2020').getMonth() +1, new Date('03/28/2020').getDate()), 47409],-->
+
+
 
 {% endblock %}
