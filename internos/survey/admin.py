@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from import_export import resources, fields
 from import_export import fields
+from djmoney.money import Money
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 
@@ -73,9 +74,10 @@ class EconomicReportingResource(resources.ModelResource):
         fields = (
             'id',
             'category',
-            'item',
+            'reporting_item_id',
             'reporting_date',
-            'item_price'
+            'price_amount',
+            'price_currency'
         )
         export_order = fields
 
@@ -111,3 +113,31 @@ class EconomicReportingAdmin(ImportExportModelAdmin):
         'reporting_date',
         'item_price',
     )
+
+    actions = [
+        'update_money_field',
+        'update_price_fields',
+        'update_item_id',
+        'update_reporting_item_id'
+    ]
+
+    def update_money_field(self, request,queryset):
+        for item in queryset:
+            item.item_price = Money(float(item.price_amount), item.price_currency)
+            item.save()
+
+    def update_price_fields(self, request,queryset):
+        for item in queryset:
+            item.price_amount = item.item_price.amount
+            item.price_currency = item.item_price.currency
+            item.save()
+
+    def update_item_id(self, request,queryset):
+        for item in queryset:
+            item.item_id = int(item.reporting_item_id)
+            item.save()
+
+    def update_reporting_item_id(self, request,queryset):
+        for item in queryset:
+            item.reporting_item_id = item.item.id
+            item.save()

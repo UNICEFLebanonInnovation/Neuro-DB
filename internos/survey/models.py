@@ -95,6 +95,21 @@ class EconomicReporting(models.Model):
     reporting_date = models.DateField(blank=False, null=False)
 
     item_price = MoneyField(max_digits=14, decimal_places=2, default_currency='LBP')
+    price_amount = models.CharField(
+        max_length=250,
+        blank=True,
+        null=True,
+    )
+    price_currency = models.CharField(
+        max_length=250,
+        blank=True,
+        null=True,
+    )
+    reporting_item_id = models.CharField(
+        max_length=250,
+        blank=True,
+        null=True,
+    )
 
     @property
     def category_reporting_period(self):
