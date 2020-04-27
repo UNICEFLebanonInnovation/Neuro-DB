@@ -5,6 +5,7 @@ import json
 import datetime
 import calendar
 from django.db.models import Q, Sum, Max
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, TemplateView, FormView
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -13,7 +14,7 @@ from django.http import HttpResponseRedirect
 from .models import EconomicReporting
 
 
-class EconomicDashboardView(TemplateView):
+class EconomicDashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'survey/economic_dashboard.html'
 
     def get_context_data(self, **kwargs):
