@@ -326,186 +326,20 @@ icon-wrapper {
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script type="text/javascript" src="{% static 'js/Highcharts.chart.js' %}"></script>
 
-<script>
+<script type="text/javascript">
 
     var food_data = '{{ food_data|safe }}';
     food_data = JSON.parse(food_data);
 
-    var food_series = [];
-    $(food_data).each(function(i, item){
-        new_data = []
-        $(item.data).each(function(j, item1){
-            new_data[j] = [Date.UTC(item1[0], item1[1], item1[2]), item1[3]]
-        });
-
-        food_series[i] = {
-          name: item.name,
-          data: new_data
-        }
-    });
-
-
     var fuel_data = '{{ fuel_data|safe }}';
     fuel_data = JSON.parse(fuel_data);
 
-    var fuel_series = [];
-    $(fuel_data).each(function(i, item){
-        new_data = []
-        $(item.data).each(function(j, item1){
-            new_data[j] = [Date.UTC(item1[0], item1[1], item1[2]), item1[3]]
-        });
-
-        fuel_series[i] = {
-          name: item.name,
-          data: new_data
-        }
-    });
-
-
-Highcharts.chart('food_chart', {
-
-    title: {
-        text: 'Price of essential food in WFP contracted shops'
-    },
-
-    subtitle: {
-        text: 'Source: WFP M&E unit'
-    },
-
-    yAxis: {
-        title: {
-            text: 'Price in LBP'
-        }
-    },
-    xAxis: {
-        type: 'datetime',
-        dateTimeLabelFormats: {
-            month: '%e. %b',
-            year: '%b'
-        },
-        title: {
-            text: 'Date'
-        }
-    },
-    tooltip: {
-        headerFormat: '<b>{series.name}</b><br>',
-        pointFormat: '{point.x:%e. %b}: {point.y:.2f} LBP'
-    },
-
-    <!--legend: {-->
-        <!--layout: 'vertical',-->
-        <!--align: 'right',-->
-        <!--verticalAlign: 'middle'-->
-    <!--},-->
-
-    plotOptions: {
-        series: {
-            label: {
-                connectorAllowed: false
-            },
-           marker: {
-                enabled: true
-            },
-        }
-    },
-
-    series: food_series,
-
-    responsive: {
-        rules: [{
-            condition: {
-                maxWidth: 500
-            },
-            chartOptions: {
-                legend: {
-                    layout: 'horizontal',
-                    align: 'center',
-                    verticalAlign: 'bottom'
-                }
-            }
-        }]
-    }
-
-});
-
-
-Highcharts.chart('fuel_chart', {
-
-    title: {
-        text: 'Price of fuel'
-    },
-
-    subtitle: {
-        text: 'Source: Ministry of Energy & Water'
-    },
-
-    yAxis: {
-        title: {
-            text: 'Price in LBP'
-        }
-    },
-    xAxis: {
-        type: 'datetime',
-        dateTimeLabelFormats: {
-            month: '%e. %b',
-            year: '%b'
-        },
-        title: {
-            text: 'Date'
-        }
-    },
-    tooltip: {
-        headerFormat: '<b>{series.name}</b><br>',
-        pointFormat: '{point.x:%e. %b}: {point.y:.2f} LBP'
-    },
-
-    <!--legend: {-->
-        <!--layout: 'vertical',-->
-        <!--align: 'right',-->
-        <!--verticalAlign: 'middle'-->
-    <!--},-->
-
-    plotOptions: {
-        series: {
-            label: {
-                connectorAllowed: false
-            },
-           marker: {
-                enabled: true
-            },
-        }
-    },
-
-    series: fuel_series,
-
-    responsive: {
-        rules: [{
-            condition: {
-                maxWidth: 500
-            },
-            chartOptions: {
-                legend: {
-                    layout: 'horizontal',
-                    align: 'center',
-                    verticalAlign: 'bottom'
-                }
-            }
-        }]
-    }
-
-});
-
+    createChart(food_data, 'food_chart', 'Price of essential food in WFP contracted shops', 'Source: WFP M&E unit', 'Price in LBP', 'Date');
+    createChart(fuel_data, 'fuel_chart', 'Price of fuel', 'Source: Ministry of Energy & Water', 'Price in LBP', 'Date');
 
 </script>
-
-            <!--[Date.UTC(new Date('10/16/2019').getFullYear(), new Date('10/16/2019').getMonth() +1, new Date('10/16/2019').getDate()), 36907],-->
-            <!--[Date.UTC(new Date('10/31/2019').getFullYear(), new Date('10/31/2019').getMonth() +1, new Date('10/31/2019').getDate()), 39940],-->
-            <!--[Date.UTC(new Date('11/30/2019').getFullYear(), new Date('11/30/2019').getMonth() +1, new Date('11/30/2019').getDate()), 41666],-->
-            <!--[Date.UTC(new Date('12/31/2019').getFullYear(), new Date('12/31/2019').getMonth() +1, new Date('12/31/2019').getDate()), 44320],-->
-            <!--[Date.UTC(new Date('01/31/2020').getFullYear(), new Date('01/31/2020').getMonth() +1, new Date('01/31/2020').getDate()), 45125],-->
-            <!--[Date.UTC(new Date('02/30/2020').getFullYear(), new Date('02/30/2020').getMonth() +1, new Date('02/30/2020').getDate()), 45922],-->
-            <!--[Date.UTC(new Date('03/28/2020').getFullYear(), new Date('03/28/2020').getMonth() +1, new Date('03/28/2020').getDate()), 47409],-->
 
 
 

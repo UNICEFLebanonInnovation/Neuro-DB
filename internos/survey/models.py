@@ -48,11 +48,6 @@ class EconomicReporting(models.Model):
         blank=False, null=False,
         related_name='+',
     )
-    # item = models.ForeignKey(
-    #     Item,
-    #     blank=False, null=False,
-    #     related_name='+',
-    # )
     item = ChainedForeignKey(
         Item,
         chained_field="category",
