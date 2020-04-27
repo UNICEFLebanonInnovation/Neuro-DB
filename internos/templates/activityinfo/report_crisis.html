@@ -114,12 +114,7 @@
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
                 <td class="w-150">
                   {{ item.name }}
-                  <a href="{% url 'activityinfo:report_partner' %}?rep_year=2020&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
                 </td>
-
                 <td></td>
                 <td class="w-5">
                   {{ cumulative_value }}
@@ -189,10 +184,6 @@
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
                 <td class="w-150">
                   {{ item.name }}
-                  <a href="{% url 'activityinfo:report_partner' %}?rep_year=2020&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
                 </td>
                 {% get_database_by_activity item.activity as databasename %}
                 <td class="w-5">{{ databasename }}</td>
@@ -211,21 +202,17 @@
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
                   {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
                   {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
-                {% if item1.master_indicator_sub %}
-                <td class="w-150">
-                  {{ item1.name }}
-                  <a href="{% url 'activityinfo:report_partner' %}?rep_year={{ reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
-                </td>
-                {% else %}
-                <td class="w-100">
+                 <td class="w-150">
                   {{ item1.name }}
                 </td>
-                {% endif %}
-                  {% get_database_by_activity item.activity as databasename %}
+                 {% if item1.master_indicator_sub %}
+                 {% get_database_by_activity item.activity as databasename %}
                 <td class="w-5">{{ databasename }}</td>
+                {% else %}
+                <td class="w-5"></td>
+                {% endif %}
+
+                <td class="w-5"></td>
                 <td class="w-5">
                     {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
@@ -245,8 +232,8 @@
                   {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                   itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                 <td class="w-150">{{ item2.name }}</td>
-                  {% get_database_by_activity item.activity as databasename %}
-                <td>{{ databasename }}</td>
+
+                <td></td>
                 <td></td>
                 {% for month, month_name in months %}
                 <td class="w-10">

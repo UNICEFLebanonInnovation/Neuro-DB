@@ -261,7 +261,7 @@ class ReportCrisisView(TemplateView):
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality').order_by(
             'sequence')
         if database.mapped_db:
             master_indicators1 = master_indicators.filter(master_indicator=True)

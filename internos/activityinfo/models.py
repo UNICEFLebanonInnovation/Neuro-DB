@@ -424,6 +424,7 @@ class Indicator(models.Model):
     tag_programme = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     tag_focus = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     hpm_indicator = models.BooleanField(default=False)
+    hpm_global_indicator = models.BooleanField(default=False)
     hpm_comment = models.CharField(max_length=1000, blank=True, null=True)
     comment = JSONField(blank=True, null=True)
     has_hpm_note = models.BooleanField(default=False)

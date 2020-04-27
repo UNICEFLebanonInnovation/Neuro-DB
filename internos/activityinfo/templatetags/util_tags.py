@@ -1423,6 +1423,7 @@ def get_Crisis_db():
     except Exception as ex:
         # print(ex)
         return []
+
 @register.assignment_tag
 def split_results(key,value):
     d = dict()
@@ -1447,13 +1448,12 @@ def split_results(key,value):
 @register.assignment_tag
 def get_database_by_activity(activity_id):
     from internos.activityinfo.models import Activity, Database
+
     databasename = ""
-    activity = Activity.objects.get(id=activity_id)
-    if activity:
-        database = Database.objects.get(id=activity.database.id)
-        if database:
-            databasename= database.label
-
-
+    try:
+        activity = Activity.objects.get(id=activity_id)
+        return activity.database.label
+    except Exception as ex:
+        print(ex)
     return databasename
 
