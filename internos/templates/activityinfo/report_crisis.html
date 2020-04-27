@@ -96,6 +96,7 @@
               <thead>
               <tr>
                 <th content="Indicator Name"> Indicator Name</th>
+                <th>Section</th>
                 <th content="Cumulative Results of All Months" title="Cumulative Results of All Months">Cumulative Results
                 </th>
                 {% for month, month_name in months %}
@@ -104,7 +105,7 @@
               </tr>
               </thead>
               <tbody>
-              {% for item in master_indicators %}
+              {% for item in indicators %}
               {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates as cumulative_value %}
               {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% if display_indicator %}
@@ -113,11 +114,8 @@
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
                 <td class="w-150">
                   {{ item.name }}
-                  <a href="{% url 'activityinfo:report_partner' %}?rep_year=2020&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
                 </td>
+                <td></td>
                 <td class="w-5">
                   {{ cumulative_value }}
                 </td>
@@ -177,7 +175,77 @@
               {% endfor %}
                     {% endif %}
               {% endfor %}
+              {% for item in covid_indicators %}
+              {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates as cumulative_value %}
+              {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+              {% if display_indicator %}
+              <tr itemid="{{ item.id }}"
+                  {% if item.master_indicator %}class="level1 master_indicator"
+                  {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
+                <td class="w-150">
+                  {{ item.name }}
+                </td>
+                {% get_database_by_activity item.activity as databasename %}
+                <td class="w-5">{{ databasename }}</td>
+                <td class="w-5">
+                  {{ cumulative_value }}
+                </td>
+                {% for month, month_name in months %}
+                <td class="w-5">
+                  {% get_indicator_value item month selected_partners selected_governorates as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+              {% get_sub_indicators_data item.id as sub_indicators %}
+              {% for item1 in sub_indicators %}
+              <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
+                  {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
+                  {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
+                 <td class="w-150">
+                  {{ item1.name }}
+                </td>
+                 {% if item1.master_indicator_sub %}
+                 {% get_database_by_activity item.activity as databasename %}
+                <td class="w-5">{{ databasename }}</td>
+                {% else %}
+                <td class="w-5"></td>
+                {% endif %}
 
+                <td class="w-5"></td>
+                <td class="w-5">
+                    {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
+                  {{ cumulative_value }}
+                </td>
+                {% for month, month_name in months %}
+                <td class="w-5">
+                  {% get_indicator_value item1 month selected_partners selected_governorates as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+               {% endfor %}
+              {% get_sub_indicators_data item1.id as sub_indicators1 %}
+              {% for item2 in sub_indicators1 %}
+              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
+              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
+                  {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
+                  itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
+                <td class="w-150">{{ item2.name }}</td>
+
+                <td></td>
+                <td></td>
+                {% for month, month_name in months %}
+                <td class="w-10">
+                  {% get_indicator_value item2 month selected_partners selected_governorates as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+              {% endif %}
+              {% endfor %}
+                    {% endif %}
+              {% endfor %}
               </tbody>
             </table>
           </div>
@@ -244,6 +312,66 @@ $('#filter_month').multiselect({
   });
 
   });
+      $('.level1').addClass('collapsed');
+      $('.level2').addClass('collapsed');
+      $('.level3').addClass('collapsed');
+
+      $('.level2').hide();
+      $('.level3').hide();
+
+    $('.expanded-all').click(function () {
+      $('.expanded-all').addClass('active');
+      $('.collapse-all').removeClass('active');
+
+      $('.level1').removeClass('collapsed');
+      $('.level2').removeClass('collapsed');
+      $('.level3').removeClass('collapsed');
+
+      $('.level1').show();
+      $('.level2').show();
+      $('.level3').show();
+    });
+
+    $('.collapse-all').click(function () {
+      $('.expanded-all').removeClass('active');
+      $('.collapse-all').addClass('active');
+
+      $('.level1').addClass('collapsed');
+      $('.level2').addClass('collapsed');
+      $('.level3').addClass('collapsed');
+
+      $('.level2').hide();
+      $('.level3').hide();
+    });
+
+    $('.level1').dblclick(function () {
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level2-' + itemid;
+      var sub_sub_items = 'tr.level3-' + itemid;
+
+      if ($(this).hasClass('collapsed')) {
+        $(sub_items).show();
+        $(this).removeClass('collapsed');
+      } else {
+        $(sub_items).hide();
+        $(sub_items).addClass('collapsed');
+        $(sub_sub_items).hide();
+        $(this).addClass('collapsed');
+      }
+    });
+
+    $('.level2').dblclick(function () {
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level3-' + itemid;
+
+      if ($(this).hasClass('collapsed')) {
+        $(sub_items).show();
+        $(this).removeClass('collapsed');
+      } else {
+        $(sub_items).hide();
+        $(this).addClass('collapsed');
+      }
+    });
 
 
 

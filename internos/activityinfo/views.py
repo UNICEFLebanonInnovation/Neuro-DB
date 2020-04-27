@@ -243,10 +243,6 @@ class ReportCrisisView(TemplateView):
 
         ai_id = int(self.request.GET.get('ai_id', 0))
         database = Database.objects.get(ai_id=ai_id)
-        reporting_year = date.today().year
-        report = ActivityReport.objects.filter(database_id=database.ai_id)
-        reporting_year = database.reporting_year.name
-        report = ActivityReport.objects.filter(database_id=database.ai_id)
         selected_partners = self.request.GET.getlist('partners', [])
         selected_months = self.request.GET.getlist('s_months', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
@@ -254,46 +250,6 @@ class ReportCrisisView(TemplateView):
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
         selected_filter= False
         current_year = date.today().year
-        current_month = date.today().month
-        partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
-
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
-            'sequence')
-        if database.mapped_db:
-            master_indicators1 = master_indicators.filter(master_indicator=True)
-            master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
-            master_indicators = master_indicators1 | master_indicators2
-
-        master_indicators = master_indicators.values(
-            'id',
-            'ai_id',
-            'name',
-            'master_indicator',
-            'master_indicator_sub',
-            'master_indicator_sub_sub',
-            'individual_indicator',
-            'explication',
-            'awp_code',
-            'measurement_type',
-            'units',
-            'target',
-            'status_color',
-            'status',
-            'cumulative_values',
-            'values_partners_gov',
-            'values_partners',
-            'values_gov',
-            'values',
-            'values_live',
-            'values_gov_live',
-            'values_partners_live',
-            'values_partners_gov_live',
-            'cumulative_values_live',
-            'is_cumulative',
-        ).distinct()
-
 
         reporting_year =str(current_year)
         report = ActivityReport.objects.filter(database_id=database.ai_id)
@@ -305,13 +261,14 @@ class ReportCrisisView(TemplateView):
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality').order_by(
             'sequence')
         if database.mapped_db:
             master_indicators1 = master_indicators.filter(master_indicator=True)
             master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
             master_indicators = master_indicators1 | master_indicators2
-        none_ai_indicators = Indicator.objects.filter(activity__none_ai_database=database).exclude(is_sector=True)
+
+        covid_indicators = Indicator.objects.filter(support_COVID=True)
 
         master_indicators = master_indicators.values(
             'id',
@@ -321,7 +278,6 @@ class ReportCrisisView(TemplateView):
             'master_indicator_sub',
             'master_indicator_sub_sub',
             'individual_indicator',
-            'explication',
             'awp_code',
             'measurement_type',
             'units',
@@ -339,13 +295,40 @@ class ReportCrisisView(TemplateView):
             'values_partners_gov_live',
             'cumulative_values_live',
             'is_cumulative',
+            'activity'
         ).distinct()
 
+        covid_indicators = covid_indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+            'is_cumulative',
+            'activity'
+        ).distinct()
 
         months = []
         for i in range(1, 13):
             months.append((i, calendar.month_abbr[i]))
-
 
         return {
 
@@ -356,9 +339,9 @@ class ReportCrisisView(TemplateView):
             'months': months,
             'partners': partners,
             'governorates': governorates,
-            'master_indicators': master_indicators,
+            'indicators': master_indicators,
+            'covid_indicators':covid_indicators,
             'selected_filter': selected_filter,
-            'none_ai_indicators': none_ai_indicators,
 
         }
 
@@ -435,6 +418,8 @@ class ReportInternalFormView(TemplateView):
         governorates.append((7,'Beirut'))
         governorates.append((8,'South'))
         governorates.append((9,'Nabatiye'))
+        governorates.append((10, 'National'))
+
         if indicator_id != 0:
             indicator = Indicator.objects.get(id=indicator_id)
         else:
@@ -442,7 +427,7 @@ class ReportInternalFormView(TemplateView):
             indicator = None
         months =[]
         for i in range(1,13):
-            months.append((i,calendar.month_abbr[i]))
+            months.append((i,calendar.month_name[i]))
 
         return {
             'reports': report.order_by('id'),
@@ -480,6 +465,7 @@ class ReportInternalFormView(TemplateView):
         governorates.append((7, 'Beirut'))
         governorates.append((8, 'South'))
         governorates.append((9, 'Nabatiye'))
+        governorates.append((10, 'National'))
 
         if form_name == 'valuesform':
             row_values = self.request.POST.get('row_values', "")

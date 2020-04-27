@@ -1423,10 +1423,11 @@ def get_Crisis_db():
     except Exception as ex:
         # print(ex)
         return []
+
 @register.assignment_tag
 def split_results(key,value):
     d = dict()
-    month = calendar.month_abbr[int(key)]
+    month = calendar.month_name[int(key)]
     result = value.split('-')[0]
     status = value.split('-')[1]
     color=""
@@ -1442,3 +1443,17 @@ def split_results(key,value):
     d['status'] = status
     d['color'] = color
     return d
+
+
+@register.assignment_tag
+def get_database_by_activity(activity_id):
+    from internos.activityinfo.models import Activity, Database
+
+    databasename = ""
+    try:
+        activity = Activity.objects.get(id=activity_id)
+        return activity.database.label
+    except Exception as ex:
+        print(ex)
+    return databasename
+
