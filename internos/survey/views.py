@@ -89,3 +89,13 @@ class EconomicDashboardView(LoginRequiredMixin, TemplateView):
             'food_data': json.dumps(food_data.values()),
             'fuel_data': json.dumps(fuel_data.values()),
         }
+
+
+class PopulationFiguresView(LoginRequiredMixin, TemplateView):
+    template_name = 'survey/population_figures.html'
+
+    def get_context_data(self, **kwargs):
+
+        return {
+
+        }
