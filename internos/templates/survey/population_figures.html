@@ -1,0 +1,314 @@
+{% extends "base2.html" %}
+{% load staticfiles i18n %}
+{% block project_title %}{% endblock %}
+
+{% block content %}
+
+<script type="text/javascript" src="{% static 'css/highcharts.css' %}"></script>
+<style>
+.highcharts-figure, .highcharts-data-table table {
+    min-width: 500px;
+    max-width: 1200px;
+    min-height: 400px;
+    border: 1px solid #eee;
+}
+
+.highcharts-data-table table {
+	font-family: Verdana, sans-serif;
+	border-collapse: collapse;
+	border: 1px solid #EBEBEB;
+	margin: 10px auto;
+	text-align: center;
+	width: 100%;
+	max-width: 500px;
+}
+.highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+}
+.highcharts-data-table th {
+	font-weight: 600;
+    padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+    padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+    background: #f1f7ff;
+}
+
+
+.widget-chart .widget-numbers {
+    font-weight: bold;
+    font-size: 2rem;
+    display: block;
+    line-height: 1;
+    margin: 1rem auto;
+}
+
+.widget-chart .widget-subheading + .widget-numbers {
+    margin-top: 0.5rem;
+}
+
+.widget-chart.text-left .widget-numbers {
+    margin-left: 0;
+}
+
+.widget-chart .widget-subheading:first-child {
+    margin-top: 0;
+}
+
+.widget-chart .widget-subheading {
+    margin: -0.5rem 0 0;
+    display: block;
+    opacity: .6;
+}
+
+.widget-chart.text-left .widget-chart-content .widget-description {
+    -ms-flex-item-align: start;
+    align-self: flex-start;
+}
+
+.widget-chart .widget-numbers + .widget-chart-flex, .widget-chart .widget-numbers + .widget-description, .widget-chart .widget-numbers + .widget-subheading {
+    margin-top: -0.5rem;
+}
+
+.widget-chart .widget-description {
+    margin: 1rem 0 0;
+}
+
+.text-focus {
+    color: #444054 !important;
+}
+
+.widget-chart.text-left .widget-chart-content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    position: relative;
+}
+
+.widget-chart .widget-chart-content {
+    position: relative;
+    z-index: 5;
+}
+.widget-chart.text-left .icon-wrapper {
+    min-width: 54px;
+    height: 54px;
+    margin: 0 1rem 0 0;
+}
+icon-wrapper {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+.icon-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.rounded-circle {
+    border-radius: 50% !important;
+}
+.icon-wrapper .icon-wrapper-bg {
+    position: absolute;
+    height: 60px;
+    width: 60px;
+    z-index: 3;
+    opacity: .2;
+}
+
+.opacity-9 {
+    opacity: .9 !important;
+}
+.bg-success {
+    background-color: #3ac47d !important;
+}
+.icon-wrapper i {
+    margin: 0 auto;
+    font-size: 1.7rem;
+    position: relative;
+    z-index: 5;
+}
+[class^="lnr-"], [class*=" lnr-"] {
+    font-family: 'Linearicons-Free';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.widget-chart.text-left {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.widget-chart {
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+}
+.card {
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+    border-width: 0;
+    -webkit-transition: all .2s;
+    transition: all .2s;
+}
+.bg-transparent {
+    background: transparent !important;
+}
+.no-shadow {
+    box-shadow: 0 0 0 transparent !important;
+}
+.rm-border {
+    border-width: 0 !important;
+}
+
+
+</style>
+
+<div class="app-main__inner">
+   <div class="app-page-title">
+     <div class="page-title-wrapper">
+                                <div class="page-title-heading">
+                                    <div class="page-title-icon">
+                                        <i class="pe-7s-keypad icon-gradient bg-mean-fruit">
+                                        </i>
+                                    </div>
+                                    <div>Population Figures in Lebanon
+                                        <div class="page-title-subheading">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="page-title-actions">
+
+                                </div>
+                            </div>
+   </div>
+
+<div class="mb-3 card">
+  <div class="no-gutters row">
+    <div class="col-sm-6 col-md-4 col-xl-4">
+        <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
+          <div class="icon-wrapper rounded-circle bg-info">
+            <div class="icon-wrapper-bg opacity-9"></div>
+            <i class="fa fa-universal-access text-white"></i>
+          </div>
+          <div class="widget-chart-content">
+            <div class="widget-subheading">Total Population</div>
+            <div class="widget-numbers text-info"><span>5,742,742</span></div>
+            <!--<div class="widget-description text-focus"> Stable-->
+              <!--<span class="text-info pl-1">-->
+                <!--<fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>-->
+                <!--<span class="pl-1">0.0%</span>-->
+              <!--</span>-->
+            <!--</div>-->
+          </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-md-4 col-xl-4">
+        <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
+          <div class="icon-wrapper rounded-circle bg-warning">
+            <div class="icon-wrapper-bg opacity-9"></div>
+            <i class="fa fa-universal-access text-white"></i>
+          </div>
+          <div class="widget-chart-content">
+            <div class="widget-subheading">Total number of children</div>
+            <div class="widget-numbers text-warning"><span>2,139,634</span></div>
+
+            <div class="widget-description text-focus">% out of each nationality are: 172,200</div>
+
+          </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-md-4 col-xl-4">
+        <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
+          <div class="icon-wrapper rounded-circle bg-danger">
+            <div class="icon-wrapper-bg opacity-9"></div>
+            <i class="fa fa-universal-access text-white"></i>
+          </div>
+          <div class="widget-chart-content">
+            <div class="widget-subheading">Most Vulnerable Population</div>
+            <div class="widget-numbers text-danger"><span>2,479,043</span></div>
+            <!--{% if market_percentage_status %}-->
+              <!--<div class="widget-description text-focus"> Increased by <span class="text-danger pl-1">-->
+                <!--<fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>-->
+                <!--<span class="pl-1">{{ market_rate_per }}%</span></span>-->
+              <!--</div>-->
+            <!--{% else %}-->
+              <!--<div class="widget-description text-focus"> Decrease by <span class="text-success pl-1">-->
+                <!--<fa name="angle-down" _nghost-djc-c2="" ng-reflect-name="angle-down"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-down" ng-reflect-klass="fa fa-angle-down" ng-reflect-ng-class=""></i></fa>-->
+                <!--<span class="pl-1">{{ market_rate_per }}%</span></span>-->
+              <!--</div>-->
+            <!--{% endif %}-->
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="main-card mb-3 card">
+          <div class="card-body">
+              <div class="table-responsive">
+
+                <iframe src="{% static 'files/Population Figures in Lebanon-2020.pdf' %}" width="100%" height="500px"></iframe>
+
+              </div>
+          </div>
+      </div>
+      </div>
+  </div>
+
+</div>
+
+{% endblock content %}
+
+    {% block extra_js %}
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script type="text/javascript" src="{% static 'js/Highcharts.chart.js' %}"></script>
+
+<script type="text/javascript">
+
+
+</script>
+
+
+
+{% endblock %}
