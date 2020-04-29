@@ -14,7 +14,7 @@ from django.http import HttpResponseRedirect
 from .models import EconomicReporting
 
 
-class EconomicDashboardView(LoginRequiredMixin, TemplateView):
+class EconomicDashboardView(TemplateView):
     template_name = 'survey/economic_dashboard.html'
 
     def get_context_data(self, **kwargs):
@@ -91,7 +91,7 @@ class EconomicDashboardView(LoginRequiredMixin, TemplateView):
         }
 
 
-class PopulationFiguresView(LoginRequiredMixin, TemplateView):
+class PopulationFiguresView(TemplateView):
     template_name = 'survey/population_figures.html'
 
     def get_context_data(self, **kwargs):
