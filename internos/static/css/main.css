@@ -24255,3 +24255,8 @@ a.fc-more:hover {
     margin-bottom: 30px;
     background-size: 100%
 }
+
+.watermark {
+  background: url('../images/watermark.png') repeat;
+  background-size: 100px;
+}
