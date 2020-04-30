@@ -295,7 +295,9 @@ class ReportCrisisView(TemplateView):
             'values_partners_gov_live',
             'cumulative_values_live',
             'is_cumulative',
-            'activity'
+            'activity',
+            'tag_focus',
+            'hpm_global_indicator'
         ).distinct()
 
         covid_indicators = covid_indicators.values(
@@ -323,7 +325,9 @@ class ReportCrisisView(TemplateView):
             'values_partners_gov_live',
             'cumulative_values_live',
             'is_cumulative',
-            'activity'
+            'activity',
+            'tag_focus',
+            'hpm_global_indicator'
         ).distinct()
 
         months = []
@@ -352,7 +356,7 @@ class ReportInternalView(TemplateView):
     def get_context_data(self, **kwargs):
         ai_id = int(self.request.GET.get('ai_id', 0))
         database = Database.objects.get(ai_id=ai_id)
-        reporting_year = database.reporting_year.name
+        reporting_year = database.reporting_year.year
         report = ActivityReport.objects.filter(database_id=database.ai_id)
         none_ai_indicators = Indicator.objects.filter(none_ai_indicator=True,activity__database=database).values(
             'id',
@@ -372,6 +376,7 @@ class ReportInternalView(TemplateView):
             'values_gov',
             'values',
             'is_cumulative',
+            'type'
         ).distinct()
         months = []
         for i in range(1, 13):
@@ -396,7 +401,7 @@ class ReportInternalFormView(TemplateView):
         ai_id = self.request.GET.get('ai_id', 0)
         step = int(self.request.GET.get('step', 0))
         database = Database.objects.get(ai_id=ai_id)
-        reporting_year = database.reporting_year.name
+        reporting_year = database.reporting_year.year
         activities = Activity.objects.filter(database=database.id)
         report = ActivityReport.objects.filter(database_id=database.ai_id,indicator_id=indicator_id).values(
             'indicator_id',
@@ -522,22 +527,24 @@ class ReportInternalFormView(TemplateView):
             row_results = self.request.POST.get('row_results', "")
             json_string = json.loads(row_results)
             result=""
-            status=""
-            indicator.result_status = {}
+            gov=""
+            indicator.results = {}
             indicator.save()
+            results_list = {}
             if 'myrows' in json_string:
                 for row in json_string['myrows']:
                     if 'Result' in row:
                         result = row['Result']
                     if 'Month' in row:
                         month = row['Month']
-                    if "Status" in row:
-                        status = row['Status']
+                    if "Governorate" in row:
+                        gov = row['Governorate']
 
-                    results_list = indicator.result_status
-                    results_list[month] = '{}-{}'.format(result,status)
-                    indicator.result_status = results_list
-                    indicator.save()
+                    key = '{}-{}'.format(month,gov)
+                    results_list[key] = result
+
+                indicator.results = results_list
+                indicator.save()
 
             return HttpResponseRedirect('/activityinfo/report-internal/?rep_year=2020&ai_id=' + str(ai_id))
 
@@ -545,13 +552,15 @@ class ReportInternalFormView(TemplateView):
             name = self.request.POST.get('name', "")
             activity_id = self.request.POST.get('activity', "")
             awp_code = self.request.POST.get('awp_code',"")
-
             qualitative_target = self.request.POST.get('qualitative_target',"")
             unit = self.request.POST.get('unit',"")
             level = self.request.POST.get('level',"")
             type = self.request.POST.get('type',"")
-            measurement= self.request.POST.get('measurement',"")
+            measurement = self.request.POST.get('measurement',"")
             activity = Activity.objects.get(id=activity_id)
+            qualitative_result = self.request.POST.get('qualitative_result',"")
+            status = self.request.POST.get('status',"")
+
 
             if self.request.POST.get('target'):
                 target = self.request.POST.get('target', default=0)
@@ -568,7 +577,6 @@ class ReportInternalFormView(TemplateView):
             else:
                 sub_master_indicator = False
 
-
             indicator.label = name
             indicator.name = name
             indicator.type = type
@@ -580,6 +588,8 @@ class ReportInternalFormView(TemplateView):
             indicator.none_ai_indicator = True
             indicator.target = target
             indicator.qualitative_target = qualitative_target
+            indicator.qualitative_result = qualitative_result
+            indicator.status = status
             indicator.measurement_type = measurement
             indicator.funded_by = 'UNICEF'
             indicator.save()
