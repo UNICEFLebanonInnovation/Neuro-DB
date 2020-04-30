@@ -160,6 +160,7 @@ def add_rows(ai_db=None, model=None):
                 project_description=unicode(row['projects.project_name'], errors='replace') if 'projects.project_name' in row else '',
                 funded_by=funded_by,
                 indicator_value=indicator_value,
+                indicator_units = row['unit'] if 'unit' in row else '',
                 site_type=row['site_type'] if 'site_type' in row else '',
                 location_longitude=row[
                     'ai_allsites.geographic_location.longitude'] if 'ai_allsites.geographic_location.longitude' in row else '',

@@ -23,14 +23,21 @@
         </div>
      </div>
   </div>
+
     <div class="row">
     <div class="col-lg-12">
       <div class="main-card mb-3 card">
         <div class="card-body">
-         <div class="card-header mb-3 mt-2">
-             Internal Indicators
+
+         <div class="card-header">
+           <nav class="" aria-label="breadcrumb">
+          <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a title="Back to main Dashboard " href="{% url 'activityinfo:report_crisis' %}?rep_year={{ reporting_year }}&ai_id={{ database.ai_id }}">Covid Response</a></li>
+          <li class="active breadcrumb-item" aria-current="page">Internal Reporting</li>
+      </ol>
+      </nav>
             <div class="btn-actions-pane-right">
-               <a href="{% url 'activityinfo:report_internal_form' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&step=1" class="btn btn-outline-primary">Add Indicator </a>
+               <a href="{% url 'activityinfo:report_internal_form' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&step=1" class="link">Add Indicator </a>
             </div>
           </div>
           <div class="table-responsive">
@@ -38,32 +45,25 @@
               <thead>
               <tr>
                 <th content=""> Indicator Name</th>
-                <th content="">Cumulative</th>
-                {% for month, month_name in months %}
-                <th content="{{ month_name }}">{{ month_name }}</th>
-                {% endfor %}
+                <th content="">Type</th>
+                <th ></th>
+
               </tr>
               </thead>
               <tbody>
               {% for indicator in list_indicators %}
               <tr>
                 <td class="w-150">
-                  <a href="{% url 'activityinfo:report_internal_form' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&id={{ indicator.id }}">
-                    {{ indicator.name }}
-                </a>
-
+                  {{ indicator.name }}
                 </td>
-                  <td class="w-5">
-                      {% get_indicator_cumulative_months indicator  as cumulative_value %}
-                  {{ cumulative_value }}
-                </td>
-                {% for month, month_name in months %}
                 <td class="w-5">
-                  {% get_indicator_value indicator month  as value %}
-                  {{ value }}
+                   {{ indicator.type }}
                 </td>
-                {% endfor %}
-
+                <td class="w-5">
+                   <a  class="btn btn-primary" href="{% url 'activityinfo:report_internal_form' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&id={{ indicator.id }}">
+                    Edit
+                  </a>
+                </td>
               </tr>
               {% endfor %}
               </tbody>

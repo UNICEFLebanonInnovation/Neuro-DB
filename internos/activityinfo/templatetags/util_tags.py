@@ -134,6 +134,7 @@ def check_indicators_unit(indicators, cumulative_value):
 
 @register.assignment_tag
 def get_indicator_unit(indicator, value):
+
     if not value:
         return '0'
     if indicator['measurement_type'] == 'percentage':
@@ -1427,21 +1428,33 @@ def get_Crisis_db():
 @register.assignment_tag
 def split_results(key,value):
     d = dict()
-    month = calendar.month_name[int(key)]
-    result = value.split('-')[0]
-    status = value.split('-')[1]
-    color=""
-    if status == 'Off_Track':
-        color = 'badge-danger'
-    elif status == 'Over_Track':
-        color = 'badge-warning'
-    elif status == 'On_Track':
-        color = 'badge-success'
+    month_num = key.split('-')[0]
+    month = calendar.month_name[int(month_num)]
+    gov = key.split('-')[1]
+    result = value
+    governorates = []
+    governorates.append((2, 'Akkar'))
+    governorates.append((3, ' Baalbek_Hermel'))
+    governorates.append((4, 'North'))
+    governorates.append((5, 'Mount Lebanon'))
+    governorates.append((6, 'Bekaa'))
+    governorates.append((7, 'Beirut'))
+    governorates.append((8, 'South'))
+    governorates.append((9, 'Nabatiye'))
+    governorates.append((10, 'National'))
+
+    gov_name = ""
+    for num, name in governorates:
+        if num == int(gov):
+            gov_name = name
+
 
     d['month'] = month
+    d['month_num'] =month_num
     d['result'] = result
-    d['status'] = status
-    d['color'] = color
+    d['gov'] = gov
+    d['gov_name'] = gov_name
+
     return d
 
 
@@ -1449,11 +1462,22 @@ def split_results(key,value):
 def get_database_by_activity(activity_id):
     from internos.activityinfo.models import Activity, Database
 
-    databasename = ""
+    database = ""
     try:
         activity = Activity.objects.get(id=activity_id)
-        return activity.database.label
+        return activity.database
     except Exception as ex:
         print(ex)
-    return databasename
+    return database
 
+@register.assignment_tag
+def get_tag_name(tag_id):
+    from internos.activityinfo.models import IndicatorTag
+
+    tag_name = ""
+    try:
+        tag = IndicatorTag.objects.get(id=tag_id)
+        return tag.label
+    except Exception as ex:
+        print(ex)
+    return tag_name
