@@ -191,6 +191,18 @@ icon-wrapper {
     border-width: 0 !important;
 }
 
+.modal-backdrop {
+  z-index: -1;
+}
+
+#myModal {
+  top: 100px;
+  max-height: 600px;
+}
+
+#myModal .modal-dialog {
+    max-width: 800px;
+}
 
 </style>
 
@@ -212,6 +224,13 @@ icon-wrapper {
                                     </div>
                                 </div>
                                 <div class="page-title-actions">
+
+
+  <button type="button" class="btn btn-success show_model" data-toggle="modal" style="position: unset !important;" data-id="" data-target="#myModal"
+                        title="Preview Report"><i class="fa fa-eye" style="font-size: 25px;"></i>
+                </button>
+
+
 
                                 </div>
                             </div>
@@ -280,21 +299,55 @@ icon-wrapper {
   </div>
 </div>
 
-  <div class="row">
-    <div class="col-lg-12">
-      <div class="main-card mb-3 card">
-          <div class="card-body watermark">
-              <div class="table-responsive">
+<div class="mb-3 card">
+  <div class="no-gutters row">
+      <div id="populations_per_nationality"></div>
 
-                <iframe src="{% static 'files/Population Figures in Lebanon-2020.pdf' %}" width="100%" height="500px"></iframe>
+      <div id="children_per_nationality"></div>
+  </div>
+</div>
 
-              </div>
-          </div>
-      </div>
+<div class="mb-3 card">
+  <div class="no-gutters row">
+      <div id="vulnerable_populations"></div>
+
+      <div style="position: absolute; top: 20px; right: 20%;">
+        <img src="{% static 'images/Most-Vulnerable-Map.png' %}" style="width: 300px; height: 375px;"/>
       </div>
   </div>
+</div>
+
+<!--<div class="row">-->
+  <!--<div class="col-lg-12">-->
+    <!--<div class="main-card mb-3 card">-->
+        <!--<div class="card-body watermark">-->
+            <!--<div class="table-responsive">-->
+
+              <!--<iframe src="{% static 'files/Population Figures in Lebanon-2020.pdf' %}" width="100%" height="500px"></iframe>-->
+
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
 
 </div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Report Preview</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+<object data="{% static 'files/Population Figures in Lebanon-2020.pdf' %}"
+          type="application/pdf"  width="100%" style="height:100vh">    </object>
+    </div>
+  </div>
+</div>
+
 
 {% endblock content %}
 
@@ -308,6 +361,238 @@ icon-wrapper {
 <script type="text/javascript" src="{% static 'js/Highcharts.chart.js' %}"></script>
 
 <script type="text/javascript">
+
+
+
+var data = {
+    2020: [
+        ['Lebanese', 1256916],
+        ['Syrians', 804000],
+        ['PRL', 68580],
+        ['PRS', 10138],
+    ],
+};
+
+var countries = [{
+    name: 'Lebanese',
+    flag: '{% static "images/rounded_flag_lebanon.jpg" %}',
+    color: '#70C64A'
+}, {
+    name: 'Syrians',
+    flag: '{% static "images/rounded_flag_syrian.jpg" %}',
+    color: '#EDDA2A'
+}, {
+    name: 'PRL',
+    flag: '{% static "images/rounded_flag_palestine.jpg" %}',
+    color: '#ED705A'
+}, {
+    name: 'PRS',
+    flag: '{% static "images/rounded_flag_palestine.jpg" %}',
+    color: '#E84D58'
+}];
+
+
+function getData(data) {
+    return data.map(function (country, i) {
+        return {
+            name: country[0],
+            y: country[1],
+            color: countries[i].color
+        };
+    });
+}
+
+var chart = Highcharts.chart('children_per_nationality', {
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: 'Total number of children: 2,139,634'
+    },
+    subtitle: {
+        text: 'Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]'
+    },
+    plotOptions: {
+        series: {
+            grouping: false,
+            borderWidth: 0
+        }
+    },
+    legend: {
+        enabled: false
+    },
+    tooltip: {
+        shared: true,
+        headerFormat: '<span style="font-size: 15px">{point.point.name}</span><br/>',
+        pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y} Children</b><br/>'
+    },
+    xAxis: {
+        type: 'category',
+        max: 3,
+        labels: {
+            useHTML: true,
+            animate: true,
+            formatter: function () {
+                var value = this.value,
+                    output;
+                var country = '';
+
+                countries.forEach(function (country) {
+                    if (country.name === value) {
+                        output = country.flag;
+                    }
+                });
+
+                return '<span><img src="' + output + '" style="width: 40px; height: 40px;"/><br>'+value+'</span>';
+            }
+        }
+    },
+    yAxis: [{
+        title: {
+            text: ''
+        },
+        showFirstLabel: false
+    }],
+    series: [{
+        name: '2020',
+        id: 'main',
+        dataSorting: {
+            enabled: true,
+            matchByName: true
+        },
+        dataLabels: [{
+            enabled: true,
+            inside: true,
+            style: {
+                fontSize: '16px'
+            }
+        }],
+        data: getData(data[2020]).slice()
+    }],
+    exporting: {
+        allowHTML: true
+    }
+});
+
+
+
+
+
+Highcharts.chart('populations_per_nationality', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: 0,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'Total Population<br>5,742,742',
+        align: 'center',
+        verticalAlign: 'middle',
+        y: 50
+    },
+    subtitle: {
+        text: 'Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    accessibility: {
+        point: {
+            valueSuffix: '%'
+        }
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+            }
+        }
+    },
+    series: [{
+        name: 'Nationality',
+        colorByPoint: true,
+        innerSize: '50%',
+        data: [{
+            name: 'Lebanese',
+            y: 4035042,
+            color: '#70C64A'
+        }, {
+            name: 'Syrians',
+            y: 1500000,
+            color: '#EDDA2A'
+        }, {
+            name: 'Palestinians',
+            y: 208800,
+            color: '#ED705A'
+        }]
+    }]
+});
+
+
+
+
+
+Highcharts.chart('vulnerable_populations', {
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: 'Population in the Vulnerable Cadasters based on UNICEF MSVI'
+    },
+    subtitle: {
+        text: '[Multi-Sections Vulnerability Index]'
+    },
+    xAxis: {
+        categories: [
+            'Most Vulnerable',
+            '2nd Most Vulnerabke',
+            '3rd Most Vulnerable',
+            '4th Most Vulnerable',
+            '5th Most Vulnerable',
+        ],
+        crosshair: true
+    },
+    yAxis: {
+        min: 0,
+        title: {
+            text: 'Number of Most Vulnerable'
+        }
+    },
+    tooltip: {
+        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:} </b></td></tr>',
+        footerFormat: '</table>',
+        shared: true,
+        useHTML: true
+    },
+    plotOptions: {
+        column: {
+            pointPadding: 0.2,
+            borderWidth: 0
+        }
+    },
+    series: [{
+        name: 'Lebanese',
+        data: [1625629, 504141, 348860, 234114, 194827],
+        color: '#70C64A'
+
+    }, {
+        name: 'Syrians',
+        data: [699730, 227655, 117390, 105990, 62165],
+        color: '#EDDA2A'
+
+    }, {
+        name: 'Palestinians',
+        data: [144684, 19664, 3486, 3655, 711],
+        color: '#ED705A'
+
+    }]
+});
 
 
 </script>
