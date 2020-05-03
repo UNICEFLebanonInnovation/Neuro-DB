@@ -56,7 +56,9 @@
   .x_title span.label {
       color: white;
   }
-
+  .card-body {
+    max-height: 500px;
+  }
 </style>
 
 <div class="app-page-title">
@@ -82,8 +84,8 @@
               <ul class="dropdown-menu">
                 {% for section in sections %}
                 <li>
-                  <button type="button" itemref="sections" itemscope="section-content" content="{{ section.name }}" class="btn btn-default btn-filter-content">
-                    {{ section.name }}
+                  <button type="button" itemref="sections" itemscope="section-content" content="{{ section }}" class="btn btn-default btn-filter-content">
+                    {{ section }}
                   </button>
                 </li>
                 {% endfor %}
