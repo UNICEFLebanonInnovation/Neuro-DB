@@ -1,0 +1,605 @@
+{% extends "base2.html" %}
+{% load staticfiles i18n %}
+{% block project_title %}{% endblock %}
+
+{% block content %}
+
+<script type="text/javascript" src="{% static 'css/highcharts.css' %}"></script>
+<style>
+.highcharts-figure, .highcharts-data-table table {
+    min-width: 500px;
+    max-width: 1200px;
+    min-height: 400px;
+    border: 1px solid #eee;
+}
+
+.highcharts-data-table table {
+	font-family: Verdana, sans-serif;
+	border-collapse: collapse;
+	border: 1px solid #EBEBEB;
+	margin: 10px auto;
+	text-align: center;
+	width: 100%;
+	max-width: 500px;
+}
+.highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+}
+.highcharts-data-table th {
+	font-weight: 600;
+    padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+    padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+    background: #f1f7ff;
+}
+
+
+.widget-chart .widget-numbers {
+    font-weight: bold;
+    font-size: 2rem;
+    display: block;
+    line-height: 1;
+    margin: 1rem auto;
+}
+
+.widget-chart .widget-subheading + .widget-numbers {
+    margin-top: 0.5rem;
+}
+
+.widget-chart.text-left .widget-numbers {
+    margin-left: 0;
+}
+
+.widget-chart .widget-subheading:first-child {
+    margin-top: 0;
+}
+
+.widget-chart .widget-subheading {
+    margin: -0.5rem 0 0;
+    display: block;
+    opacity: .6;
+}
+
+.widget-chart.text-left .widget-chart-content .widget-description {
+    -ms-flex-item-align: start;
+    align-self: flex-start;
+}
+
+.widget-chart .widget-numbers + .widget-chart-flex, .widget-chart .widget-numbers + .widget-description, .widget-chart .widget-numbers + .widget-subheading {
+    margin-top: -0.5rem;
+}
+
+.widget-chart .widget-description {
+    margin: 1rem 0 0;
+}
+
+.text-focus {
+    color: #444054 !important;
+}
+
+.widget-chart.text-left .widget-chart-content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    position: relative;
+}
+
+.widget-chart .widget-chart-content {
+    position: relative;
+    z-index: 5;
+}
+.widget-chart.text-left .icon-wrapper {
+    min-width: 54px;
+    height: 54px;
+    margin: 0 1rem 0 0;
+}
+icon-wrapper {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+.icon-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.rounded-circle {
+    border-radius: 50% !important;
+}
+.icon-wrapper .icon-wrapper-bg {
+    position: absolute;
+    height: 60px;
+    width: 60px;
+    z-index: 3;
+    opacity: .2;
+}
+
+.opacity-9 {
+    opacity: .9 !important;
+}
+.bg-success {
+    background-color: #3ac47d !important;
+}
+.icon-wrapper i {
+    margin: 0 auto;
+    font-size: 1.7rem;
+    position: relative;
+    z-index: 5;
+}
+[class^="lnr-"], [class*=" lnr-"] {
+    font-family: 'Linearicons-Free';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.widget-chart.text-left {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.widget-chart {
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+}
+.card {
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+    border-width: 0;
+    -webkit-transition: all .2s;
+    transition: all .2s;
+}
+.bg-transparent {
+    background: transparent !important;
+}
+.no-shadow {
+    box-shadow: 0 0 0 transparent !important;
+}
+.rm-border {
+    border-width: 0 !important;
+}
+
+.modal-backdrop {
+  z-index: -1;
+}
+
+#myModal {
+  top: 100px;
+}
+
+#myModal .modal-dialog {
+    max-width: 800px;
+}
+
+</style>
+
+<div class="app-main__inner watermark">
+   <div class="app-page-title">
+     <div class="page-title-wrapper">
+                                <div class="page-title-heading">
+                                    <div class="page-title-icon">
+                                        <i class="pe-7s-keypad icon-gradient bg-mean-fruit">
+                                        </i>
+                                    </div>
+                                    <div>Population Figures in Lebanon
+                                        <div class="page-title-subheading">
+<div class="text-danger">
+            <i class="fa fa-fw" aria-hidden="true" title=""></i>
+            This dashboard is under construction, please don't use it in any official report.
+       </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="page-title-actions">
+
+
+  <button type="button" class="btn btn-success show_model" data-toggle="modal" style="position: unset !important;" data-id="" data-target="#myModal"
+                        title="Preview Report"><i class="fa fa-eye" style="font-size: 25px;"></i>
+                </button>
+
+
+
+                                </div>
+                            </div>
+   </div>
+
+<div class="mb-3 card">
+  <div class="no-gutters row">
+    <div class="col-sm-6 col-md-4 col-xl-4">
+        <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
+          <div class="icon-wrapper rounded-circle bg-info">
+            <div class="icon-wrapper-bg opacity-9"></div>
+            <i class="fa fa-universal-access text-white"></i>
+          </div>
+          <div class="widget-chart-content">
+            <div class="widget-subheading">Total Population</div>
+            <div class="widget-numbers text-info"><span>5,742,742</span></div>
+            <!--<div class="widget-description text-focus"> Stable-->
+              <!--<span class="text-info pl-1">-->
+                <!--<fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>-->
+                <!--<span class="pl-1">0.0%</span>-->
+              <!--</span>-->
+            <!--</div>-->
+          </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-md-4 col-xl-4">
+        <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
+          <div class="icon-wrapper rounded-circle bg-warning">
+            <div class="icon-wrapper-bg opacity-9"></div>
+            <i class="fa fa-universal-access text-white"></i>
+          </div>
+          <div class="widget-chart-content">
+            <div class="widget-subheading">Total number of children</div>
+            <div class="widget-numbers text-warning"><span>2,139,634</span></div>
+
+            <div class="widget-description text-focus">% out of each nationality are: 172,200</div>
+
+          </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-md-4 col-xl-4">
+        <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
+          <div class="icon-wrapper rounded-circle bg-danger">
+            <div class="icon-wrapper-bg opacity-9"></div>
+            <i class="fa fa-universal-access text-white"></i>
+          </div>
+          <div class="widget-chart-content">
+            <div class="widget-subheading">Most Vulnerable Population</div>
+            <div class="widget-numbers text-danger"><span>2,479,043</span></div>
+            <!--{% if market_percentage_status %}-->
+              <!--<div class="widget-description text-focus"> Increased by <span class="text-danger pl-1">-->
+                <!--<fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>-->
+                <!--<span class="pl-1">{{ market_rate_per }}%</span></span>-->
+              <!--</div>-->
+            <!--{% else %}-->
+              <!--<div class="widget-description text-focus"> Decrease by <span class="text-success pl-1">-->
+                <!--<fa name="angle-down" _nghost-djc-c2="" ng-reflect-name="angle-down"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-down" ng-reflect-klass="fa fa-angle-down" ng-reflect-ng-class=""></i></fa>-->
+                <!--<span class="pl-1">{{ market_rate_per }}%</span></span>-->
+              <!--</div>-->
+            <!--{% endif %}-->
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="mb-3 card">
+  <div class="no-gutters row">
+      <div id="populations_per_nationality"></div>
+
+      <div id="children_per_nationality"></div>
+  </div>
+</div>
+
+<div class="mb-3 card">
+  <div class="no-gutters row">
+      <div id="vulnerable_populations"></div>
+
+      <div style="position: absolute;right: 5%;border: 1px solid #eee;width: 400px;height: 400px;border-radius: 50%;">
+        <img src="{% static 'images/Most-Vulnerable-Map.png' %}" style="width: 250px;height: 300px; margin-top: 47px; margin-left: 70px;"/>
+      </div>
+  </div>
+</div>
+
+<!--<div class="row">-->
+  <!--<div class="col-lg-12">-->
+    <!--<div class="main-card mb-3 card">-->
+        <!--<div class="card-body watermark">-->
+            <!--<div class="table-responsive">-->
+
+              <!--<iframe src="{% static 'files/Population Figures in Lebanon-2020.pdf' %}" width="100%" height="500px"></iframe>-->
+
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Report Preview</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <div class="modal-body"><object data="{% static 'files/Population Figures in Lebanon-2020.pdf' %}"
+          type="application/pdf"  width="100%" style="height:500px;">    </object></div>
+<div class="modal-footer">
+
+  Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]
+</div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock content %}
+
+    {% block extra_js %}
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script type="text/javascript" src="{% static 'js/Highcharts.chart.js' %}"></script>
+
+<script type="text/javascript">
+
+
+
+var data = {
+    2020: [
+        ['Lebanese', 1256916],
+        ['Syrians', 804000],
+        ['PRL', 68580],
+        ['PRS', 10138],
+    ],
+};
+
+var countries = [{
+    name: 'Lebanese',
+    flag: '{% static "images/rounded_flag_lebanon.jpg" %}',
+    color: '#70C64A'
+}, {
+    name: 'Syrians',
+    flag: '{% static "images/rounded_flag_syrian.jpg" %}',
+    color: '#EDDA2A'
+}, {
+    name: 'PRL',
+    flag: '{% static "images/rounded_flag_palestine.jpg" %}',
+    color: '#ED705A'
+}, {
+    name: 'PRS',
+    flag: '{% static "images/rounded_flag_palestine.jpg" %}',
+    color: '#E84D58'
+}];
+
+
+function getData(data) {
+    return data.map(function (country, i) {
+        return {
+            name: country[0],
+            y: country[1],
+            color: countries[i].color
+        };
+    });
+}
+
+var chart = Highcharts.chart('children_per_nationality', {
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: 'Total number of children: 2,139,634'
+    },
+    subtitle: {
+        text: 'Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]'
+    },
+    plotOptions: {
+        series: {
+            grouping: false,
+            borderWidth: 0
+        }
+    },
+    legend: {
+        enabled: false
+    },
+    tooltip: {
+        shared: true,
+        headerFormat: '<span style="font-size: 15px">{point.point.name}</span><br/>',
+        pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y} Children</b><br/>'
+    },
+    xAxis: {
+        type: 'category',
+        max: 3,
+        labels: {
+            useHTML: true,
+            animate: true,
+            formatter: function () {
+                var value = this.value,
+                    output;
+                var country = '';
+
+                countries.forEach(function (country) {
+                    if (country.name === value) {
+                        output = country.flag;
+                    }
+                });
+
+                return '<div style="text-align: center;"><img src="' + output + '" style="width: 40px; height: 40px;"/><br>'+value+'</div>';
+            }
+        }
+    },
+    yAxis: [{
+        title: {
+            text: ''
+        },
+        showFirstLabel: false
+    }],
+    series: [{
+        name: '2020',
+        id: 'main',
+        dataSorting: {
+            enabled: true,
+            matchByName: true
+        },
+        dataLabels: [{
+            enabled: true,
+            inside: true,
+            style: {
+                fontSize: '16px'
+            }
+        }],
+        data: getData(data[2020]).slice()
+    }],
+    exporting: {
+        allowHTML: true
+    }
+});
+
+
+
+
+
+Highcharts.chart('populations_per_nationality', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: 0,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'Total Population<br>5,742,742',
+        align: 'center',
+        verticalAlign: 'middle',
+        y: 50
+    },
+    subtitle: {
+        text: 'Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    accessibility: {
+        point: {
+            valueSuffix: '%'
+        }
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+            }
+        }
+    },
+    series: [{
+        name: 'Nationality',
+        colorByPoint: true,
+        innerSize: '50%',
+        data: [{
+            name: 'Lebanese',
+            y: 4035042,
+            color: '#70C64A'
+        }, {
+            name: 'Syrians',
+            y: 1500000,
+            color: '#EDDA2A'
+        }, {
+            name: 'Palestinians',
+            y: 208800,
+            color: '#ED705A'
+        }]
+    }]
+});
+
+
+
+
+
+Highcharts.chart('vulnerable_populations', {
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: 'Population in the Vulnerable Cadasters based on UNICEF MSVI'
+    },
+    subtitle: {
+        text: '[Multi-Sections Vulnerability Index]'
+    },
+    xAxis: {
+        categories: [
+            'Most Vulnerable',
+            '2nd Most Vulnerabke',
+            '3rd Most Vulnerable',
+            '4th Most Vulnerable',
+            '5th Most Vulnerable',
+        ],
+        crosshair: true
+    },
+    yAxis: {
+        min: 0,
+        title: {
+            text: 'Number of Most Vulnerable'
+        }
+    },
+    tooltip: {
+        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y} </b></td></tr>',
+        footerFormat: '</table>',
+        shared: true,
+        useHTML: true
+    },
+    plotOptions: {
+        column: {
+            pointPadding: 0.2,
+            borderWidth: 0
+        }
+    },
+    series: [{
+        name: 'Lebanese',
+        data: [1625629, 504141, 348860, 234114, 194827],
+        color: '#70C64A'
+
+    }, {
+        name: 'Syrians',
+        data: [699730, 227655, 117390, 105990, 62165],
+        color: '#EDDA2A'
+
+    }, {
+        name: 'Palestinians',
+        data: [144684, 19664, 3486, 3655, 711],
+        color: '#ED705A'
+
+    }]
+});
+
+
+</script>
+
+
+
+{% endblock %}

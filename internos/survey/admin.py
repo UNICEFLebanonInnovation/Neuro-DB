@@ -107,11 +107,11 @@ class EconomicReportingAdmin(ImportExportModelAdmin):
         'item_price',
     )
     list_display = (
-        'category_reporting_period',
+        'reporting_date',
         'category',
         'item',
-        'reporting_date',
         'item_price',
+        'category_reporting_period',
     )
 
     actions = [

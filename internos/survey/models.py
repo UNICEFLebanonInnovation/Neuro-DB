@@ -94,7 +94,7 @@ class EconomicReporting(models.Model):
 
     reporting_date = models.DateField(blank=False, null=False)
 
-    item_price = MoneyField(max_digits=14, decimal_places=2, default_currency='LBP')
+    item_price = MoneyField(max_digits=14, decimal_places=2, default=0, default_currency='LBP')
     price_amount = models.CharField(
         max_length=250,
         blank=True,

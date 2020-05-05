@@ -73,7 +73,7 @@ internos/media/
 mailhog
 
 staticfiles/
-static/
+/static/
 
 .cache/
 
