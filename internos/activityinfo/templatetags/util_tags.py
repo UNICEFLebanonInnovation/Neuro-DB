@@ -138,7 +138,7 @@ def get_indicator_unit(indicator, value):
     if not value:
         return '0'
     if indicator['measurement_type'] == 'percentage':
-        return '{} {}'.format(round(value, 1), '%')
+        return '{} {}'.format (int(round(value, 1)), '%')
 
     if indicator['measurement_type'] == 'percentage_x':
         value = "{:,}".format(round(value * 100, 1))
@@ -1481,3 +1481,16 @@ def get_tag_name(tag_id):
     except Exception as ex:
         print(ex)
     return tag_name
+
+@register.assignment_tag
+def get_indicator_reporting_unit(indicator_id):
+    from internos.activityinfo.models import ActivityReport
+    unit=""
+    try:
+        report = ActivityReport.objects.filter(ai_indicator=indicator_id).first()
+        unit= report.unit
+        return unit
+    except Exception as ex :
+       return unit
+
+

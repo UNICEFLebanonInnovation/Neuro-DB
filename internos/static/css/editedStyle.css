@@ -607,7 +607,9 @@ font-size:20px;
 .breadcrumb{
 background-color:#fff;
 padding: 0;
-
+}
+ol.breadcrumb{
+margin:0px;
 }
 .card-header, .card-title{
 font-size:0.9rem;

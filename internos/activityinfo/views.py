@@ -21,7 +21,7 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
-        databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('label')
+        databases = Database.objects.filter(reporting_year__name=reporting_year,display=True).exclude(ai_id=10240).order_by('label')
         return {
             'ai_databases': databases,
             'reporting_year': reporting_year
