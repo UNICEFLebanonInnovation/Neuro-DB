@@ -1604,8 +1604,8 @@ class LiveReportView(TemplateView):
         today = datetime.date.today()
         day_number = today.strftime("%d")
         month_number = today.strftime("%m")
-        month = int(today.strftime("%m"))
-        month_name = today.strftime("%B")
+        month = int(today.strftime("%m"))-1
+        month_name = calendar.month_name[month]
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -1613,7 +1613,6 @@ class LiveReportView(TemplateView):
         reporting_year = database.reporting_year
 
         report = LiveActivityReport.objects.filter(database_id=database.ai_id)
-
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
@@ -1628,9 +1627,10 @@ class LiveReportView(TemplateView):
         if selected_partners or selected_governorates:
             selected_filter = True
 
-        partners = report.values('partner_label', 'partner_id').distinct()
+        partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
         governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
+                                     'location_adminlevel_governorate').order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+        print (partners)
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
             'sequence')

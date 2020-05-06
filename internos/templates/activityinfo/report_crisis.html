@@ -158,7 +158,7 @@
                   {{ tag_name }}
                 </td>
                  <td class="w-5">
-                   {% get_indicator_reporting_unit item.id %}
+                 {{ item.units }}
                  </td>
                 <td class="w-5">{{ cumulative_value }}</td>
 
@@ -244,7 +244,7 @@
                   {% get_tag_name item.tag_focus as tag_name %}
                   {{ tag_name }}</td>
                  <td class="w-5">
-                   {% get_indicator_reporting_unit item.id %}
+                  {{ item.units }}
                  </td>
                 <td class="w-5">{{ cumulative_value }}</td>
 
