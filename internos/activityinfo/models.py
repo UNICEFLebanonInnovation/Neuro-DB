@@ -578,6 +578,7 @@ class ActivityReport(TimeStampedModel):
     master_indicator_sub = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
     pending = models.BooleanField(default=False)
+    reporting_section = models.CharField(max_length=250, blank=True, null=True)
 
     location_cadastral = models.ForeignKey('activityinfo.AdminLevelEntities', blank=True, null=True, related_name='+')
     location_caza = models.ForeignKey('activityinfo.AdminLevelEntities', blank=True, null=True, related_name='+')

@@ -1487,8 +1487,12 @@ def get_indicator_reporting_unit(indicator_id):
     from internos.activityinfo.models import ActivityReport
     unit=""
     try:
-        report = ActivityReport.objects.filter(ai_indicator=indicator_id).first()
-        unit= report.unit
+        report = ActivityReport.objects.filter(ai_indicator=indicator_id).first().values(
+            'id',
+            'ai_indicator',
+            'indicator_units',
+        )
+        unit = report['indicator_units']
         return unit
     except Exception as ex :
        return unit

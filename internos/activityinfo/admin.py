@@ -417,7 +417,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'is_sector',
                 'is_section',
                 'support_disability',
-                'support_COVID'
+                'support_COVID',
                 'is_cumulative'
             ]
         }),
@@ -431,8 +431,8 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'tag_programme',
                 'tag_focus',
                 'hpm_indicator',
+                'comment',
                 'target_hpm',
-                'hpm_comment',
                 'has_hpm_note',
                 'hpm_additional_cumulative',
                 'hpm_global_indicator'
