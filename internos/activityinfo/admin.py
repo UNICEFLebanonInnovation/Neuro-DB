@@ -207,7 +207,7 @@ class ActivityAdmin(ImportExportModelAdmin):
     # )
     readonly_fields = (
         'ai_id',
-        'name',
+        # 'name',
         'database',
         'category',
         'location_type',
