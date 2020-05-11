@@ -91,5 +91,25 @@ urlpatterns = [
         view=views.HPMExportViewSet.as_view(),
         name='hpm_report'
     ),
+    url(
+        regex='ajax/load-sections/',
+        view=views.load_sections,
+        name='ajax_load_sections'
+    ),
+    url(
+        regex='ajax/load-govs/',
+        view=views.load_governorates,
+        name='ajax_load_govs'
+    ),
+    url(
+        regex='ajax/load-months/',
+        view=views.load_months,
+        name='ajax_load_months'
+    ),
+    url(
+        regex='ajax/load-partners/',
+        view=views.load_partners,
+        name='ajax_load_partners'
+    ),
 
 ]

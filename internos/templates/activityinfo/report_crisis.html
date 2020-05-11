@@ -9,9 +9,11 @@
 
 <div class="app-main__inner">
   <div class="app-page-title">
-      <form action="{% url 'activityinfo:report_crisis' %}" method="get">
+
+      <form action="{% url 'activityinfo:report_crisis' %}" method="get" id="filterForm" data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"  data-sections-url="{% url 'activityinfo:ajax_load_sections' %}"
+            data-govs-url="{% url 'activityinfo:ajax_load_govs' %}" data-month-url="{% url 'activityinfo:ajax_load_months' %}">
       <div class="page-title-wrapper">
-        <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
+        <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
         <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
           <div class="page-title-icon">
             <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
@@ -27,19 +29,24 @@
                 </option>
                 {% endfor %}
               </select>
+                <select id="filter_section" class="btn btn-outline-primary" multiple="multiple" name="sections">
+                </select>
+
               <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">
-                {% for gov in governorates %}
-                <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
-                  {{ gov.location_adminlevel_governorate }}
-                </option>
-                {% endfor %}
+              {% for gov in governorates %}
+              <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
+                {{ gov.location_adminlevel_governorate }}
+              </option>
+              {% endfor %}
               </select>
+
               <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="s_months">
-                 {% for month, month_name in months %}
+               {% for month, month_name in months %}
                 <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
                   {{ month_name }}
                 </option>
                 {% endfor %}
+
               </select>
             <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
               <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ database.ai_id }}"title="Cancel"
@@ -377,7 +384,6 @@
 
   $(document).ready(function () {
 
-
     var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = window.location.search.substring(1),
         sURLVariables = sPageURL.split('&'),
@@ -391,98 +397,108 @@
             return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
         }
     }
-};
+  };
 
-    var id = getUrlParameter('ai_id');
-    var selected_li=$('li#'+id).find('a');
-    var parent = selected_li.parent();
-    parent.addClass("mm-active");
-    selected_li.addClass("mm-active");
+
+  var id = getUrlParameter('ai_id');
+  var selected_li=$('li#'+id).find('a');
+  var parent = selected_li.parent();
+  parent.addClass("mm-active");
+  selected_li.addClass("mm-active");
 
   $('#filter_partners').multiselect({
-    buttonWidth : '180px',
+    buttonWidth : '150px',
     includeSelectAllOption : true,
-		nonSelectedText: 'Partners',
-		nSelectedText:'selected partners',
-		numberDisplayed:1
+    nonSelectedText: 'Partners',
+    nSelectedText:'selected partners',
+    numberDisplayed:1
   });
+
    $('#filter_governorates').multiselect({
     buttonWidth : '190px',
     includeSelectAllOption : true,
-		nonSelectedText: 'Governorates',
-		nSelectedText:'selected governorates',
-		numberDisplayed:1
+    nonSelectedText: 'Governorates',
+    nSelectedText:'selected governorates',
+    numberDisplayed:1
   });
 
-$('#filter_month').multiselect({
-    buttonWidth : '180px',
+  $('#filter_month').multiselect({
+      buttonWidth : '150px',
+      includeSelectAllOption : true,
+      nonSelectedText: 'Months',
+      nSelectedText:'selected months',
+      numberDisplayed:1
+    });
+
+  $('#filter_section').multiselect({
+    buttonWidth : '150px',
     includeSelectAllOption : true,
-		nonSelectedText: 'Months',
-		nSelectedText:'selected months',
-		numberDisplayed:1
+    nonSelectedText: 'Sections',
+    nSelectedText:'selected months',
+    numberDisplayed:1
+  });
+});
+
+  $('.level1').addClass('collapsed');
+  $('.level2').addClass('collapsed');
+  $('.level3').addClass('collapsed');
+
+  $('.level2').hide();
+  $('.level3').hide();
+
+  $('.expanded-all').click(function () {
+    $('.expanded-all').addClass('active');
+    $('.collapse-all').removeClass('active');
+
+    $('.level1').removeClass('collapsed');
+    $('.level2').removeClass('collapsed');
+    $('.level3').removeClass('collapsed');
+
+    $('.level1').show();
+    $('.level2').show();
+    $('.level3').show();
   });
 
+  $('.collapse-all').click(function () {
+    $('.expanded-all').removeClass('active');
+    $('.collapse-all').addClass('active');
+
+    $('.level1').addClass('collapsed');
+    $('.level2').addClass('collapsed');
+    $('.level3').addClass('collapsed');
+
+    $('.level2').hide();
+    $('.level3').hide();
   });
-      $('.level1').addClass('collapsed');
-      $('.level2').addClass('collapsed');
-      $('.level3').addClass('collapsed');
 
-      $('.level2').hide();
-      $('.level3').hide();
+  $('.level1').dblclick(function () {
+    var itemid = $(this).attr('itemid');
+    var sub_items = 'tr.level2-' + itemid;
+    var sub_sub_items = 'tr.level3-' + itemid;
 
-    $('.expanded-all').click(function () {
-      $('.expanded-all').addClass('active');
-      $('.collapse-all').removeClass('active');
+    if ($(this).hasClass('collapsed')) {
+      $(sub_items).show();
+      $(this).removeClass('collapsed');
+    } else {
+      $(sub_items).hide();
+      $(sub_items).addClass('collapsed');
+      $(sub_sub_items).hide();
+      $(this).addClass('collapsed');
+    }
+  });
 
-      $('.level1').removeClass('collapsed');
-      $('.level2').removeClass('collapsed');
-      $('.level3').removeClass('collapsed');
+  $('.level2').dblclick(function () {
+    var itemid = $(this).attr('itemid');
+    var sub_items = 'tr.level3-' + itemid;
 
-      $('.level1').show();
-      $('.level2').show();
-      $('.level3').show();
-    });
-
-    $('.collapse-all').click(function () {
-      $('.expanded-all').removeClass('active');
-      $('.collapse-all').addClass('active');
-
-      $('.level1').addClass('collapsed');
-      $('.level2').addClass('collapsed');
-      $('.level3').addClass('collapsed');
-
-      $('.level2').hide();
-      $('.level3').hide();
-    });
-
-    $('.level1').dblclick(function () {
-      var itemid = $(this).attr('itemid');
-      var sub_items = 'tr.level2-' + itemid;
-      var sub_sub_items = 'tr.level3-' + itemid;
-
-      if ($(this).hasClass('collapsed')) {
-        $(sub_items).show();
-        $(this).removeClass('collapsed');
-      } else {
-        $(sub_items).hide();
-        $(sub_items).addClass('collapsed');
-        $(sub_sub_items).hide();
-        $(this).addClass('collapsed');
-      }
-    });
-
-    $('.level2').dblclick(function () {
-      var itemid = $(this).attr('itemid');
-      var sub_items = 'tr.level3-' + itemid;
-
-      if ($(this).hasClass('collapsed')) {
-        $(sub_items).show();
-        $(this).removeClass('collapsed');
-      } else {
-        $(sub_items).hide();
-        $(this).addClass('collapsed');
-      }
-    });
+    if ($(this).hasClass('collapsed')) {
+      $(sub_items).show();
+      $(this).removeClass('collapsed');
+    } else {
+      $(sub_items).hide();
+      $(this).addClass('collapsed');
+    }
+  });
 
 function download_csv(csv, filename) {
     var csvFile;
@@ -528,11 +544,186 @@ function download_csv(csv, filename) {
     export_table_to_csv(html, file_name);
   });
 
-
-
-
-
-
 </script>
+
+ <script>
+    $('#filter_month').change(function () {
+
+      var partnerId=$("#filter_partners").val();
+      var section_Id = $('#filter_section').val();
+      var gov_Id = $('#filter_governorates').val();
+      var month_Id = $(this).val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+
+      if (partnerId == null){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'month_id':month_Id,
+            'gov_id':gov_Id,
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+         });
+      }
+      if (gov_Id == null){
+           $.ajax({
+              url: gov_url,
+              data: {
+              'ai_id':ai_id,
+              'month_id':month_Id,
+              'partner_id':partnerId,
+              'section_id':section_Id
+               },
+              success: function (data) {
+                $("#filter_governorates").html(data);
+                $("#filter_governorates").multiselect('rebuild');
+              }
+           });
+      }
+
+    });
+
+    $('#filter_governorates').change(function () {
+
+      var partnerId=$("#filter_partners").val();
+      var section_Id = $('#filter_section').val();
+      var gov_Id = $(this).val();
+      var ai_id = $('#ai_id').val();
+      var month_Id = $('#filter_month').val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var month_url = $("#filterForm").attr("data-month-url");
+
+      if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'month_id':month_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
+      if ( month_Id == null ){
+
+        $.ajax({
+            url: month_url,
+            data: {
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'section_id':section_Id,
+            'gov_id':gov_Id
+             },
+            success: function (data) {
+              $("#filter_month").html(data);
+              $("#filter_month").multiselect('rebuild');
+            }
+        });
+      }
+    });
+
+    $('#filter_section').change(function () {
+
+    var partnerId=$("#filter_partners").val();
+    var section_Id = $(this).val();
+    var ai_id = $('#ai_id').val();
+
+    var gov_url = $("#filterForm").attr("data-govs-url");
+    $.ajax({
+        url: gov_url,
+        data: {
+        'partner_id':partnerId,
+        'ai_id':ai_id,
+        'section_id':section_Id
+         },
+        success: function (data) {
+          $("#filter_governorates").html(data);
+          $("#filter_governorates").multiselect('rebuild');
+        }
+    });
+    var month_url = $("#filterForm").attr("data-month-url");
+    $.ajax({
+        url: month_url,
+        data: {
+        'partner_id':partnerId,
+        'ai_id':ai_id,
+        'section_id':section_Id
+         },
+        success: function (data) {
+          $("#filter_month").html(data);
+          $("#filter_month").multiselect('rebuild');
+        }
+    });
+
+    });
+    $("#filter_partners").change(function () {
+
+    var partnerId = $(this).val();
+    var ai_id = $('#ai_id').val();
+    var month_Id = $('#filter_month').val();
+    var gov_Id = $('#filter_governorates').val();
+
+    var url = $("#filterForm").attr("data-sections-url");
+    var gov_url = $("#filterForm").attr("data-govs-url");
+    var month_url = $("#filterForm").attr("data-month-url");
+
+    if (partnerId == 'UNICEF'){
+      $.ajax({
+        url: url,
+        data: {
+          'partnerId': partnerId
+        },
+        success: function (data) {
+          $("#filter_section").html(data);
+          $("#filter_section").multiselect('rebuild');
+        }
+      });
+     }
+    else
+    {
+       $("#filter_section").html('');
+       $("#filter_section").multiselect('rebuild');
+    }
+    if(govId == null){
+      $.ajax({
+          url: gov_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'month_id':month_Id
+           },
+          success: function (data) {
+            $("#filter_governorates").html(data);
+            $("#filter_governorates").multiselect('rebuild');
+          }
+      });
+    }
+    if( month_Id ==  null){
+      $.ajax({
+          url: month_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'gov_id':gov_Id
+           },
+          success: function (data) {
+            $("#filter_month").html(data);
+            $("#filter_month").multiselect('rebuild');
+          }
+      });
+    }
+
+ });
+  </script>
 
 {% endblock %}
