@@ -298,7 +298,8 @@ class ReportCrisisView(TemplateView):
             'is_cumulative',
             'activity',
             'tag_focus',
-            'hpm_global_indicator'
+            'hpm_global_indicator',
+            'category'
         ).distinct()
 
         covid_indicators = covid_indicators.values(
@@ -1889,14 +1890,15 @@ def load_sections(request):
 
 
 def load_partners(request):
-
     govId = request.GET.getlist('gov_id[]')
     ai_id = request.GET.get('ai_id')
     monthId = request.GET.getlist('month_id[]')
     month_list = []
     if monthId:
         for month in monthId:
-            date = datetime.datetime.strptime(month, "%Y-%m")
+            date = datetime.datetime.strptime(month, "%m")
+            date = date.replace(year=date.today().year)
+
             month_list.append(date)
     if govId and month_list:
         report = ActivityReport.objects.filter(database_id=ai_id , location_adminlevel_governorate_code__in=govId,month__in=month_list)
@@ -1919,7 +1921,9 @@ def load_governorates(request):
     month_list=[]
     if monthId:
         for month in monthId:
-            date = datetime.datetime.strptime(month, "%Y-%m")
+            date = datetime.datetime.strptime(month, "%m")
+            date = date.replace(year=date.today().year)
+
             month_list.append(date)
 
     if partnerId and sectionId and month_list:

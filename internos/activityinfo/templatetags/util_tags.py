@@ -1062,6 +1062,7 @@ def get_sub_indicators_data(ai_id, is_sector=False):
             'values_sites_sector',
             'values_sector',
             'is_cumulative',
+            'category'
         ).distinct()
 
         if is_sector:

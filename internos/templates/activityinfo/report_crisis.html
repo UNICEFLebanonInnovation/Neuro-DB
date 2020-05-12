@@ -104,7 +104,14 @@
 
       <div class="main-card mb-3 card">
         <div class="card-header">
-            <div class="card-title">{{ database.label }}
+            <div class="card-title">
+                <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
+              <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
+              <a href="#" class="expanded-all"><i
+                class="fa fa-bars"></i></a>
+            </span> </i>
+
+              {{ database.label }}
            <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Raw Data">
               <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
                       data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">
@@ -136,6 +143,7 @@
               <thead>
               <tr>
                 <th content="Indicator Name"> Indicator Name</th>
+                <th content="Pillars">Pillar</th>
                 <th content="Global/LCO">Global/LCO</th>
                 <th content="Unit">Unit</th>
                 <th content="Cumulative Results of All Months" title="Cumulative Results of All Months">Cumulative Results
@@ -154,12 +162,12 @@
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
                 <td class="w-150">{{ item.name }}
                 {% if item.hpm_global_indicator %}
-                  <a  data-toggle="popover" data-placement="right" data-content="Hpm Global Indicator" style="cursor:pointer">
+                  <a  data-toggle="popover" data-placement="right" data-content="HPM" style="cursor:pointer">
                      <i class="pe-7s-global text-primary"> </i>
                   </a>
                   {% endif %}
                 </td>
-
+                 <td class="w-5">{{ item.category}}</td>
                 <td class="w-5">
                   {% get_tag_name item.tag_focus as tag_name %}
                   {{ tag_name }}
@@ -185,15 +193,23 @@
                 <td class="w-150">
                   {{ item1.name }}
                 </td>
-                 <td class="w-5"></td>
-                <td class="w-5">
-                   {% get_indicator_reporting_unit item.id %}
+                    <td class="w-5">{{ item1.category}}</td>
+                 <td class="w-5">
+                  {% get_tag_name item.tag_focus as tag_name %}
+                  {{ tag_name }}
                  </td>
-                <td class="w-5">
+                 <td class="w-5">
+                   {% if item1.master_indicator_sub %}
+                   {{ item1.units }}
+                   {% else %}
+                   {% get_indicator_reporting_unit item.id %}
+                   {% endif %}
+
+                 </td>
+                 <td class="w-5">
                   {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
-                </td>
-                 <td></td>
+                 </td>
                 {% for month, month_name in months %}
                 <td class="w-5">
                   {% get_indicator_value item1 month selected_partners selected_governorates as value %}
@@ -209,12 +225,11 @@
                   {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                   itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                 <td class="w-150">{{ item2.name }}</td>
-
-                <td></td>
+                <td class="w-5"></td>
+                <td class="w-5"></td>
                  <td class="w-5">
                    {% get_indicator_reporting_unit item.id %}
                  </td>
-                <td></td>
                  <td></td>
                 {% for month, month_name in months %}
                 <td class="w-10">
@@ -246,15 +261,12 @@
                   </a>
                   {% endif %}
                 </td>
-
+                <td class="w-5"></td>
                 <td class="w-5">
                   {% get_tag_name item.tag_focus as tag_name %}
                   {{ tag_name }}</td>
-                 <td class="w-5">
-                  {{ item.units }}
-                 </td>
+                <td class="w-5">{{ item.units }}</td>
                 <td class="w-5">{{ cumulative_value }}</td>
-
                 {% for month, month_name in months %}
                 <td class="w-5">
                   {% get_indicator_value item month selected_partners selected_governorates as value %}
@@ -271,6 +283,7 @@
                   {{ item1.name }}
                 </td>
                 <td class="w-5"></td>
+                <td class="w-5"></td>
                  <td class="w-5">
                    {% get_indicator_reporting_unit item.id %}
                  </td>
@@ -278,7 +291,6 @@
                     {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
                 </td>
-                 <td></td>
                 {% for month, month_name in months %}
                 <td class="w-5">
                   {% get_indicator_value item1 month selected_partners selected_governorates as value %}
@@ -294,11 +306,10 @@
                   {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                   itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                 <td class="w-150">{{ item2.name }}</td>
-                <td></td>
-                 <td class="w-5">
-                   {% get_indicator_reporting_unit item.id %}
-                 </td>
-                <td></td>
+                 <td class="w-5"></td>
+                <td class="w-5"></td>
+                <td class="w-5">{% get_indicator_reporting_unit item.id %}</td>
+                <td class="w-5"></td>
                 {% for month, month_name in months %}
                 <td class="w-10">
                   {% get_indicator_value item2 month selected_partners selected_governorates as value %}
@@ -547,17 +558,18 @@ function download_csv(csv, filename) {
 </script>
 
  <script>
-    $('#filter_month').change(function () {
+ $('#filter_month').on('change', function() {
 
       var partnerId=$("#filter_partners").val();
       var section_Id = $('#filter_section').val();
       var gov_Id = $('#filter_governorates').val();
+      var ai_id = $('#ai_id').val();
       var month_Id = $(this).val();
 
       var partner_url = $("#filterForm").attr("data-partner-url");
       var gov_url = $("#filterForm").attr("data-govs-url");
-
       if (partnerId == null){
+
          $.ajax({
             url: partner_url,
             data: {
@@ -572,15 +584,17 @@ function download_csv(csv, filename) {
          });
       }
       if (gov_Id == null){
+
            $.ajax({
               url: gov_url,
               data: {
               'ai_id':ai_id,
               'month_id':month_Id,
               'partner_id':partnerId,
-              'section_id':section_Id
+              'section_id':section_Id,
                },
               success: function (data) {
+
                 $("#filter_governorates").html(data);
                 $("#filter_governorates").multiselect('rebuild');
               }
@@ -694,7 +708,7 @@ function download_csv(csv, filename) {
        $("#filter_section").html('');
        $("#filter_section").multiselect('rebuild');
     }
-    if(govId == null){
+    if(gov_Id == null){
       $.ajax({
           url: gov_url,
           data: {

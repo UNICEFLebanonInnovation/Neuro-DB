@@ -30,7 +30,6 @@ def r_script_command_line(script_name, ai_db):
 
 def read_data_from_file(ai_db, forced=False, report_type=None):
     from internos.activityinfo.models import Database, ActivityReport, LiveActivityReport
-
     result = 0
 
     if report_type == 'live':
@@ -127,11 +126,30 @@ def add_rows(ai_db=None, model=None):
 
             start_date = None
             if 'month' in row and row['month'] and not row['month'] == 'NA':
-                start_date = '{}-01'.format(row['month'])
+                date = row['month']
+                try:
+                    date = datetime.datetime.strptime(date, '%Y-%m-%d')
+                    start_date = date
+                except Exception :
+                     start_date = '{}-01'.format(date)
+
             if 'month.' in row and row['month.'] and not row['month.'] == 'NA':
                 start_date = '{}-01'.format(row['month.'])
             if 'date' in row and row['date'] and not row['date'] == 'NA':
                 start_date = row['date']
+            gov_code =0
+            gov_name=""
+            if 'governorate.code' in row :
+                if row['governorate.code'] == 'NA':
+                    gov_code = 10
+                else :
+                    gov_code = row['governorate.code']
+
+            if 'governorate.name' in row :
+                if row['governorate.name'] == 'NA':
+                    gov_name = "National"
+                else :
+                    gov_name =unicode(row['governorate.name'],  errors='replace')
 
             model.create(
                 month=month,
@@ -150,8 +168,13 @@ def add_rows(ai_db=None, model=None):
                 form=unicode(row['Form'], errors='replace') if 'Form' in row else '',
                 location_adminlevel_cadastral_area_code=row['cadastral_area.code'] if 'cadastral_area.code' in row else'',
                 location_adminlevel_cadastral_area=unicode(row['cadastral_area.name'],  errors='replace') if 'cadastral_area.name' in row else '',
+
                 governorate=row['governorate'] if 'governorate' in row else '',
-                location_adminlevel_governorate_code=row['governorate.code'] if 'governorate.code' in row else '',
+
+                location_adminlevel_governorate_code=gov_code,
+
+                location_adminlevel_governorate=gov_name,
+
                 partner_description=unicode(row['partner.partner_full_name'],
                                             errors='replace') if 'partner.partner_full_name' in row else '',
                 project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
@@ -172,8 +195,7 @@ def add_rows(ai_db=None, model=None):
 
                 location_name=unicode(row['ai_allsites.name'], errors='replace') if 'ai_allsites.name' in row else '',
                 partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
-                location_adminlevel_governorate=unicode(row['governorate.name'],
-                                                        errors='replace') if 'governorate.name' in row else '',
+
                 # start_date=datetime.datetime.strptime(row['month'], 'YYYY-MM-DD') if 'month' in row else '',
                 start_date=start_date,
                 # form_category=row['form.category'] if 'form.category' in row else '',
