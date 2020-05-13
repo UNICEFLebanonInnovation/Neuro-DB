@@ -120,7 +120,7 @@ def import_data_and_generate_live_report(database):
 
     databases = Database.objects.filter(reporting_year__current=True)
     if database:
-        databases = databases.filter(ai_id=database)
+        databases = Database.objects.filter(ai_id=database)
 
     for db in databases:
         print(db.name)
