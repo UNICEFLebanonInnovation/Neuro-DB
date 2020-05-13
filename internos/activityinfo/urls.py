@@ -47,6 +47,11 @@ urlpatterns = [
         name='report_crisis'
     ),
     url(
+        regex=r'^report-crisis-live/$',
+        view=views.ReportLiveCrisis.as_view(),
+        name='report_crisis_live'
+    ),
+    url(
         regex=r'^report-partner/$',
         view=views.ReportPartnerView.as_view(),
         name='report_partner'

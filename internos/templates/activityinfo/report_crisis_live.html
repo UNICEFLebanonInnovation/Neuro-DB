@@ -10,11 +10,11 @@
 <div class="app-main__inner">
   <div class="app-page-title">
 
-      <form action="{% url 'activityinfo:report_crisis' %}" method="get" id="filterForm" data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"  data-sections-url="{% url 'activityinfo:ajax_load_sections' %}"
-            data-govs-url="{% url 'activityinfo:ajax_load_govs' %}" data-month-url="{% url 'activityinfo:ajax_load_months' %}">
+      <form action="{% url 'activityinfo:report_crisis_live' %}" method="get" id="filterForm" data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"  data-sections-url="{% url 'activityinfo:ajax_load_sections' %}"
+            data-govs-url="{% url 'activityinfo:ajax_load_govs' %}">
       <div class="page-title-wrapper">
         <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
-        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
+        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate">
           <div class="page-title-icon">
             <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
             </i>
@@ -40,14 +40,6 @@
               {% endfor %}
               </select>
 
-              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="s_months">
-               {% for month, month_name in months %}
-                <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
-                  {{ month_name }}
-                </option>
-                {% endfor %}
-
-              </select>
             <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
               <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ database.ai_id }}"title="Cancel"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
@@ -76,7 +68,7 @@
             </div>
           </div>
             <div class="page-title-subheading">
-              Filter by multiple Partners, Governorates, and Months
+              Filter by multiple Partners and Governorates
             </div>
           </div>
         </div>
@@ -85,18 +77,18 @@
   </div>
   <div class="row">
     <div class="col-lg-12">
-       <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
-        <li class="nav-item">
-           <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
-            <span>Quantitative Dashboard</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" href="#tab-content-1">
-            <span>Qualitative Dashboard</span>
-          </a>
-        </li>
-    </ul>
+<!--       <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">-->
+<!--        <li class="nav-item">-->
+<!--           <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">-->
+<!--            <span>Quantitative Dashboard</span>-->
+<!--          </a>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--          <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" href="#tab-content-1">-->
+<!--            <span>Qualitative Dashboard</span>-->
+<!--          </a>-->
+<!--        </li>-->
+<!--    </ul>-->
 
 
  <div class="tab-content">
@@ -104,33 +96,22 @@
 
       <div class="main-card mb-3 card">
         <div class="card-header">
-
+            <div class="card-title">
                 <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
               <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
               <a href="#" class="expanded-all"><i
                 class="fa fa-bars"></i></a>
             </span> </i>
 
-              {{ database.label }}
-                <div class="d-inline-block dashboard_icons">
-                 <a href="{% url 'activityinfo:report_crisis_live' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
-                   data-placement="top" title="Live Data Monitoring" class="text-danger"
-                   data-step="9" data-intro="Open live ActivityInfo Dashboard">
-                  <i class="fa fa-rss faa-flash "></i>
-                   </a>
-<!--                  <a-->
-<!--                    href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year.year }}&ai_id={{ database.ai_id }}"-->
-<!--                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">-->
-<!--                    <i class="fa fa-users" aria-hidden="true" title=""></i>-->
-<!--                  </a>-->
-                </div>
-              <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Raw Data">
+            Live Dashboard - {{ database.label }} - {{database.reporting_year.year}}
+
+           <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Raw Data">
               <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
                       data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">
                 <i class="fa fa-download"></i>
               </button>
               <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
-                <a type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</a>
+                <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>
                 <div tabindex="-1" class="dropdown-divider"></div>
                 <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
                    href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
@@ -138,29 +119,29 @@
                 <div tabindex="-1" class="dropdown-divider"></div>
               </div>
             </div>
+        </div>
              <div class="btn-actions-pane-right">
-            <a href="{% url 'activityinfo:report_internal' %}?rep_year=2020&ai_id={{ database.ai_id }}" class="link">
-             <i class="nav-link-icon fa fa-fw"></i>
-             <span>Internal Reporting</span>
-            </a>
+
           </div>
       </div>
         <div class="card-body">
-
+       <div class="text-danger fsize-1 mb-1 mt-2">
+            <i class="fa fa-fw" aria-hidden="true" title=""></i>
+          These numbers are only for monitoring purposes, don't use it in any official report.
+       </div>
            <div class="table-responsive">
             <table class="mb-0 table table-striped table-hover" id="exportheader"
-              content="{{ database.label }}_Dashboard_ {{ current_month_name}}_{{ database.reporting_year.year }}.csv"
-                   data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.year }}">
+              content="{{ day_number }}_{{ month_number }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard - Live data.csv"
+                    data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year.year }}">
               <thead>
               <tr>
                 <th content="Indicator Name"> Indicator Name</th>
                 <th content="Pillars">Pillar</th>
                 <th content="Global/LCO">Global/LCO</th>
                 <th content="Unit">Unit</th>
-                <th content="Cumulative Results of All Months" title="Cumulative Results of All Months">Cumulative Results</th>
-                {% for month, month_name in months %}
+                <th content="As of today" data-toggle="tooltip" data-placement="top" title="As of today (Starting January)">As of today
+                </th>
                 <th content="{{ month_name }}">{{ month_name }}</th>
-                {% endfor %}
               </tr>
               </thead>
               <tbody>
@@ -188,12 +169,11 @@
                  </td>
                 <td class="w-5">{{ cumulative_value }}</td>
 
-                {% for month, month_name in months %}
                 <td class="w-5">
                   {% get_indicator_value item month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
-                {% endfor %}
+
               </tr>
               {% get_sub_indicators_data item.id as sub_indicators %}
               {% for item1 in sub_indicators %}
@@ -221,12 +201,10 @@
                   {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
                  </td>
-                {% for month, month_name in months %}
                 <td class="w-5">
                   {% get_indicator_value item1 month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
-                {% endfor %}
               </tr>
 
 
@@ -243,12 +221,10 @@
                    {% get_indicator_reporting_unit item.id %}
                  </td>
                  <td></td>
-                {% for month, month_name in months %}
                 <td class="w-5">
                   {% get_indicator_value item2 month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
-                {% endfor %}
               </tr>
               {% endif %}
               {% endfor %}
@@ -282,15 +258,10 @@
                 <td class="w-5">{{ item.units }}</td>
                 <td class="w-5">{{ cumulative_value }}</td>
 
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                {% for month, month_name in sliced_months %}
                 <td class="w-5">
                   {% get_indicator_value item month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
-                {% endfor %}
               </tr>
               {% get_sub_indicators_data item.id as sub_indicators %}
               {% for item1 in sub_indicators %}
@@ -309,16 +280,11 @@
                     {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
                 </td>
-
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                {% for month, month_name in sliced_months %}
                 <td class="w-5">
                   {% get_indicator_value item1 month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
-                {% endfor %}
+
               </tr>
                {% endfor %}
               {% get_sub_indicators_data item1.id as sub_indicators1 %}
@@ -332,16 +298,10 @@
                 <td class="w-5"></td>
                 <td class="w-5">{% get_indicator_reporting_unit item.id %}</td>
                 <td class="w-5"></td>
-
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                {% for month, month_name in sliced_months %}
                 <td class="w-5">
                   {% get_indicator_value item2 month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
-                {% endfor %}
               </tr>
               {% endif %}
               {% endfor %}
@@ -372,16 +332,10 @@
                   {{ tag_name }}</td>
                 <td class="w-5">{{ item.units }}</td>
                 <td class="w-5">{{ cumulative_value }}</td>
-
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                {% for month, month_name in sliced_months %}
                 <td class="w-5">
                   {% get_indicator_value_sector item month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
-                {% endfor %}
               </tr>
                {% get_sub_indicators_data item.id True as sub_indicators %}
               {% for item1 in sub_indicators %}
@@ -400,16 +354,10 @@
                     {% get_indicator_cumulative_sector item1 selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
                 </td>
-
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                {% for month, month_name in sliced_months %}
                 <td class="w-5">
                   {% get_indicator_value_sector item1 month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
-                {% endfor %}
               </tr>
                {% endfor %}
               {% get_sub_indicators_data item1.id True as sub_indicators1 %}
@@ -422,17 +370,10 @@
                  <td class="w-5"></td>
                 <td class="w-5"></td>
                 <td class="w-5">{% get_indicator_reporting_unit item.id %}</td>
-
-
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                {% for month, month_name in sliced_months %}
                 <td class="w-10">
                   {% get_indicator_value_sector item2 month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
-                {% endfor %}
               </tr>
               {% endif %}
               {% endfor %}

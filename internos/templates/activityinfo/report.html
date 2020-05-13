@@ -179,6 +179,11 @@
                     <i class="fa fa-users" aria-hidden="true" title=""></i>
                   </a>
                   {{ item.name }}
+                  {% if item.support_COVID %}
+                  <a  data-toggle="tooltip" data-placement="right" title="Support COVID_19" style="cursor:pointer">
+                  <i class="metismenu-icon pe-7s-settings" style="color:#ef6283;font-size:16px"></i>
+                  </a>
+                  {% endif %}
                 </td>
                 {% else %}
                 <!-- <td class="w-10">{{ item.ai_id }}</td>-->
