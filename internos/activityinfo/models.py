@@ -644,6 +644,7 @@ class LiveActivityReport(TimeStampedModel):
     master_indicator_sub = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
     pending = models.BooleanField(default=False)
+    reporting_section = models.CharField(max_length=250, blank=True, null=True)
 
     class Meta:
         ordering = ['id']
