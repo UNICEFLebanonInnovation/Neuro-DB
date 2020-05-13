@@ -404,7 +404,7 @@ class ReportLiveCrisis(TemplateView):
         today = datetime.date.today()
         day_number = today.strftime("%d")
         month_number = today.strftime("%m")
-        month = int(today.strftime("%m")) - 1
+        month = int(today.strftime("%m"))
         month_name = calendar.month_name[month]
 
         reporting_year = database.reporting_year.year
