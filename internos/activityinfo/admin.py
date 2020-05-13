@@ -360,6 +360,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'sequence',
         'is_sector',
         'is_section',
+        'support_COVID'
         # 'support_disability',
         # 'values_tags'
     )
@@ -379,6 +380,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'category',
         'sequence',
         'is_sector',
+        'support_COVID',
         # 'is_section',
         # 'support_disability',
         # 'values_tags'
