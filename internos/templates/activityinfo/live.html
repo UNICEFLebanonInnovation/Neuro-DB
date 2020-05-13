@@ -79,7 +79,7 @@
               <a href="#" class="expanded-all"><i
                 class="fa fa-bars"></i></a>
             </span>
-             Live Dashboard - {{ database.label }} - 2020
+             Live Dashboard - {{ database.label }} - {{database.reporting_year.year}}
             <div class="dropdown d-inline-block" data-intro="Download Dashboard report and raw data">
               <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
                       data-toggle="dropdown" class="mb-2 mr-2 dropdown-toggle btn btn-link">
@@ -101,7 +101,7 @@
           <div class="table-responsive">
             <table class="mb-0 table table-striped table-hover" id="exportheader"
                    content="{{ day_number }}_{{ month_number }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard - Live data.csv"
-                   data-tableName="Dashboard - {{ database.label }} - 2020">
+                   data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year.year }}">
               <thead>
               <tr>
                 <th content="Indicator Name"> Indicator Name</th>
@@ -109,7 +109,7 @@
                 <th content="Target">Target</th>
                 <th content="As of today" data-toggle="tooltip" data-placement="top"
                     title="As of today (Starting January)">
-                  As of today <i class="fa fa-question-circle-o"></i>
+                  As of today
                 </th>
                 <th content="Total Percentage achieved of all months" data-toggle="tooltip" data-placement="top"
                     title="Total Percentage achieved of all months">
