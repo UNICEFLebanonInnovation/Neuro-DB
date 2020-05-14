@@ -1,0 +1,21 @@
+            <div class="d-inline-block mr-3"  data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+
+              <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
+            <br />
+            email: {{ database.focal_point.email }} " data-placement="bottom" data-html="true"
+                    class="btn-shadow  btn btn-outline-primary">
+              <i class="fa fa-user"></i>
+            </button>
+
+            <a class="btn shadow  btn-outline-dark"
+               href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database"
+               data-toggle="tooltip" data-placement="bottom" title="Send email to the database focal point">
+              <i class="fa fa-envelope"></i>
+            </a>
+
+            <a class="btn shadow  btn-outline-warning" href="javascript:void(0);"
+               onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip"
+               data-placement="bottom" title="Show me some tips">
+              <i class="fa fa-lightbulb" aria-hidden="true"></i>
+            </a>
+            </div>

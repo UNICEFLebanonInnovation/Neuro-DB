@@ -59,8 +59,13 @@
                           <i class="fa fa-rss faa-flash "></i>
                         </a>
                         <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
-                           data-placement="top" title="Indicators Data Disaggregated" class="text-info">
+                           data-placement="top" title="Indicators Data Disaggregated" class="text-success">
                           <i class="fa fa-tags animated"></i>
+                        </a>
+                         <a
+                          href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}"
+                          target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
+                          <i class="fa fa-users" aria-hidden="true" title=""></i>
                         </a>
                         <a class="disabled" href="#" data-toggle="tooltip" data-placement="top"
                            title="Data Analysis (Under Construction)"
