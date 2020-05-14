@@ -80,9 +80,9 @@ class ReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
         selected_filter = False
-        display_live = False
+        display_live = True
         selected_partners = self.request.GET.getlist('partners', [])
-        selected_months = self.request.GET.getlist('s_months', [])
+        selected_months = self.request.GET.getlist('months', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
@@ -120,16 +120,16 @@ class ReportView(TemplateView):
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
 
-        s_months = []
+        months = []
         if int(reporting_year) == current_year:
 
             for i in range(1, current_month):
-                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         else:
             for i in range(1, 13):
-                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
-        print (support_covid)
+
         if int(support_covid) == 1:
             master_indicators = Indicator.objects.filter(activity__database=database, support_COVID=True).exclude(is_sector=True).order_by('sequence')
         elif int(support_covid) == 0:
@@ -198,25 +198,25 @@ class ReportView(TemplateView):
             'values_partners_gov_live',
             'cumulative_values_live',
         ).distinct()
-        months = []
+        t_months = []
         if selected_months is not None and len(selected_months) > 0:
             for mon in selected_months:
-                months.append((mon, datetime.date(2008, int(mon), 1).strftime('%B')))
+                t_months.append((mon, datetime.date(2008, int(mon), 1).strftime('%B')))
         else:
             if int(reporting_year) == current_year:
                 display_live = True
                 if current_month == 1:
-                    months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
+                    t_months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
                 if current_month >= 2 :
                     for i in range(1, current_month):
-                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                        t_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
                 # if current_month > 4 :
                 #     for i in range(current_month - 3, current_month):
                 #         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
             else:
                 display_live = False
                 for i in range(1, 13):
-                    months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                    t_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         return {
             'selected_partners': selected_partners,
@@ -230,11 +230,11 @@ class ReportView(TemplateView):
             'year': today.year,
             'month_name': month_name,
             'month_number': month_number,
-            'months': months,
+            't_months': t_months,
             'database': database,
             'partners': partners,
             'governorates': governorates,
-            's_months': s_months,
+            'months': months,
             'master_indicators': master_indicators,
             'partner_info': partner_info,
             'selected_filter': selected_filter,
@@ -2085,7 +2085,7 @@ def load_partners(request):
     govId = request.GET.getlist('gov_id[]')
     ai_id = request.GET.get('ai_id')
     monthId = request.GET.getlist('month_id[]')
-
+    database= Database.objects.get(ai_id=ai_id)
     if govId and monthId:
         report = ActivityReport.objects.filter(database_id=ai_id , location_adminlevel_governorate_code__in=govId,start_date__month__in=monthId)
     elif govId and len(monthId) == 0:
@@ -2094,6 +2094,8 @@ def load_partners(request):
         report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId)
     else:
         report = ActivityReport.objects.filter(database_id=ai_id)
+    if database.is_funded_by_unicef:
+            report = report.filter(funded_by__contains='UNICEF')
 
     partners = report.values('partner_label', 'partner_id').distinct()
     return render(request, 'activityinfo/partner_dropdown_list_options.html', {'partners': partners})
@@ -2104,6 +2106,7 @@ def load_governorates(request):
     sectionId = request.GET.getlist('section_id[]')
     monthId= request.GET.getlist('month_id[]')
     ai_id = request.GET.get('ai_id')
+    database = Database.objects.get(ai_id=ai_id)
 
     if partnerId and sectionId and monthId:
         report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId,
@@ -2119,6 +2122,8 @@ def load_governorates(request):
     else:
         report = ActivityReport.objects.filter(database_id=ai_id)
 
+    if database.is_funded_by_unicef:
+            report = report.filter(funded_by__contains='UNICEF')
     governorates = report.values('location_adminlevel_governorate_code',
                                                                'location_adminlevel_governorate').distinct()
     return render(request, 'activityinfo/gov_dropdown_list_options.html', {'governorates': governorates})
@@ -2154,12 +2159,9 @@ def load_months(request):
                  if (m, calendar.month_name[m]) not in months:
                      months.append((m, calendar.month_name[m]))
 
-
     elif partnerId and (sectionId is None or len(sectionId) == 0) and (govId is None or len(govId) == 0):
-
         report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId)
         result_list = report.values('start_date').distinct()
-
         for record in result_list:
             if 'start_date' in record and record['start_date'] is not None:
                 m = record['start_date'].month
@@ -2170,7 +2172,6 @@ def load_months(request):
 
         report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId,location_adminlevel_governorate_code__in=govId)
         result_list = report.values('start_date').distinct()
-
         for record in result_list:
             if 'start_date' in record and record['start_date'] is not None:
                 m = record['start_date'].month

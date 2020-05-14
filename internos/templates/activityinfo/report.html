@@ -16,9 +16,11 @@
 
 <div class="app-main__inner">
   <div class="app-page-title">
-    <form action="{% url 'activityinfo:report' %}" method="get">
+    <form id="filterForm" action="{% url 'activityinfo:report' %}" method="get"  data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"
+            data-govs-url="{% url 'activityinfo:ajax_load_govs' %}" data-month-url="{% url 'activityinfo:ajax_load_months' %}">
+
       <div class="page-title-wrapper">
-        <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
+        <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
         <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
           <div class="page-title-icon">
             <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
@@ -45,15 +47,15 @@
                 </option>
                 {% endfor %}
               </select>
-              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="s_months">
-                 {% for month, month_name in s_months %}
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
+                 {% for month, month_name in months %}
                 <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
                   {{ month_name }}
                 </option>
                 {% endfor %}
               </select>
             </div>
-  <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
+              <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
               <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
           </div>
@@ -148,7 +150,7 @@
                 </th>
                 <th content="Status">Status</th>
 
-                {% for month, month_name in months %}
+                {% for month, month_name in t_months %}
                 <th content="{{ month_name }}">{{ month_name }}</th>
                 {% endfor %}
               </tr>
@@ -197,7 +199,7 @@
                   <div class='badge {{ item.status_color }}'>{{ item.status }}</div>
                 </td>
 
-                {% for month, month_name in months %}
+                {% for month, month_name in t_months %}
                 <td class="w-10">
                   {% get_indicator_value item month selected_partners selected_governorates as value %}
                   {{ value }}
@@ -249,7 +251,7 @@
                 <td class="w-10"></td>
                 {% endif %}
 
-                {% for month, month_name in months %}
+                {% for month, month_name in t_months %}
                 <td class="w-10">
                   {% get_indicator_value item1 month selected_partners selected_governorates as value %}
                   {{ value }}
@@ -281,7 +283,7 @@
                 <td class="w-10">
 
                 </td>
-                {% for month, month_name in months %}
+                {% for month, month_name in t_months %}
                 <td class="w-10">
                   {% get_indicator_value item2 month selected_partners selected_governorates as value %}
                   {{ value }}
@@ -685,5 +687,130 @@ function search() {
   });
 
 </script>
+ <script>
 
+    $("#filter_partners").change(function () {
+
+    var partnerId = $(this).val();
+    var ai_id = $('#ai_id').val();
+    var month_Id = $('#filter_month').val();
+    var gov_Id = $('#filter_governorates').val();
+
+    var gov_url = $("#filterForm").attr("data-govs-url");
+    var month_url = $("#filterForm").attr("data-month-url");
+
+    if(gov_Id == null){
+      $.ajax({
+          url: gov_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'month_id':month_Id
+           },
+          success: function (data) {
+            $("#filter_governorates").html(data);
+            $("#filter_governorates").multiselect('rebuild');
+          }
+      });
+    }
+    if( month_Id ==  null){
+      $.ajax({
+          url: month_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'gov_id':gov_Id
+           },
+          success: function (data) {
+            $("#filter_month").html(data);
+            $("#filter_month").multiselect('rebuild');
+          }
+      });
+    }
+ });
+ $('#filter_month').on('change', function() {
+
+      var partnerId=$("#filter_partners").val();
+      var gov_Id = $('#filter_governorates').val();
+      var ai_id = $('#ai_id').val();
+      var month_Id = $(this).val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+      if (partnerId == null){
+
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'month_id':month_Id,
+            'gov_id':gov_Id,
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+         });
+      }
+      if (gov_Id == null){
+
+           $.ajax({
+              url: gov_url,
+              data: {
+              'ai_id':ai_id,
+              'month_id':month_Id,
+              'partner_id':partnerId,
+               },
+              success: function (data) {
+
+                $("#filter_governorates").html(data);
+                $("#filter_governorates").multiselect('rebuild');
+              }
+           });
+      }
+
+    });
+
+    $('#filter_governorates').change(function () {
+
+      var partnerId=$("#filter_partners").val();
+      var gov_Id = $(this).val();
+      var ai_id = $('#ai_id').val();
+      var month_Id = $('#filter_month').val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var month_url = $("#filterForm").attr("data-month-url");
+
+      if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'month_id':month_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
+      if ( month_Id == null ){
+
+        $.ajax({
+            url: month_url,
+            data: {
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'gov_id':gov_Id
+             },
+            success: function (data) {
+              $("#filter_month").html(data);
+              $("#filter_month").multiselect('rebuild');
+            }
+        });
+      }
+    });
+
+  </script>
 {% endblock %}
