@@ -11,7 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from datetime import date
 from django.http import HttpResponseRedirect
-from .models import EconomicReporting
+from .models import EconomicReporting, MonitoringReporting
 
 
 class EconomicDashboardView(TemplateView):
@@ -98,4 +98,81 @@ class PopulationFiguresView(TemplateView):
 
         return {
 
+        }
+
+
+class ChildProtectionView(TemplateView):
+    template_name = 'survey/child_protection.html'
+
+    def get_context_data(self, **kwargs):
+
+        data_set1 = {}
+        data_category1 = MonitoringReporting.objects.filter(category_id=4).order_by('reporting_date')
+        for item in data_category1:
+            if item.item_id not in data_set1:
+                data_set1[item.item_id] = {}
+                data_set1[item.item_id] = {
+                    'name': item.item.name,
+                    'data': []
+                }
+            data_set1[item.item_id]['data'].append((
+                item.reporting_date.year,
+                item.reporting_date.month,
+                item.reporting_date.day,
+                float(item.number))
+            )
+
+        data_set2 = {}
+        data_category2 = MonitoringReporting.objects.filter(category_id=5).order_by('reporting_date')
+        for item in data_category2:
+            if item.item_id not in data_set2:
+                data_set2[item.item_id] = {}
+                data_set2[item.item_id] = {
+                    'name': item.item.name,
+                    'data': []
+                }
+            data_set2[item.item_id]['data'].append((
+                item.reporting_date.year,
+                item.reporting_date.month,
+                item.reporting_date.day,
+                float(item.number))
+            )
+
+        data_set3 = {}
+        data_category3 = MonitoringReporting.objects.filter(category_id=6).order_by('reporting_date')
+        for item in data_category3:
+            if item.item_id not in data_set3:
+                data_set3[item.item_id] = {}
+                data_set3[item.item_id] = {
+                    'name': item.item.name,
+                    'data': []
+                }
+            data_set3[item.item_id]['data'].append((
+                item.reporting_date.year,
+                item.reporting_date.month,
+                item.reporting_date.day,
+                float(item.number))
+            )
+
+        data_set4 = {}
+        data_category4 = MonitoringReporting.objects.filter(category_id=7).order_by('reporting_date')
+        for item in data_category4:
+            if item.item_id not in data_set4:
+                data_set4[item.item_id] = {}
+                data_set4[item.item_id] = {
+                    'name': item.item.name,
+                    'data': []
+                }
+            data_set4[item.item_id]['data'].append((
+                item.reporting_date.year,
+                item.reporting_date.month,
+                item.reporting_date.day,
+                float(item.number))
+            )
+
+        return {
+            'data_set1': json.dumps(data_set1.values()),
+            'data_set2': json.dumps(data_set2.values()),
+            'data_set3': json.dumps(data_set3.values()),
+            'data_set4': json.dumps(data_set4.values()),
         }

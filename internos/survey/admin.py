@@ -7,8 +7,8 @@ from djmoney.money import Money
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 
-from .models import ItemCategory, Item, EconomicReporting
-from .forms import EconomicReportingForm
+from .models import ItemCategory, Item, EconomicReporting, MonitoringReporting
+from .forms import EconomicReportingForm, MonitoringReportingForm
 
 
 class ItemCategoryResource(resources.ModelResource):
@@ -105,6 +105,8 @@ class EconomicReportingAdmin(ImportExportModelAdmin):
         'item',
         'reporting_date',
         'item_price',
+        'source_text',
+        'source_url',
     )
     list_display = (
         'reporting_date',
@@ -141,3 +143,54 @@ class EconomicReportingAdmin(ImportExportModelAdmin):
         for item in queryset:
             item.reporting_item_id = item.item.id
             item.save()
+
+
+class MonitoringReportingResource(resources.ModelResource):
+
+    class Meta:
+        model = MonitoringReporting
+        fields = (
+            'id',
+            'category',
+            'item',
+            'reporting_date',
+            'number',
+            'source_text',
+            'source_url'
+        )
+        export_order = fields
+
+
+@admin.register(MonitoringReporting)
+class MonitoringReportingAdmin(ImportExportModelAdmin):
+    resource_class = MonitoringReportingResource
+    form = MonitoringReportingForm
+    list_filter = (
+        'item',
+        'category',
+        'category__reporting_period',
+    )
+    suit_list_filter_horizontal = (
+        'item',
+        'category',
+        'category__reporting_period',
+    )
+    search_fields = (
+        'item__name',
+        'category__name',
+    )
+    fields = (
+        'category',
+        'item',
+        'reporting_date',
+        'number',
+        'source_text',
+        'source_url',
+    )
+    list_display = (
+        'reporting_date',
+        'category',
+        'item',
+        'number',
+        'category_reporting_period',
+    )
