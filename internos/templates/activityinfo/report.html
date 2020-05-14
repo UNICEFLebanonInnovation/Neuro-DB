@@ -99,9 +99,14 @@
               </a>
               {% endif%}
               <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
-                 data-placement="top" title="Indicators Data Disaggregated" class="text-info">
+                 data-placement="top" title="Indicators Data Disaggregated" class="text-success">
                 <i class="fa fa-tags animated"></i>
               </a>
+               <a
+                    href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}"
+                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
+                    <i class="fa fa-users" aria-hidden="true" title=""></i>
+               </a>
               <a class="disabled" href="#" data-toggle="tooltip" data-placement="top"
                  title="Data Analysis (Under Construction)"
                  style=" color:currentColor;cursor: not-allowed; opacity: 0.5;text-decoration: none;"
@@ -171,13 +176,8 @@
               <tr itemid="{{ item.id }}"
                   {% if item.master_indicator %}class="level1 master_indicator"
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
-                {% if item.master_indicator %}
+
                 <td class="w-150">
-                  <a
-                    href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results" style="float: right;">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
                   {{ item.name }}
                   {% if item.support_COVID %}
                   <a  data-toggle="tooltip" data-placement="right" title="Support COVID_19" style="cursor:pointer">
@@ -185,18 +185,7 @@
                   </a>
                   {% endif %}
                 </td>
-                {% else %}
-                <!-- <td class="w-10">{{ item.ai_id }}</td>-->
-                <td class="w-150">
-                  <a
-                    href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results" style="float: right;">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
-                  {{ item.name }}
-                </td>
-                {% endif %}
-                <!--<td>Site</td>-->
+
                 <td class="w-10">{{ item.awp_code }}</td>
                 <td class="w-10">
                   {% if item.measurement_type == 'percentage' %}
@@ -233,22 +222,9 @@
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
                   {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
                   {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
-
-                <!--<td>{{ item1.id }}</td>-->
-                {% if item1.master_indicator_sub %}
-                <td class="w-150">
-                  <a href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results" style="float: right;">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
-                  {{ item1.name }}
-                </td>
-                {% else %}
                 <td class="w-150">
                   {{ item1.name }}
                 </td>
-                {% endif %}
-
                 <td class="w-10">{{ item1.awp_code }}</td>
                   {% if item1.master_indicator_sub %}
                 <td class="w-10">

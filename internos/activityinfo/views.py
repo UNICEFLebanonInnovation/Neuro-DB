@@ -199,12 +199,12 @@ class ReportView(TemplateView):
                 display_live = True
                 if current_month == 1:
                     months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
-                if current_month == 2 or current_month == 3 or current_month == 4:
+                if current_month >= 2 :
                     for i in range(1, current_month):
                         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
-                if current_month > 4 :
-                    for i in range(current_month - 3, current_month):
-                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                # if current_month > 4 :
+                #     for i in range(current_month - 3, current_month):
+                #         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
             else:
                 display_live = False
                 for i in range(1, 13):
@@ -791,7 +791,7 @@ class ReportPartnerView(TemplateView):
 
         from internos.activityinfo.utils import load_reporting_map
 
-        partner_info = {}
+
         selected_filters = False
         today = datetime.date.today()
         first = today.replace(day=1)
@@ -811,54 +811,22 @@ class ReportPartnerView(TemplateView):
         ai_id = int(self.request.GET.get('ai_id', 0))
         database = Database.objects.get(ai_id=ai_id)
         reporting_year = database.reporting_year.name
-        selected_sub_indicator = [int(x) for x in selected_sub_indicator]
-        if selected_indicator:
-            indicator = Indicator.objects.get(id=selected_indicator)
-            selected_indicator_name = indicator.name
-        list_selected_sub = Indicator.objects.filter(id__in=selected_sub_indicator)
-        list_selected_sub = list_selected_sub.values(
-            'id',
-            'ai_id',
-            'name',
-            'units',
-            'target',
-            'measurement_type',
-            'cumulative_values',
-            'values_partners_gov',
-            'values_partners',
-            'values_gov',
-            'values',
-        )
-        if indicator:
-            indicator = {
-                'id': indicator.id,
-                'ai_id': indicator.ai_id,
-                'name': indicator.name,
-                'explication': indicator.explication,
-                'awp_code': indicator.awp_code,
-                'measurement_type': indicator.measurement_type,
-                'units': indicator.units,
-                'target': indicator.target,
-                'status_color': indicator.status_color,
-                'status': indicator.status,
-                'cumulative_values': indicator.cumulative_values,
-                'values_partners_gov': indicator.values_partners_gov,
-                'values_partners': indicator.values_partners,
-                'values_gov': indicator.values_gov,
-                'values': indicator.values,
-            }
 
         report = ActivityReport.objects.filter(database_id=database.ai_id)
 
         if database.is_funded_by_unicef:
-            report = report.filter(funded_by__contains='UNICEF')
+           report = report.filter(funded_by__contains='UNICEF')
 
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database,master_indicator=True).exclude(is_sector=True).order_by('sequence')
-        individual_indicators = Indicator.objects.filter(activity__database=database,individual_indicator=True).exclude(is_sector=True).order_by('sequence')
+
+        master_indicators = Indicator.objects.filter(activity__database=database, master_indicator=True).exclude(
+            is_sector=True).order_by('sequence')
+        individual_indicators = Indicator.objects.filter(activity__database=database,
+                                                         individual_indicator=True).exclude(is_sector=True).order_by(
+            'sequence')
         indicators = master_indicators | individual_indicators
         indicators = indicators.values(
             'id',
@@ -886,47 +854,89 @@ class ReportPartnerView(TemplateView):
             'values_partners_gov_live',
             'cumulative_values_live',
         ).distinct()
+        selected_sub_indicator = [int(x) for x in selected_sub_indicator]
+
+        if selected_indicator:
+            indicator = Indicator.objects.get(id=selected_indicator)
+            indicator = {
+                'id': indicator.id,
+                'ai_id': indicator.ai_id,
+                'name': indicator.name,
+                'explication': indicator.explication,
+                'awp_code': indicator.awp_code,
+                'measurement_type': indicator.measurement_type,
+                'units': indicator.units,
+                'target': indicator.target,
+                'status_color': indicator.status_color,
+                'status': indicator.status,
+                'cumulative_values': indicator.cumulative_values,
+                'values_partners_gov': indicator.values_partners_gov,
+                'values_partners': indicator.values_partners,
+                'values_gov': indicator.values_gov,
+                'values': indicator.values,
+            }
+            selected_indicator_name = indicator['name']
+
+        else:
+            indicator= indicators.first()
+            selected_indicator_name= indicator['name']
+
+        list_selected_sub = Indicator.objects.filter(id__in=selected_sub_indicator)
+        list_selected_sub = list_selected_sub.values(
+            'id',
+            'ai_id',
+            'name',
+            'units',
+            'target',
+            'measurement_type',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+        )
+
 
         months = []
         for i in range(1, 13):
             months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
-        report = ActivityReport.objects.filter(database=database)
-        if database.is_funded_by_unicef:
-            report = report.filter(funded_by__contains='UNICEF')
+        # report = ActivityReport.objects.filter(database=database)
+        # if database.is_funded_by_unicef:
+        #     report = report.filter(funded_by__contains='UNICEF')
 
-        rows = load_reporting_map(ai_id, indicator=selected_indicator)
+        # rows = load_reporting_map(ai_id, indicator=selected_indicator)
+        #
+        # locations = {}
+        # ctr = 0
+        # for item in rows:
+        #     if not item[2] or not item[3]:
+        #         continue
+        #     if item[0] not in locations:
+        #         ctr += 1
+        #         locations[item[0]] = {
+        #             'location_name': item[1],
+        #             'location_longitude': item[2],
+        #             'location_latitude': item[3],
+        #             'governorate': item[5],
+        #             'caza': '{}-{}'.format(item[6], item[7]),
+        #             'cadastral': '{}-{}'.format(item[8], item[9]),
+        #             'indicators': []
+        #         }
 
-        locations = {}
-        ctr = 0
-        for item in rows:
-            if not item[2] or not item[3]:
-                continue
-            if item[0] not in locations:
-                ctr += 1
-                locations[item[0]] = {
-                    'location_name': item[1],
-                    'location_longitude': item[2],
-                    'location_latitude': item[3],
-                    'governorate': item[5],
-                    'caza': '{}-{}'.format(item[6], item[7]),
-                    'cadastral': '{}-{}'.format(item[8], item[9]),
-                    'indicators': []
-                }
-
-            try:
-                cumulative_value = "{:,}".format(round(float(item[12]), 1))
-            except Exception:
-                cumulative_value = 0
-
-            locations[item[0]]['indicators'].append({
-                'indicator_units': item[4].upper(),
-                'partner_label': item[10],
-                'indicator_name': item[11],
-                'cumulative_value': cumulative_value,
-            })
-
-        locations = json.dumps(locations.values())
+        #     try:
+        #         cumulative_value = "{:,}".format(round(float(item[12]), 1))
+        #     except Exception:
+        #         cumulative_value = 0
+        #
+        #     locations[item[0]]['indicators'].append({
+        #         'indicator_units': item[4].upper(),
+        #         'partner_label': item[10],
+        #         'indicator_name': item[11],
+        #         'cumulative_value': cumulative_value,
+        #     })
+        #
+        # locations = json.dumps(locations.values())
 
         if selected_governorate is not None:
             for x in governorates:
@@ -951,7 +961,7 @@ class ReportPartnerView(TemplateView):
             'selected_sub_indicator': selected_sub_indicator,
             'selected_indicator_name': selected_indicator_name,
             'list_selected_sub': list_selected_sub,
-            'locations': locations,
+            # 'locations': locations,
             'selected_filters': selected_filters,
             'current_month': datetime.datetime.now().strftime("%B"),
             'reporting_year': str(reporting_year),
@@ -1422,7 +1432,7 @@ class ReportDisabilityView(TemplateView):
             'selected_governorate_name': selected_governorate_name,
             'reports': report.order_by('id'),
             'month': month,
-            'year': today.year,
+            'reporting_year': database.reporting_year.year,
             'month_name': month_name,
             'month_number': month_number,
             'months': months,
