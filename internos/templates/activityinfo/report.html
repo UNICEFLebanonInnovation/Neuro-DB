@@ -6,16 +6,21 @@
 {% block project_title %}{% endblock %}
 
 {% block filter %}
-  {% include "activityinfo/filter_calendar.html" %}
+
+{% include "activityinfo/focalpoints.html" %}
+{% include "activityinfo/filter_calendar.html" %}
+
 {% endblock filter %}
 
 {% block content %}
 
 <div class="app-main__inner">
   <div class="app-page-title">
-    <form action="{% url 'activityinfo:report' %}" method="get">
+    <form id="filterForm" action="{% url 'activityinfo:report' %}" method="get"  data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"
+            data-govs-url="{% url 'activityinfo:ajax_load_govs' %}" data-month-url="{% url 'activityinfo:ajax_load_months' %}">
+
       <div class="page-title-wrapper">
-        <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
+        <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
         <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
           <div class="page-title-icon">
             <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
@@ -23,8 +28,13 @@
           <div style="width:100%; margin-top:12px">
             <div class="row">
               <div class="col-lg-10 col-sm-12">
+                <select class="btn btn-outline-primary" id="filter_covid" name="support_covid" >
+                     <option class="dropdown-item"  value="-1">Support COVID</option>
+                     <option class="dropdown-item" {% if support_covid == 1 %} selected {% endif %} value="1">Yes</option>
+                     <option class="dropdown-item"  {% if support_covid == 0 %} selected {% endif %} value="0">NO</option>
+                </select>
                 <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
-                {% for partner in partners %}
+                  {% for partner in partners %}
                 <option class="dropdown-item" value="{{ partner.partner_id }}"
                         {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
                 </option>
@@ -37,39 +47,17 @@
                 </option>
                 {% endfor %}
               </select>
-              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="s_months">
-                 {% for month, month_name in s_months %}
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
+                 {% for month, month_name in months %}
                 <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
                   {{ month_name }}
                 </option>
                 {% endfor %}
               </select>
-            <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
+            </div>
+              <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
               <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
-
-            </div>
-            <div class="col-lg-2 col-sm-12" style="padding:0;" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
-
-              <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
-            <br />
-            email: {{ database.focal_point.email }} " data-placement="bottom" data-html="true"
-                    class="btn-shadow  btn btn-outline-primary">
-              <i class="fa fa-user"></i>
-            </button>
-
-            <a class="btn shadow  btn-outline-dark"
-               href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database"
-               data-toggle="tooltip" data-placement="bottom" title="Send email to the database focal point">
-              <i class="fa fa-envelope"></i>
-            </a>
-
-            <a class="btn shadow  btn-outline-warning" href="javascript:void(0);"
-               onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip"
-               data-placement="bottom" title="Show me some tips">
-              <i class="fa fa-lightbulb" aria-hidden="true"></i>
-            </a>
-            </div>
           </div>
             <div class="page-title-subheading">
               Filter by multiple Partners, Governorates, and Months
@@ -99,9 +87,14 @@
               </a>
               {% endif%}
               <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
-                 data-placement="top" title="Indicators Data Disaggregated" class="text-info">
+                 data-placement="top" title="Indicators Data Disaggregated" class="text-success">
                 <i class="fa fa-tags animated"></i>
               </a>
+               <a
+                    href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}"
+                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
+                    <i class="fa fa-users" aria-hidden="true" title=""></i>
+               </a>
               <a class="disabled" href="#" data-toggle="tooltip" data-placement="top"
                  title="Data Analysis (Under Construction)"
                  style=" color:currentColor;cursor: not-allowed; opacity: 0.5;text-decoration: none;"
@@ -157,41 +150,31 @@
                 </th>
                 <th content="Status">Status</th>
 
-                {% for month, month_name in months %}
+                {% for month, month_name in t_months %}
                 <th content="{{ month_name }}">{{ month_name }}</th>
                 {% endfor %}
               </tr>
               </thead>
               <tbody>
               {% for item in master_indicators %}
-              {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates as cumulative_value %}
-              {% to_display_indicator selected_filter cumulative_value as display_indicator %}
 
+              {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates as cumulative_value %}
+
+              {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% if display_indicator %}
               <tr itemid="{{ item.id }}"
                   {% if item.master_indicator %}class="level1 master_indicator"
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
-                {% if item.master_indicator %}
+
                 <td class="w-150">
-                  <a
-                    href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results" style="float: right;">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
                   {{ item.name }}
-                </td>
-                {% else %}
-                <!-- <td class="w-10">{{ item.ai_id }}</td>-->
-                <td class="w-150">
-                  <a
-                    href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results" style="float: right;">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
+                  {% if item.support_COVID %}
+                  <a  data-toggle="tooltip" data-placement="right" title="Support COVID_19" style="cursor:pointer">
+                  <i class="metismenu-icon pe-7s-settings" style="color:#ef6283;font-size:16px"></i>
                   </a>
-                  {{ item.name }}
+                  {% endif %}
                 </td>
-                {% endif %}
-                <!--<td>Site</td>-->
+
                 <td class="w-10">{{ item.awp_code }}</td>
                 <td class="w-10">
                   {% if item.measurement_type == 'percentage' %}
@@ -216,7 +199,7 @@
                   <div class='badge {{ item.status_color }}'>{{ item.status }}</div>
                 </td>
 
-                {% for month, month_name in months %}
+                {% for month, month_name in t_months %}
                 <td class="w-10">
                   {% get_indicator_value item month selected_partners selected_governorates as value %}
                   {{ value }}
@@ -228,22 +211,9 @@
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
                   {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
                   {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
-
-                <!--<td>{{ item1.id }}</td>-->
-                {% if item1.master_indicator_sub %}
-                <td class="w-150">
-                  <a href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ item1.id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results" style="float: right;">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
-                  {{ item1.name }}
-                </td>
-                {% else %}
                 <td class="w-150">
                   {{ item1.name }}
                 </td>
-                {% endif %}
-
                 <td class="w-10">{{ item1.awp_code }}</td>
                   {% if item1.master_indicator_sub %}
                 <td class="w-10">
@@ -281,7 +251,7 @@
                 <td class="w-10"></td>
                 {% endif %}
 
-                {% for month, month_name in months %}
+                {% for month, month_name in t_months %}
                 <td class="w-10">
                   {% get_indicator_value item1 month selected_partners selected_governorates as value %}
                   {{ value }}
@@ -313,7 +283,7 @@
                 <td class="w-10">
 
                 </td>
-                {% for month, month_name in months %}
+                {% for month, month_name in t_months %}
                 <td class="w-10">
                   {% get_indicator_value item2 month selected_partners selected_governorates as value %}
                   {{ value }}
@@ -324,6 +294,7 @@
               {% endfor %}
               {% endfor %}
               {% endif %}
+
               {% endfor %}
               </tbody>
             </table>
@@ -548,6 +519,13 @@
     parent.addClass("mm-active");
     selected_li.addClass("mm-active");
 
+  $('#filter_covid').multiselect({
+      buttonWidth : '180px',
+      includeSelectAllOption : true,
+      nonSelectedText: 'Support COVID',
+      numberDisplayed:1
+
+  });
 
   $('#filter_partners').multiselect({
     buttonWidth : '180px',
@@ -709,5 +687,130 @@ function search() {
   });
 
 </script>
+ <script>
 
+    $("#filter_partners").change(function () {
+
+    var partnerId = $(this).val();
+    var ai_id = $('#ai_id').val();
+    var month_Id = $('#filter_month').val();
+    var gov_Id = $('#filter_governorates').val();
+
+    var gov_url = $("#filterForm").attr("data-govs-url");
+    var month_url = $("#filterForm").attr("data-month-url");
+
+    if(gov_Id == null){
+      $.ajax({
+          url: gov_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'month_id':month_Id
+           },
+          success: function (data) {
+            $("#filter_governorates").html(data);
+            $("#filter_governorates").multiselect('rebuild');
+          }
+      });
+    }
+    if( month_Id ==  null){
+      $.ajax({
+          url: month_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'gov_id':gov_Id
+           },
+          success: function (data) {
+            $("#filter_month").html(data);
+            $("#filter_month").multiselect('rebuild');
+          }
+      });
+    }
+ });
+ $('#filter_month').on('change', function() {
+
+      var partnerId=$("#filter_partners").val();
+      var gov_Id = $('#filter_governorates').val();
+      var ai_id = $('#ai_id').val();
+      var month_Id = $(this).val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+      if (partnerId == null){
+
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'month_id':month_Id,
+            'gov_id':gov_Id,
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+         });
+      }
+      if (gov_Id == null){
+
+           $.ajax({
+              url: gov_url,
+              data: {
+              'ai_id':ai_id,
+              'month_id':month_Id,
+              'partner_id':partnerId,
+               },
+              success: function (data) {
+
+                $("#filter_governorates").html(data);
+                $("#filter_governorates").multiselect('rebuild');
+              }
+           });
+      }
+
+    });
+
+    $('#filter_governorates').change(function () {
+
+      var partnerId=$("#filter_partners").val();
+      var gov_Id = $(this).val();
+      var ai_id = $('#ai_id').val();
+      var month_Id = $('#filter_month').val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var month_url = $("#filterForm").attr("data-month-url");
+
+      if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'month_id':month_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
+      if ( month_Id == null ){
+
+        $.ajax({
+            url: month_url,
+            data: {
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'gov_id':gov_Id
+             },
+            success: function (data) {
+              $("#filter_month").html(data);
+              $("#filter_month").multiselect('rebuild');
+            }
+        });
+      }
+    });
+
+  </script>
 {% endblock %}

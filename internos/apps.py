@@ -36,6 +36,7 @@ class SuitConfig(DjangoSuitConfig):
             ChildItem(model='survey.itemcategory'),
             ChildItem(model='survey.item'),
             ChildItem(model='survey.economicreporting'),
+            ChildItem(model='survey.monitoringreporting'),
         ], icon='fa fa-list'),
         ParentItem('eTools', children=[
             ChildItem(model='etools.partnerorganization'),

@@ -111,6 +111,59 @@ class EconomicReporting(models.Model):
         null=True,
     )
 
+    source_text = models.CharField(
+        max_length=1500,
+        blank=True,
+        null=True,
+    )
+
+    source_url = models.URLField(
+        max_length=1500,
+        blank=True,
+        null=True,
+    )
+
+    @property
+    def category_reporting_period(self):
+        if self.category:
+            return self.category.reporting_period
+        return ''
+
+    def __unicode__(self):
+        return str(self.id)
+
+
+class MonitoringReporting(models.Model):
+
+    category = models.ForeignKey(
+        ItemCategory,
+        blank=False, null=False,
+        related_name='+',
+    )
+    item = ChainedForeignKey(
+        Item,
+        chained_field="category",
+        chained_model_field="category",
+        show_all=False,
+        auto_choose=False,
+        null=True, blank=True,
+    )
+
+    reporting_date = models.DateField(blank=False, null=False)
+    number = models.FloatField(blank=True, null=True)
+
+    source_text = models.CharField(
+        max_length=1500,
+        blank=True,
+        null=True,
+    )
+
+    source_url = models.URLField(
+        max_length=1500,
+        blank=True,
+        null=True,
+    )
+
     @property
     def category_reporting_period(self):
         if self.category:

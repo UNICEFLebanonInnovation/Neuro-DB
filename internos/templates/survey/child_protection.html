@@ -203,7 +203,7 @@ icon-wrapper {
                                         <i class="pe-7s-keypad icon-gradient bg-mean-fruit">
                                         </i>
                                     </div>
-                                    <div>Economic Dashboard 2020
+                                    <div>Child Protection Working Group Real time monitoring 2020
                                         <div class="page-title-subheading">
 <div class="text-danger">
             <i class="fa fa-fw" aria-hidden="true" title=""></i>
@@ -221,7 +221,7 @@ icon-wrapper {
   <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
       <li class="nav-item">
          <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
-          <span>Economy</span>
+          <span>Children</span>
         </a>
       </li>
       <li class="nav-item">
@@ -234,79 +234,6 @@ icon-wrapper {
  <div class="tab-content">
     <div class="tab-pane tabs-animation active show" id="tab-content-0" role="tabpanel">
 
-<div class="mb-3 card">
-  <div class="no-gutters row">
-    <div class="col-sm-6 col-md-4 col-xl-4">
-        <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
-          <div class="icon-wrapper rounded-circle bg-info">
-            <div class="icon-wrapper-bg opacity-9"></div>
-            <i class="pe-7s-culture text-white"></i>
-          </div>
-          <div class="widget-chart-content">
-            <div class="widget-subheading">Official Rate</div>
-            <div class="widget-numbers text-info"><span>{{ official_rate }}</span></div>
-            <div class="widget-description text-focus"> Stable
-              <span class="text-info pl-1">
-                <!--<fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>-->
-                <span class="pl-1">0.0%</span>
-              </span>
-            </div>
-          </div>
-        </div>
-    </div>
-
-    <div class="col-sm-6 col-md-4 col-xl-4">
-        <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
-          <div class="icon-wrapper rounded-circle bg-success">
-            <div class="icon-wrapper-bg opacity-9"></div>
-            <i class="pe-7s-culture text-white"></i>
-          </div>
-          <div class="widget-chart-content">
-            <div class="widget-subheading">BDL Rate</div>
-            <div class="widget-numbers text-success"><span>{{ bdl_rate }}</span></div>
-
-            {% if bdl_percentage_status %}
-              <div class="widget-description text-focus"> Increased by <span class="text-danger pl-1">
-                <fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>
-                <span class="pl-1">{{ bdl_rate_per }}%</span></span>
-              </div>
-            {% else %}
-              <div class="widget-description text-focus"> Decrease by <span class="text-success pl-1">
-                <fa name="angle-down" _nghost-djc-c2="" ng-reflect-name="angle-down"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-down" ng-reflect-klass="fa fa-angle-down" ng-reflect-ng-class=""></i></fa>
-                <span class="pl-1">{{ bdl_rate_per }}%</span></span>
-              </div>
-            {% endif %}
-
-          </div>
-        </div>
-    </div>
-
-    <div class="col-sm-6 col-md-4 col-xl-4">
-        <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
-          <div class="icon-wrapper rounded-circle bg-warning">
-            <div class="icon-wrapper-bg opacity-9"></div>
-            <i class="pe-7s-culture text-white"></i>
-          </div>
-          <div class="widget-chart-content">
-            <div class="widget-subheading">Market Rate</div>
-            <div class="widget-numbers text-warning"><span>{{ market_rate }}</span></div>
-            {% if market_percentage_status %}
-              <div class="widget-description text-focus"> Increased by <span class="text-danger pl-1">
-                <fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>
-                <span class="pl-1">{{ market_rate_per }}%</span></span>
-              </div>
-            {% else %}
-              <div class="widget-description text-focus"> Decrease by <span class="text-success pl-1">
-                <fa name="angle-down" _nghost-djc-c2="" ng-reflect-name="angle-down"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-down" ng-reflect-klass="fa fa-angle-down" ng-reflect-ng-class=""></i></fa>
-                <span class="pl-1">{{ market_rate_per }}%</span></span>
-              </div>
-            {% endif %}
-          </div>
-        </div>
-    </div>
-  </div>
-</div>
-
 <div class="row">
     <div class="col-lg-12">
 
@@ -314,8 +241,23 @@ icon-wrapper {
           <div class="card-body watermark">
               <div class="table-responsive">
 
+
 <figure class="highcharts-figure">
-    <div id="food_chart"></div>
+    <div id="cp_chart3"></div>
+    <p class="highcharts-description">
+
+    </p>
+</figure>
+
+<figure class="highcharts-figure">
+    <div id="cp_chart4"></div>
+    <p class="highcharts-description">
+
+    </p>
+</figure>
+
+<figure class="highcharts-figure">
+    <div id="cp_chart1"></div>
     <p class="highcharts-description">
 
     </p>
@@ -323,7 +265,7 @@ icon-wrapper {
 
 
 <figure class="highcharts-figure">
-    <div id="fuel_chart"></div>
+    <div id="cp_chart2"></div>
     <p class="highcharts-description">
 
     </p>
@@ -343,20 +285,6 @@ icon-wrapper {
           <div class="card-body watermark">
               <div class="table-responsive">
 
-<figure class="highcharts-figure">
-    <div id="cp_chart1"></div>
-    <p class="highcharts-description">
-
-    </p>
-</figure>
-
-
-<figure class="highcharts-figure">
-    <div id="cp_chart2"></div>
-    <p class="highcharts-description">
-
-    </p>
-</figure>
               </div></div></div>
 
    </div>
@@ -377,14 +305,23 @@ icon-wrapper {
 
 <script type="text/javascript">
 
-    var food_data = '{{ food_data|safe }}';
-    food_data = JSON.parse(food_data);
+    var data_set1 = '{{ data_set1|safe }}';
+    data_set1 = JSON.parse(data_set1);
 
-    var fuel_data = '{{ fuel_data|safe }}';
-    fuel_data = JSON.parse(fuel_data);
+    var data_set2 = '{{ data_set2|safe }}';
+    data_set2 = JSON.parse(data_set2);
 
-    createChart(food_data, 'food_chart', 'Price of essential food in WFP contracted shops', 'Source: WFP M&E unit', 'Price in LBP', 'Date', 'LBP');
-    createChart(fuel_data, 'fuel_chart', 'Price of fuel', 'Source: Ministry of Energy & Water', 'Price in LBP', 'Date', 'LBP');
+    var data_set3 = '{{ data_set3|safe }}';
+    data_set3 = JSON.parse(data_set3);
+
+    var data_set4 = '{{ data_set4|safe }}';
+    data_set4 = JSON.parse(data_set4);
+
+    createChart(data_set1, 'cp_chart1', 'Requests for assistance by Lebanese', 'Source: ', 'Children', 'Date', 'Child');
+    createChart(data_set2, 'cp_chart2', 'Requests for assistance by Non-Lebanese', 'Source: ', 'Children', 'Date', 'Child');
+
+    createChart(data_set3, 'cp_chart3', 'Reported gaps in services', 'Source: ', '', 'Date', '');
+    createChart(data_set4, 'cp_chart4', 'Difficulty in accessing services', 'Source: ', '', 'Date', '');
 
 </script>
 

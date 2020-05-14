@@ -1,0 +1,5 @@
+  {% for partner in partners %}
+  <option class="dropdown-item" value="{{ partner.partner_id }}"
+          {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
+  </option>
+  {% endfor %}

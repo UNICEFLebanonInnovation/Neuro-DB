@@ -21,7 +21,7 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
-        databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('label')
+        databases = Database.objects.filter(reporting_year__name=reporting_year,display=True).exclude(ai_id=10240).order_by('label')
         return {
             'ai_databases': databases,
             'reporting_year': reporting_year
@@ -80,12 +80,14 @@ class ReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
         selected_filter = False
-        display_live = False
+        display_live = True
         selected_partners = self.request.GET.getlist('partners', [])
-        selected_months = self.request.GET.getlist('s_months', [])
+        selected_months = self.request.GET.getlist('months', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+        support_covid = self.request.GET.get('support_covid', -1)
+
 
         current_year = date.today().year
         current_month = date.today().month
@@ -118,17 +120,23 @@ class ReportView(TemplateView):
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
 
-        s_months = []
+        months = []
         if int(reporting_year) == current_year:
 
             for i in range(1, current_month):
-                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         else:
             for i in range(1, 13):
-                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
-            'sequence')
+
+        if int(support_covid) == 1:
+            master_indicators = Indicator.objects.filter(activity__database=database, support_COVID=True).exclude(is_sector=True).order_by('sequence')
+        elif int(support_covid) == 0:
+            master_indicators = Indicator.objects.filter(activity__database=database, support_COVID=False).exclude(is_sector=True).order_by( 'sequence')
+        else:
+            master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by( 'sequence')
+
         if database.mapped_db:
             master_indicators1 = master_indicators.filter(master_indicator=True)
             master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
@@ -161,6 +169,7 @@ class ReportView(TemplateView):
             'values_partners_gov_live',
             'cumulative_values_live',
             'is_cumulative',
+            'support_COVID'
         ).distinct()
 
         none_ai_indicators = none_ai_indicators.values(
@@ -189,25 +198,25 @@ class ReportView(TemplateView):
             'values_partners_gov_live',
             'cumulative_values_live',
         ).distinct()
-        months = []
+        t_months = []
         if selected_months is not None and len(selected_months) > 0:
             for mon in selected_months:
-                months.append((mon, datetime.date(2008, int(mon), 1).strftime('%B')))
+                t_months.append((mon, datetime.date(2008, int(mon), 1).strftime('%B')))
         else:
             if int(reporting_year) == current_year:
                 display_live = True
                 if current_month == 1:
-                    months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
-                if current_month == 2 or current_month == 3 or current_month == 4:
+                    t_months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
+                if current_month >= 2 :
                     for i in range(1, current_month):
-                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
-                if current_month > 4 :
-                    for i in range(current_month - 3, current_month):
-                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                        t_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                # if current_month > 4 :
+                #     for i in range(current_month - 3, current_month):
+                #         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
             else:
                 display_live = False
                 for i in range(1, 13):
-                    months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                    t_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         return {
             'selected_partners': selected_partners,
@@ -215,16 +224,17 @@ class ReportView(TemplateView):
             'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
             'selected_months': selected_months,
+            'support_covid':int(support_covid),
             'reports': report.order_by('id'),
             'month': month,
             'year': today.year,
             'month_name': month_name,
             'month_number': month_number,
-            'months': months,
+            't_months': t_months,
             'database': database,
             'partners': partners,
             'governorates': governorates,
-            's_months': s_months,
+            'months': months,
             'master_indicators': master_indicators,
             'partner_info': partner_info,
             'selected_filter': selected_filter,
@@ -249,9 +259,9 @@ class ReportCrisisView(TemplateView):
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
         selected_filter= False
-        current_year = date.today().year
 
-        reporting_year =str(current_year)
+
+        reporting_year = database.reporting_year.year
         report = ActivityReport.objects.filter(database_id=database.ai_id)
 
         if selected_partners or selected_governorates or selected_months:
@@ -261,6 +271,7 @@ class ReportCrisisView(TemplateView):
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
 
+
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality').order_by(
             'sequence')
         if database.mapped_db:
@@ -268,7 +279,9 @@ class ReportCrisisView(TemplateView):
             master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
             master_indicators = master_indicators1 | master_indicators2
 
-        covid_indicators = Indicator.objects.filter(support_COVID=True)
+        covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=True)
+        covid_sector_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=False)
+
 
         master_indicators = master_indicators.values(
             'id',
@@ -297,7 +310,8 @@ class ReportCrisisView(TemplateView):
             'is_cumulative',
             'activity',
             'tag_focus',
-            'hpm_global_indicator'
+            'hpm_global_indicator',
+            'category'
         ).distinct()
 
         covid_indicators = covid_indicators.values(
@@ -330,9 +344,36 @@ class ReportCrisisView(TemplateView):
             'hpm_global_indicator'
         ).distinct()
 
+        covid_sector_indicators = covid_sector_indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'explication',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target_sector',
+            'status_color_sector',
+            'status_sector',
+            'cumulative_values_sector',
+            'values_partners_sites_sector',
+            'values_partners_sector',
+            'values_sites_sector',
+            'values_sector',
+            'is_cumulative',
+            'activity',
+            'tag_focus',
+            'hpm_global_indicator'
+        ).distinct()
+
         months = []
         for i in range(1, 13):
             months.append((i, calendar.month_abbr[i]))
+        sliced_months = months[3:]
 
         return {
 
@@ -341,12 +382,167 @@ class ReportCrisisView(TemplateView):
             'reporting_year': str(reporting_year),
             'current_month_name':  datetime.datetime.now().strftime("%B"),
             'months': months,
+            'sliced_months':sliced_months,
             'partners': partners,
             'governorates': governorates,
             'indicators': master_indicators,
             'covid_indicators':covid_indicators,
             'selected_filter': selected_filter,
+            'covid_sector_indicators':covid_sector_indicators,
+            'selected_partners': selected_partners,
+            'selected_partner_name': selected_partner_name,
+            'selected_governorates': selected_governorates,
+            'selected_governorate_name': selected_governorate_name,
+            'selected_months': selected_months,
+        }
 
+
+class ReportLiveCrisis(TemplateView):
+    template_name = 'activityinfo/report_crisis_live.html'
+
+    def get_context_data(self,**kwargs):
+        ai_id = int(self.request.GET.get('ai_id', 0))
+        database = Database.objects.get(ai_id=ai_id)
+        selected_partners = self.request.GET.getlist('partners', [])
+        selected_months = self.request.GET.getlist('s_months', [])
+        selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
+        selected_governorates = self.request.GET.getlist('governorates', [])
+        selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+        selected_filter = False
+
+        today = datetime.date.today()
+        day_number = today.strftime("%d")
+        month_number = today.strftime("%m")
+        month = int(today.strftime("%m"))
+        month_name = calendar.month_name[month]
+
+        reporting_year = database.reporting_year.year
+        report = LiveActivityReport.objects.filter(database_id=database.ai_id)
+
+        if selected_partners or selected_governorates or selected_months:
+            selected_filter = True
+
+        partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
+        governorates = report.values('location_adminlevel_governorate_code',
+                                     'location_adminlevel_governorate').order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality').order_by(
+            'sequence')
+        if database.mapped_db:
+            master_indicators1 = master_indicators.filter(master_indicator=True)
+            master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
+            master_indicators = master_indicators1 | master_indicators2
+
+        covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=True)
+        covid_sector_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=False)
+
+        master_indicators = master_indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+            'is_cumulative',
+            'activity',
+            'tag_focus',
+            'hpm_global_indicator',
+            'category'
+        ).distinct()
+
+        covid_indicators = covid_indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+            'is_cumulative',
+            'activity',
+            'tag_focus',
+            'hpm_global_indicator'
+        ).distinct()
+
+        covid_sector_indicators = covid_sector_indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'explication',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target_sector',
+            'status_color_sector',
+            'status_sector',
+            'cumulative_values_sector',
+            'values_partners_sites_sector',
+            'values_partners_sector',
+            'values_sites_sector',
+            'values_sector',
+            'is_cumulative',
+            'activity',
+            'tag_focus',
+            'hpm_global_indicator'
+        ).distinct()
+
+        return {
+
+            'reports': report.order_by('id'),
+            'database': database,
+            'reporting_year': str(reporting_year),
+            'current_month_name': datetime.datetime.now().strftime("%B"),
+            'partners': partners,
+            'governorates': governorates,
+            'indicators': master_indicators,
+            'covid_indicators': covid_indicators,
+            'selected_filter': selected_filter,
+            'covid_sector_indicators': covid_sector_indicators,
+            'selected_partners': selected_partners,
+            'selected_partner_name': selected_partner_name,
+            'selected_governorates': selected_governorates,
+            'selected_governorate_name': selected_governorate_name,
+            'month': month,
+            'month_name': month_name,
+            'month_number': month_number,
+            'day_number':day_number,
         }
 
 
@@ -604,7 +800,7 @@ class ReportPartnerView(TemplateView):
 
         from internos.activityinfo.utils import load_reporting_map
 
-        partner_info = {}
+
         selected_filters = False
         today = datetime.date.today()
         first = today.replace(day=1)
@@ -624,52 +820,22 @@ class ReportPartnerView(TemplateView):
         ai_id = int(self.request.GET.get('ai_id', 0))
         database = Database.objects.get(ai_id=ai_id)
         reporting_year = database.reporting_year.name
-        selected_sub_indicator = [int(x) for x in selected_sub_indicator]
-        indicator = Indicator.objects.get(id=selected_indicator)
-        selected_indicator_name = indicator.name
-        list_selected_sub = Indicator.objects.filter(id__in=selected_sub_indicator)
-        list_selected_sub = list_selected_sub.values(
-            'id',
-            'ai_id',
-            'name',
-            'units',
-            'target',
-            'measurement_type',
-            'cumulative_values',
-            'values_partners_gov',
-            'values_partners',
-            'values_gov',
-            'values',
-        )
-        indicator = {
-            'id': indicator.id,
-            'ai_id': indicator.ai_id,
-            'name': indicator.name,
-            'explication': indicator.explication,
-            'awp_code': indicator.awp_code,
-            'measurement_type': indicator.measurement_type,
-            'units': indicator.units,
-            'target': indicator.target,
-            'status_color': indicator.status_color,
-            'status': indicator.status,
-            'cumulative_values': indicator.cumulative_values,
-            'values_partners_gov': indicator.values_partners_gov,
-            'values_partners': indicator.values_partners,
-            'values_gov': indicator.values_gov,
-            'values': indicator.values,
-        }
 
         report = ActivityReport.objects.filter(database_id=database.ai_id)
 
         if database.is_funded_by_unicef:
-            report = report.filter(funded_by__contains='UNICEF')
+           report = report.filter(funded_by__contains='UNICEF')
 
         partners = report.values('partner_label', 'partner_id').distinct()
         governorates = report.values('location_adminlevel_governorate_code',
                                      'location_adminlevel_governorate').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database,master_indicator=True).exclude(is_sector=True).order_by('sequence')
-        individual_indicators = Indicator.objects.filter(activity__database=database,individual_indicator=True).exclude(is_sector=True).order_by('sequence')
+
+        master_indicators = Indicator.objects.filter(activity__database=database, master_indicator=True).exclude(
+            is_sector=True).order_by('sequence')
+        individual_indicators = Indicator.objects.filter(activity__database=database,
+                                                         individual_indicator=True).exclude(is_sector=True).order_by(
+            'sequence')
         indicators = master_indicators | individual_indicators
         indicators = indicators.values(
             'id',
@@ -697,47 +863,89 @@ class ReportPartnerView(TemplateView):
             'values_partners_gov_live',
             'cumulative_values_live',
         ).distinct()
+        selected_sub_indicator = [int(x) for x in selected_sub_indicator]
+
+        if selected_indicator:
+            indicator = Indicator.objects.get(id=selected_indicator)
+            indicator = {
+                'id': indicator.id,
+                'ai_id': indicator.ai_id,
+                'name': indicator.name,
+                'explication': indicator.explication,
+                'awp_code': indicator.awp_code,
+                'measurement_type': indicator.measurement_type,
+                'units': indicator.units,
+                'target': indicator.target,
+                'status_color': indicator.status_color,
+                'status': indicator.status,
+                'cumulative_values': indicator.cumulative_values,
+                'values_partners_gov': indicator.values_partners_gov,
+                'values_partners': indicator.values_partners,
+                'values_gov': indicator.values_gov,
+                'values': indicator.values,
+            }
+            selected_indicator_name = indicator['name']
+
+        else:
+            indicator= indicators.first()
+            selected_indicator_name= indicator['name']
+
+        list_selected_sub = Indicator.objects.filter(id__in=selected_sub_indicator)
+        list_selected_sub = list_selected_sub.values(
+            'id',
+            'ai_id',
+            'name',
+            'units',
+            'target',
+            'measurement_type',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+        )
+
 
         months = []
         for i in range(1, 13):
             months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
-        report = ActivityReport.objects.filter(database=database)
-        if database.is_funded_by_unicef:
-            report = report.filter(funded_by__contains='UNICEF')
+        # report = ActivityReport.objects.filter(database=database)
+        # if database.is_funded_by_unicef:
+        #     report = report.filter(funded_by__contains='UNICEF')
 
-        rows = load_reporting_map(ai_id, indicator=selected_indicator)
+        # rows = load_reporting_map(ai_id, indicator=selected_indicator)
+        #
+        # locations = {}
+        # ctr = 0
+        # for item in rows:
+        #     if not item[2] or not item[3]:
+        #         continue
+        #     if item[0] not in locations:
+        #         ctr += 1
+        #         locations[item[0]] = {
+        #             'location_name': item[1],
+        #             'location_longitude': item[2],
+        #             'location_latitude': item[3],
+        #             'governorate': item[5],
+        #             'caza': '{}-{}'.format(item[6], item[7]),
+        #             'cadastral': '{}-{}'.format(item[8], item[9]),
+        #             'indicators': []
+        #         }
 
-        locations = {}
-        ctr = 0
-        for item in rows:
-            if not item[2] or not item[3]:
-                continue
-            if item[0] not in locations:
-                ctr += 1
-                locations[item[0]] = {
-                    'location_name': item[1],
-                    'location_longitude': item[2],
-                    'location_latitude': item[3],
-                    'governorate': item[5],
-                    'caza': '{}-{}'.format(item[6], item[7]),
-                    'cadastral': '{}-{}'.format(item[8], item[9]),
-                    'indicators': []
-                }
-
-            try:
-                cumulative_value = "{:,}".format(round(float(item[12]), 1))
-            except Exception:
-                cumulative_value = 0
-
-            locations[item[0]]['indicators'].append({
-                'indicator_units': item[4].upper(),
-                'partner_label': item[10],
-                'indicator_name': item[11],
-                'cumulative_value': cumulative_value,
-            })
-
-        locations = json.dumps(locations.values())
+        #     try:
+        #         cumulative_value = "{:,}".format(round(float(item[12]), 1))
+        #     except Exception:
+        #         cumulative_value = 0
+        #
+        #     locations[item[0]]['indicators'].append({
+        #         'indicator_units': item[4].upper(),
+        #         'partner_label': item[10],
+        #         'indicator_name': item[11],
+        #         'cumulative_value': cumulative_value,
+        #     })
+        #
+        # locations = json.dumps(locations.values())
 
         if selected_governorate is not None:
             for x in governorates:
@@ -762,7 +970,7 @@ class ReportPartnerView(TemplateView):
             'selected_sub_indicator': selected_sub_indicator,
             'selected_indicator_name': selected_indicator_name,
             'list_selected_sub': list_selected_sub,
-            'locations': locations,
+            # 'locations': locations,
             'selected_filters': selected_filters,
             'current_month': datetime.datetime.now().strftime("%B"),
             'reporting_year': str(reporting_year),
@@ -892,9 +1100,9 @@ class ReportPartnerSectorView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
-        month_number = '12'
-        month = 12
-        month_name = 'December'
+        # month_number = '12'
+        # month = 12
+        # month_name = 'December'
 
         selected_indicator = int(self.request.GET.get('indicator_id', 0))
         selected_governorate = self.request.GET.get('governorate', 0)
@@ -1000,9 +1208,9 @@ class ReportMapSectorView(TemplateView):
         month = int(last_month.strftime("%m"))
         month_name = last_month.strftime("%B")
 
-        month_number = '12'
-        month = 12
-        month_name = 'December'
+        # month_number = '12'
+        # month = 12
+        # month_name = 'December'
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -1233,7 +1441,7 @@ class ReportDisabilityView(TemplateView):
             'selected_governorate_name': selected_governorate_name,
             'reports': report.order_by('id'),
             'month': month,
-            'year': today.year,
+            'reporting_year': database.reporting_year.year,
             'month_name': month_name,
             'month_number': month_number,
             'months': months,
@@ -1418,7 +1626,7 @@ class ReportTagView(TemplateView):
         tags = IndicatorTag.objects.all().order_by('sequence')
 
         database = Database.objects.get(ai_id=ai_id)
-        reporting_year = database.reporting_year.name
+        reporting_year = database.reporting_year.year
         report = ActivityReport.objects.filter(database=database)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
@@ -1593,10 +1801,8 @@ class LiveReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
         selected_filter = False
-        selected_partner = self.request.GET.get('partner', 0)
         selected_partners = self.request.GET.getlist('partners', [])
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
-        selected_governorate = self.request.GET.get('governorate', 0)
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
 
@@ -1604,8 +1810,8 @@ class LiveReportView(TemplateView):
         today = datetime.date.today()
         day_number = today.strftime("%d")
         month_number = today.strftime("%m")
-        month = int(today.strftime("%m"))
-        month_name = today.strftime("%B")
+        month = int(today.strftime("%m"))-1
+        month_name = calendar.month_name[month]
 
         ai_id = int(self.request.GET.get('ai_id', 0))
 
@@ -1613,33 +1819,21 @@ class LiveReportView(TemplateView):
         reporting_year = database.reporting_year
 
         report = LiveActivityReport.objects.filter(database_id=database.ai_id)
-
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
-        if selected_partner:
-            try:
-                partner = Partner.objects.get(number=selected_partner)
-                if partner.partner_etools:
-                    partner_info = partner.detailed_info
-            except Exception as ex:
-                # print(ex)
-                pass
         if selected_partners or selected_governorates:
             selected_filter = True
 
-        partners = report.values('partner_label', 'partner_id').distinct()
+        partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
         governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
+                                     'location_adminlevel_governorate').order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
             'sequence')
         if database.mapped_db:
             master_indicators = master_indicators.filter(Q(master_indicator=True) | Q(individual_indicator=True))
-
-        months = []
-        for i in range(1, 13):
-            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         master_indicators = master_indicators.values(
             'id',
@@ -1684,7 +1878,6 @@ class LiveReportView(TemplateView):
             'selected_filter': selected_filter,
             'partner_info': partner_info,
             'day_number': day_number,
-            'months': months,
             'reporting_year': str(reporting_year)
         }
 
@@ -1872,7 +2065,131 @@ class ExportViewSet(ListView):
             response['Content-Disposition'] = 'attachment; filename=%s;' % filename
         return response
 
+def load_sections(request):
+    partner_id = request.GET.get('partner')
+    sections = []
+    sections.append(('CP', 'Child Protection'))
+    sections.append(('C4D', ' Comms. 4 Development'))
+    sections.append(('Com', 'Communications'))
+    sections.append(('Edu', 'Education'))
+    sections.append(('FO', 'Field Office'))
+    sections.append(('H', 'Health'))
+    sections.append(('PPL', 'Palestinian Prog'))
+    sections.append(('SP', 'Social Policy'))
+    sections.append(('W', 'WASH'))
+    sections.append(('Y&A', ' Youth & Adolescents'))
+    return render(request, 'activityinfo/section_dropdown_list_options.html', {'sections': sections})
 
 
+def load_partners(request):
+    govId = request.GET.getlist('gov_id[]')
+    ai_id = request.GET.get('ai_id')
+    monthId = request.GET.getlist('month_id[]')
+    database= Database.objects.get(ai_id=ai_id)
+    if govId and monthId:
+        report = ActivityReport.objects.filter(database_id=ai_id , location_adminlevel_governorate_code__in=govId,start_date__month__in=monthId)
+    elif govId and len(monthId) == 0:
+        report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId)
+    elif monthId and (govId is None and len(govId)) == 0:
+        report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId)
+    else:
+        report = ActivityReport.objects.filter(database_id=ai_id)
+    if database.is_funded_by_unicef:
+            report = report.filter(funded_by__contains='UNICEF')
 
+    partners = report.values('partner_label', 'partner_id').distinct()
+    return render(request, 'activityinfo/partner_dropdown_list_options.html', {'partners': partners})
+
+def load_governorates(request):
+
+    partnerId = request.GET.getlist('partner_id[]')
+    sectionId = request.GET.getlist('section_id[]')
+    monthId= request.GET.getlist('month_id[]')
+    ai_id = request.GET.get('ai_id')
+    database = Database.objects.get(ai_id=ai_id)
+
+    if partnerId and sectionId and monthId:
+        report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId,
+                                               reporting_section__in=sectionId , start_date__month__in=monthId)
+    elif partnerId and (sectionId is None or len(sectionId) == 0) and monthId:
+            report= ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId, start_date__month__in=monthId)
+
+    elif partnerId and sectionId and len(monthId) ==0 :
+            report = ActivityReport.objects.filter(database_id=ai_id , partner_id__in=partnerId,reporting_section__in=sectionId)
+
+    elif partnerId and (sectionId is None or len(sectionId) == 0) and len(monthId) ==0 :
+        report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId)
+    else:
+        report = ActivityReport.objects.filter(database_id=ai_id)
+
+    if database.is_funded_by_unicef:
+            report = report.filter(funded_by__contains='UNICEF')
+    governorates = report.values('location_adminlevel_governorate_code',
+                                                               'location_adminlevel_governorate').distinct()
+    return render(request, 'activityinfo/gov_dropdown_list_options.html', {'governorates': governorates})
+
+def load_months(request):
+
+    partnerId = request.GET.getlist('partner_id[]')
+    sectionId = request.GET.getlist('section_id[]')
+    govId = request.GET.getlist('gov_id[]')
+
+    ai_id = request.GET.get('ai_id')
+    months = []
+
+    if partnerId and sectionId and govId:
+        report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId,
+                                               reporting_section__in=sectionId,location_adminlevel_governorate_code__in=govId)
+        result_list = report.values('start_date').distinct()
+
+        for record in result_list:
+            if 'start_date' in record and record['start_date'] is not None:
+                m = record['start_date'].month
+                if (m, calendar.month_name[m]) not in months:
+                    months.append((m,calendar.month_name[m]))
+
+    elif partnerId and sectionId and (govId is None or len(govId) == 0):
+
+         report = ActivityReport.objects.filter(database_id=ai_id , partner_id__in=partnerId,reporting_section__in=sectionId)
+         result_list = report.values('start_date').distinct()
+
+         for record in result_list:
+             if 'start_date' in record and record['start_date'] is not None:
+                 m = record['start_date'].month
+                 if (m, calendar.month_name[m]) not in months:
+                     months.append((m, calendar.month_name[m]))
+
+    elif partnerId and (sectionId is None or len(sectionId) == 0) and (govId is None or len(govId) == 0):
+        report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId)
+        result_list = report.values('start_date').distinct()
+        for record in result_list:
+            if 'start_date' in record and record['start_date'] is not None:
+                m = record['start_date'].month
+                if (m, calendar.month_name[m]) not in months:
+                    months.append((m, calendar.month_name[m]))
+
+    elif partnerId and govId and (sectionId is None or len(sectionId) == 0):
+
+        report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId,location_adminlevel_governorate_code__in=govId)
+        result_list = report.values('start_date').distinct()
+        for record in result_list:
+            if 'start_date' in record and record['start_date'] is not None:
+                m = record['start_date'].month
+                if (m, calendar.month_name[m]) not in months:
+                    months.append((m, calendar.month_name[m]))
+    elif govId and (sectionId is None or len(sectionId) == 0) and (partnerId is None or len(partnerId) == 0):
+
+        report = ActivityReport.objects.filter(database_id=ai_id,location_adminlevel_governorate_code__in=govId)
+        result_list = report.values('start_date').distinct()
+
+        for record in result_list:
+            if 'start_date' in record and record['start_date'] is not None:
+                m = record['start_date'].month
+                if (m, calendar.month_name[m]) not in months:
+                    months.append((m, calendar.month_name[m]))
+    else:
+
+        for i in range(1, 13):
+            months.append((i, calendar.month_abbr[i]))
+    return render(request, 'activityinfo/month_dropdown_list_options.html', {'months': months})
 

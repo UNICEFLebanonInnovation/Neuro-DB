@@ -131,11 +131,10 @@
 <div class="row">
   <div class="col-lg-12">
     <div class="main-card mb-3 card">
-      <div class="card-body">
-        <div class="card-title ">
-          <i class="fa fa-fw icon-gradient  bg-malibu-beach" aria-hidden="true"></i>
-          </i>
-
+        <div class="card-header">
+       <i class="header-icon">
+         <i class="fa fa-fw icon-gradient  bg-malibu-beach" aria-hidden="true"></i>
+       </i>
          Disaggregated AI Results | {{ database.label }}  | {{ reporting_year }}
            <div class=" d-inline-block" data-intro="Download Dashboard report">
               <button type="button" tabindex="0" id="export1" style="font-size:20px;" class="mb-2 mr-2 btn btn-link" data-toggle="tooltip"
@@ -143,7 +142,7 @@
                 <i class="fa fa-download"></i></button>
             </div>
         </div>
-
+      <div class="card-body">
         <div  class="table-responsive table-scroll">
           <table class="mb-0 table table-striped table-hover" id="export_tags"
                  content="Disaggregation Dashboard of {{ database.label }}_{{ current_month_name }}_{{ database.reporting_year.name }}.csv"
