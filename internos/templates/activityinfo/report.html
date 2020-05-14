@@ -6,7 +6,10 @@
 {% block project_title %}{% endblock %}
 
 {% block filter %}
-  {% include "activityinfo/filter_calendar.html" %}
+
+{% include "activityinfo/focalpoints.html" %}
+{% include "activityinfo/filter_calendar.html" %}
+
 {% endblock filter %}
 
 {% block content %}
@@ -23,8 +26,13 @@
           <div style="width:100%; margin-top:12px">
             <div class="row">
               <div class="col-lg-10 col-sm-12">
+                <select class="btn btn-outline-primary" id="filter_covid" name="support_covid" >
+                     <option class="dropdown-item"  value="-1">Support COVID</option>
+                     <option class="dropdown-item" {% if support_covid == 1 %} selected {% endif %} value="1">Yes</option>
+                     <option class="dropdown-item"  {% if support_covid == 0 %} selected {% endif %} value="0">NO</option>
+                </select>
                 <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
-                {% for partner in partners %}
+                  {% for partner in partners %}
                 <option class="dropdown-item" value="{{ partner.partner_id }}"
                         {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
                 </option>
@@ -44,32 +52,10 @@
                 </option>
                 {% endfor %}
               </select>
-            <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
+            </div>
+  <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
               <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
-
-            </div>
-            <div class="col-lg-2 col-sm-12" style="padding:0;" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
-
-              <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
-            <br />
-            email: {{ database.focal_point.email }} " data-placement="bottom" data-html="true"
-                    class="btn-shadow  btn btn-outline-primary">
-              <i class="fa fa-user"></i>
-            </button>
-
-            <a class="btn shadow  btn-outline-dark"
-               href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database"
-               data-toggle="tooltip" data-placement="bottom" title="Send email to the database focal point">
-              <i class="fa fa-envelope"></i>
-            </a>
-
-            <a class="btn shadow  btn-outline-warning" href="javascript:void(0);"
-               onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip"
-               data-placement="bottom" title="Show me some tips">
-              <i class="fa fa-lightbulb" aria-hidden="true"></i>
-            </a>
-            </div>
           </div>
             <div class="page-title-subheading">
               Filter by multiple Partners, Governorates, and Months
@@ -169,9 +155,10 @@
               </thead>
               <tbody>
               {% for item in master_indicators %}
-              {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates as cumulative_value %}
-              {% to_display_indicator selected_filter cumulative_value as display_indicator %}
 
+              {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates as cumulative_value %}
+
+              {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% if display_indicator %}
               <tr itemid="{{ item.id }}"
                   {% if item.master_indicator %}class="level1 master_indicator"
@@ -305,6 +292,7 @@
               {% endfor %}
               {% endfor %}
               {% endif %}
+
               {% endfor %}
               </tbody>
             </table>
@@ -529,6 +517,13 @@
     parent.addClass("mm-active");
     selected_li.addClass("mm-active");
 
+  $('#filter_covid').multiselect({
+      buttonWidth : '180px',
+      includeSelectAllOption : true,
+      nonSelectedText: 'Support COVID',
+      numberDisplayed:1
+
+  });
 
   $('#filter_partners').multiselect({
     buttonWidth : '180px',

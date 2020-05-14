@@ -86,6 +86,8 @@ class ReportView(TemplateView):
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+        support_covid = self.request.GET.get('support_covid', -1)
+
 
         current_year = date.today().year
         current_month = date.today().month
@@ -127,8 +129,14 @@ class ReportView(TemplateView):
             for i in range(1, 13):
                 s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
-            'sequence')
+        print (support_covid)
+        if int(support_covid) == 1:
+            master_indicators = Indicator.objects.filter(activity__database=database, support_COVID=True).exclude(is_sector=True).order_by('sequence')
+        elif int(support_covid) == 0:
+            master_indicators = Indicator.objects.filter(activity__database=database, support_COVID=False).exclude(is_sector=True).order_by( 'sequence')
+        else:
+            master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by( 'sequence')
+
         if database.mapped_db:
             master_indicators1 = master_indicators.filter(master_indicator=True)
             master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
@@ -216,6 +224,7 @@ class ReportView(TemplateView):
             'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
             'selected_months': selected_months,
+            'support_covid':int(support_covid),
             'reports': report.order_by('id'),
             'month': month,
             'year': today.year,
@@ -1617,7 +1626,7 @@ class ReportTagView(TemplateView):
         tags = IndicatorTag.objects.all().order_by('sequence')
 
         database = Database.objects.get(ai_id=ai_id)
-        reporting_year = database.reporting_year.name
+        reporting_year = database.reporting_year.year
         report = ActivityReport.objects.filter(database=database)
         if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
