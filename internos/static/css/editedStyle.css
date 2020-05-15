@@ -154,7 +154,7 @@ li.dropdown-item.active,li.dropdown-item:active {
     background-color: #e0f3ff !important;
 }
 
-#exportheader th , #table-disability th{
+#exportheader thead th , #table-disability th{
  	 background: white;
 	 position: sticky;
 	 top: 0;
@@ -163,7 +163,25 @@ li.dropdown-item.active,li.dropdown-item:active {
 	 vertical-align:middle;
 	 font-size:13px;
  }
-
+#exportheader tbody tr.level1 th:first-child{
+ position: sticky;
+ z-index:2;
+ left:0;
+ top:56px;
+	 background: white;
+}
+#exportheader tbody tr.level2 th:first-child{
+ position: sticky;
+ z-index:3;
+ left:0;
+	 background: white;
+}
+#exportheader tbody tr.level3 th:first-child{
+ position: sticky;
+ z-index:4;
+ left:0;
+	 background: white;
+}
 .widget-content .widget-content-left .widget-heading{
 font-size:15px;
 }
@@ -385,11 +403,11 @@ a:hover{ text-decoration:none !important;}
    vertical-align:top;
     padding: 4px 10px;
 }
-#govform #filter_govs{
-padding : 3px 10px
+#govform #filter_partner{
+padding : 3px 10px;
+margin-top:10px;
 }
 #btn_cancel{
-    margin-top:-7px;
     padding: 3px 9px;
 }
 #indicator_form .col-md-2 , #govform .col-md-3 {
@@ -397,7 +415,7 @@ padding-right:0px;
 padding-left:10px;
 }
 #indicator_form .col-md-10 ,#govform .col-md-9{
-
+padding-left:5px;
 
 }
 .fontS_20{
