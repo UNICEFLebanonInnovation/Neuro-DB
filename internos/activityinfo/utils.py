@@ -1773,7 +1773,7 @@ def calculate_individual_indicators_values_1(ai_db):
     from django.db import connection
     from internos.activityinfo.models import Indicator
 
-    last_month = int(datetime.datetime.now().strftime("%m")) + 1
+    last_month = int(datetime.datetime.now().strftime("%m"))
     # last_month = 13
 
     ai_id = str(ai_db.ai_id)
