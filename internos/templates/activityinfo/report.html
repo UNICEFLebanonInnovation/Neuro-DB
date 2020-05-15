@@ -28,11 +28,7 @@
           <div style="width:100%; margin-top:12px">
             <div class="row">
               <div class="col-lg-10 col-sm-12">
-                <select class="btn btn-outline-primary" id="filter_covid" name="support_covid" >
-                     <option class="dropdown-item"  value="-1">Support COVID</option>
-                     <option class="dropdown-item" {% if support_covid == 1 %} selected {% endif %} value="1">Yes</option>
-                     <option class="dropdown-item"  {% if support_covid == 0 %} selected {% endif %} value="0">NO</option>
-                </select>
+
                 <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
                   {% for partner in partners %}
                 <option class="dropdown-item" value="{{ partner.partner_id }}"
@@ -54,13 +50,18 @@
                 </option>
                 {% endfor %}
               </select>
+                <select class="btn btn-outline-danger" id="filter_covid" name="support_covid" >
+                     <option class="dropdown-item"  value="-1">Support COVID</option>
+                     <option class="dropdown-item" {% if support_covid == 1 %} selected {% endif %} value="1">Yes</option>
+                     <option class="dropdown-item"  {% if support_covid == 0 %} selected {% endif %} value="0">NO</option>
+                </select>
             </div>
               <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
               <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
           </div>
             <div class="page-title-subheading">
-              Filter by multiple Partners, Governorates, and Months
+            Filter by multiple Partners, Locations, and/or Months
             </div>
           </div>
         </div>
@@ -192,7 +193,11 @@
                   {% endif %}
                 </td>
                 <td class="w-10">
-                  {% get_indicator_achieved item month selected_partners selected_governorates as achieved %}
+                  {% if item.is_cumulative %}
+                  {% calculate_achievement_new item.target cumulative_value  as achieved %}
+                   {% else %}
+                   {% calculate_achievement_new item.target highest_value  as achieved %}
+                  {% endif %}
                   {{ achieved }}%
                 </td>
                 <td class="w-10">
@@ -239,7 +244,7 @@
                 </td>
                 <td class="w-10">
                   {% if item1.master_indicator_sub %}
-                  {% get_indicator_achieved item1 month selected_partners selected_governorates as achieved %}
+                 {% calculate_achievement_new item.target cumulative_value  as achieved %}
                   {{ achieved }}%
                   {% endif %}
                 </td>
@@ -277,8 +282,7 @@
                   {% endif %}
                 </td>
                 <td class="w-10">
-<!--                  {% get_indicator_achieved item2 month selected_partners selected_governorates as achieved %}-->
-<!--                  {{ achieved }}%-->
+
                 </td>
                 <td class="w-10">
 

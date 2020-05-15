@@ -470,6 +470,17 @@ def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None)
         # print(ex)
         return get_indicator_unit(indicator, 0)
 
+@register.assignment_tag
+def calculate_achievement_new(target, cumulative_values):
+    achieved = 0
+    if not target:
+        return 0
+    try:
+        value = cumulative_values.replace(",","")
+        achieved = round((int(value )* 100.0) / target, 2)
+    except Exception:
+        return achieved
+    return achieved
 
 def calculate_achievement(indicator, cumulative_values, target, month=None, partner=None, gov=None):
     try:
