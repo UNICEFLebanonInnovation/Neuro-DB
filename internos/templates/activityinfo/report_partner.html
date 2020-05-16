@@ -276,12 +276,12 @@
                     </button>
                     <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu governorates-drp">
                       <a class="dropdown-item" data-value="0" href=""> All Partners</a>
-                      {% for partner in partners %}
-                      <a value="{{ partner.partner_id }}"
-                         onclick="selectGov('{{partner.partner_label}}')"
+                      {% for partner_id,partner_label in partners_list %}
+                      <a value="{{ partner_id }}"
+                         onclick="selectGov('{{partner_label}}')"
                          {% if partner.partner_label == selected_partner %} class="dropdown-item active"
                          {% else %}class="dropdown-item" {% endif %}>
-                        {{ partner.partner_label }}</a>
+                        {{ partner_label }}</a>
                       {% endfor %}
                     </div>
                     <a href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ indicator.id }}"

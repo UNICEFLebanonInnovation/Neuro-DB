@@ -121,7 +121,7 @@
                   Percentage Achieved <i class="fa fa-question-circle-o"></i>
                 </th>
                 <th content="Status">Status</th>
-                <th content="{{ month_name }}">{{ month_name }}</th>
+<!--                <th content="{{ month_name }}">{{ month_name }}</th>-->
               </tr>
               </thead>
              <tbody>
@@ -165,10 +165,10 @@
                                 {{ achieved }}%
                               </td>
                               <td class="w-10" ><div class='badge {{ item.status_color }}'>{{ item.status }}</div></td>
-                              <td class="w-10">
-                                {% get_indicator_live_value item month selected_partner selected_governorate as value %}
-                                {{ value }}
-                              </td>
+<!--                              <td class="w-10">-->
+<!--                                {% get_indicator_live_value item month selected_partner selected_governorate as value %}-->
+<!--                                {{ value }}-->
+<!--                              </td>-->
                           </tr>
                           {% get_sub_indicators_data item.id as sub_indicators %}
                           {% for item1 in sub_indicators %}
@@ -201,10 +201,10 @@
                                   {{ achieved }}%
                                 </td>
                               <td class="w-10" ><div class='badge {{ item.status_color }}'>{{ item.status }}</div></td>
-                                <td class="w-10">
-                                    {% get_indicator_live_value item1 month selected_partner selected_governorate as value %}
-                                    {{ value }}
-                                </td>
+<!--                                <td class="w-10">-->
+<!--                                    {% get_indicator_live_value item1 month selected_partner selected_governorate as value %}-->
+<!--                                    {{ value }}-->
+<!--                                </td>-->
                             </tr>
                             {% get_sub_indicators_data item1.id as sub_indicators1 %}
                             {% for item2 in sub_indicators1 %}
@@ -239,10 +239,10 @@
                                     {{ achieved }}%
                                   </td>
                                <td class="w-10" ><div class='badge {{ item.status_color }}'>{{ item.status }}</div></td>
-                                  <td class="w-10">
-                                    {% get_indicator_live_value item2 month selected_partner selected_governorate as value %}
-                                    {{ value }}
-                                  </td>
+<!--                                  <td class="w-10">-->
+<!--                                    {% get_indicator_live_value item2 month selected_partner selected_governorate as value %}-->
+<!--                                    {{ value }}-->
+<!--                                  </td>-->
                               </tr>
                               {% endif %}
                             {% endfor %}

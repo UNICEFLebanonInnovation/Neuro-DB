@@ -1,3 +1,3 @@
-{% for section ,section_name in sections %}
-<option value="{{ section }}">{{ section_name }}</option>
+{% for reporting_section in sections %}
+<option value="{{ reporting_section.reporting_section }}">{{ reporting_section.reporting_section }}</option>
 {% endfor %}
