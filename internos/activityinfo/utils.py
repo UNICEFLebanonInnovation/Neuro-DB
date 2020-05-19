@@ -514,7 +514,7 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
         'values_hpm',
         'cumulative_values',
         'cumulative_values_live',
-    )
+    ).exclude(measurement_type='percentage')
 
     rows_data = {}
     cursor = connection.cursor()
