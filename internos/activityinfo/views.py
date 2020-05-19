@@ -260,13 +260,15 @@ class ReportCrisisView(TemplateView):
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
         selected_sections = self.request.GET.getlist('sections',[])
-        selected_filter= False
 
+        current_month = date.today().month
+
+        selected_filter= False
 
         reporting_year = database.reporting_year.year
         report = ActivityReport.objects.filter(database_id=database.ai_id)
 
-        if selected_partners or selected_governorates or selected_months:
+        if selected_partners or selected_governorates or selected_months or selected_sections:
             selected_filter = True
 
         partners = report.values('partner_label', 'partner_id').distinct()
@@ -312,7 +314,11 @@ class ReportCrisisView(TemplateView):
             'activity',
             'tag_focus',
             'hpm_global_indicator',
-            'category'
+            'category',
+            'values_sections',
+            'values_sections_partners',
+            'values_sections_gov',
+            'values_sections_partners_gov'
         ).distinct()
 
         covid_indicators = covid_indicators.values(
@@ -372,8 +378,13 @@ class ReportCrisisView(TemplateView):
         ).distinct()
 
         months = []
-        for i in range(1, 13):
-            months.append((i, calendar.month_abbr[i]))
+        if selected_months is not None and len(selected_months) > 0:
+            for mon in selected_months:
+                months.append((mon, calendar.month_abbr[int(mon)]))
+        else:
+            for i in range(1, current_month + 1):
+                months.append((i, calendar.month_abbr[i]))
+
         sliced_months = months[3:]
 
         return {
@@ -396,7 +407,7 @@ class ReportCrisisView(TemplateView):
             'selected_governorate_name': selected_governorate_name,
             'selected_months': selected_months,
             'sections':sections,
-            'selected_sections':selected_sections
+            'selected_sections' : selected_sections
         }
 
 
@@ -411,6 +422,8 @@ class ReportLiveCrisis(TemplateView):
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+        selected_sections  = self.request.GET.getlist('sections', [])
+
         selected_filter = False
 
         today = datetime.date.today()
@@ -426,8 +439,11 @@ class ReportLiveCrisis(TemplateView):
             selected_filter = True
 
         partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').\
+            order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+
+        sections = report.values('reporting_section').order_by('reporting_section').distinct('reporting_section')
+
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality').order_by(
             'sequence')
@@ -546,6 +562,8 @@ class ReportLiveCrisis(TemplateView):
             'month_name': month_name,
             'month_number': month_number,
             'day_number':day_number,
+            'sections':sections,
+            'selected_sections':selected_sections
         }
 
 
@@ -846,10 +864,11 @@ class ReportPartnerView(TemplateView):
             selected_indicator_name = indicator['name']
             partners_values = indicator['values_partners']
             partners_list=[]
-            for key , value in partners_values.items():
-                p = key.split('-')[1]
-                if (p,p) not in partners_list:
-                    partners_list.append((p,p))
+            if partners_values:
+                for key , value in partners_values.items():
+                    p = key.split('-')[1]
+                    if (p,p) not in partners_list:
+                        partners_list.append((p,p))
 
         else:
             indicator = []
@@ -962,9 +981,7 @@ class ReportMapView(TemplateView):
     template_name = 'activityinfo/report_map.html'
 
     def get_context_data(self, **kwargs):
-        from django.db import connection
         from internos.etools.models import PCA
-        from internos.activityinfo.templatetags.util_tags import number_format
         from internos.activityinfo.utils import load_reporting_map
 
         now = datetime.now()
@@ -1840,6 +1857,7 @@ class LiveReportView(TemplateView):
             'values_partners_live',
             'values_gov_live',
             'values_live',
+            'is_cumulative'
         ).distinct()
 
         return {
@@ -2045,43 +2063,91 @@ class ExportViewSet(ListView):
             response['Content-Disposition'] = 'attachment; filename=%s;' % filename
         return response
 
+
 def load_sections(request):
     partnerId = request.GET.getlist('partner_id[]')
     govId = request.GET.getlist('gov_id[]')
     ai_id = request.GET.get('ai_id')
     monthId = request.GET.getlist('month_id[]')
+    type= request.GET.get('type')
     database = Database.objects.get(ai_id=ai_id)
 
     if partnerId and govId and monthId:
-        report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
-                                               partner_id__in=partnerId, start_date__month__in=monthId)
+
+        if type =='live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
+                                               partner_id__in=partnerId, start_date__month__in=monthId) \
+                .order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+        else:
+            report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
+                                                   partner_id__in=partnerId, start_date__month__in=monthId) \
+                .order_by('location_adminlevel_governorate_code','partner_id').distinct('location_adminlevel_governorate_code','partner_id')
+
     elif govId and partnerId and len(monthId) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
-                                               partner_id__in=partnerId)
+
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
+                                               partner_id__in=partnerId) \
+            .order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code',)
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
+                                                   partner_id__in=partnerId)
 
     elif partnerId and monthId and (govId is None and len(govId)) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId, partner_id__in=partnerId)
+
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId, partner_id__in=partnerId) \
+                .order_by('partner_id').distinct('partner_id')
+        else:
+            report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId,
+                                                   partner_id__in=partnerId)
 
     elif govId and monthId and (partnerId is None and len(partnerId)) == 0:
-         report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId,
-                                                location_adminlevel_governorate_code__in=govId)
+
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId,
+                                                location_adminlevel_governorate_code__in=govId)\
+            .order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+        else:
+            report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId,
+                                                   location_adminlevel_governorate_code__in=govId)
 
     elif monthId and (govId is None and len(govId)) == 0 and (partnerId is None and len(partnerId)) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId)
+
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId)
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId)
 
     elif partnerId and (govId is None and len(govId)) == 0 and (monthId is None and len(monthId)) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId)
+
+        if type == 'live':
+             report = LiveActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId) \
+                 .order_by('partner_id').distinct('partner_id')
+        else:
+            report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId)
 
     elif govId and (partnerId is None and len(partnerId)) == 0 and (monthId is None and len(monthId)) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id,  location_adminlevel_governorate_code__in=govId)
+
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id,  location_adminlevel_governorate_code__in=govId) \
+                .order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+        else:
+            report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId)
     else:
-        report = ActivityReport.objects.filter(database_id=ai_id)
+
+        if type == 'live':
+             report = LiveActivityReport.objects.filter(database_id=ai_id)
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id)
+
     if database.is_funded_by_unicef:
         report = report.filter(funded_by__contains='UNICEF')
 
-    sections = report.values('reporting_section').distinct()
+    sections = report.values('reporting_section').order_by('reporting_section').distinct('reporting_section')
 
     return render(request, 'activityinfo/section_dropdown_list_options.html', {'sections': sections})
+
 
 def load_partners(request):
     govId = request.GET.getlist('gov_id[]')
@@ -2089,35 +2155,77 @@ def load_partners(request):
     monthId = request.GET.getlist('month_id[]')
     sectionId = request.GET.getlist('section_id[]')
     database = Database.objects.get(ai_id=ai_id)
+    type = request.GET.get('type')
 
     if govId and monthId and sectionId:
-        report = ActivityReport.objects.filter(database_id=ai_id , location_adminlevel_governorate_code__in=govId,
-                                               start_date__month__in=monthId,reporting_section__in=sectionId)
+
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id , location_adminlevel_governorate_code__in=govId,
+                                                   start_date__month__in=monthId,reporting_section__in=sectionId)\
+                    .order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code__in')
+        else:
+            report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
+                                                   start_date__month__in=monthId, reporting_section__in=sectionId) \
+                .order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+
     elif govId and sectionId and len(monthId) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
+
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
+                                               reporting_section__in=sectionId) \
+                .order_by('reporting_section').distinct('reporting_section')
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
                                                reporting_section__in=sectionId)
+
     elif govId and monthId and len(sectionId) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
-                                               start_date__month__in=monthId)
+        if type == 'live':
+             report = LiveActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
+                                               start_date__month__in=monthId) \
+                 .order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+        else:
+            report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId,
+                                                   start_date__month__in=monthId)
     elif sectionId and monthId and len(govId) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, reporting_section__in=sectionId, start_date__month__in=monthId)
+        if type == 'live':
+             report = LiveActivityReport.objects.filter(database_id=ai_id, reporting_section__in=sectionId, start_date__month__in=monthId) \
+                 .order_by('reporting_section').distinct('reporting_section')
+        else:
+            report = ActivityReport.objects.filter(database_id=ai_id, reporting_section__in=sectionId,
+                                                   start_date__month__in=monthId)
 
     elif monthId and len(govId) == 0 and len(sectionId) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId)
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId)
+        else:
+            report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId)
 
     elif govId and len(monthId) == 0 and len(sectionId) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId)
+        if type == 'live':
+                report = LiveActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId)\
+                    .order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+        else:
+            report = ActivityReport.objects.filter(database_id=ai_id, location_adminlevel_governorate_code__in=govId)
 
     elif sectionId and  len(govId) == 0 and len(monthId)==0:
-        print ('test')
-        report = ActivityReport.objects.filter(database_id=ai_id, reporting_section__in=sectionId)
+        if type == 'live':
+             report = LiveActivityReport.objects.filter(database_id=ai_id, reporting_section__in=sectionId) \
+                 .order_by('reporting_section').distinct('reporting_section')
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id, reporting_section__in=sectionId)\
+                .order_by('reporting_section').distinct('reporting_section')
     else:
-        report = ActivityReport.objects.filter(database_id=ai_id)
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id)
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id)
+
     if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
 
-    partners = report.values('partner_label', 'partner_id').distinct()
+    partners = report.values('partner_label', 'partner_id') .order_by('partner_id').distinct('partner_id')
     return render(request, 'activityinfo/partner_dropdown_list_options.html', {'partners': partners})
+
 
 def load_governorates(request):
 
@@ -2126,36 +2234,76 @@ def load_governorates(request):
     monthId= request.GET.getlist('month_id[]')
     ai_id = request.GET.get('ai_id')
     database = Database.objects.get(ai_id=ai_id)
+    type = request.GET.get('type')
 
     if partnerId and sectionId and monthId:
-        report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId,
-                                               reporting_section__in=sectionId , start_date__month__in=monthId)
-    elif partnerId and (sectionId is None or len(sectionId) == 0) and monthId:
-            report= ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId, start_date__month__in=monthId)
+        if type == 'live':
+             report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId,
+                                               reporting_section__in=sectionId , start_date__month__in=monthId) \
+                        .order_by('reporting_section').distinct('reporting_section')
 
-    elif partnerId and sectionId and len(monthId) ==0 :
-            report = ActivityReport.objects.filter(database_id=ai_id , partner_id__in=partnerId,reporting_section__in=sectionId)
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId,
+                                                   reporting_section__in=sectionId, start_date__month__in=monthId)
+    elif partnerId and (sectionId is None or len(sectionId) == 0) and monthId:
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId, start_date__month__in=monthId)\
+                    .order_by('partner_id').distinct('partner_id')
+
+        else:
+            report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId,
+                                                   start_date__month__in=monthId)
+
+    elif partnerId and sectionId and len(monthId) == 0 :
+            if type == 'live':
+                 report = LiveActivityReport.objects.filter(database_id=ai_id , partner_id__in=partnerId,reporting_section__in=sectionId) \
+                     .order_by('partner_id').distinct('partner_id')
+            else:
+                report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId,
+                                                       reporting_section__in=sectionId)
 
     elif monthId and sectionId and len(partnerId) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId,
-                                               reporting_section__in=sectionId)
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId,
+                                               reporting_section__in=sectionId) \
+                .order_by('reporting_section').distinct('reporting_section')
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId,
+                                                   reporting_section__in=sectionId)
 
     elif partnerId and (sectionId is None or len(sectionId) == 0) and len(monthId) ==0 :
-        report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId)
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId) \
+                .order_by('partner_id').distinct('partner_id')
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id, partner_id__in=partnerId)
 
     elif sectionId and (partnerId is None or len(partnerId) == 0) and len(monthId) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, reporting_section__in=sectionId)
+
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, reporting_section__in=sectionId) \
+                .order_by('reporting_section').distinct('reporting_section')
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id, reporting_section__in=sectionId)
 
     elif monthId and (sectionId is None or len(sectionId) == 0) and len(partnerId) == 0:
-        report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId)
+        if type == 'live':
+            report = LiveActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId)
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id, start_date__month__in=monthId)
     else:
-        report = ActivityReport.objects.filter(database_id=ai_id)
+        if type == 'live':
+
+             report = LiveActivityReport.objects.filter(database_id=ai_id)
+        else :
+            report = ActivityReport.objects.filter(database_id=ai_id)
 
     if database.is_funded_by_unicef:
             report = report.filter(funded_by__contains='UNICEF')
     governorates = report.values('location_adminlevel_governorate_code',
                                                                'location_adminlevel_governorate').distinct()
     return render(request, 'activityinfo/gov_dropdown_list_options.html', {'governorates': governorates})
+
 
 def load_months(request):
 

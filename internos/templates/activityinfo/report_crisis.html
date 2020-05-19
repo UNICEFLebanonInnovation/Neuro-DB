@@ -45,9 +45,9 @@
               </option>
               {% endfor %}
               </select>
-              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="s_months">
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
                {% for month, month_name in months %}
-                <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
+                <option class="dropdown-item" value="{{ month }}" {% if month in selected_months %} selected {% endif %}>
                   {{ month_name }}
                 </option>
                 {% endfor %}
@@ -147,7 +147,7 @@
               </thead>
               <tbody>
               {% for item in indicators %}
-              {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates as cumulative_value %}
+              {% get_indicator_cumulative_months_sections item selected_months selected_partners selected_governorates selected_sections as cumulative_value %}
               {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% if display_indicator %}
               <tr itemid="{{ item.id }}"
@@ -172,7 +172,7 @@
 
                 {% for month, month_name in months %}
                 <td class="w-5">
-                  {% get_indicator_value item month selected_partners selected_governorates as value %}
+                  {% get_indicator_value_section item month selected_partners selected_governorates selected_sections as value %}
                   {{ value }}
                 </td>
                 {% endfor %}
@@ -186,10 +186,16 @@
                 <td class="w-150">
                   {{ item1.name }}
                 </td>
-                    <td class="w-5">{{ item1.category}}</td>
+                    <td class="w-5">
+                       {% if item1.master_indicator_sub %}
+                      {{ item1.category}}
+                      {% endif %}
+                    </td>
                  <td class="w-5">
+                   {% if item1.master_indicator_sub %}
                   {% get_tag_name item.tag_focus as tag_name %}
                   {{ tag_name }}
+                    {% endif %}
                  </td>
                  <td class="w-5">
                    {% if item1.master_indicator_sub %}
@@ -200,18 +206,15 @@
 
                  </td>
                  <td class="w-5">
-                  {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
-                  {{ cumulative_value }}
+
                  </td>
                 {% for month, month_name in months %}
                 <td class="w-5">
-                  {% get_indicator_value item1 month selected_partners selected_governorates as value %}
+                  {% get_indicator_value_section item1 month selected_partners selected_governorates selected_sections as value %}
                   {{ value }}
                 </td>
                 {% endfor %}
               </tr>
-
-
               {% get_sub_indicators_data item1.id as sub_indicators1 %}
               {% for item2 in sub_indicators1 %}
               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
@@ -227,7 +230,7 @@
                  <td></td>
                 {% for month, month_name in months %}
                 <td class="w-5">
-                  {% get_indicator_value item2 month selected_partners selected_governorates as value %}
+                  {% get_indicator_value_section item2 month selected_partners selected_governorates selected_sections as value %}
                   {{ value }}
                 </td>
                 {% endfor %}
@@ -239,7 +242,7 @@
               {% endif %}
               {% endfor %}
 
-              {% for item in covid_indicators %}
+               {% for item in covid_indicators %}
               {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates as cumulative_value %}
               {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% get_database_by_activity item.activity as db_name %}
@@ -259,8 +262,7 @@
                 </td>
                 <td class="w-5"></td>
                 <td class="w-5">
-                  {% get_tag_name item.tag_focus as tag_name %}
-                  {{ tag_name }}</td>
+                  </td>
                 <td class="w-5">{{ item.units }}</td>
                 <td class="w-5">{{ cumulative_value }}</td>
 
@@ -350,11 +352,10 @@
                 </td>
                 <td class="w-5"></td>
                 <td class="w-5">
-                  {% get_tag_name item.tag_focus as tag_name %}
-                  {{ tag_name }}</td>
+
+                </td>
                 <td class="w-5">{{ item.units }}</td>
                 <td class="w-5">{{ cumulative_value }}</td>
-
                 <td class="w-5">0</td>
                 <td class="w-5">0</td>
                 <td class="w-5">0</td>
@@ -382,7 +383,6 @@
                     {% get_indicator_cumulative_sector item1 selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
                 </td>
-
                 <td class="w-5">0</td>
                 <td class="w-5">0</td>
                 <td class="w-5">0</td>
@@ -404,8 +404,6 @@
                  <td class="w-5"></td>
                 <td class="w-5"></td>
                 <td class="w-5">{% get_indicator_reporting_unit item.id %}</td>
-
-
                 <td class="w-5">0</td>
                 <td class="w-5">0</td>
                 <td class="w-5">0</td>
@@ -420,6 +418,7 @@
               {% endfor %}
               {% endif %}
               {% endfor %}
+
               </tbody>
             </table>
           </div>
