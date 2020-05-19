@@ -3,11 +3,13 @@ import csv
 import json
 import datetime
 import subprocess
+import logging
 from django.db.models import Sum, Q
 from django.conf import settings
 from django.template.defaultfilters import length
 
 
+logger = logging.getLogger(__name__)
 
 
 def r_script_command_line(script_name, ai_db):
@@ -1479,7 +1481,8 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
                 denominator = denominator_indicator.cumulative_values['months'] if 'months' in denominator_indicator.cumulative_values['months'] else 0
                 numerator = numerator_indicator.cumulative_values['months'] if 'months' in numerator_indicator.cumulative_values['months'] else 0
             cumulative_months = numerator / denominator
-        except Exception:
+        except Exception as ex:
+            logger.error(ex.message)
             cumulative_months = 0
 
         for month in range(1, last_month):
@@ -1499,7 +1502,8 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
                     denominator = denominator_indicator.values[month] if month in denominator_indicator.values else 0
                     numerator = numerator_indicator.values[month] if month in numerator_indicator.values else 0
                 values_month = numerator / denominator
-            except Exception:
+            except Exception as ex:
+                logger.error(ex.message)
                 values_month = 0
 
             for gov1 in governorates1:
@@ -1512,7 +1516,8 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
                         denominator = denominator_indicator.values_gov[key] if key in denominator_indicator.values_gov else 0
                         numerator = numerator_indicator.values_gov[key] if key in numerator_indicator.values_gov else 0
                     values_gov[key] = numerator / denominator
-                except Exception:
+                except Exception as ex:
+                    logger.error(ex.message)
                     values_gov[key] = 0
 
             for partner in partners:
@@ -1526,7 +1531,8 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
                         denominator = denominator_indicator.values_partners[key1] if key1 in denominator_indicator.values_partners else 0
                         numerator = numerator_indicator.values_partners[key1] if key1 in numerator_indicator.values_partners else 0
                     values_partners[key1] = numerator / denominator
-                except Exception:
+                except Exception as ex:
+                    logger.error(ex.message)
                     values_partners[key1] = 0
 
                 for gov in governorates:
@@ -1539,7 +1545,8 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
                             denominator = denominator_indicator.values_partners_gov[key2] if key2 in denominator_indicator.values_partners_gov else 0
                             numerator = numerator_indicator.values_partners_gov[key2] if key2 in numerator_indicator.values_partners_gov else 0
                         values_partners_gov[key2] = numerator / denominator
-                    except Exception:
+                    except Exception as ex:
+                        logger.error(ex.message)
                         values_partners_gov[key2] = 0
 
             if report_type == 'live':
