@@ -630,7 +630,7 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
 def calculate_indicators_cumulative_results(ai_db, report_type=None):
     from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
 
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id)
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(measurement_type='percentage')
 
     if report_type == 'live':
         report = LiveActivityReport.objects.filter(database=ai_db)
@@ -1468,9 +1468,20 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
     partners = report.values('partner_id').distinct()
     governorates = report.values('location_adminlevel_governorate_code').distinct()
     governorates1 = report.values('location_adminlevel_governorate_code').distinct()
-    # last_month = 13
 
     for indicator in indicators.iterator():
+
+        try:
+            if report_type == 'live':
+                denominator = denominator_indicator.cumulative_values_live['months'] if 'months' in denominator_indicator.cumulative_values_live['months'] else 0
+                numerator = numerator_indicator.cumulative_values_live['months'] if 'months' in numerator_indicator.cumulative_values_live['months'] else 0
+            else:
+                denominator = denominator_indicator.cumulative_values['months'] if 'months' in denominator_indicator.cumulative_values['months'] else 0
+                numerator = numerator_indicator.cumulative_values['months'] if 'months' in numerator_indicator.cumulative_values['months'] else 0
+            cumulative_months = numerator / denominator
+        except Exception:
+            cumulative_months = 0
+
         for month in range(1, last_month):
             month = str(month)
             values_gov = {}
@@ -1543,6 +1554,11 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
                 indicator.values_gov.update(values_gov)
                 indicator.values_partners.update(values_partners)
                 indicator.values_partners_gov.update(values_partners_gov)
+
+        if report_type == 'live':
+            indicator.cumulative_values_live['months'] = cumulative_months
+        else:
+            indicator.cumulative_values['months'] = cumulative_months
 
         indicator.save()
 
