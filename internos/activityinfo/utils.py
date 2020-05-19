@@ -1871,6 +1871,11 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
         else:
             indicator.cumulative_values['months'] = cumulative_months
 
+        if report_type == 'live':
+            indicator.cumulative_values_live['months'] = cumulative_months
+        else:
+            indicator.cumulative_values['months'] = cumulative_months
+
         indicator.save()
 
 
