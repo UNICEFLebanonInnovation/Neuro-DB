@@ -65,7 +65,12 @@
                       <option class="dropdown-item"   value="Local">Local</option>
                     {% endif %}
               </select>
-            <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
+            <button type="submit" class="btn btn shadow btn-primary mr-left-5" onclick="$('#loading').show();" title="Search">
+              <i style="font-weight:bolder" class="pe-7s-search"></i>
+            </button>
+                <div  id="loading" class="d-inline-block"  style="display:none !important" >
+                  <img  src="/static/images/loader.gif" width="40px" height="40px" alt="" />
+                </div>
               <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ database.ai_id }}"title="Cancel"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
             </div>
