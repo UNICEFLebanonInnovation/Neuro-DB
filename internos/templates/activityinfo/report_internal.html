@@ -32,7 +32,12 @@
          <div class="card-header">
            <nav class="" aria-label="breadcrumb">
           <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a title="Back to main Dashboard " href="{% url 'activityinfo:report_crisis' %}?rep_year={{ reporting_year }}&ai_id={{ database.ai_id }}">Covid Response</a></li>
+          <li class="breadcrumb-item">
+            <a title="Back to main Dashboard "
+               href="{{ db_url }}?rep_year={{ reporting_year }}&ai_id={{ database.ai_id }}">
+              {{ database.label }}
+            </a>
+          </li>
           <li class="active breadcrumb-item" aria-current="page">Internal Reporting</li>
       </ol>
       </nav>
@@ -75,3 +80,33 @@
     </div>
 </div>
 {% endblock content %}
+
+<script>
+
+  $(document).ready(function () {
+  var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+};
+
+    var year = getUrlParameter('rep_year');
+    if (year == '2020_crisis'){
+    $('#link').href('')
+    }
+    if (year == '2020'){
+    $('#link').href('')
+    }
+
+
+  });
+  </script>

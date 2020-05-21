@@ -51,7 +51,19 @@
                   {{ month_name }}
                 </option>
                 {% endfor %}
-
+              </select>
+              <select class="btn btn-outline-primary" id="filter_type" name="filter_type">
+                    <option class="dropdown-item"  value="">Global / Local </option>
+                     {% if selected_type == 'Global' %}
+                      <option class="dropdown-item"  selected value="Global">Global</option>
+                      {% else %}
+                      <option class="dropdown-item"   value="Global">Global</option>
+                    {% endif %}
+                    {% if selected_type == 'Local' %}
+                      <option class="dropdown-item" selected  value="Local">Local</option>
+                      {% else %}
+                      <option class="dropdown-item"   value="Local">Local</option>
+                    {% endif %}
               </select>
             <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
               <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ database.ai_id }}"title="Cancel"
@@ -94,7 +106,7 @@
                 class="fa fa-bars"></i></a>
             </span> </i>
 
-              {{ database.label }}
+              {{ database.name }}
                 <div class="d-inline-block dashboard_icons">
                  <a href="{% url 'activityinfo:report_crisis_live' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
                    data-placement="top" title="Live Data Monitoring" class="text-danger"
@@ -112,7 +124,7 @@
                 <i class="fa fa-download"></i>
               </button>
               <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
-                <a type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</a>
+                <a type="button" tabindex="0" id="export1" class="dropdown-item"  style="text-transform: none;">Current Dashboard</a>
                 <div tabindex="-1" class="dropdown-divider"></div>
                 <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
                    href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
@@ -137,7 +149,7 @@
               <tr>
                 <th content="Indicator Name"> Indicator Name</th>
                 <th content="Pillars">Pillar</th>
-                <th content="Global/LCO">Global/LCO</th>
+                <th content="Global/LCO">Global/Local</th>
                 <th content="Unit">Unit</th>
                 <th content="Cumulative Results of All Months" title="Cumulative Results of All Months">Cumulative Results</th>
                 {% for month, month_name in months %}
@@ -534,7 +546,7 @@
   });
 
   $('#filter_month').multiselect({
-      buttonWidth : '180px',
+      buttonWidth : '160px',
       includeSelectAllOption : true,
       nonSelectedText: 'Months',
       nSelectedText:'selected months',
@@ -550,6 +562,16 @@
     numberDisplayed:1,
      maxHeight: 350
   });
+    $('#filter_type').multiselect({
+    buttonWidth : '160px',
+    includeSelectAllOption : true,
+    nonSelectedText: 'Global / Local',
+    numberDisplayed:1,
+     maxHeight: 350
+  });
+
+
+
 });
 
   $('.level1').addClass('collapsed');

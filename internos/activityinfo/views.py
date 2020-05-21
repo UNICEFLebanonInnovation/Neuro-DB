@@ -89,7 +89,6 @@ class ReportView(TemplateView):
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
         support_covid = self.request.GET.get('support_covid', -1)
 
-
         current_year = date.today().year
         current_month = date.today().month
         partner_info = {}
@@ -130,11 +129,12 @@ class ReportView(TemplateView):
             for i in range(1, 13):
                 months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
-
         if int(support_covid) == 1:
             master_indicators = Indicator.objects.filter(activity__database=database, support_COVID=True).exclude(is_sector=True).order_by('sequence')
+
         elif int(support_covid) == 0:
             master_indicators = Indicator.objects.filter(activity__database=database, support_COVID=False).exclude(is_sector=True).order_by( 'sequence')
+
         else:
             master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by( 'sequence')
 
@@ -260,6 +260,7 @@ class ReportCrisisView(TemplateView):
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
         selected_sections = self.request.GET.getlist('sections',[])
+        selected_type = self.request.GET.get('filter_type', '')
 
         current_month = date.today().month
 
@@ -276,8 +277,13 @@ class ReportCrisisView(TemplateView):
                                      'location_adminlevel_governorate').distinct()
         sections = report.values('reporting_section').distinct()
 
-        master_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality').order_by(
+        if len(selected_type) > 0:
+            master_indicators = Indicator.objects.filter(activity__database=database,tag_focus__label=selected_type).exclude(type='quality').order_by(
             'sequence')
+        else :
+            master_indicators = Indicator.objects.filter(activity__database=database).exclude( type='quality').order_by(
+                'sequence')
+
         if database.mapped_db:
             master_indicators1 = master_indicators.filter(master_indicator=True)
             master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
@@ -407,7 +413,8 @@ class ReportCrisisView(TemplateView):
             'selected_governorate_name': selected_governorate_name,
             'selected_months': selected_months,
             'sections':sections,
-            'selected_sections' : selected_sections
+            'selected_sections' : selected_sections,
+            'selected_type':selected_type
         }
 
 
@@ -595,6 +602,12 @@ class ReportInternalView(TemplateView):
             'is_cumulative',
             'type'
         ).distinct()
+
+        db_url =""
+        if database.reporting_year.name == '2020_Crisis':
+            db_url = '/activityinfo/report-crisis'
+        else:
+            db_url= '/activityinfo/report'
         months = []
         for i in range(1, 13):
             months.append((i, calendar.month_abbr[i]))
@@ -605,7 +618,7 @@ class ReportInternalView(TemplateView):
             'current_month_name': datetime.datetime.now().strftime("%B"),
             'list_indicators':none_ai_indicators,
             'months':months,
-
+            'db_url': str(db_url),
         }
 
 
@@ -650,7 +663,11 @@ class ReportInternalFormView(TemplateView):
         months =[]
         for i in range(1,13):
             months.append((i,calendar.month_name[i]))
-
+        db_url = ""
+        if database.reporting_year.name == '2020_Crisis':
+            db_url = '/activityinfo/report-crisis'
+        else:
+            db_url = '/activityinfo/report'
         return {
             'reports': report.order_by('id'),
             'database': database,
@@ -660,7 +677,8 @@ class ReportInternalFormView(TemplateView):
             'governorates':governorates,
             'indicator':indicator,
             'step':step,
-            'months':months
+            'months':months,
+            'db_url':db_url
         }
 
     def post(self, request, *args, **kwargs):
@@ -1976,9 +1994,9 @@ class HPMExportViewSet(ListView):
             reporting_year = year
         today = datetime.date.today()
         first = today.replace(day=1)
-        last_month = first - datetime.timedelta(days=1)
+        currnet_month = first - datetime.timedelta(days=1)
         day_number = int(today.strftime("%d"))
-        month = int(self.request.GET.get('month', last_month.strftime("%m")))
+        month = int(self.request.GET.get('month', currnet_month.strftime("%m")))
 
         # month = int(self.request.GET.get('month', int(today.strftime("%m")) - 1))
         # month = 12
@@ -1991,8 +2009,6 @@ class HPMExportViewSet(ListView):
 
         filename = "HPM Table {} {}.docx".format(months[month-1], reporting_year)
         new_file = update_hpm_table_docx(self.queryset, month, months[month-1], filename,reporting_year)
-
-        # new_file = update_hpm_table_docx(self.queryset, month, 'December', filename)
 
         with open(new_file, 'rb') as fh:
             response = HttpResponse(
