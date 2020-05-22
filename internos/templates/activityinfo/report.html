@@ -21,13 +21,14 @@
 
       <div class="page-title-wrapper">
         <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
-        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
+        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter by multiple Partners, Locations, and/or Months">
           <div class="page-title-icon">
             <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
           </div>
           <div style="width:100%; margin-top:12px">
             <div class="row">
               <div class="col-lg-12 col-sm-12">
+                {% if database.have_partners %}
                 <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
                   {% for partner in partners %}
                 <option class="dropdown-item" value="{{ partner.partner_id }}"
@@ -35,13 +36,27 @@
                 </option>
                 {% endfor %}
               </select>
-              <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">
+                {% endif %}
+                {% if database.have_governorates %}
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates" data-name="Governorates" data-title="Selected Governorates">
                 {% for gov in governorates %}
                 <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
                   {{ gov.location_adminlevel_governorate }}
                 </option>
                 {% endfor %}
               </select>
+                {% endif %}
+
+                {% if database.have_offices %}
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates" data-name="Field Offices" data-title="Selected Offices">
+                {% for gov in governorates %}
+                <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
+                  {{ gov.location_adminlevel_governorate }}
+                </option>
+                {% endfor %}
+              </select>
+                {% endif %}
+
               <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
                  {% for month, month_name in months %}
                 <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
@@ -49,15 +64,18 @@
                 </option>
                 {% endfor %}
               </select>
+                {% if database.have_covid %}
                 <select class="btn btn-outline-danger" id="filter_covid" name="support_covid" >
                      <option class="dropdown-item"  value="-1">Support COVID</option>
                      <option class="dropdown-item" {% if support_covid == 1 %} selected {% endif %} value="1">Yes</option>
                      <option class="dropdown-item"  {% if support_covid == 0 %} selected {% endif %} value="0">NO</option>
                 </select>
+                {% endif %}
                 <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search" onclick="$('#loading').show();">
-                  <i style="font-weight:bolder" class="pe-7s-search"></i></button>
+                  <i style="font-weight:bolder" class="pe-7s-search"></i>
+                </button>
                  <div  id="loading" class="d-inline-block"  style="display:none !important" >
-                  <img  src="/static/images/loader.gif" width="40px" height="40px" alt="" />
+                  <img src="{% static 'images/loader.gif' %}" width="40px" height="40px" alt="" />
                 </div>
 
                 <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
@@ -95,11 +113,13 @@
                  data-placement="top" title="Indicators Data Disaggregated" class="text-success">
                 <i class="fa fa-tags animated"></i>
               </a>
+              {% if database.have_partners %}
                <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}"
                     target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
                     <i class="fa fa-users" aria-hidden="true" title=""></i>
                </a>
+              {% endif %}
 
               <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
                  data-placement="top" title="Disability Report" class="text-warning"
@@ -123,11 +143,12 @@
               </div>
             </div>
           <div class="btn-actions-pane-right">
-
+              {% if database.have_internal_reporting %}
               <a href=" {% url 'activityinfo:report_internal' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}" class="link">
              <i class="nav-link-icon fa fa-fw"></i>
              <span>Internal Reporting</span>
             </a>
+            {% endif %}
 
           </div>
       </div>
@@ -550,8 +571,8 @@
  $('#filter_governorates').multiselect({
     buttonWidth : '190px',
     includeSelectAllOption : true,
-		nonSelectedText: 'Governorates',
-		nSelectedText:'selected governorates',
+		nonSelectedText: $('#filter_governorates').attr('data-name'),
+		nSelectedText: $('#filter_governorates').attr('data-title'),
 		numberDisplayed:1,
 		 maxHeight: 350
   });
