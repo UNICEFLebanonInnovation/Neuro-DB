@@ -27,8 +27,7 @@
           </div>
           <div style="width:100%; margin-top:12px">
             <div class="row">
-              <div class="col-lg-10 col-sm-12">
-
+              <div class="col-lg-12 col-sm-12">
                 <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
                   {% for partner in partners %}
                 <option class="dropdown-item" value="{{ partner.partner_id }}"
@@ -55,10 +54,15 @@
                      <option class="dropdown-item" {% if support_covid == 1 %} selected {% endif %} value="1">Yes</option>
                      <option class="dropdown-item"  {% if support_covid == 0 %} selected {% endif %} value="0">NO</option>
                 </select>
-            </div>
-              <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
-              <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
+                <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search" onclick="$('#loading').show();">
+                  <i style="font-weight:bolder" class="pe-7s-search"></i></button>
+                 <div  id="loading" class="d-inline-block"  style="display:none !important" >
+                  <img  src="/static/images/loader.gif" width="40px" height="40px" alt="" />
+                </div>
+
+                <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
+            </div>
           </div>
             <div class="page-title-subheading">
             Filter by multiple Partners, Locations, and/or Months
@@ -96,12 +100,7 @@
                     target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
                     <i class="fa fa-users" aria-hidden="true" title=""></i>
                </a>
-              <a class="disabled" href="#" data-toggle="tooltip" data-placement="top"
-                 title="Data Analysis (Under Construction)"
-                 style=" color:currentColor;cursor: not-allowed; opacity: 0.5;text-decoration: none;"
-                 data-step="15" data-intro="Reported Indicators on Map">
-                <i class="fa fa-map"></i>
-              </a>
+
               <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
                  data-placement="top" title="Disability Report" class="text-warning"
                  data-step="16" data-intro="Disability report">
@@ -115,7 +114,7 @@
 
               </button>
               <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
-                <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>
+                <button type="button" tabindex="0" id="export1" class="dropdown-item">Current Dashboard</button>
                 <div tabindex="-1" class="dropdown-divider"></div>
                 <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
                    href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
@@ -124,8 +123,8 @@
               </div>
             </div>
           <div class="btn-actions-pane-right">
-<!--            {% url 'activityinfo:report_internal' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}-->
-              <a href="#" class="link">
+
+              <a href=" {% url 'activityinfo:report_internal' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}" class="link">
              <i class="nav-link-icon fa fa-fw"></i>
              <span>Internal Reporting</span>
             </a>
