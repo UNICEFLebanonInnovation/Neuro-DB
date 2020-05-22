@@ -184,7 +184,7 @@
               {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% if display_indicator %}
               <tr itemid="{{ item.id }}"
-                  {% if item.master_indicator %}class="level1 master_indicator"
+                  {% if item.master_indicator or not database.mapped_db %}class="level1 master_indicator"
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
 
                 <td class="w-150">
