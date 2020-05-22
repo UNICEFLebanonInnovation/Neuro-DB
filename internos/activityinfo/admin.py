@@ -4,15 +4,9 @@ from django.contrib import admin
 from suit.admin import RelatedFieldAdmin, get_related_field
 import nested_admin
 from import_export import resources, fields
-from import_export import fields
-from django.db import models
 from import_export.admin import ImportExportModelAdmin
 from django.contrib.postgres.fields import JSONField
 from django_json_widget.widgets import JSONEditorWidget
-from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.forms import widgets
-from django import forms
-from prettyjson import PrettyJSONWidget
 from import_export.widgets import *
 from .models import *
 from .utils import *
@@ -688,6 +682,15 @@ class ActivityReportAdmin(RelatedFieldAdmin):
     )
     date_hierarchy = 'start_date'
 
+    # def get_readonly_fields(self, request, obj=None):
+    #     if request.user.is_superuser:
+    #         return list(set(
+    #             [field.name for field in self.opts.local_fields] +
+    #             [field.name for field in self.opts.local_many_to_many]
+    #         ))
+    #
+    #     return self.readonly_fields
+
 
 class LiveActivityReportAdmin(RelatedFieldAdmin):
     # resources = ActivityReportResource
@@ -847,15 +850,20 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'description',
                 'country_name',
                 'ai_country_id',
-                'dashboard_link',
+                'have_partners',
+                'have_governorates',
+                'have_covid',
+                'have_offices',
+                'have_internal_reporting',
+                # 'dashboard_link',
             ]
         }),
         ('Extraction mapping', {
             'classes': ('suit-tab', 'suit-tab-general',),
             'fields': [
-                'mapping_extraction1',
-                'mapping_extraction2',
-                'mapping_extraction3',
+                # 'mapping_extraction1',
+                # 'mapping_extraction2',
+                # 'mapping_extraction3',
             ]
         }),
         ('Activities', {

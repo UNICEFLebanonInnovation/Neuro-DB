@@ -76,6 +76,14 @@ class Database(models.Model):
     display = models.BooleanField(default=False)
     is_sector = models.BooleanField(default=False)
 
+    have_partners = models.BooleanField(default=True)
+    have_governorates = models.BooleanField(default=True)
+    have_covid = models.BooleanField(default=True)
+    have_offices = models.BooleanField(default=False)
+    have_internal_reporting = models.BooleanField(default=True)
+
+    configs = JSONField(blank=True, null=True, default={})
+
     reporting_year = models.ForeignKey(
         ReportingYear,
         blank=True,
