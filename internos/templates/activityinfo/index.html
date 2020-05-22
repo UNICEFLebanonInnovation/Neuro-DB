@@ -24,9 +24,9 @@
                                 </div>
                             </div>
    </div>
-  <div class="row">
+  <div class="row" style="padding: 5%;">
     {% for db in ai_databases %}
-      <div class="col-md-6 col-xl-4">
+      <div class="col-md-6 col-xl-3">
           <div class="card mb-2">
               <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="widget-content">
               <div class="widget-content-wrapper">
@@ -46,7 +46,7 @@
                         {% if db.section.logo %}
                         <img alt="100%x200" src="{% static db.section.logo %}" data-holder-rendered="true" style="height: 90px; width: 90px; display: block;" />
                         {% else %}
-                        <img alt="100%x200" src="{% static 'images/unicef-logo.png' %}" data-holder-rendered="true" style="height: 90px; width: 90px; display: block;" />
+                        <img alt="100%x200" src="{% static 'images/unicef.png' %}" data-holder-rendered="true" style="height: 70px; width: 90px; display: block;" />
                         {% endif %}
 <!--                        </a>-->
                   </div>
