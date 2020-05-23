@@ -13,6 +13,7 @@ from datetime import date
 from django.http import HttpResponseRedirect
 
 from .templatetags.util_tags import get_sub_indicators_data
+from .utils import get_partners_list, get_governorates_list, get_reporting_sections_list
 from .utils import calculate_internal_indicators_values, calculate_internal_cumulative_results
 
 
@@ -264,35 +265,47 @@ class ReportCrisisView(TemplateView):
 
         current_month = date.today().month
 
-        selected_filter= False
+        selected_filter = False
 
         reporting_year = database.reporting_year.year
-        report = ActivityReport.objects.filter(database_id=database.ai_id)
+        # report = ActivityReport.objects.filter(database_id=database.ai_id).only(
+        #     'partner_label', 'partner_id',
+        #     'location_adminlevel_governorate_code',
+        #     'location_adminlevel_governorate',
+        #     'reporting_section'
+        # )
 
         if selected_partners or selected_governorates or selected_months or selected_sections:
             selected_filter = True
 
-        partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
-        sections = report.values('reporting_section').distinct()
+        # partners = report.values('partner_label', 'partner_id').distinct()
+        # governorates = report.values('location_adminlevel_governorate_code',
+        #                              'location_adminlevel_governorate').distinct()
+        # sections = report.values('reporting_section').distinct()
+
+        partners = get_partners_list(database)
+        governorates = get_governorates_list(database)
+        sections = get_reporting_sections_list(database)
+
+        master_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality')\
+            .order_by('sequence')
 
         if len(selected_type) > 0:
-            master_indicators = Indicator.objects.filter(activity__database=database,tag_focus__label=selected_type).exclude(type='quality').order_by(
-            'sequence')
-        else :
-            master_indicators = Indicator.objects.filter(activity__database=database).exclude( type='quality').order_by(
-                'sequence')
+            master_indicators = master_indicators.filter(tag_focus__label=selected_type)
 
-        if database.mapped_db:
-            master_indicators1 = master_indicators.filter(master_indicator=True)
-            master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
-            master_indicators = master_indicators1 | master_indicators2
+        # if database.mapped_db:
+            # master_indicators1 = master_indicators.filter(master_indicator=True)
+            # master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
+            # master_indicators = master_indicators1 | master_indicators2
+            # master_indicators = master_indicators.filter(Q(master_indicator=True) |
+            #                                              Q(sub_indicators__isnull=True, individual_indicator=True))
 
-        covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=True)
-        covid_sector_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=False)
+        # covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=True)
+        # covid_sector_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=False)
 
-        master_indicators = master_indicators.values(
+        master_indicators = master_indicators.filter(Q(master_indicator=True) |
+                                                     Q(sub_indicators__isnull=True, individual_indicator=True))\
+            .values(
             'id',
             'ai_id',
             'name',
@@ -328,7 +341,7 @@ class ReportCrisisView(TemplateView):
             'values_sections_partners_gov'
         ).distinct()
 
-        covid_indicators = covid_indicators.values(
+        covid_indicators = Indicator.objects.filter(support_COVID=True).order_by('is_sector').values(
             'id',
             'ai_id',
             'name',
@@ -359,32 +372,32 @@ class ReportCrisisView(TemplateView):
             'hpm_global_indicator'
         ).distinct()
 
-        covid_sector_indicators = covid_sector_indicators.values(
-            'id',
-            'ai_id',
-            'name',
-            'master_indicator',
-            'master_indicator_sub',
-            'master_indicator_sub_sub',
-            'individual_indicator',
-            'explication',
-            'awp_code',
-            'measurement_type',
-            'units',
-            'target_sector',
-            'status_color_sector',
-            'status_sector',
-            'cumulative_values_sector',
-            'values_partners_sites_sector',
-            'values_partners_sector',
-            'values_sites_sector',
-            'values_sector',
-            'is_cumulative',
-            'activity',
-            'tag_focus',
-            'tag_focus__label',
-            'hpm_global_indicator'
-        ).distinct()
+        # covid_sector_indicators = covid_sector_indicators.values(
+        #     'id',
+        #     'ai_id',
+        #     'name',
+        #     'master_indicator',
+        #     'master_indicator_sub',
+        #     'master_indicator_sub_sub',
+        #     'individual_indicator',
+        #     'explication',
+        #     'awp_code',
+        #     'measurement_type',
+        #     'units',
+        #     'target_sector',
+        #     'status_color_sector',
+        #     'status_sector',
+        #     'cumulative_values_sector',
+        #     'values_partners_sites_sector',
+        #     'values_partners_sector',
+        #     'values_sites_sector',
+        #     'values_sector',
+        #     'is_cumulative',
+        #     'activity',
+        #     'tag_focus',
+        #     'tag_focus__label',
+        #     'hpm_global_indicator'
+        # ).distinct()
 
         months = []
         if selected_months is not None and len(selected_months) > 0:
@@ -397,27 +410,27 @@ class ReportCrisisView(TemplateView):
         sliced_months = months[3:]
 
         return {
-
-            'reports': report.order_by('id'),
+            # 'reports': report.order_by('id'),
             'database': database,
             'reporting_year': str(reporting_year),
             'current_month_name':  datetime.datetime.now().strftime("%B"),
             'months': months,
-            'sliced_months':sliced_months,
+            'sliced_months': sliced_months,
             'partners': partners,
             'governorates': governorates,
             'indicators': master_indicators,
-            'covid_indicators':covid_indicators,
+            'covid_indicators': covid_indicators,
             'selected_filter': selected_filter,
-            'covid_sector_indicators':covid_sector_indicators,
+            # 'covid_sector_indicators':covid_sector_indicators,
+            'covid_sector_indicators': [],
             'selected_partners': selected_partners,
             'selected_partner_name': selected_partner_name,
             'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
             'selected_months': selected_months,
-            'sections':sections,
-            'selected_sections' : selected_sections,
-            'selected_type':selected_type
+            'sections': sections,
+            'selected_sections': selected_sections,
+            'selected_type': selected_type
         }
 
 
