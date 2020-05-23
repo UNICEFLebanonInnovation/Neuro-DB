@@ -319,6 +319,7 @@ class ReportCrisisView(TemplateView):
             'is_cumulative',
             'activity',
             'tag_focus',
+            'tag_focus__label',
             'hpm_global_indicator',
             'category',
             'values_sections',
@@ -354,6 +355,7 @@ class ReportCrisisView(TemplateView):
             'is_cumulative',
             'activity',
             'tag_focus',
+            'tag_focus__label',
             'hpm_global_indicator'
         ).distinct()
 
@@ -380,6 +382,7 @@ class ReportCrisisView(TemplateView):
             'is_cumulative',
             'activity',
             'tag_focus',
+            'tag_focus__label',
             'hpm_global_indicator'
         ).distinct()
 
