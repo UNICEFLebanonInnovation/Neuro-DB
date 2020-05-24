@@ -10,7 +10,7 @@ from django.views import defaults as default_views
 from rest_framework_nested import routers
 from rest_framework_swagger.views import get_swagger_view
 
-from internos.activityinfo.views import IndexView
+from internos.activityinfo.views import IndexView, ActivityAutocomplete
 from internos.etools.views import CommentUpdateViewSet
 
 api = routers.SimpleRouter()
@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^locations/', include('internos.locations.urls', namespace='locations'), name='locations'),
     url(r'^winterization/', include('internos.winterization.urls', namespace='winterization')),
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
+    url(r'^activity-autocomplete/$', ActivityAutocomplete.as_view(), name='activity_autocomplete'),
 
     # Django Admin, use {% url 'admin:index' %}
     # url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS

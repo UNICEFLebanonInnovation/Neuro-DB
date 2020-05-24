@@ -5,6 +5,7 @@ import json
 import datetime
 import calendar
 from django.db.models import Q, Sum
+from dal import autocomplete
 from django.views.generic import ListView, TemplateView, FormView
 from django.http import HttpResponse, JsonResponse
 from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner, IndicatorTag, ReportingYear, Activity
@@ -2424,3 +2425,15 @@ def load_months(request):
             months.append((i, calendar.month_abbr[i]))
     return render(request, 'activityinfo/month_dropdown_list_options.html', {'months': months})
 
+
+class ActivityAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated():
+            return Activity.objects.none()
+
+        qs = Activity.objects.filter(database__reporting_year__year=datetime.datetime.now().year)
+
+        if self.q:
+            qs = Activity.objects.filter(name__istartswith=self.q)
+
+        return qs
