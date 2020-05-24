@@ -36,19 +36,14 @@
                       </div>
                       <div class="widget-subheading">
                         {{ db.label }}
-                      <!--   <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring">-->
-                      <!--   <i class="fa fa-rss faa-flash animated" style="font-size: 15px; color: #d23900;"></i>-->
-                       <!--</a>-->
                       </div>
                   </div>
                   <div class="widget-content-right">
-<!--                       <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">-->
                         {% if db.section.logo %}
                         <img alt="100%x200" src="{% static db.section.logo %}" data-holder-rendered="true" style="height: 90px; width: 90px; display: block;" />
                         {% else %}
-                        <img alt="100%x200" src="{% static 'images/unicef.png' %}" data-holder-rendered="true" style="height: 70px; width: 90px; display: block;" />
+                        <img alt="100%x200" src="{% static 'images/unicef.png' %}" data-holder-rendered="true" style="height: 90px; width: 110px; display: block;" />
                         {% endif %}
-<!--                        </a>-->
                   </div>
               </div>
                 <div class="card-footer d-inline-block dashboard_icons">
