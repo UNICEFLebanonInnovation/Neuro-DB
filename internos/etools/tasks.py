@@ -7,11 +7,15 @@ import datetime
 from django.utils import timezone
 from time import mktime
 from internos.backends.utils import get_data
+from internos.backends.models import ImportLog
 
 
 @app.task
 def sync_partner_data():
     from internos.etools.models import PartnerOrganization
+
+    log = ImportLog.start(name='eTools: Sync Partners data')
+
     partners = get_data('etools.unicef.org', '/api/v2/partners/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
     partners = json.loads(partners)
     for item in partners:
@@ -43,10 +47,14 @@ def sync_partner_data():
 
         partner.save()
 
+    log.end()
+
 
 @app.task
 def sync_individual_partner_data():
     from internos.etools.models import PartnerOrganization
+
+    log = ImportLog.start(name='eTools: Sync Partners individual data')
 
     partners = PartnerOrganization.objects.all()
 
@@ -109,10 +117,14 @@ def sync_individual_partner_data():
             print(ex.message)
             continue
 
+    log.end()
+
 
 @app.task
 def sync_agreement_data():
     from internos.etools.models import Agreement, PartnerOrganization
+    log = ImportLog.start(name='eTools: Sync PCA data')
+
     result = get_data('etools.unicef.org', '/api/v2/agreements/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
 
     result = json.loads(result)
@@ -134,11 +146,16 @@ def sync_agreement_data():
 
         instance.save()
 
+    log.end()
+
 
 @app.task
 def sync_intervention_data():
     from internos.etools.models import PCA
     from internos.locations.models import Location
+
+    log = ImportLog.start(name='eTools: Sync PD data')
+
     result = get_data('etools.unicef.org', '/api/v2/interventions/', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
 
     result = json.loads(result)
@@ -190,10 +207,15 @@ def sync_intervention_data():
 
         instance.save()
 
+    log.end()
+
 
 @app.task
 def sync_intervention_individual_data(instance=None):
     from internos.etools.models import PCA, PartnerOrganization, Agreement
+
+    log = ImportLog.start(name='eTools: Sync PD individual data')
+
     interventions = PCA.objects.filter(donors__len__gt=0)
 
     for instance in interventions:
@@ -223,10 +245,15 @@ def sync_intervention_individual_data(instance=None):
             print(ex.message)
             continue
 
+    log.end()
+
 
 @app.task
 def sync_audit_data():
     from internos.etools.models import Engagement, PartnerOrganization
+
+    log = ImportLog.start(name='eTools: Sync Audit data')
+
     instances = get_data('etools.unicef.org', '/api/audit/engagements/?page_size=1000', 'Token 36f06547a4b930c6608e503db49f1e45305351c2')
     instances = json.loads(instances)
     for item in instances['results']:
@@ -243,6 +270,8 @@ def sync_audit_data():
 
         instance.save()
         sync_audit_individual_data(instance)
+
+    log.end()
 
 
 @app.task
@@ -352,6 +381,9 @@ def sync_audit_individual_data(instance):
 @app.task
 def sync_trip_data():
     from internos.etools.models import Engagement, PartnerOrganization, Travel
+
+    log = ImportLog.start(name='eTools: Sync Trips data')
+
     for page in range(320, 500):
 
         try:
@@ -375,8 +407,10 @@ def sync_trip_data():
                 instance.save()
         except Exception as ex:
             print(ex.message)
-            print(item)
+            # print(item)
             continue
+
+    log.end()
 
 
 @app.task
@@ -446,6 +480,8 @@ def sync_trip_individual_data(instance):
 def sync_action_points_data():
     from internos.etools.models import Engagement, PartnerOrganization, ActionPoint
 
+    log = ImportLog.start(name='eTools: Sync Action points data')
+
     engagements = Engagement.objects.filter(status=Engagement.FINAL)
 
     for engagement in engagements.iterator():
@@ -476,3 +512,5 @@ def sync_action_points_data():
             instance.partner_id = PartnerOrganization.objects.get(etl_id=int(item['partner']['id']))
 
             instance.save()
+
+    log.end()
