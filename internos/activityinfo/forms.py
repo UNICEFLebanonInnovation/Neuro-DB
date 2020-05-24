@@ -72,7 +72,7 @@ class IndicatorForm(forms.ModelForm):
     )
     second_activity = forms.ModelChoiceField(
         required=False,
-        queryset=Activity.objects.all(),
+        queryset=Activity.objects.filter(database__reporting_year__year=datetime.datetime.now().year),
         # queryset=Activity.objects.none(),
         widget=autocomplete.ModelSelect2(url='activity_autocomplete')
     )
