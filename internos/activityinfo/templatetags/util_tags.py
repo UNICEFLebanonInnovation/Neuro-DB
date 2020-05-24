@@ -234,7 +234,7 @@ def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=Non
                     for m in month:
                         key = "{}-{}-{}".format(m, g, par)
                         if key in indicator['values_partners_gov']:
-                            value += indicator['values_partners_gov']
+                            value += indicator['values_partners_gov'][key]
             return get_indicator_unit(indicator, value)
 
         if partner and gov and not month:
@@ -302,13 +302,13 @@ def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=Non
         return get_indicator_unit(indicator, 0)
 
     except Exception as ex:
-        # print('error ' + ex.message)
+        print('get_indicator_cumulative_months error ' + ex.message)
         return get_indicator_unit(indicator, 0)
 
 
 @register.assignment_tag
 def get_indicator_cumulative_months_sections(indicator, month=None, partner=None, gov=None,section=None):
-    # try:
+    try:
         value = 0
         cumulative_values = indicator['cumulative_values']
 
@@ -469,14 +469,13 @@ def get_indicator_cumulative_months_sections(indicator, month=None, partner=None
 
         if cumulative_values and 'months' in cumulative_values:
             value = cumulative_values.get('months')
-            return get_indicator_unit(indicator,value )
+            return get_indicator_unit(indicator,value)
 
+        return get_indicator_unit(indicator, 0)
 
-        # return get_indicator_unit(indicator, 0)
-
-    # except Exception as ex:
-    #     # print('error ' + ex.message)
-    #     return get_indicator_unit(indicator, 0)
+    except Exception as ex:
+        # print('error ' + ex.message)
+        return get_indicator_unit(indicator, 0)
 
 @register.assignment_tag
 def get_indicator_partner_cumulative(indicator, partner=None, gov=None):
@@ -501,7 +500,7 @@ def get_indicator_partner_cumulative(indicator, partner=None, gov=None):
                 value += cumulative_values[gov]
         return get_indicator_unit(indicator, value)
     except Exception as ex:
-        # print('error ' + ex.message)
+        print('get_indicator_partner_cumulative error ' + ex.message)
         return get_indicator_unit(indicator, 0)
 
 
@@ -529,7 +528,7 @@ def get_indicators_partner_cumulative(indicator, partner=None, gov=None):
         return check_indicators_unit(indicator, value)
 
     except Exception as ex:
-        # print('error ' + ex.message)
+        print('get_indicators_partner_cumulative error ' + ex.message)
         return 0
 
 
@@ -605,7 +604,7 @@ def get_indicator_cumulative_sector(indicator, month=None, partner=None, site=No
 
         return get_indicator_unit(indicator, 0)
     except Exception as ex:
-        # print(ex)
+        print('get_indicator_cumulative_sector error  ' + ex.message)
         return get_indicator_unit(indicator, 0)
 
 
@@ -648,7 +647,7 @@ def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None)
 
         return get_indicator_unit(indicator, 0)
     except Exception as ex:
-        # print(ex)
+        print('get_indicator_live_cumulative error'  + ex.message)
         return get_indicator_unit(indicator, 0)
 
 @register.assignment_tag
@@ -725,7 +724,7 @@ def get_indicator_live_cumulative_section(indicator, month=None, partner=None, g
 
         return get_indicator_unit(indicator, 0)
     except Exception as ex:
-        # print(ex)
+        print('get_indicator_live_cumulative_section error' + ex.message)
         return get_indicator_unit(indicator, 0)
 
 
@@ -782,7 +781,7 @@ def calculate_achievement(indicator, cumulative_values, target, month=None, part
 
         return 0
     except Exception as ex:
-        # print(ex)
+        print('calculate_achievement error' + ex.message)
         return 0
 
 
@@ -863,7 +862,7 @@ def get_indicator_live_achieved(indicator, month=None, partner=None, gov=None):
 
         return 0
     except Exception as ex:
-        # print(ex)
+        print('get_indicator_live_achieved error' + ex.message)
         return 0
 
 
@@ -1055,7 +1054,7 @@ def get_indicator_hpm_data(ai_id, month=None):
         }
         return data
     except Exception as ex:
-        # print(ex.message)
+        print('get_indicator_hpm_data error' + ex.message)
         return data
 
 
@@ -1341,7 +1340,7 @@ def get_sub_indicators_data(ai_id, is_sector=False):
             indicators = indicators.exclude(calculated_indicator=True)
         return indicators
     except Exception as ex:
-        # print(ex)
+        print('get_sub_indicators_data error' + ex.message)
         return indicators
 
 
@@ -1390,7 +1389,7 @@ def get_sub_master_indicators_data(ai_id, is_sector=False):
             indicators = indicators.exclude(calculated_indicator=True)
         return indicators
     except Exception as ex:
-        # print(ex)
+        print('get_sub_master_indicators_data error' + ex.message)
         return indicators
 
 
@@ -1426,7 +1425,7 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
 
         return get_indicator_unit(indicator, 0)
      except Exception as ex:
-        # print(ex)
+        print('get_indicator_value error' + ex.message)
         return get_indicator_unit(indicator, 0)
 
 
@@ -1494,7 +1493,7 @@ def get_indicator_value_section(indicator, month=None, partner=None, gov=None,se
 
         return get_indicator_unit(indicator, 0)
      except Exception as ex:
-        # print(ex)
+        print('get_indicator_value_section error' + ex.message)
         return get_indicator_unit(indicator, 0)
 
 
@@ -1546,7 +1545,7 @@ def get_indicators_value(indicators, month=None, partner=None, gov=None):
 
         return check_indicators_unit(indicators, value)
     except Exception as ex:
-        # print(ex)
+        print('get_indicators_value error' + ex.message)
         return check_indicators_unit(indicators, 0)
 
 
@@ -1580,7 +1579,7 @@ def get_indicator_value_sector(indicator, month=None, partner=None, site=None):
 
         return get_indicator_unit(indicator, indicator['values_sector'][str(month)])
     except Exception as ex:
-        # print(ex)
+        print('get_indicator_value_sector error' + ex.message)
         return get_indicator_unit(indicator, 0)
 
 
@@ -1593,7 +1592,7 @@ def get_indicator_tag_value(indicator, tag):
             value = values_tags[tag]
         return str(round(value)).replace('.0', '')
     except Exception as ex:
-        print(ex)
+        print('get_indicator_tag_value error' + ex.message)
         return 0
 
 
@@ -1642,6 +1641,7 @@ def get_indicator_live_value(indicator, month=None, partner=None, gov=None):
 
         return get_indicator_unit(indicator, indicator['values_live'][str(month)])
     except Exception as ex:
+        print('get_indicator_live_value error' + ex.message)
         return get_indicator_unit(indicator, 0)
 
 
@@ -1656,6 +1656,7 @@ def get_indicator_highest_value(indicator):
                 return get_indicator_unit(indicator, max_value)
         return value
     except Exception as ex:
+        print('get_indicator_highest_value error' + ex.message)
         return value
 
 
@@ -1681,7 +1682,7 @@ def get_array_value(data, key1=None, key2=None, key3=None):
 
         return 0
     except Exception as ex:
-        # print(ex)
+        print('get_array_value error' + ex.message)
         return 0
 
 
@@ -1702,7 +1703,7 @@ def get_trip_values(data, partner=None, offices=None, section=None):
 
             return result
         except Exception as ex:
-            # print(ex)
+            print('get_trip_values error' + ex.message)
             return 0
 
     try:
@@ -1719,7 +1720,7 @@ def get_trip_values(data, partner=None, offices=None, section=None):
 
         return result
     except Exception as ex:
-        # print(ex)
+        print('get_trip_values 2 error' + ex.message)
         return 0
 
 
@@ -1732,7 +1733,7 @@ def get_databases(is_sector=False):
             databases = databases.filter(is_sector=True)
         return databases
     except Exception as ex:
-        # print(ex)
+        print('get_databases error' + ex.message)
         return []
 
 
@@ -1749,7 +1750,7 @@ def get_Crisis_db():
         databases = Database.objects.filter(reporting_year__name='2020_Crisis').order_by('label')
         return databases
     except Exception as ex:
-        # print(ex)
+        print('get_Crisis_db error' + ex.message)
         return []
 
 
@@ -1795,7 +1796,7 @@ def get_database_by_activity(activity_id):
         activity = Activity.objects.get(id=activity_id)
         return activity.database
     except Exception as ex:
-        print(ex)
+        print('get_database_by_activity error' + ex.message)
     return database
 
 
@@ -1808,7 +1809,7 @@ def get_tag_name(tag_id):
         tag = IndicatorTag.objects.get(id=tag_id)
         return tag.label
     except Exception as ex:
-        print(ex)
+        print('get_tag_name error' + ex.message)
     return tag_name
 
 
@@ -1825,6 +1826,7 @@ def get_indicator_reporting_unit(indicator_id):
         unit = report['indicator_units']
         return unit
     except Exception as ex :
-       return unit
+        # print('get_indicator_reporting_unit error' + ex.message)
+        return unit
 
 
