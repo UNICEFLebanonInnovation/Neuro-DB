@@ -218,8 +218,9 @@
                 <td class="w-150">
                   {{ item1.name }}
                 </td>
-                <td class="w-10">{{ item1.awp_code }}</td>
+
                   {% if item1.master_indicator_sub %}
+                 <td class="w-10">{{ item1.awp_code }}</td>
                 <td class="w-10">
                    {% if item1.measurement_type == 'percentage' %}
                   {{ item1.target }}%
@@ -228,7 +229,7 @@
                   {% endif %}
                 </td>
                 {% else %}
-
+                <td class="w-10"></td>
                 <td class="w-10"></td>
                 {% endif %}
 

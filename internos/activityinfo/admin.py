@@ -843,6 +843,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'mapped_db',
                 'is_funded_by_unicef',
                 'is_sector',
+                'is_current_extraction',
                 'display',
                 'description',
                 'country_name',
@@ -873,6 +874,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                     )
 
     def re_formatting_json(self, request, queryset):
+
         from .utilities import import_data_v4
         objects = 0
         for db in queryset:
@@ -891,6 +893,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             request,
             "Partners imported successfully"
         )
+
+
 
     def import_basic_data(self, request, queryset):
         objects = 0
