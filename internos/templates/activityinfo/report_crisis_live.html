@@ -25,7 +25,7 @@
           </div>
           <div style="width:100%; margin-top:12px">
             <div class="row">
-              <div class="col-lg-10 col-sm-12">
+              <div class="col-lg-12 col-sm-12">
                 <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
                 {% for partner in partners %}
                 <option class="dropdown-item" value="{{ partner.partner_id }}"
@@ -48,8 +48,22 @@
               {% endfor %}
               </select>
 
+                <select class="btn btn-outline-primary" id="filter_type" name="filter_type">
+                    <option class="dropdown-item"  value="">Global / Local </option>
+                     {% if selected_type == 'Global' %}
+                      <option class="dropdown-item"  selected value="Global">Global</option>
+                      {% else %}
+                      <option class="dropdown-item"   value="Global">Global</option>
+                    {% endif %}
+                    {% if selected_type == 'Local' %}
+                      <option class="dropdown-item" selected  value="Local">Local</option>
+                      {% else %}
+                      <option class="dropdown-item"   value="Local">Local</option>
+                    {% endif %}
+              </select>
+
             <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
-              <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ database.ai_id }}"title="Cancel"
+              <a href="{% url 'activityinfo:report_crisis_live' %}?ai_id={{ database.ai_id }}"title="Cancel"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
 
             </div>
@@ -125,7 +139,7 @@
               <tr>
                 <th content="Indicator Name"> Indicator Name</th>
                 <th content="Pillars">Pillar</th>
-                <th content="Global/LCO">Global/LCO</th>
+                <th content="Global/LCO">Global/Local</th>
                 <th content="Unit">Unit</th>
                 <th content="As of today" data-toggle="tooltip" data-placement="top" title="As of today (Starting January)">As of today
                 </th>
@@ -186,8 +200,7 @@
                  <td class="w-5">
                    {% if item1.master_indicator_sub %}
                    {{ item1.units }}
-                   {% else %}
-                   {% get_indicator_reporting_unit item.id %}
+
                    {% endif %}
 
                  </td>
@@ -212,7 +225,7 @@
                 <td class="w-5"></td>
                 <td class="w-5"></td>
                  <td class="w-5">
-                   {% get_indicator_reporting_unit item.id %}
+
                  </td>
                  <td></td>
 <!--                <td class="w-5">-->
@@ -266,7 +279,7 @@
                 <td class="w-5"></td>
                 <td class="w-5"></td>
                  <td class="w-5">
-                   {% get_indicator_reporting_unit item.id %}
+
                  </td>
                 <td class="w-5">
                     {% get_indicator_live_cumulative item1 month selected_partners selected_governorates as cumulative_value %}
@@ -288,7 +301,7 @@
                 <td class="w-150">{{ item2.name }}</td>
                  <td class="w-5"></td>
                 <td class="w-5"></td>
-                <td class="w-5">{% get_indicator_reporting_unit item.id %}</td>
+                <td class="w-5"></td>
                 <td class="w-5"></td>
 <!--                <td class="w-5">-->
 <!--                  {% get_indicator_live_value item2 month selected_partners selected_governorates as value %}-->
@@ -422,6 +435,14 @@
     nSelectedText:'selected Sections',
     numberDisplayed:1,
     maxHeight: 350
+  });
+
+    $('#filter_type').multiselect({
+    buttonWidth : '160px',
+    includeSelectAllOption : true,
+    nonSelectedText: 'Global / Local',
+    numberDisplayed:1,
+     maxHeight: 350
   });
 });
 

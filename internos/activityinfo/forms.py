@@ -100,10 +100,16 @@ class IndicatorForm(forms.ModelForm):
 
         super(IndicatorForm, self).__init__(*args, **kwargs)
 
-        if self.instance and hasattr(self.instance, 'activity') and self.instance.activity:
+        if self.instance and hasattr(self.instance, 'activity') and self.instance.activity and \
+           hasattr(self.instance, 'second_activity') and self.instance.second_activity:
             queryset = Indicator.objects.filter(
                Q(activity__database_id=self.instance.activity.database_id) |
                Q(second_activity__database_id=self.instance.second_activity.database_id))
+
+        elif self.instance and hasattr(self.instance, 'activity') and self.instance.activity:
+            queryset = Indicator.objects.filter(
+               activity__database_id=self.instance.activity.database_id
+            )
         else:
             queryset = Indicator.objects.none()
         self.fields['denominator_indicator'].queryset = queryset
