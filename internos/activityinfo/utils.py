@@ -4373,24 +4373,39 @@ def calculate_internal_cumulative_results(ai_db,indicator_id):
     return indicators.count()
 
 
-def get_partners_list(ai_db):
+def get_partners_list(ai_db,type):
     from django.db import connection
 
     result = {}
     cursor = connection.cursor()
 
-    if ai_db.is_funded_by_unicef:
-        cursor.execute(
-            "SELECT DISTINCT partner_id, partner_label "
-            "FROM activityinfo_activityreport "
-            "WHERE database_id = %s AND funded_by = %s ",
-            [str(ai_db.ai_id), 'UNICEF'])
+    if type == 'live':
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT DISTINCT partner_id, partner_label "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE database_id = %s AND funded_by = %s ",
+                [str(ai_db.ai_id), 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT DISTINCT partner_id, partner_label "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE database_id = %s ",
+                [str(ai_db.ai_id)])
     else:
-        cursor.execute(
-            "SELECT DISTINCT partner_id, partner_label "
-            "FROM activityinfo_activityreport "
-            "WHERE database_id = %s ",
-            [str(ai_db.ai_id)])
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT DISTINCT partner_id, partner_label "
+                "FROM activityinfo_activityreport "
+                "WHERE database_id = %s AND funded_by = %s ",
+                [str(ai_db.ai_id), 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT DISTINCT partner_id, partner_label "
+                "FROM activityinfo_activityreport "
+                "WHERE database_id = %s ",
+                [str(ai_db.ai_id)])
 
     rows = cursor.fetchall()
 
@@ -4403,24 +4418,39 @@ def get_partners_list(ai_db):
     return result.values()
 
 
-def get_governorates_list(ai_db):
+def get_governorates_list(ai_db,type):
     from django.db import connection
 
     result = {}
     cursor = connection.cursor()
 
-    if ai_db.is_funded_by_unicef:
-        cursor.execute(
-            "SELECT DISTINCT location_adminlevel_governorate_code, location_adminlevel_governorate "
-            "FROM activityinfo_activityreport "
-            "WHERE database_id = %s AND funded_by = %s ",
-            [str(ai_db.ai_id), 'UNICEF'])
-    else:
-        cursor.execute(
-            "SELECT DISTINCT location_adminlevel_governorate_code, location_adminlevel_governorate "
-            "FROM activityinfo_activityreport "
-            "WHERE database_id = %s ",
-            [str(ai_db.ai_id)])
+    if type == 'live':
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_governorate_code, location_adminlevel_governorate "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE database_id = %s AND funded_by = %s ",
+                [str(ai_db.ai_id), 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_governorate_code, location_adminlevel_governorate "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE database_id = %s ",
+                [str(ai_db.ai_id)])
+    else :
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_governorate_code, location_adminlevel_governorate "
+                "FROM activityinfo_activityreport "
+                "WHERE database_id = %s AND funded_by = %s ",
+                [str(ai_db.ai_id), 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_governorate_code, location_adminlevel_governorate "
+                "FROM activityinfo_activityreport "
+                "WHERE database_id = %s ",
+                [str(ai_db.ai_id)])
 
     rows = cursor.fetchall()
 
@@ -4433,24 +4463,40 @@ def get_governorates_list(ai_db):
     return result.values()
 
 
-def get_reporting_sections_list(ai_db):
+def get_reporting_sections_list(ai_db,type):
     from django.db import connection
 
     result = {}
     cursor = connection.cursor()
 
-    if ai_db.is_funded_by_unicef:
-        cursor.execute(
-            "SELECT DISTINCT reporting_section "
-            "FROM activityinfo_activityreport "
-            "WHERE database_id = %s AND funded_by = %s ",
-            [str(ai_db.ai_id), 'UNICEF'])
+    if type == 'live':
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT DISTINCT reporting_section "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE database_id = %s AND funded_by = %s ",
+                [str(ai_db.ai_id), 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT DISTINCT reporting_section "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE database_id = %s ",
+                [str(ai_db.ai_id)])
     else:
-        cursor.execute(
-            "SELECT DISTINCT reporting_section "
-            "FROM activityinfo_activityreport "
-            "WHERE database_id = %s ",
-            [str(ai_db.ai_id)])
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT DISTINCT reporting_section "
+                "FROM activityinfo_activityreport "
+                "WHERE database_id = %s AND funded_by = %s ",
+                [str(ai_db.ai_id), 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT DISTINCT reporting_section "
+                "FROM activityinfo_activityreport "
+                "WHERE database_id = %s ",
+                [str(ai_db.ai_id)])
 
     rows = cursor.fetchall()
 

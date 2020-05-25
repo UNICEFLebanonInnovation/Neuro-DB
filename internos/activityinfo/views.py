@@ -284,9 +284,9 @@ class ReportCrisisView(TemplateView):
         #                              'location_adminlevel_governorate').distinct()
         # sections = report.values('reporting_section').distinct()
 
-        partners = get_partners_list(database)
-        governorates = get_governorates_list(database)
-        sections = get_reporting_sections_list(database)
+        partners = get_partners_list(database,'')
+        governorates = get_governorates_list(database,'')
+        sections = get_reporting_sections_list(database,'')
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality')\
             .order_by('sequence')
@@ -427,15 +427,19 @@ class ReportLiveCrisis(TemplateView):
         month_name = calendar.month_name[month]
 
         reporting_year = database.reporting_year.year
-        report = LiveActivityReport.objects.filter(database_id=database.ai_id)
+        # report = LiveActivityReport.objects.filter(database_id=database.ai_id)
 
         if selected_partners or selected_governorates :
             selected_filter = True
 
-        partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
-        governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').\
-            order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
-        sections = report.values('reporting_section').order_by('reporting_section').distinct('reporting_section')
+        partners = get_partners_list(database,'live')
+        governorates = get_governorates_list(database,'live')
+        sections = get_reporting_sections_list(database,'live')
+
+        # partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
+        # governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').\
+        #     order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+        # sections = report.values('reporting_section').order_by('reporting_section').distinct('reporting_section')
 
         if len(selected_type) > 0:
             master_indicators = Indicator.objects.filter(activity__database=database,
@@ -516,7 +520,6 @@ class ReportLiveCrisis(TemplateView):
 
         return {
 
-            'reports': report.order_by('id'),
             'database': database,
             'reporting_year': str(reporting_year),
             'current_month_name': datetime.datetime.now().strftime("%B"),
@@ -861,14 +864,17 @@ class ReportPartnerView(TemplateView):
             governorates=[]
             partners_list=[]
 
-        report = ActivityReport.objects.filter(database_id=database.ai_id)
+        # report = ActivityReport.objects.filter(database_id=database.ai_id)
+        #
+        # if database.is_funded_by_unicef:
+        #    report = report.filter(funded_by__contains='UNICEF')
 
-        if database.is_funded_by_unicef:
-           report = report.filter(funded_by__contains='UNICEF')
+        partners = get_partners_list(database,'')
+        governorates = get_governorates_list(database,'')
 
-        partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
+        # partners = report.values('partner_label', 'partner_id').distinct()
+        # governorates = report.values('location_adminlevel_governorate_code',
+        #                              'location_adminlevel_governorate').distinct()
 
         master_indicators = Indicator.objects.filter(activity__database=database, master_indicator=True).exclude(
             is_sector=True).order_by('sequence')
@@ -1112,9 +1118,14 @@ class ReportPartnerSectorView(TemplateView):
 
         report = ActivityReport.objects.filter(database=database)
 
-        partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
+        partners = get_partners_list(database,'')
+        governorates = get_governorates_list(database,'')
+
+
+
+        # partners = report.values('partner_label', 'partner_id').distinct()
+        # governorates = report.values('location_adminlevel_governorate_code',
+        #                              'location_adminlevel_governorate').distinct()
         cadastrals = report.values('location_adminlevel_cadastral_area_code',
                                    'location_adminlevel_cadastral_area').distinct()
 
@@ -1307,9 +1318,12 @@ class ReportDisabilityView(TemplateView):
                                                tag_gender__isnull=False).exclude(is_sector=True) \
             .values('tag_gender__name', 'tag_gender__label').distinct().order_by('tag_gender__sequence')
 
-        partners = report.values('partner_label', 'partner_id').distinct()
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
+        partners = get_partners_list(database, '')
+        governorates = get_governorates_list(database, '')
+
+        # partners = report.values('partner_label', 'partner_id').distinct()
+        # governorates = report.values('location_adminlevel_governorate_code',
+        #                              'location_adminlevel_governorate').distinct()
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
             'sequence')
@@ -1608,9 +1622,12 @@ class ReportTagView(TemplateView):
         if selected_partners or selected_governorates or selected_months:
             selected_filter = True
 
-        partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
+        partners = get_partners_list(database, '')
+        governorates = get_governorates_list(database, '')
+
+        # partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
+        # governorates = report.values('location_adminlevel_governorate_code',
+        #                              'location_adminlevel_governorate').distinct()
 
         tags = IndicatorTag.objects.all().order_by('sequence')
 
@@ -1805,9 +1822,12 @@ class ReportCrisisTags(TemplateView):
         if selected_partners or selected_governorates or selected_months:
             selected_filter = True
 
-        partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').distinct()
+        partners = get_partners_list(database, '')
+        governorates = get_governorates_list(database, '')
+
+        # partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
+        # governorates = report.values('location_adminlevel_governorate_code',
+        #                              'location_adminlevel_governorate').distinct()
 
         tags = IndicatorTag.objects.all().order_by('sequence')
 
@@ -1997,9 +2017,13 @@ class LiveReportView(TemplateView):
         if selected_partners or selected_governorates:
             selected_filter = True
 
-        partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
-        governorates = report.values('location_adminlevel_governorate_code',
-                                     'location_adminlevel_governorate').order_by('location_adminlevel_governorate_code').distinct('location_adminlevel_governorate_code')
+        partners = get_partners_list(database, 'live')
+        governorates = get_governorates_list(database, 'live')
+
+        # partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
+        # governorates = report.values('location_adminlevel_governorate_code',
+        #                              'location_adminlevel_governorate').order_by('location_adminlevel_governorate_code').\
+        #     distinct('location_adminlevel_governorate_code')
 
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
