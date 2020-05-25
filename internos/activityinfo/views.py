@@ -294,6 +294,7 @@ class ReportCrisisView(TemplateView):
         if len(selected_type) > 0:
             master_indicators = master_indicators.filter(tag_focus__label=selected_type)
 
+
         # if database.mapped_db:
             # master_indicators1 = master_indicators.filter(master_indicator=True)
             # master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
