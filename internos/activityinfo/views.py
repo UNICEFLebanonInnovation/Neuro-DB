@@ -301,8 +301,6 @@ class ReportCrisisView(TemplateView):
             # master_indicators = master_indicators.filter(Q(master_indicator=True) |
             #                                              Q(sub_indicators__isnull=True, individual_indicator=True))
 
-        covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=True)
-
         master_indicators = master_indicators.filter(Q(master_indicator=True) |
                                                      Q(sub_indicators__isnull=True, individual_indicator=True))\
             .values(
@@ -341,7 +339,7 @@ class ReportCrisisView(TemplateView):
             'values_sections_partners_gov'
         ).distinct()
 
-        covid_indicators = Indicator.objects.filter(support_COVID=True).order_by('is_sector').values(
+        covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=True).values(
             'id',
             'ai_id',
             'name',

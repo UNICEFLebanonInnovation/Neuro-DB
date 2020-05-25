@@ -1,6 +1,7 @@
 
 import json
 import logging
+from datetime import datetime
 
 from internos.taskapp.celery import app
 from .client import ActivityInfoClient
@@ -118,7 +119,7 @@ def import_data_and_generate_live_report(database):
     from internos.activityinfo.models import Database
     from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values
 
-    databases = Database.objects.filter(reporting_year__current=True)
+    databases = Database.objects.filter(reporting_year__year=datetime.now().year)
     if database:
         databases = Database.objects.filter(ai_id=database)
 
