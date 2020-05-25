@@ -3028,7 +3028,7 @@ def calculate_individual_indicators_values_1(ai_db):
 
     ai_id = str(ai_db.ai_id)
 
-    if ai_id.is_current_extraction:
+    if ai_db.is_current_extraction:
 
         last_month = int(datetime.datetime.now().strftime("%m")) + 1
     else:
@@ -4203,6 +4203,7 @@ def calculate_internal_indicators_values(ai_db,indicator_id):
             indicator.values_partners_gov = rows_partners_govs[str(indicator.id)]
 
         indicator.save()
+
 
 def calculate_internal_cumulative_results(ai_db,indicator_id):
     from django.db import connection
