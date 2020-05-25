@@ -1,5 +1,7 @@
 import datetime
 from django import forms
+from dal import autocomplete
+from django.db.models import Q, Sum
 from django.forms.models import BaseInlineFormSet
 from django.contrib.admin.widgets import FilteredSelectMultiple, RelatedFieldWidgetWrapper
 from .models import Database, Indicator, IndicatorTag, Activity
@@ -68,6 +70,12 @@ class IndicatorForm(forms.ModelForm):
         # queryset=Activity.objects.none(),
         widget=widgets.Select(attrs={'style': 'height:200px;', 'size': '100px;'})
     )
+    second_activity = forms.ModelChoiceField(
+        required=False,
+        queryset=Activity.objects.filter(database__reporting_year__year=datetime.datetime.now().year),
+        # queryset=Activity.objects.none(),
+        widget=autocomplete.ModelSelect2(url='activity_autocomplete')
+    )
     # denominator_summation = forms.ModelMultipleChoiceField(
     #     required=False,
     #     queryset=Indicator.objects.all(),
@@ -94,7 +102,8 @@ class IndicatorForm(forms.ModelForm):
 
         if self.instance and hasattr(self.instance, 'activity') and self.instance.activity:
             queryset = Indicator.objects.filter(
-               activity__database_id=self.instance.activity.database_id)
+               Q(activity__database_id=self.instance.activity.database_id) |
+               Q(second_activity__database_id=self.instance.second_activity.database_id))
         else:
             queryset = Indicator.objects.none()
         self.fields['denominator_indicator'].queryset = queryset

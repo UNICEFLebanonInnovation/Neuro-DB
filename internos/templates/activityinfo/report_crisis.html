@@ -21,7 +21,6 @@
         <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
           <div class="page-title-icon">
             <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
-            </i>
           </div>
           <div style="width:100%; margin-top:12px">
             <div class="row">
@@ -190,8 +189,7 @@
                 </td>
                  <td class="w-5">{{ item.category}}</td>
                 <td class="w-5">
-                  {% get_tag_name item.tag_focus as tag_name %}
-                  {{ tag_name }}
+                  {{ item.tag_focus__label }}
                 </td>
                  <td class="w-5">
                  {{ item.units }}
@@ -221,8 +219,7 @@
                     </td>
                  <td class="w-5">
                    {% if item1.master_indicator_sub %}
-                  {% get_tag_name item.tag_focus as tag_name %}
-                  {{ tag_name }}
+                   {{ item.tag_focus__label }}
                     {% endif %}
                  </td>
                  <td class="w-5">
@@ -251,7 +248,6 @@
                 <td class="w-5"></td>
                 <td class="w-5"></td>
                  <td class="w-5">
-
                  </td>
                  <td></td>
                 {% for month, month_name in months %}

@@ -42,7 +42,10 @@ def read_data_from_file(ai_db, forced=False, report_type=None):
     if forced:
         model = ActivityReport.objects.none()
         ActivityReport.objects.filter(database_id=ai_db.ai_id).delete()
-        result = add_rows(ai_db=ai_db, model=model)
+        if ai_db.have_offices:
+            result = add_rows_temp(ai_db=ai_db, model=model)
+        else:
+            result = add_rows(ai_db=ai_db, model=model)
 
     link_ai_partners(report_type)
     return result
@@ -93,6 +96,88 @@ def set_tags(indicator, tags):
 
 def clean_string(value, string):
     return value.replace(string, '')
+
+
+# todo to be merged with the add_rows function
+def add_rows_temp(ai_db=None, model=None):
+
+    month = int(datetime.datetime.now().strftime("%m"))
+    path = os.path.dirname(os.path.abspath(__file__))
+    path2file = path+'/AIReports/'+str(ai_db.ai_id)+'_ai_data.csv'
+    ctr = 0
+
+    if not os.path.isfile(path2file):
+        return False
+
+    with open(path2file) as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            ctr += 1
+            indicator_value = 0
+            if 'Value' in row:
+                indicator_value = row['Value']
+
+            try:
+                indicator_value = float(indicator_value)
+            except Exception:
+                indicator_value = 0
+
+            funded_by = 'UNICEF'
+            partner_label = 'UNICEF'
+
+            start_date = None
+            if 'month' in row and row['month'] and not row['month'] == 'NA':
+                start_date = '{}-01'.format(row['month'])
+
+            gov_code = row['reporting_office']
+            gov_name = row['reporting_office']
+
+            model.create(
+                month=month,
+                database=row['Folder'],
+                database_id=ai_db.ai_id,
+                report_id=row['FormId'],
+                indicator_id=row['Quantity.Field.ID'],
+                indicator_name=unicode(row['Quantity.Field'], errors='replace'),
+                indicator_awp_code='',
+                month_name=row['month'] if 'month' in row else '',
+                partner_label=partner_label,
+                location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
+                location_adminlevel_caza=unicode(row['caza.name'], errors='replace') if 'caza.name' in row else '',
+                form=unicode(row['Form'], errors='replace') if 'Form' in row else '',
+                location_adminlevel_cadastral_area_code=row['cadastral_area.code'] if 'cadastral_area.code' in row else'',
+                location_adminlevel_cadastral_area=unicode(row['cadastral_area.name'],  errors='replace') if 'cadastral_area.name' in row else '',
+
+                governorate=row['governorate'] if 'governorate' in row else '',
+
+                location_adminlevel_governorate_code=gov_code,
+
+                location_adminlevel_governorate=gov_name,
+
+                partner_description='UNICEF',
+                project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
+                project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
+                project_label=unicode(row['projects.project_code'], errors='replace') if 'projects.project_code' in row else '',
+                project_description=unicode(row['projects.project_name'], errors='replace') if 'projects.project_name' in row else '',
+                funded_by=funded_by,
+                indicator_value=indicator_value,
+                indicator_units=row['units'] if 'units' in row else '',
+                reporting_section=row['reporting_section'] if 'reporting_section' in row else '',
+                site_type=row['site_type'] if 'site_type' in row else '',
+                location_longitude=row[
+                    'ai_allsites.geographic_location.longitude'] if 'ai_allsites.geographic_location.longitude' in row else '',
+                location_latitude=row[
+                    'ai_allsites.geographic_location.latitude'] if 'ai_allsites.geographic_location.latitude' in row else '',
+                location_alternate_name=row[
+                    'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
+
+                location_name=unicode(row['ai_allsites.name'], errors='replace') if 'ai_allsites.name' in row else '',
+                partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
+
+                start_date=start_date,
+            )
+
+    return ctr
 
 
 def add_rows(ai_db=None, model=None):
@@ -4286,3 +4371,92 @@ def calculate_internal_cumulative_results(ai_db,indicator_id):
             indicator.save()
 
     return indicators.count()
+
+
+def get_partners_list(ai_db):
+    from django.db import connection
+
+    result = {}
+    cursor = connection.cursor()
+
+    if ai_db.is_funded_by_unicef:
+        cursor.execute(
+            "SELECT DISTINCT partner_id, partner_label "
+            "FROM activityinfo_activityreport "
+            "WHERE database_id = %s AND funded_by = %s ",
+            [str(ai_db.ai_id), 'UNICEF'])
+    else:
+        cursor.execute(
+            "SELECT DISTINCT partner_id, partner_label "
+            "FROM activityinfo_activityreport "
+            "WHERE database_id = %s ",
+            [str(ai_db.ai_id)])
+
+    rows = cursor.fetchall()
+
+    for row in rows:
+        result[row[0]] = {
+            'partner_id': row[0],
+            'partner_label': row[1]
+        }
+
+    return result.values()
+
+
+def get_governorates_list(ai_db):
+    from django.db import connection
+
+    result = {}
+    cursor = connection.cursor()
+
+    if ai_db.is_funded_by_unicef:
+        cursor.execute(
+            "SELECT DISTINCT location_adminlevel_governorate_code, location_adminlevel_governorate "
+            "FROM activityinfo_activityreport "
+            "WHERE database_id = %s AND funded_by = %s ",
+            [str(ai_db.ai_id), 'UNICEF'])
+    else:
+        cursor.execute(
+            "SELECT DISTINCT location_adminlevel_governorate_code, location_adminlevel_governorate "
+            "FROM activityinfo_activityreport "
+            "WHERE database_id = %s ",
+            [str(ai_db.ai_id)])
+
+    rows = cursor.fetchall()
+
+    for row in rows:
+        result[row[0]] = {
+            'location_adminlevel_governorate_code': row[0],
+            'location_adminlevel_governorate': row[1]
+        }
+
+    return result.values()
+
+
+def get_reporting_sections_list(ai_db):
+    from django.db import connection
+
+    result = {}
+    cursor = connection.cursor()
+
+    if ai_db.is_funded_by_unicef:
+        cursor.execute(
+            "SELECT DISTINCT reporting_section "
+            "FROM activityinfo_activityreport "
+            "WHERE database_id = %s AND funded_by = %s ",
+            [str(ai_db.ai_id), 'UNICEF'])
+    else:
+        cursor.execute(
+            "SELECT DISTINCT reporting_section "
+            "FROM activityinfo_activityreport "
+            "WHERE database_id = %s ",
+            [str(ai_db.ai_id)])
+
+    rows = cursor.fetchall()
+
+    for row in rows:
+        result[row[0]] = {
+            'reporting_section': row[0],
+        }
+
+    return result.values()
