@@ -1333,7 +1333,11 @@ def get_sub_indicators_data(ai_id, is_sector=False):
             'values_sites_sector',
             'values_sector',
             'is_cumulative',
-            'category'
+            'category',
+            'values_sections',
+            'values_sections_partners',
+            'values_sections_gov',
+            'values_sections_partners_gov'
         ).distinct()
 
         if is_sector:
@@ -1431,13 +1435,13 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
 
 @register.assignment_tag
 def get_indicator_value_section(indicator, month=None, partner=None, gov=None,section=None):
-     try:
+      try:
         value = 0
         if partner and gov and section:
             for sec in section:
                 for par in partner:
                     for g in gov:
-                        key = "{}-{}-{}-{}".format(month,sec, g, par)
+                        key = "{}-{}-{}-{}".format(month,sec, par,g)
                         if key in indicator['values_sections_partners_gov']:
                             value += indicator['values_sections_partners_gov'][key]
             return get_indicator_unit(indicator, value)
@@ -1492,9 +1496,9 @@ def get_indicator_value_section(indicator, month=None, partner=None, gov=None,se
                 return get_indicator_unit(indicator, indicator['values'][str(month)])
 
         return get_indicator_unit(indicator, 0)
-     except Exception as ex:
-        logger.error('get_indicator_value_section error' + ex.message)
-        return get_indicator_unit(indicator, 0)
+      except Exception as ex:
+         logger.error('get_indicator_value_section error' + ex.message)
+         return get_indicator_unit(indicator, 0)
 
 
 @register.assignment_tag

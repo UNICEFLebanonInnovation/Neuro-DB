@@ -14,7 +14,7 @@ from datetime import date
 from django.http import HttpResponseRedirect
 
 from .templatetags.util_tags import get_sub_indicators_data
-from .utils import get_partners_list, get_governorates_list, get_reporting_sections_list
+from .utils import get_partners_list, get_governorates_list, get_reporting_sections_list, get_cadastrals_list
 from .utils import calculate_internal_indicators_values, calculate_internal_cumulative_results
 
 
@@ -284,9 +284,9 @@ class ReportCrisisView(TemplateView):
         #                              'location_adminlevel_governorate').distinct()
         # sections = report.values('reporting_section').distinct()
 
-        partners = get_partners_list(database,'')
-        governorates = get_governorates_list(database,'')
-        sections = get_reporting_sections_list(database,'')
+        partners = get_partners_list(database)
+        governorates = get_governorates_list(database)
+        sections = get_reporting_sections_list(database)
 
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality')\
             .order_by('sequence')
@@ -431,9 +431,9 @@ class ReportLiveCrisis(TemplateView):
         if selected_partners or selected_governorates :
             selected_filter = True
 
-        partners = get_partners_list(database,'live')
-        governorates = get_governorates_list(database,'live')
-        sections = get_reporting_sections_list(database,'live')
+        partners = get_partners_list(database, 'live')
+        governorates = get_governorates_list(database, 'live')
+        sections = get_reporting_sections_list(database, 'live')
 
         # partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
         # governorates = report.values('location_adminlevel_governorate_code', 'location_adminlevel_governorate').\
@@ -868,8 +868,8 @@ class ReportPartnerView(TemplateView):
         # if database.is_funded_by_unicef:
         #    report = report.filter(funded_by__contains='UNICEF')
 
-        partners = get_partners_list(database,'')
-        governorates = get_governorates_list(database,'')
+        partners = get_partners_list(database)
+        governorates = get_governorates_list(database)
 
         # partners = report.values('partner_label', 'partner_id').distinct()
         # governorates = report.values('location_adminlevel_governorate_code',
@@ -1115,18 +1115,17 @@ class ReportPartnerSectorView(TemplateView):
             'values_sector': indicator.values_sector,
         }
 
-        report = ActivityReport.objects.filter(database=database)
+        # report = ActivityReport.objects.filter(database=database)
 
-        partners = get_partners_list(database,'')
-        governorates = get_governorates_list(database,'')
-
-
+        partners = get_partners_list(database)
+        governorates = get_governorates_list(database)
+        cadastrals = get_cadastrals_list(database)
 
         # partners = report.values('partner_label', 'partner_id').distinct()
         # governorates = report.values('location_adminlevel_governorate_code',
         #                              'location_adminlevel_governorate').distinct()
-        cadastrals = report.values('location_adminlevel_cadastral_area_code',
-                                   'location_adminlevel_cadastral_area').distinct()
+        # cadastrals = report.values('location_adminlevel_cadastral_area_code',
+        #                            'location_adminlevel_cadastral_area').distinct()
 
         indicators = Indicator.objects.filter(activity__database=database).exclude(is_section=True).order_by('sequence')
 
@@ -1157,7 +1156,7 @@ class ReportPartnerSectorView(TemplateView):
             months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         return {
-            'reports': report.order_by('id'),
+            # 'reports': report.order_by('id'),
             'month': month,
             'year': today.year,
             'month_name': month_name,
@@ -1317,8 +1316,8 @@ class ReportDisabilityView(TemplateView):
                                                tag_gender__isnull=False).exclude(is_sector=True) \
             .values('tag_gender__name', 'tag_gender__label').distinct().order_by('tag_gender__sequence')
 
-        partners = get_partners_list(database, '')
-        governorates = get_governorates_list(database, '')
+        partners = get_partners_list(database)
+        governorates = get_governorates_list(database)
 
         # partners = report.values('partner_label', 'partner_id').distinct()
         # governorates = report.values('location_adminlevel_governorate_code',
@@ -1621,8 +1620,8 @@ class ReportTagView(TemplateView):
         if selected_partners or selected_governorates or selected_months:
             selected_filter = True
 
-        partners = get_partners_list(database, '')
-        governorates = get_governorates_list(database, '')
+        partners = get_partners_list(database)
+        governorates = get_governorates_list(database)
 
         # partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
         # governorates = report.values('location_adminlevel_governorate_code',
@@ -1821,8 +1820,9 @@ class ReportCrisisTags(TemplateView):
         if selected_partners or selected_governorates or selected_months:
             selected_filter = True
 
-        partners = get_partners_list(database, '')
-        governorates = get_governorates_list(database, '')
+        partners = get_partners_list(database)
+        governorates = get_governorates_list(database)
+        sections = get_reporting_sections_list(database)
 
         # partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
         # governorates = report.values('location_adminlevel_governorate_code',
@@ -1983,7 +1983,18 @@ class ReportCrisisTags(TemplateView):
             'disability_keys': json.dumps(disability_calculation.keys()),
             'age_keys': json.dumps(age_calculation.keys()),
             'reporting_year': str(reporting_year),
-            'current_month_name': datetime.datetime.now().strftime("%B")
+            'current_month_name': datetime.datetime.now().strftime("%B"),
+            'sections':sections
+        }
+
+
+class ReportCrisisVisualView(TemplateView):
+    template_name = 'activityinfo/report_crisis_visual.html'
+
+    def get_context_data(self, **kwargs):
+
+        return {
+
         }
 
 
@@ -2600,3 +2611,102 @@ class ActivityAutocomplete(autocomplete.Select2QuerySetView):
             qs = Activity.objects.filter(name__istartswith=self.q)
 
         return qs
+
+
+class IndicatorsListVisualView(TemplateView):
+    template_name = 'activityinfo/indicators_list_visual.html'
+
+    def get_context_data(self, **kwargs):
+        pillar = self.request.GET.get('pillar', 0)
+        reporting_level = self.request.GET.get('reporting_level', 0)
+        color = self.request.GET.get('color', 0)
+
+        indicators = Indicator.objects.filter(activity__database__ai_id='202020',
+                                              master_indicator=True)
+
+        if pillar:
+            indicators = indicators.filter(category=pillar)
+        if reporting_level:
+            indicators = indicators.filter(reporting_level__contains=reporting_level)
+
+        indicators = indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+            'is_cumulative',
+            'support_COVID',
+            'category',
+            'tag_focus__name',
+        ).distinct().order_by('sequence')
+
+        return {
+            'indicators': indicators,
+            'color': color
+        }
+
+
+class IndicatorsSubListVisualView(TemplateView):
+    template_name = 'activityinfo/indicators_list_visual.html'
+
+    def get_context_data(self, **kwargs):
+        parent_id = self.request.GET.get('parent_id', 0)
+        color = self.request.GET.get('color', 0)
+
+        indicators = Indicator.objects.filter(activity__database__ai_id='202020',
+                                              master_indicator=False)
+
+        if parent_id:
+            indicators = indicators.filter(sub_indicators=int(parent_id))
+
+        indicators = indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+            'is_cumulative',
+            'support_COVID',
+            'category',
+            'tag_focus__name',
+        ).distinct().order_by('sequence')
+
+        return {
+            'indicators': indicators,
+            'color': color
+        }
