@@ -1990,6 +1990,16 @@ class ReportCrisisTags(TemplateView):
         }
 
 
+class ReportCrisisVisualView(TemplateView):
+    template_name = 'activityinfo/report_crisis_visual.html'
+
+    def get_context_data(self, **kwargs):
+
+        return {
+
+        }
+
+
 class LiveReportView(TemplateView):
     template_name = 'activityinfo/live.html'
 
@@ -2603,3 +2613,102 @@ class ActivityAutocomplete(autocomplete.Select2QuerySetView):
             qs = Activity.objects.filter(name__istartswith=self.q)
 
         return qs
+
+
+class IndicatorsListVisualView(TemplateView):
+    template_name = 'activityinfo/indicators_list_visual.html'
+
+    def get_context_data(self, **kwargs):
+        pillar = self.request.GET.get('pillar', 0)
+        reporting_level = self.request.GET.get('reporting_level', 0)
+        color = self.request.GET.get('color', 0)
+
+        indicators = Indicator.objects.filter(activity__database__ai_id='202020',
+                                              master_indicator=True)
+
+        if pillar:
+            indicators = indicators.filter(category=pillar)
+        if reporting_level:
+            indicators = indicators.filter(reporting_level__contains=reporting_level)
+
+        indicators = indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+            'is_cumulative',
+            'support_COVID',
+            'category',
+            'tag_focus__name',
+        ).distinct().order_by('sequence')
+
+        return {
+            'indicators': indicators,
+            'color': color
+        }
+
+
+class IndicatorsSubListVisualView(TemplateView):
+    template_name = 'activityinfo/indicators_list_visual.html'
+
+    def get_context_data(self, **kwargs):
+        parent_id = self.request.GET.get('parent_id', 0)
+        color = self.request.GET.get('color', 0)
+
+        indicators = Indicator.objects.filter(activity__database__ai_id='202020',
+                                              master_indicator=False)
+
+        if parent_id:
+            indicators = indicators.filter(sub_indicators=int(parent_id))
+
+        indicators = indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+            'is_cumulative',
+            'support_COVID',
+            'category',
+            'tag_focus__name',
+        ).distinct().order_by('sequence')
+
+        return {
+            'indicators': indicators,
+            'color': color
+        }

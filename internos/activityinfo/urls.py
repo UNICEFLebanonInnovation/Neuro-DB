@@ -57,6 +57,21 @@ urlpatterns = [
         name='report_crisis_tags'
     ),
     url(
+        regex=r'^report-crisis-visual/$',
+        view=views.ReportCrisisVisualView.as_view(),
+        name='report_crisis_visual'
+    ),
+    url(
+        regex=r'^indicators-list-visual/$',
+        view=views.IndicatorsListVisualView.as_view(),
+        name='indicators_list_visual'
+    ),
+    url(
+        regex=r'^indicators-sub-list-visual/$',
+        view=views.IndicatorsSubListVisualView.as_view(),
+        name='indicators_sub_list_visual'
+    ),
+    url(
         regex=r'^report-partner/$',
         view=views.ReportPartnerView.as_view(),
         name='report_partner'
