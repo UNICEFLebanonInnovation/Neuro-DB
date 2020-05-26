@@ -55,7 +55,11 @@
                 </option>
                 {% endfor %}
               </select>
-
+                <select id="filter_section" class="btn btn-outline-primary" multiple="multiple" name="sections">
+                  {% for reporting_section in sections %}
+                    <option value="{{ reporting_section.reporting_section }}" {% if reporting_section.reporting_section in selected_sections %} selected {% endif %}>{{ reporting_section.reporting_section }}</option>
+                  {% endfor %}
+                </select>
               <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="s_months">
                  {% for month, month_name in s_months %}
                 <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
@@ -263,7 +267,14 @@ d3ChartPie(data4, '#chart-4', domain4, range, 200, 125);
 		nSelectedText:'selected governorates',
 		numberDisplayed:1
   });
-
+  $('#filter_section').multiselect({
+    buttonWidth : '200px',
+    includeSelectAllOption : true,
+    nonSelectedText: 'Sections',
+    nSelectedText:'selected sections',
+    numberDisplayed:1,
+     maxHeight: 350
+  });
 $('#filter_month').multiselect({
     buttonWidth : '180px',
     includeSelectAllOption : true,
