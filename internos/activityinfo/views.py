@@ -2662,9 +2662,11 @@ class IndicatorsListVisualView(TemplateView):
         ).distinct().order_by('sequence')
 
         return {
+            'count': indicators.count(),
             'indicators': indicators,
             'color': color,
             'filter': 'level3-filter',
+            'display_tags': True
         }
 
 
@@ -2712,7 +2714,9 @@ class IndicatorsSubListVisualView(TemplateView):
         ).distinct().order_by('sequence')
 
         return {
+            'count': indicators.count(),
             'indicators': indicators,
             'color': color,
             'filter': 'level4-filter',
+            'display_tags': False
         }
