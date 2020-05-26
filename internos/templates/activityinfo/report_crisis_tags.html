@@ -30,9 +30,11 @@
 
 <div class="app-main__inner">
   <div class="app-page-title">
-    <form action="{% url 'activityinfo:report_tags' %}?rep_year={{ database.reporting_year }}" method="get">
+   <form action="{% url 'activityinfo:report_crisis_tags' %}" method="get" id="filterForm" data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"  data-sections-url="{% url 'activityinfo:ajax_load_sections' %}"
+            data-govs-url="{% url 'activityinfo:ajax_load_govs' %}" data-month-url="{% url 'activityinfo:ajax_load_months' %}">
+
       <div class="page-title-wrapper">
-        <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
+        <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
         <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
           <div class="page-title-icon">
             <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
@@ -60,9 +62,9 @@
                     <option value="{{ reporting_section.reporting_section }}" {% if reporting_section.reporting_section in selected_sections %} selected {% endif %}>{{ reporting_section.reporting_section }}</option>
                   {% endfor %}
                 </select>
-              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="s_months">
-                 {% for month, month_name in s_months %}
-                <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
+                 {% for month, month_name in months %}
+                <option class="dropdown-item" value="{{ month }}" {% if month in selected_months %} selected {% endif %}>
                   {{ month_name }}
                 </option>
                 {% endfor %}
@@ -102,7 +104,7 @@
                  data-tableName="Dashboard - {{ database.label }} - {{ reporting_year}}">
             <thead>
             <tr>
-              <th  content="Indicator Information" colspan="6" >
+              <th  content="Indicator Information" colspan="3" >
                 Indicator Information
               </th>
               {% if tags_gender %}
@@ -144,7 +146,7 @@
             </thead>
             <tbody>
             {% for item in master_indicators %}
-            {% get_indicator_cumulative_months item selected_months selected_partners selected_governorate as cumulative_value %}
+            {% get_indicator_cumulative_months_sections item selected_months selected_partners selected_governorate selected_sections as cumulative_value %}
 
             <tr class="level1" itemid="{{ item.id }}">
               <th class="w-150">{{ item.name }}</th>
@@ -154,12 +156,10 @@
               </td>
               {% for tag in tags_gender %}
               <td class="w-10">
-                {% get_indicator_tag_value item tag.tag_gender__name as value %}
+                {% get_indicator_tag_value item tag.tag_gender__name selected_months selected_partners selected_governorate selected_sections as value %}
                  {{ value | number_format }}
                 <br/>
-                {% if item.cumulative_values.months %}
-               {{ value|percentage_float:item.cumulative_values.months }}{% if value != "0" %}%{% endif %}
-                {% endif %}
+               {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
               </td>
               {% endfor %}
 
@@ -214,43 +214,6 @@
 <!--  <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>-->
   <script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>
 
-<!--  <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>-->
-<!--  <script type="text/javascript" src="{% static 'js/d3.chart.js' %}"></script>-->
-
-  <script>
-
-
-var range = ["#31B6FD", "#F5C040", "#A5D027", "#5BCF78", "#4584D3"];
-
-// Disabilities
-var data1 = '{{ disability_values|safe }}';
-data1 = JSON.parse(data1);
-var domain1 = '{{ disability_keys|safe }}';
-domain1 = JSON.parse(domain1)
-d3ChartPie(data1, '#chart-1', domain1, range, 180, 125);
-
-// Nationalities
-var data2 = '{{ nationality_values|safe }}';
-data2 = JSON.parse(data2);
-var domain2 = '{{ nationality_keys|safe }}';
-domain2 = JSON.parse(domain2)
-d3ChartPie(data2, '#chart-2', domain2, range, 200, 125);
-
-// Gender
-var data3 = '{{ gender_values|safe }}';
-data3 = JSON.parse(data3);
-var domain3 = '{{ gender_keys|safe }}';
-domain3 = JSON.parse(domain3)
-d3ChartPie(data3, '#chart-3', domain3, range, 200, 125);
-
-// Age
-var data4 = '{{ age_values|safe }}';
-data4 = JSON.parse(data4);
-var domain4 = '{{ age_keys|safe }}';
-domain4 = JSON.parse(domain4)
-d3ChartPie(data4, '#chart-4', domain4, range, 200, 125);
-
-  </script>
   <script>
 
   $('#filter_partners').multiselect({
@@ -258,14 +221,16 @@ d3ChartPie(data4, '#chart-4', domain4, range, 200, 125);
     includeSelectAllOption : true,
 		nonSelectedText: 'Partners',
 		nSelectedText:'selected partners',
-		numberDisplayed:1
+		numberDisplayed:1,
+		 maxHeight: 350
   });
  $('#filter_governorates').multiselect({
     buttonWidth : '190px',
     includeSelectAllOption : true,
 		nonSelectedText: 'Governorates',
 		nSelectedText:'selected governorates',
-		numberDisplayed:1
+		numberDisplayed:1,
+		 maxHeight: 350
   });
   $('#filter_section').multiselect({
     buttonWidth : '200px',
@@ -274,13 +239,16 @@ d3ChartPie(data4, '#chart-4', domain4, range, 200, 125);
     nSelectedText:'selected sections',
     numberDisplayed:1,
      maxHeight: 350
+
   });
+
 $('#filter_month').multiselect({
     buttonWidth : '180px',
     includeSelectAllOption : true,
 		nonSelectedText: 'Months',
 		nSelectedText:'selected months',
-		numberDisplayed:1
+		numberDisplayed:1,
+		 maxHeight: 350
   });
   var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = window.location.search.substring(1),
@@ -384,5 +352,255 @@ $('input#search-input').quicksearch('table#export_tags tbody tr', {
 });
 
 
+  </script>
+ <script>
+ $('#filter_month').on('change', function() {
+
+      var partnerId=$("#filter_partners").val();
+      var section_Id = $('#filter_section').val();
+      var gov_Id = $('#filter_governorates').val();
+      var ai_id = $('#ai_id').val();
+      var month_Id = $(this).val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+      var sec_url = $("#filterForm").attr("data-sections-url");
+
+      if (partnerId == null){
+
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'month_id':month_Id,
+            'gov_id':gov_Id,
+            'sec_id':section_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+         });
+      }
+      if (gov_Id == null){
+
+           $.ajax({
+              url: gov_url,
+              data: {
+              'ai_id':ai_id,
+              'month_id':month_Id,
+              'partner_id':partnerId,
+              'section_id':section_Id,
+               },
+              success: function (data) {
+
+                $("#filter_governorates").html(data);
+                $("#filter_governorates").multiselect('rebuild');
+              }
+           });
+      }
+      if (section_Id == null){
+
+             $.ajax({
+                url: sec_url,
+                data: {
+                'ai_id':ai_id,
+                'month_id':month_Id,
+                'partner_id':partnerId,
+                'gov_id':gov_Id,
+                 },
+                success: function (data) {
+
+                  $("#filter_section").html(data);
+                  $("#filter_section").multiselect('rebuild');
+                }
+             });
+        }
+    });
+
+    $('#filter_governorates').change(function () {
+
+      var partnerId=$("#filter_partners").val();
+      var section_Id = $('#filter_section').val();
+       var month_Id = $('#filter_month').val();
+      var gov_Id = $(this).val();
+      var ai_id = $('#ai_id').val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var month_url = $("#filterForm").attr("data-month-url");
+      var sec_url = $("#filterForm").attr("data-sections-url");
+
+      if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'month_id':month_Id,
+            'section_id':section_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
+      if ( month_Id == null ){
+
+        $.ajax({
+            url: month_url,
+            data: {
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'section_id':section_Id,
+            'gov_id':gov_Id
+             },
+            success: function (data) {
+              $("#filter_month").html(data);
+              $("#filter_month").multiselect('rebuild');
+            }
+        });
+      }
+      if ( section_Id == null ){
+
+        $.ajax({
+            url: sec_url,
+            data: {
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+             'month_id':month_Id
+             },
+            success: function (data) {
+              $("#filter_section").html(data);
+              $("#filter_section").multiselect('rebuild');
+            }
+        });
+      }
+
+    });
+
+    $('#filter_section').change(function () {
+
+     var partnerId=$("#filter_partners").val();
+     var gov_Id = $('#filter_governorates').val();
+     var month_Id = $('#filter_month').val();
+     var section_Id = $(this).val();
+     var ai_id = $('#ai_id').val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+      var month_url = $("#filterForm").attr("data-month-url");
+      var ai_id = $('#ai_id').val();
+
+       if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'month_id':month_Id,
+            'section_id':section_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
+       if(gov_Id == null){
+        $.ajax({
+            url: gov_url,
+            data: {
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'month_id':month_Id,
+            'section_id':section_Id
+
+             },
+            success: function (data) {
+              $("#filter_governorates").html(data);
+              $("#filter_governorates").multiselect('rebuild');
+            }
+        });
+      }
+      if ( month_Id == null ){
+
+        $.ajax({
+            url: month_url,
+            data: {
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'section_id':section_Id,
+            'gov_id':gov_Id
+             },
+            success: function (data) {
+              $("#filter_month").html(data);
+              $("#filter_month").multiselect('rebuild');
+            }
+        });
+      }
+
+    });
+    $("#filter_partners").change(function () {
+
+    var partnerId = $(this).val();
+    var ai_id = $('#ai_id').val();
+
+    var month_Id = $('#filter_month').val();
+    var gov_Id = $('#filter_governorates').val();
+    var section_Id= $('#filter_section').val();
+
+    var url = $("#filterForm").attr("data-sections-url");
+    var gov_url = $("#filterForm").attr("data-govs-url");
+    var month_url = $("#filterForm").attr("data-month-url");
+
+    if(section_Id == null){
+      $.ajax({
+        url: url,
+        data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'month_id':month_Id,
+          'gov_id':gov_Id
+        },
+        success: function (data) {
+          $("#filter_section").html(data);
+          $("#filter_section").multiselect('rebuild');
+        }
+      });
+    }
+    if(gov_Id == null){
+      $.ajax({
+          url: gov_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'month_id':month_Id,
+          'section_id':section_Id
+           },
+          success: function (data) {
+            $("#filter_governorates").html(data);
+            $("#filter_governorates").multiselect('rebuild');
+          }
+      });
+    }
+    if( month_Id ==  null){
+      $.ajax({
+          url: month_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'gov_id':gov_Id,
+          'section_id':section_Id
+           },
+          success: function (data) {
+            $("#filter_month").html(data);
+            $("#filter_month").multiselect('rebuild');
+          }
+      });
+    }
+
+ });
   </script>
 {% endblock %}
