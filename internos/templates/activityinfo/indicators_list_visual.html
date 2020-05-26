@@ -34,39 +34,72 @@
 
 <div class="">
 
-  <button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm"><i class="pe-7s-male btn-icon-wrapper font-size-xlg"></i><span class="badge badge-info">
-                    {% get_indicator_tag_value item 'Male' as value %}
-                          {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
-  </span></button>
-  <button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm"><i class="pe-7s-female btn-icon-wrapper font-size-xlg"></i><span class="badge badge-success">
-                    {% get_indicator_tag_value item 'Female' as value %}
-                          {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
-  </span></button>
-  <button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm"><i class="pe-7s-delete-user btn-icon-wrapper font-size-xlg"></i><span class="badge badge-warning">14%</span></button>
+{% get_indicator_tag_value item 'Male' as value %}
+<button class="mb-2 mr-2 btn btn-light"><i class="pe-7s-male btn-icon-wrapper font-size-xlg"></i><span class="badge badge-pill badge-light">{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}</span></button>
+
+{% get_indicator_tag_value item 'Female' as value %}
+<button class="mb-2 mr-2 btn btn-light"><i class="pe-7s-female btn-icon-wrapper font-size-xlg"></i><span class="badge badge-pill badge-light">{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}</span></button>
+
+
+
+  <!--<button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm"><i class="pe-7s-male btn-icon-wrapper font-size-xlg"></i><span class="badge badge-light">-->
+                    <!--{% get_indicator_tag_value item 'Male' as value %}-->
+                          <!--{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}-->
+  <!--</span></button>-->
+  <!--<button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm"><i class="pe-7s-female btn-icon-wrapper font-size-xlg"></i><span class="badge badge-light">-->
+                    <!--{% get_indicator_tag_value item 'Female' as value %}-->
+                          <!--{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}-->
+  <!--</span></button>-->
 
 </div>
-<div class="">
-  <button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm"><div class="font-flag-wrapper  btn-icon-wrapper flag flag-icon-background flag-icon-lb"></div><span class="badge badge-warning">
-                        {% get_indicator_tag_value item 'LEB' as value %}
-                          {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
+<div>
+  {% get_indicator_tag_value item 'LBN' as value %}
+  <button class="mb-2 mr-2 btn btn-light">LBN<span class="badge badge-pill badge-light">{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}</span></button>
 
-  </span></button>
-  <button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm"><div class="font-flag-wrapper  btn-icon-wrapper flag flag-icon-background flag-icon-sy"></div><span class="badge badge-warning">
-                            {% get_indicator_tag_value item 'SYR' as value %}
-                          {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
 
-  </span></button>
-  <button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm"><div class="font-flag-wrapper  btn-icon-wrapper flag flag-icon-background flag-icon-ps"></div><span class="badge badge-warning">
-                            {% get_indicator_tag_value item 'PRS' as value %}
-                          {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
+  {% get_indicator_tag_value item 'SYR' as value %}
+  <button class="mb-2 mr-2 btn btn-light">SYR<span class="badge badge-pill badge-light">{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}</span></button>
 
-  </span></button>
-  <button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm"><div class="font-flag-wrapper  btn-icon-wrapper flag flag-icon-background flag-icon-ps"></div><span class="badge badge-warning">
+  {% get_indicator_tag_value item 'PRS' as value %}
+  <button class="mb-2 mr-2 btn btn-light">PRS<span class="badge badge-pill badge-light">{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}</span></button>
 
-                        {% get_indicator_tag_value item 'PRL' as value %}
-                          {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
+  {% get_indicator_tag_value item 'PRL' as value %}
+  <button class="mb-2 mr-2 btn btn-light">PRL<span class="badge badge-pill badge-light">{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}</span></button>
 
-  </span></button>
+  {% get_indicator_tag_value item 'OTH' as value %}
+  <button class="mb-2 mr-2 btn btn-light">OTH<span class="badge badge-pill badge-light">{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}</span></button>
+
+
+</div>
+
+<!--<div class="">-->
+  <!--<button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm">LBN<span class="badge badge-secondary">-->
+                        <!--{% get_indicator_tag_value item 'LEB' as value %}-->
+                          <!--{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}-->
+<!---->
+  <!--</span></button>-->
+  <!--<button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm">SYR<span class="badge badge-secondary">-->
+                            <!--{% get_indicator_tag_value item 'SYR' as value %}-->
+                          <!--{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}-->
+<!---->
+  <!--</span></button>-->
+  <!--<button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm">PRS<span class="badge badge-secondary">-->
+                            <!--{% get_indicator_tag_value item 'PRS' as value %}-->
+                          <!--{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}-->
+<!---->
+  <!--</span></button>-->
+  <!--<button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm">PRL<span class="badge badge-secondary">-->
+<!---->
+                        <!--{% get_indicator_tag_value item 'PRL' as value %}-->
+                          <!--{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}-->
+<!---->
+  <!--</span></button>-->
+  <!--<button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm">OTH<span class="badge badge-secondary">-->
+<!---->
+                        <!--{% get_indicator_tag_value item 'OTH' as value %}-->
+                          <!--{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}-->
+<!---->
+  <!--</span></button>-->
 </div>
 
                       <!--<div class="progress-bar-xs progress">-->

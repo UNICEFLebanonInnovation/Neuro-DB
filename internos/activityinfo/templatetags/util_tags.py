@@ -66,6 +66,8 @@ def multiply(value, arg):
 
 @register.filter(name='percentage')
 def percentage(number, total):
+    total = total.replace(",", "")
+
     if number and total:
         return round((number * 100.0) / total, 2)
     return 0
@@ -73,6 +75,7 @@ def percentage(number, total):
 
 @register.filter(name='percentage_int')
 def percentage_int(number, total):
+    total = total.replace(",", "")
     if number:
         return int(round((number * 100.0) / total, 2))
     return 0
@@ -81,6 +84,8 @@ def percentage_int(number, total):
 @register.filter(name='percentage_float')
 def percentage_float(number, total):
     try:
+        total = total.replace(",", "")
+
         if number and not isinstance(total, dict):
             return float(round((float(number) * 100.0) / float(total), 2))
         return 0
