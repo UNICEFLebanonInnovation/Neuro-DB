@@ -4373,13 +4373,13 @@ def calculate_internal_cumulative_results(ai_db,indicator_id):
     return indicators.count()
 
 
-def get_partners_list(ai_db,type):
+def get_partners_list(ai_db, report_type=None):
     from django.db import connection
 
     result = {}
     cursor = connection.cursor()
 
-    if type == 'live':
+    if report_type == 'live':
 
         if ai_db.is_funded_by_unicef:
             cursor.execute(
@@ -4418,13 +4418,13 @@ def get_partners_list(ai_db,type):
     return result.values()
 
 
-def get_governorates_list(ai_db,type):
+def get_governorates_list(ai_db, report_type=None):
     from django.db import connection
 
     result = {}
     cursor = connection.cursor()
 
-    if type == 'live':
+    if report_type == 'live':
 
         if ai_db.is_funded_by_unicef:
             cursor.execute(
@@ -4463,13 +4463,58 @@ def get_governorates_list(ai_db,type):
     return result.values()
 
 
-def get_reporting_sections_list(ai_db,type):
+def get_cadastrals_list(ai_db, report_type=None):
     from django.db import connection
 
     result = {}
     cursor = connection.cursor()
 
-    if type == 'live':
+    if report_type == 'live':
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_cadastral_area_code, location_adminlevel_cadastral_area "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE database_id = %s AND funded_by = %s ",
+                [str(ai_db.ai_id), 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_cadastral_area_code, location_adminlevel_cadastral_area "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE database_id = %s ",
+                [str(ai_db.ai_id)])
+    else :
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_cadastral_area_code, location_adminlevel_cadastral_area "
+                "FROM activityinfo_activityreport "
+                "WHERE database_id = %s AND funded_by = %s ",
+                [str(ai_db.ai_id), 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_cadastral_area_code, location_adminlevel_cadastral_area "
+                "FROM activityinfo_activityreport "
+                "WHERE database_id = %s ",
+                [str(ai_db.ai_id)])
+
+    rows = cursor.fetchall()
+
+    for row in rows:
+        result[row[0]] = {
+            'location_adminlevel_cadastral_area_code': row[0],
+            'location_adminlevel_cadastral_area': row[1]
+        }
+
+    return result.values()
+
+
+def get_reporting_sections_list(ai_db, report_type=None):
+    from django.db import connection
+
+    result = {}
+    cursor = connection.cursor()
+
+    if report_type == 'live':
 
         if ai_db.is_funded_by_unicef:
             cursor.execute(
