@@ -225,28 +225,36 @@ def add_rows(ai_db=None, model=None):
             if 'date' in row and row['date'] and not row['date'] == 'NA':
                 start_date = row['date']
             gov_code =0
-            gov_name=""
-            if 'governorate.code' in row :
+            gov_name = ""
+            if 'governorate.code' in row:
                 if row['governorate.code'] == 'NA':
                     gov_code = 10
-                else :
+                else:
                     gov_code = row['governorate.code']
 
-            if 'governorate.name' in row :
+            if 'governorate.name' in row:
                 if row['governorate.name'] == 'NA':
                     gov_name = "National"
-                else :
-                    gov_name =unicode(row['governorate.name'],  errors='replace')
+                else:
+                    gov_name = unicode(row['governorate.name'],  errors='replace')
 
-            support_covid ={}
+            support_covid1 = False
+            support_covid2 = False
+            support_covid3 = False
+
             if 'X4.2.3_covid_adaptation' in row:
-                support_covid.add['X4.2.3_covid_adaptation']= row['X4.2.3_covid_adaptation']
+                if row['X4.2.3_covid_adaptation'] == 'Yes':
+                    support_covid1 = True
 
             if 'covid_adaptation' in row:
-                support_covid.add['covid_adaptation'] = row['covid_adaptation']
+                if row['covid_adaptation'] == 'Yes':
+                    support_covid2 = True
 
             if 'covid_adapted_sensitization' in row:
-                support_covid.add['covid_adapted_sensitization'] = row['covid_adapted_sensitization']
+                if row['covid_adapted_sensitization'] == 'Yes':
+                    support_covid3 = True
+
+            support_covid = support_covid1 or support_covid2 or support_covid3
 
             model.create(
                 month=month,
