@@ -338,6 +338,7 @@ class ReportCrisisView(TemplateView):
             'values_sections_partners',
             'values_sections_gov',
             'values_sections_partners_gov'
+
         ).distinct()
 
         covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=True).values(
@@ -1823,6 +1824,7 @@ class ReportCrisisTags(TemplateView):
 
         partners = get_partners_list(database, '')
         governorates = get_governorates_list(database, '')
+        sections = get_reporting_sections_list(database, '')
 
         # partners = report.values('partner_label', 'partner_id').order_by('partner_id').distinct('partner_id')
         # governorates = report.values('location_adminlevel_governorate_code',
@@ -1983,7 +1985,8 @@ class ReportCrisisTags(TemplateView):
             'disability_keys': json.dumps(disability_calculation.keys()),
             'age_keys': json.dumps(age_calculation.keys()),
             'reporting_year': str(reporting_year),
-            'current_month_name': datetime.datetime.now().strftime("%B")
+            'current_month_name': datetime.datetime.now().strftime("%B"),
+            'sections':sections
         }
 
 
