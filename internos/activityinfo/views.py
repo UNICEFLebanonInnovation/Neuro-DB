@@ -1799,11 +1799,13 @@ class ReportCrisisTags(TemplateView):
         current_month = date.today().month
 
         selected_partners = self.request.GET.getlist('partners', [])
-        selected_months = self.request.GET.getlist('s_months', [])
+        selected_months = self.request.GET.getlist('months', [])
         selected_governorates = self.request.GET.getlist('governorates', [])
+        selected_sections = self.request.GET.getlist('sections', [])
 
         selected_partner_name = self.request.GET.get('partner_name', 'All Partners')
         selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+
         today = datetime.date.today()
         first = today.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
@@ -1835,13 +1837,13 @@ class ReportCrisisTags(TemplateView):
         if selected_partners or selected_governorates or selected_months:
             selected_filter = True
 
-        s_months = []
+        months = []
         if int(reporting_year) == current_year:
             for i in range(1, current_month):
-                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
         else:
             for i in range(1, 13):
-                s_months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         tags_gender = Indicator.objects.filter(activity__database__id__exact=database.id,
                                                tag_gender__isnull=False).exclude(is_sector=True).values(
@@ -1955,16 +1957,16 @@ class ReportCrisisTags(TemplateView):
             'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
             'selected_months': selected_months,
-            'reports': report.order_by('id'),
+            'selected_sections':selected_sections,
+            # 'reports': report.order_by('id'),
             'month': month,
             'year': today.year,
             'month_name': month_name,
             'month_number': month_number,
-            # 'months': months,
+            'months': months,
             'database': database,
             'partners': partners,
             'governorates': governorates,
-            's_months':s_months,
             'master_indicators': master_indicators,
             'selected_filter': selected_filter,
             'tags': tags,
