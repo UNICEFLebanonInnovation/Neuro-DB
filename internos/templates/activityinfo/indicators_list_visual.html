@@ -14,33 +14,75 @@
                         <div class="widget-subheading">{{ item.units }}
                           {% if item.tag_focus__name  %}
                           -
-                          {% if item.tag_focus__name == 'Global'  %}
-<a data-toggle="tooltip" data-placement="right" title="" style="cursor:pointer" data-original-title="HPM">
-                     <i class="pe-7s-global text-primary"> </i>
-                  </a>
+                              {% if item.tag_focus__name == 'Global'  %}
+                                <a data-toggle="tooltip" data-placement="right" title="" style="cursor:pointer" data-original-title="HPM">
+                                    <i class="pe-7s-global text-primary"> </i></a>
+                              {% endif %}
+                            {{ item.tag_focus__name }}
                           {% endif %}
-                                                    {{ item.tag_focus__name }}
-                          {% endif %}
+                          {% if item.reporting_level %} - {{ item.reporting_level }} {% endif %}
                         </div>
                       </div>
                       <div class="widget-content-right">
-                        <div class="widget-numbers text-{{ color }}">
-                          {% get_indicator_cumulative_months item 0 0 0 as cumulative_value %}
-                          {{ cumulative_value }}
-                        </div>
+                        {% get_indicator_cumulative_months item 0 0 0 as cumulative_value %}
+                        {% if item.category == 'Pillar 1' %}
+                          <div class="widget-numbers text-info">
+                            {{ cumulative_value }}
+                          </div>
+                        {% elif item.category == 'Pillar 2' %}
+                          <div class="widget-numbers text-warning">
+                            {{ cumulative_value }}
+                          </div>
+                        {% elif item.category == 'Pillar 3' %}
+                          <div class="widget-numbers text-text-alternate">
+                            {{ cumulative_value }}
+                          </div>
+                        {% elif item.category == 'Pillar 4' %}
+                          <div class="widget-numbers text-success">
+                            {{ cumulative_value }}
+                          </div>
+                        {% elif item.category == 'Pillar 5' %}
+                          <div class="widget-numbers text-text-danger">
+                            {{ cumulative_value }}
+                          </div>
+                        {% else %}
+                          <div class="widget-numbers text-{{ color }}">
+                            {{ cumulative_value }}
+                          </div>
+                        {% endif %}
                       </div>
                     </div>
 
 {% if display_tags == True %}
+                    {% calculate_achievement_new item.target cumulative_value as achieved %}
                     <div class="widget-progress-wrapper">
+                      <div class="progress-bar-xs progress">
+                        {% if item.status_color == 'badge-success' %}
+                        <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="{{ achieved }}" class="progress-bar bg-success"
+                             role="progressbar" style="width: {{ achieved }}%;">{{ achieved }}%</div>
+                        {% elif item.status_color == 'badge-warning' %}
+                        <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="{{ achieved }}" class="progress-bar bg-warning"
+                             role="progressbar" style="width: {{ achieved }}%;">{{ achieved }}%</div>
+                        {% elif item.status_color == 'badge-danger' %}
+                        <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="{{ achieved }}" class="progress-bar bg-danger"
+                             role="progressbar" style="width: {{ achieved }}%;">{{ achieved }}%</div>
+                        {% else %}
+                        <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="{{ achieved }}" class="progress-bar bg-primary"
+                             role="progressbar" style="width: {{ achieved }}%;">{{ achieved }}%</div>
+                        {% endif %}
+                      </div>
+                      <div class="progress-sub-label">
+                        <div class="sub-label-left"></div>
+                        <div class="sub-label-right">100% / {{ item.target }}</div>
+                      </div>
 
 <div>
 
 {% get_indicator_tag_value item 'Male' as value %}
-<button class="mb-2 mr-2 btn btn-light"><i class="pe-7s-male btn-icon-wrapper font-size-xlg"></i><span class="badge badge-pill badge-light">{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}</span></button>
+<button class="mb-2 mr-2 btn btn-light"><i class="pe-7s-male btn-icon-wrapper font-size-xlg"></i>&nbsp;&nbsp;&nbsp;<span class="badge badge-pill badge-light">{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}</span></button>
 
 {% get_indicator_tag_value item 'Female' as value %}
-<button class="mb-2 mr-2 btn btn-light"><i class="pe-7s-female btn-icon-wrapper font-size-xlg"></i><span class="badge badge-pill badge-light">{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}</span></button>
+<button class="mb-2 mr-2 btn btn-light"><i class="pe-7s-female btn-icon-wrapper font-size-xlg"></i>&nbsp;&nbsp;&nbsp;<span class="badge badge-pill badge-light">{{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}</span></button>
 
 
 
@@ -104,15 +146,6 @@
   <!--</span></button>-->
 <!--</div>-->
 {% endif %}
-                      <!--<div class="progress-bar-xs progress">-->
-                        <!--{% calculate_achievement_new item.target cumulative_value  as achieved %}-->
-                        <!--<div aria-valuemax="100" aria-valuemin="0" aria-valuenow="{{ achieved }}" class="progress-bar bg-primary"-->
-                             <!--role="progressbar" style="width: {{ achieved }}%;"></div>-->
-                      <!--</div>-->
-                      <!--<div class="progress-sub-label">-->
-                        <!--<div class="sub-label-left">{{ item.units }}</div>-->
-                        <!--<div class="sub-label-right">100% / {{ item.target }}</div>-->
-                      <!--</div>-->
                     </div>
                   </div>
                 </div>
