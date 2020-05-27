@@ -83,6 +83,8 @@ class Database(models.Model):
     have_covid = models.BooleanField(default=True)
     have_offices = models.BooleanField(default=False)
     have_internal_reporting = models.BooleanField(default=True)
+    support_covid = models.BooleanField(default=False)
+    have_sections = models.BooleanField(default=False)
     configs = JSONField(blank=True, null=True, default={})
     reporting_year = models.ForeignKey(
         ReportingYear,
@@ -480,7 +482,7 @@ class Indicator(models.Model):
     values_gov_weekly = JSONField(blank=True, null=True, default={})
     values_partners_weekly = JSONField(blank=True, null=True, default={})
     values_partners_gov_weekly = JSONField(blank=True, null=True, default={})
-    values_cumulative_weekly =  JSONField(blank=True, null=True, default={})
+    values_cumulative_weekly = JSONField(blank=True, null=True, default={})
 
 
     def __unicode__(self):

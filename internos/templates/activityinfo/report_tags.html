@@ -282,43 +282,6 @@
 <!--  <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>-->
   <script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>
 
-<!--  <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>-->
-<!--  <script type="text/javascript" src="{% static 'js/d3.chart.js' %}"></script>-->
-
-  <script>
-
-
-var range = ["#31B6FD", "#F5C040", "#A5D027", "#5BCF78", "#4584D3"];
-
-// Disabilities
-var data1 = '{{ disability_values|safe }}';
-data1 = JSON.parse(data1);
-var domain1 = '{{ disability_keys|safe }}';
-domain1 = JSON.parse(domain1)
-d3ChartPie(data1, '#chart-1', domain1, range, 180, 125);
-
-// Nationalities
-var data2 = '{{ nationality_values|safe }}';
-data2 = JSON.parse(data2);
-var domain2 = '{{ nationality_keys|safe }}';
-domain2 = JSON.parse(domain2)
-d3ChartPie(data2, '#chart-2', domain2, range, 200, 125);
-
-// Gender
-var data3 = '{{ gender_values|safe }}';
-data3 = JSON.parse(data3);
-var domain3 = '{{ gender_keys|safe }}';
-domain3 = JSON.parse(domain3)
-d3ChartPie(data3, '#chart-3', domain3, range, 200, 125);
-
-// Age
-var data4 = '{{ age_values|safe }}';
-data4 = JSON.parse(data4);
-var domain4 = '{{ age_keys|safe }}';
-domain4 = JSON.parse(domain4)
-d3ChartPie(data4, '#chart-4', domain4, range, 200, 125);
-
-  </script>
   <script>
 
   $('#filter_partners').multiselect({

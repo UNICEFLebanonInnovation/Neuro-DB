@@ -315,19 +315,11 @@ class ReportCrisisView(TemplateView):
             'awp_code',
             'measurement_type',
             'units',
-            'target',
-            'status_color',
-            'status',
             'cumulative_values',
             'values_partners_gov',
             'values_partners',
             'values_gov',
             'values',
-            'values_live',
-            'values_gov_live',
-            'values_partners_live',
-            'values_partners_gov_live',
-            'cumulative_values_live',
             'is_cumulative',
             'activity',
             'tag_focus',
@@ -337,7 +329,13 @@ class ReportCrisisView(TemplateView):
             'values_sections',
             'values_sections_partners',
             'values_sections_gov',
-            'values_sections_partners_gov'
+            'values_sections_partners_gov',
+            'values_weekly',
+            'values_gov_weekly',
+            'values_partners_weekly',
+            'values_partners_gov_weekly',
+            'values_cumulative_weekly',
+
         ).distinct()
 
         covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=True).values(
