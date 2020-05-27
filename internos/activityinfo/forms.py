@@ -104,7 +104,9 @@ class IndicatorForm(forms.ModelForm):
            hasattr(self.instance, 'second_activity') and self.instance.second_activity:
             queryset = Indicator.objects.filter(
                Q(activity__database_id=self.instance.activity.database_id) |
-               Q(second_activity__database_id=self.instance.second_activity.database_id))
+               Q(activity__database_id=self.instance.second_activity.database_id)
+               # Q(second_activity__database_id=self.instance.second_activity.database_id)
+            )
 
         elif self.instance and hasattr(self.instance, 'activity') and self.instance.activity:
             queryset = Indicator.objects.filter(
