@@ -40,10 +40,13 @@
     background: #f1f7ff;
 }
 
+#level1 .nav {
+    flex-wrap: nowrap;
+}
 
 .widget-chart .widget-numbers {
     font-weight: bold;
-    font-size: 2rem;
+    font-size: 1.7rem;
     display: block;
     line-height: 1;
     margin: 1rem auto;
@@ -105,13 +108,13 @@
     z-index: 5;
 }
 .widget-chart.text-left .icon-wrapper {
-    min-width: 54px;
-    height: 54px;
+    min-width: 50px;
+    height: 50px;
     margin: 0 1rem 0 0;
 }
-icon-wrapper {
-    width: 54px;
-    height: 54px;
+.icon-wrapper {
+    width: 50px;
+    height: 50px;
     margin: 0 auto;
     position: relative;
     overflow: hidden;
@@ -145,7 +148,7 @@ icon-wrapper {
 }
 .icon-wrapper i {
     margin: 0 auto;
-    font-size: 1.7rem;
+    font-size: 2.5rem;
     position: relative;
     z-index: 5;
 }
@@ -171,7 +174,7 @@ icon-wrapper {
 }
 .widget-chart {
     text-align: center;
-    padding: 1rem;
+    padding: 0.5rem;
     position: relative;
 }
 .card {
@@ -285,6 +288,96 @@ icon-wrapper {
 #level2 .nav-link::before {
     border-radius: 50px !important;
 }
+#loaded-dependent-content .widget-content .widget-content-left .widget-heading {
+    font-size: 13px;
+}
+#loaded-content .list-group-item {
+    cursor: pointer;
+}
+.loader-box {
+    z-index: 1999;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  z-index: 2000;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.btn-icon .btn-icon-wrapper {
+    margin-right: 0.5rem;
+    margin-left: 0;
+    margin-top: 0;
+    font-size: 17px;
+    vertical-align: middle;
+    -webkit-transition: none;
+    transition: none;
+    display: inline-block;
+}
+[class^="pe-7s-"], [class*=" pe-7s-"] {
+    display: inline-block;
+    font-family: 'Pe-icon-7-stroke';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.pe-7s-settings:before {
+    content: "";
+}
+
+.list-group-item.active i {
+    color: #495057;
+}
+
+.font-flag-wrapper {
+    width: 20px;
+    height: 20px;
+    margin-right: 2px !important;
+}
+.flag-icon-lb {
+    background-image: url('{% static 'images/flags/lb.svg' %}');
+}
+.flag-icon-sy {
+    background-image: url('{% static 'images/flags/sy.svg' %}');
+}
+.flag-icon-ps {
+    background-image: url('{% static 'images/flags/ps.svg' %}');
+}
+.flag-icon-background, .flag-icon {
+    background-size: contain;
+    background-position: 50%;
+    background-repeat: no-repeat;
+}
+
+.list-group-item:hover, .list-group-item.active {
+    background-color: #E0F3FF;
+    color: #495057;
+}
+
 </style>
 
 <style>
@@ -462,21 +555,10 @@ icon-wrapper {
                                     </div>
                                     <div>COVID-19 Response | Reporting Database
                                         <div class="page-title-subheading">
-<div class="text-danger">
-            <i class="fa fa-fw" aria-hidden="true" title=""></i>
-            This dashboard is under construction, please don't use it in any official report.
-       </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="page-title-actions">
-
-
-  <button type="button" class="btn btn-success show_model" data-toggle="modal" style="position: unset !important;" data-id="" data-target="#myModal"
-                        title="Preview Report"><i class="fa fa-eye" style="font-size: 25px;"></i>
-                </button>
-
-
 
                                 </div>
                             </div>
@@ -647,7 +729,7 @@ icon-wrapper {
         <div class="col-md-6" style="margin: 0 auto;">
           <div class="main-card mb-3 card">
             <div class="card-header">
-              <i class="header-icon pe-7s-menu icon-gradient bg-ripe-malin"></i> Master Indicators
+              <i class="header-icon pe-7s-menu icon-gradient bg-ripe-malin"></i> Indicator Name
               <!--<div class="btn-actions-pane-right actions-icon-btn">-->
                 <!--<button class="btn-icon btn-icon-only btn btn-link"><i class="pe-7s-look btn-icon-wrapper"></i></button>-->
               <!--</div>-->
@@ -659,10 +741,13 @@ icon-wrapper {
         </div>
 
         <div class="col-md-6" style="margin: 0 auto;">
-          <div class="main-card mb-3 card">
-            <div class="card-header">Indicators</div>
+          <div class="main-card mb-3 card" style="min-height: 200px;">
+            <div class="card-header">Sub Indicators</div>
             <div class="card-body">
                 <ul class="list-group list-group-flush" id="loaded-dependent-content" style="max-height: 500px; overflow: scroll;"></ul>
+            </div>
+            <div class="loader-box" style="display: none;">
+                <div class="loader"></div>
             </div>
           </div>
         </div>
@@ -698,12 +783,14 @@ icon-wrapper {
   });
 
   $(document).on('click', '.level3-filter', function(){
+      $('#loaded-content .list-group-item').removeClass('active');
+      $(this).addClass('active');
       load_sub_data($(this).attr('data-data'), $('#level1').find('a.active').attr('data-fgColor'));
   });
 
   function load_data(pillar_name, reporting_level, color){
-      $('#loading-content').show();
       $('#loaded-dependent-content').empty();
+      $('#loaded-content').empty();
 
       $.ajax({
           url: visual_url,
@@ -714,13 +801,13 @@ icon-wrapper {
               color: color
           },
           success: function (data) {
-              $('#loading-content').hide();
               $('#loaded-content').html(data);
           }
       });
   }
 
   function load_sub_data(parent_id, color){
+      $('.loader-box').show();
 
       $.ajax({
           url: visual_sub_url,
@@ -730,6 +817,7 @@ icon-wrapper {
               color: color
           },
           success: function (data) {
+              $('.loader-box').hide();
               $('#loaded-dependent-content').html(data);
           }
       });

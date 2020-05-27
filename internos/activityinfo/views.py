@@ -2656,11 +2656,15 @@ class IndicatorsListVisualView(TemplateView):
             'support_COVID',
             'category',
             'tag_focus__name',
+            'values_tags',
         ).distinct().order_by('sequence')
 
         return {
+            'count': indicators.count(),
             'indicators': indicators,
-            'color': color
+            'color': color,
+            'filter': 'level3-filter',
+            'display_tags': True
         }
 
 
@@ -2704,9 +2708,13 @@ class IndicatorsSubListVisualView(TemplateView):
             'support_COVID',
             'category',
             'tag_focus__name',
+            'values_tags',
         ).distinct().order_by('sequence')
 
         return {
+            'count': indicators.count(),
             'indicators': indicators,
-            'color': color
+            'color': color,
+            'filter': 'level4-filter',
+            'display_tags': False
         }
