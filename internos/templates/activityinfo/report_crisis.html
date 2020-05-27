@@ -174,7 +174,7 @@
               </thead>
               <tbody>
               {% for item in indicators %}
-              {% get_indicator_cumulative_months_sections item selected_months selected_partners selected_governorates selected_sections as cumulative_value %}
+                {% get_indicator_cumulative_months_sections item selected_months selected_partners selected_governorates selected_sections as cumulative_value %}
               {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% if display_indicator %}
               <tr itemid="{{ item.id }}"
@@ -229,7 +229,8 @@
 
                  </td>
                  <td class="w-5">
-
+                {% get_indicator_cumulative_months_sections item1 selected_months selected_partners selected_governorates selected_sections as cumulative_value %}
+                   {{ cumulative_value}}
                  </td>
                 {% for month, month_name in months %}
                 <td class="w-5">
@@ -249,7 +250,8 @@
                 <td class="w-5"></td>
                  <td class="w-5">
                  </td>
-                 <td></td>
+                 <td> {% get_indicator_cumulative_months_sections item2 selected_months selected_partners selected_governorates selected_sections as cumulative_value %}
+                   {{ cumulative_value}}</td>
                 {% for month, month_name in months %}
                 <td class="w-5">
                   {% get_indicator_value_section item2 month selected_partners selected_governorates selected_sections as value %}
