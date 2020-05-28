@@ -6,6 +6,7 @@ from datetime import datetime
 from internos.taskapp.celery import app
 from .client import ActivityInfoClient
 from .utils import r_script_command_line
+from internos.backends.models import ImportLog
 
 logger = logging.getLogger(__name__)
 
@@ -83,6 +84,8 @@ def import_data_and_generate_monthly_report(database):
     from internos.activityinfo.models import Database
     from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values, calculate_indicators_tags
 
+    log = ImportLog.start(name='ActivityInfo: Monthly report, '+str(database))
+
     databases = Database.objects.filter(reporting_year__current=True)
     if database:
         databases = Database.objects.filter(ai_id=database)
@@ -96,12 +99,16 @@ def import_data_and_generate_monthly_report(database):
         calculate_indicators_values(db)
         calculate_indicators_tags(db)
 
+    log.end()
+
 
 @app.task
 def import_data_and_generate_monthly_report_sector():
     from internos.activityinfo.models import Database
     from .utils import import_data_via_r_script, link_indicators_data
     from .utils_sector import calculate_indicators_values, calculate_indicators_tags
+
+    log = ImportLog.start(name='ActivityInfo: Monthly report sector')
 
     databases = Database.objects.filter(reporting_year__current=True, is_sector=True)
     for db in databases:
@@ -113,11 +120,15 @@ def import_data_and_generate_monthly_report_sector():
         calculate_indicators_values(db)
     calculate_indicators_tags()
 
+    log.end()
+
 
 @app.task
 def import_data_and_generate_live_report(database):
     from internos.activityinfo.models import Database
     from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values
+
+    log = ImportLog.start(name='ActivityInfo: Monthly live report, ' + str(database))
 
     databases = Database.objects.filter(reporting_year__year=datetime.now().year)
     if database:
@@ -132,11 +143,15 @@ def import_data_and_generate_live_report(database):
         print('3. Calculate indicator values')
         calculate_indicators_values(db, report_type='live')
 
+    log.end()
+
+
 @app.task
 def import_data_and_generate_weekly_report(database):
     from internos.activityinfo.models import Database
     from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values
 
+    databases = []
     if database:
         databases = Database.objects.filter(ai_id=database)
 

@@ -9,18 +9,21 @@ admin.site.site_header = 'Neuro-DB'
 
 
 class ImportLogAdmin(admin.ModelAdmin):
+
     list_filter = (
-        'object_type',
+        'name',
+        'module_name',
         'year',
         'month',
     )
     list_display = (
-        'object_id',
-        'object_name',
-        'object_type',
-        'year',
-        'month',
-        'status'
+        'module_name',
+        'name',
+        'slug',
+        'start_date',
+        'end_date',
+        'status',
+        'result',
     )
 
 
