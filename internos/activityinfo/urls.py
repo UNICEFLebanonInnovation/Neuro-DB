@@ -47,6 +47,31 @@ urlpatterns = [
         name='report_crisis'
     ),
     url(
+        regex=r'^report-crisis-live/$',
+        view=views.ReportLiveCrisis.as_view(),
+        name='report_crisis_live'
+    ),
+    url(
+        regex=r'^report-crisis-tags/$',
+        view=views.ReportCrisisTags.as_view(),
+        name='report_crisis_tags'
+    ),
+    url(
+        regex=r'^COVID-19-Overview-Dashboard/$',
+        view=views.ReportCrisisVisualView.as_view(),
+        name='report_crisis_visual'
+    ),
+    url(
+        regex=r'^indicators-list-visual/$',
+        view=views.IndicatorsListVisualView.as_view(),
+        name='indicators_list_visual'
+    ),
+    url(
+        regex=r'^indicators-sub-list-visual/$',
+        view=views.IndicatorsSubListVisualView.as_view(),
+        name='indicators_sub_list_visual'
+    ),
+    url(
         regex=r'^report-partner/$',
         view=views.ReportPartnerView.as_view(),
         name='report_partner'
@@ -90,6 +115,26 @@ urlpatterns = [
         regex=r'^HPM-report/$',
         view=views.HPMExportViewSet.as_view(),
         name='hpm_report'
+    ),
+    url(
+        regex='ajax/load-sections/',
+        view=views.load_sections,
+        name='ajax_load_sections'
+    ),
+    url(
+        regex='ajax/load-govs/',
+        view=views.load_governorates,
+        name='ajax_load_govs'
+    ),
+    url(
+        regex='ajax/load-months/',
+        view=views.load_months,
+        name='ajax_load_months'
+    ),
+    url(
+        regex='ajax/load-partners/',
+        view=views.load_partners,
+        name='ajax_load_partners'
     ),
 
 ]

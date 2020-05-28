@@ -1,0 +1,691 @@
+{% extends "base2.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}{% endblock %}
+{% block filter %}
+
+{% include "activityinfo/focalpoints.html" %}
+
+{% endblock filter %}
+{% block content %}
+
+<div class="app-main__inner">
+  <div class="app-page-title">
+
+      <form action="{% url 'activityinfo:report_crisis_live' %}" method="get" id="filterForm" data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"  data-sections-url="{% url 'activityinfo:ajax_load_sections' %}"
+            data-govs-url="{% url 'activityinfo:ajax_load_govs' %}">
+      <div class="page-title-wrapper">
+        <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
+        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate">
+          <div class="page-title-icon">
+            <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
+            </i>
+          </div>
+          <div style="width:100%; margin-top:12px">
+            <div class="row">
+              <div class="col-lg-12 col-sm-12">
+                <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
+                {% for partner in partners %}
+                <option class="dropdown-item" value="{{ partner.partner_id }}"
+                        {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
+                </option>
+                {% endfor %}
+              </select>
+
+                <select id="filter_section" class="btn btn-outline-primary" multiple="multiple" name="sections">
+                    {% for reporting_section in sections %}
+                    <option value="{{ reporting_section.reporting_section }}" {% if reporting_section.reporting_section in selected_sections %} selected {% endif %}>{{ reporting_section.reporting_section }}</option>
+                  {% endfor %}
+                </select>
+
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">
+              {% for gov in governorates %}
+              <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
+                {{ gov.location_adminlevel_governorate }}
+              </option>
+              {% endfor %}
+              </select>
+
+                <select class="btn btn-outline-primary" id="filter_type" name="filter_type">
+                    <option class="dropdown-item"  value="">Global / Local </option>
+                     {% if selected_type == 'Global' %}
+                      <option class="dropdown-item"  selected value="Global">Global</option>
+                      {% else %}
+                      <option class="dropdown-item"   value="Global">Global</option>
+                    {% endif %}
+                    {% if selected_type == 'Local' %}
+                      <option class="dropdown-item" selected  value="Local">Local</option>
+                      {% else %}
+                      <option class="dropdown-item"   value="Local">Local</option>
+                    {% endif %}
+              </select>
+
+            <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
+              <a href="{% url 'activityinfo:report_crisis_live' %}?ai_id={{ database.ai_id }}"title="Cancel"
+                 class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
+
+            </div>
+
+          </div>
+            <div class="page-title-subheading">
+              Filter by multiple Partners and Governorates
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+<!--       <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">-->
+<!--        <li class="nav-item">-->
+<!--           <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">-->
+<!--            <span>Quantitative Dashboard</span>-->
+<!--          </a>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--          <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" href="#tab-content-1">-->
+<!--            <span>Qualitative Dashboard</span>-->
+<!--          </a>-->
+<!--        </li>-->
+<!--    </ul>-->
+
+
+ <div class="tab-content">
+    <div class="tab-pane tabs-animation active show" id="tab-content-0" role="tabpanel">
+
+      <div class="main-card mb-3 card">
+        <div class="card-header">
+
+                <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
+              <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
+              <a href="#" class="expanded-all"><i
+                class="fa fa-bars"></i></a>
+            </span> </i>
+
+            Live Dashboard | {{ database.label }} | {{database.reporting_year.year}}
+
+           <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Raw Data">
+              <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
+                      data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">
+                <i class="fa fa-download"></i>
+              </button>
+              <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
+                <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>
+                <div tabindex="-1" class="dropdown-divider"></div>
+                <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                   href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
+                  Raw Data</a>
+                <div tabindex="-1" class="dropdown-divider"></div>
+              </div>
+            </div>
+
+             <div class="btn-actions-pane-right">
+
+          </div>
+      </div>
+        <div class="card-body">
+       <div class="text-danger fsize-1 mb-1 mt-2">
+            <i class="fa fa-fw" aria-hidden="true" title=""></i>
+          These numbers are only for monitoring purposes, don't use it in any official report.
+       </div>
+           <div class="table-responsive">
+            <table class="mb-0 table table-striped table-hover" id="exportheader"
+              content="{{ day_number }}_{{ month_number }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard - Live data.csv"
+                    data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year.year }}">
+              <thead>
+              <tr>
+                <th content="Indicator Name"> Indicator Name</th>
+                <th content="Pillars">Pillar</th>
+                <th content="Global/LCO">Global/Local</th>
+                <th content="Unit">Unit</th>
+                <th content="As of today" data-toggle="tooltip" data-placement="top" title="As of today (Starting January)">As of today
+                </th>
+<!--                <th content="{{ month_name }}">{{ month_name }}</th>-->
+              </tr>
+              </thead>
+              <tbody>
+              {% for item in indicators %}
+              {% get_indicator_live_cumulative_section item month selected_partners selected_governorates selected_sections as cumulative_value %}
+              {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+              {% if display_indicator %}
+              <tr itemid="{{ item.id }}"
+                  {% if item.master_indicator %}class="level1 master_indicator"
+                  {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
+                <td class="w-150">{{ item.name }}
+                {% if item.hpm_global_indicator %}
+                  <a  data-toggle="tooltip" data-placement="right" title="HPM" style="cursor:pointer">
+                     <i class="pe-7s-global text-primary"> </i>
+                  </a>
+                  {% endif %}
+                </td>
+                 <td class="w-5">{{ item.category}}</td>
+                <td class="w-5">
+                  {% get_tag_name item.tag_focus as tag_name %}
+                  {{ tag_name }}
+                </td>
+                 <td class="w-5">
+                 {{ item.units }}
+                 </td>
+                <td class="w-5">{{ cumulative_value }}</td>
+
+<!--                <td class="w-5">-->
+<!--                  {% get_indicator_live_value item month selected_partners selected_governorates as value %}-->
+<!--                  {{ value }}-->
+<!--                </td>-->
+
+              </tr>
+              {% get_sub_indicators_data item.id as sub_indicators %}
+              {% for item1 in sub_indicators %}
+              <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
+                  {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
+                  {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
+
+                <td class="w-150">
+                  {{ item1.name }}
+                </td>
+                    <td class="w-5">
+                       {% if item1.master_indicator_sub %}
+                      {{ item1.category}}
+                    {% endif %}
+                    </td>
+                 <td class="w-5">
+                    {% if item1.master_indicator_sub %}
+                  {% get_tag_name item.tag_focus as tag_name %}
+                  {{ tag_name }}
+                    {% endif %}
+                 </td>
+                 <td class="w-5">
+                   {% if item1.master_indicator_sub %}
+                   {{ item1.units }}
+
+                   {% endif %}
+
+                 </td>
+                 <td class="w-5">
+                  {% get_indicator_live_cumulative_section item1 month selected_partners selected_governorates selected_sections as cumulative_value %}
+                  {{ cumulative_value }}
+                 </td>
+<!--                <td class="w-5">-->
+<!--                  {% get_indicator_live_value item1 month selected_partners selected_governorates as value %}-->
+<!--                  {{ value }}-->
+<!--                </td>-->
+              </tr>
+
+
+              {% get_sub_indicators_data item1.id as sub_indicators1 %}
+              {% for item2 in sub_indicators1 %}
+              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
+              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
+                  {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
+                  itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
+                <td class="w-150">{{ item2.name }}</td>
+                <td class="w-5"></td>
+                <td class="w-5"></td>
+                 <td class="w-5">
+
+                 </td>
+                 <td></td>
+<!--                <td class="w-5">-->
+<!--                  {% get_indicator_live_value item2 month selected_partners selected_governorates as value %}-->
+<!--                  {{ value }}-->
+<!--                </td>-->
+              </tr>
+              {% endif %}
+              {% endfor %}
+              {% endfor %}
+
+              {% endif %}
+              {% endfor %}
+
+              {% for item in covid_indicators %}
+              {% get_indicator_live_cumulative item month selected_partners selected_governorates as cumulative_value %}
+              {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+              {% get_database_by_activity item.activity as db_name %}
+              {% if display_indicator %}
+              <tr itemid="{{ item.id }}"
+                  {% if item.master_indicator %}class="level1 master_indicator"
+                  {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
+                <td class="w-150">{{ item.name }}
+                  <a  data-toggle="tooltip" data-placement="right" title="{{db_name.label}}" style="cursor:pointer">
+                   <img alt="" src="{% static db_name.section.logo %}"  style="height: 30px; width: 30px; display: inline-block;" />
+                  </a>
+                 {% if item.hpm_global_indicator %}
+                  <a data-toggle="tooltip" data-placement="right" title="HPM" style="cursor:pointer">
+                     <i class="pe-7s-global text-primary"> </i>
+                  </a>
+                  {% endif %}
+                </td>
+                <td class="w-5"></td>
+                <td class="w-5"></td>
+                <td class="w-5">{{ item.units }}</td>
+                <td class="w-5">{{ cumulative_value }}</td>
+
+<!--                <td class="w-5">-->
+<!--                  {% get_indicator_live_value item month selected_partners selected_governorates as value %}-->
+<!--                  {{ value }}-->
+<!--                </td>-->
+              </tr>
+              {% get_sub_indicators_data item.id as sub_indicators %}
+              {% for item1 in sub_indicators %}
+              <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
+                  {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
+                  {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
+                 <td class="w-150">
+                  {{ item1.name }}
+                </td>
+                <td class="w-5"></td>
+                <td class="w-5"></td>
+                 <td class="w-5">
+
+                 </td>
+                <td class="w-5">
+                    {% get_indicator_live_cumulative item1 month selected_partners selected_governorates as cumulative_value %}
+                  {{ cumulative_value }}
+                </td>
+<!--                <td class="w-5">-->
+<!--                  {% get_indicator_live_value item1 month selected_partners selected_governorates as value %}-->
+<!--                  {{ value }}-->
+<!--                </td>-->
+
+              </tr>
+               {% endfor %}
+              {% get_sub_indicators_data item1.id as sub_indicators1 %}
+              {% for item2 in sub_indicators1 %}
+              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
+              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
+                  {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
+                  itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
+                <td class="w-150">{{ item2.name }}</td>
+                 <td class="w-5"></td>
+                <td class="w-5"></td>
+                <td class="w-5"></td>
+                <td class="w-5"></td>
+<!--                <td class="w-5">-->
+<!--                  {% get_indicator_live_value item2 month selected_partners selected_governorates as value %}-->
+<!--                  {{ value }}-->
+<!--                </td>-->
+              </tr>
+              {% endif %}
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+     <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
+ <div class="main-card mb-3 card">
+        <div class="card-header">
+            <div class="card-title">{{ database.label }}
+<!--           <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Raw Data">-->
+<!--              <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"-->
+<!--                      data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">-->
+<!--                <i class="fa fa-download"></i>-->
+<!--              </button>-->
+<!--              <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">-->
+<!--                <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>-->
+<!--                <div tabindex="-1" class="dropdown-divider"></div>-->
+<!--                <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"-->
+<!--                   href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">-->
+<!--                  Raw Data</a>-->
+<!--                <div tabindex="-1" class="dropdown-divider"></div>-->
+<!--              </div>-->
+<!--            </div>-->
+        </div>
+             <div class="btn-actions-pane-right">
+<!--            <a href="{% url 'activityinfo:report_internal' %}?rep_year=2020&ai_id={{ database.ai_id }}" class="link">-->
+<!--             <i class="nav-link-icon fa fa-fw"></i>-->
+<!--             <span>Internal Reporting</span>-->
+<!--            </a>-->
+          </div>
+      </div>
+        <div class="card-body">
+        <div class="table-responsive">
+            <table class="mb-0 table table-striped table-hover" id="exportheader"
+              content="{{ database.label }}_Dashboard_ {{ current_month_name}}_{{ database.reporting_year.year }}.csv"
+                   data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.year }}">
+              <thead>
+              <tr>
+                <th content="Indicator Name"> Indicator Name</th>
+                <th content="Global/LCO">Global/LCO</th>
+                <th content="Result" title="Result">Results
+                </th>
+                {% for month, month_name in months %}
+                <th content="{{ month_name }}">{{ month_name }}</th>
+                {% endfor %}
+              </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+</div>
+</div>
+     </div>
+ </div>
+
+
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
+<script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>
+<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+
+<script>
+
+  $(document).ready(function () {
+
+    var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+  };
+
+
+  var id = getUrlParameter('ai_id');
+  var selected_li=$('li#'+id).find('a');
+  var parent = selected_li.parent();
+  parent.addClass("mm-active");
+  selected_li.addClass("mm-active");
+
+  $('#filter_partners').multiselect({
+    buttonWidth : '180px',
+    includeSelectAllOption : true,
+    nonSelectedText: 'Partners',
+    nSelectedText:'selected partners',
+    numberDisplayed:1,
+    maxHeight: 350
+  });
+
+   $('#filter_governorates').multiselect({
+    buttonWidth : '190px',
+    includeSelectAllOption : true,
+    nonSelectedText: 'Governorates',
+    nSelectedText:'selected governorates',
+    numberDisplayed:1,
+    maxHeight: 350
+  });
+
+  $('#filter_section').multiselect({
+    buttonWidth : '180px',
+    includeSelectAllOption : true,
+    nonSelectedText: 'Sections',
+    nSelectedText:'selected Sections',
+    numberDisplayed:1,
+    maxHeight: 350
+  });
+
+    $('#filter_type').multiselect({
+    buttonWidth : '160px',
+    includeSelectAllOption : true,
+    nonSelectedText: 'Global / Local',
+    numberDisplayed:1,
+     maxHeight: 350
+  });
+});
+
+  $('.level1').addClass('collapsed');
+  $('.level2').addClass('collapsed');
+  $('.level3').addClass('collapsed');
+
+  $('.level2').hide();
+  $('.level3').hide();
+
+  $('.expanded-all').click(function () {
+    $('.expanded-all').addClass('active');
+    $('.collapse-all').removeClass('active');
+
+    $('.level1').removeClass('collapsed');
+    $('.level2').removeClass('collapsed');
+    $('.level3').removeClass('collapsed');
+
+    $('.level1').show();
+    $('.level2').show();
+    $('.level3').show();
+  });
+
+  $('.collapse-all').click(function () {
+    $('.expanded-all').removeClass('active');
+    $('.collapse-all').addClass('active');
+
+    $('.level1').addClass('collapsed');
+    $('.level2').addClass('collapsed');
+    $('.level3').addClass('collapsed');
+
+    $('.level2').hide();
+    $('.level3').hide();
+  });
+
+  $('.level1').dblclick(function () {
+    var itemid = $(this).attr('itemid');
+    var sub_items = 'tr.level2-' + itemid;
+    var sub_sub_items = 'tr.level3-' + itemid;
+
+    if ($(this).hasClass('collapsed')) {
+      $(sub_items).show();
+      $(this).removeClass('collapsed');
+    } else {
+      $(sub_items).hide();
+      $(sub_items).addClass('collapsed');
+      $(sub_sub_items).hide();
+      $(this).addClass('collapsed');
+    }
+  });
+
+  $('.level2').dblclick(function () {
+    var itemid = $(this).attr('itemid');
+    var sub_items = 'tr.level3-' + itemid;
+
+    if ($(this).hasClass('collapsed')) {
+      $(sub_items).show();
+      $(this).removeClass('collapsed');
+    } else {
+      $(sub_items).hide();
+      $(this).addClass('collapsed');
+    }
+  });
+
+function download_csv(csv, filename) {
+    var csvFile;
+    var downloadLink;
+
+    csvFile = new Blob([csv], { type: "text/csv" });
+    downloadLink = document.createElement("a");
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+  }
+
+  function export_table_to_csv(html, filename) {
+    var csv = [];
+    $("tr:hidden,td:hidden","#exportheader").remove();
+    var rows_header = document.querySelectorAll("table#exportheader thead tr");
+    var rows = document.querySelectorAll("table#exportheader tbody tr");
+    for (var i = 0; i < rows_header.length; i++) {
+      var row = [], cols = rows_header[i].querySelectorAll("th");
+      for (var j = 0; j < cols.length; j++)
+        row.push($(cols[j]).attr('content'));
+      csv.push(row.join(","));
+    }
+    for (var i = 0; i < rows.length; i++) {
+      var row = [], cols = rows[i].querySelectorAll("td");
+      for (var j = 0; j < cols.length; j++) {
+        if ($(cols[j]).attr('colspan') == '2') {
+          row.push('');
+        }
+        row.push('"' + cols[j].innerText + '"');
+      }
+      csv.push(row.join(","));
+    }
+    // Download CSV
+    download_csv(csv.join("\n"), filename);
+  }
+
+  document.querySelector("#export1").addEventListener("click", function () {
+    var html = document.querySelector("table").outerHTML;
+    var file_name = $("#exportheader").attr("content");
+    export_table_to_csv(html, file_name);
+  });
+
+</script>
+
+ <script>
+
+    $('#filter_governorates').change(function () {
+
+      var partnerId=$("#filter_partners").val();
+      var section_Id = $('#filter_section').val();
+      var gov_Id = $(this).val();
+      var ai_id = $('#ai_id').val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var sec_url = $("#filterForm").attr("data-sections-url");
+
+      if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'type':'live',
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'section_id':section_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
+      if ( section_Id == null ){
+
+        $.ajax({
+            url: sec_url,
+            data: {
+            'type':'live',
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+             },
+            success: function (data) {
+              $("#filter_section").html(data);
+              $("#filter_section").multiselect('rebuild');
+            }
+        });
+      }
+
+    });
+
+    $('#filter_section').change(function () {
+
+     var partnerId=$("#filter_partners").val();
+     var gov_Id = $('#filter_governorates').val();
+     var section_Id = $(this).val();
+     var ai_id = $('#ai_id').val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+      var ai_id = $('#ai_id').val();
+
+       if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'type':'live',
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'section_id':section_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
+       if(gov_Id == null){
+        $.ajax({
+            url: gov_url,
+            data: {
+            'type':'live',
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'section_id':section_Id
+
+             },
+            success: function (data) {
+              $("#filter_governorates").html(data);
+              $("#filter_governorates").multiselect('rebuild');
+            }
+        });
+      }
+    });
+    $("#filter_partners").change(function () {
+
+    var partnerId = $(this).val();
+    var ai_id = $('#ai_id').val();
+
+    var gov_Id = $('#filter_governorates').val();
+    var section_Id= $('#filter_section').val();
+
+    var url = $("#filterForm").attr("data-sections-url");
+    var gov_url = $("#filterForm").attr("data-govs-url");
+
+    if(section_Id == null){
+      $.ajax({
+        url: url,
+        data: {
+
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'type':'live',
+          'gov_id':gov_Id
+        },
+        success: function (data) {
+          $("#filter_section").html(data);
+          $("#filter_section").multiselect('rebuild');
+        }
+      });
+    }
+    if(gov_Id == null){
+      $.ajax({
+          url: gov_url,
+          data: {
+          'type':'live',
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'section_id':section_Id
+           },
+          success: function (data) {
+            $("#filter_governorates").html(data);
+            $("#filter_governorates").multiselect('rebuild');
+          }
+      });
+    }
+
+ });
+  </script>
+
+{% endblock %}

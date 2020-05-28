@@ -15,5 +15,10 @@ urlpatterns = [
         regex=r'^Population-Figures-in-Lebanon/2020/$',
         view=views.PopulationFiguresView.as_view(),
         name='population_figures'
+    ),
+    url(
+        regex=r'^Child-Protection-Working-Group-Real-time-monitoring/2020/$',
+        view=views.ChildProtectionView.as_view(),
+        name='child_protection'
     )
 ]

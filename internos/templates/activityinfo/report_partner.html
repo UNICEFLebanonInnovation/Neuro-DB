@@ -22,19 +22,24 @@
   <div class="row">
     <div class="col-lg-12">
       <div class="main-card mb-3 card">
-        <div class="card-body">
-          <div class="card-title">
-              <i class="fa fa-users icon-gradient  bg-malibu-beach" aria-hidden="true"></i>
-          </i>
-            Partners AI Results | {{ database.label }} | {{ database.reporting_year }}
+        <div class="card-header">
+
+           <i class="header-icon">
+             <i class="fa fa-users icon-gradient  bg-malibu-beach" aria-hidden="true"></i>
+           </i>
+
+            Partners AI Results | {{ database.label }} | {{ database.reporting_year.year }}
             <div class=" d-inline-block" data-intro="Download Dashboard report">
-              <button type="button" tabindex="0" id="export1" style="font-size:20px;" class="mb-2 mr-2 btn btn-link" data-toggle="tooltip"
+              <button type="button" tabindex="0" id="export1" style="font-size:20px;" class="mr-2 btn btn-link" data-toggle="tooltip"
                       title="download partner dashboard">
                 <i class="fa fa-download"></i></button>
             </div>
-          </div>
+
+        </div>
+        <div class="card-body">
+
              <div>
-               <form style="width:100%" action="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}" method="get" id="indicator_form">
+               <form style="width:100%" action="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year.year }}" method="get" id="indicator_form">
               <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
 
                <div class="row mb-1">
@@ -45,6 +50,7 @@
                  <div class="col-md-10 col-sm-12">
                     <select class="d-inline-block select2" id="indicators" style="display:inline-block !important" data-style="btn-primary"
                         data-live-search="true" name="indicator_id">
+                      <option value="-1">Select Indicator</option>
                   {% for item in indicators %}
                   <option value="{{ item.id }}" {% if item.id == selected_indicator %}selected{% endif %}>{{ item.name }}
                   </option>
@@ -118,7 +124,7 @@
                  <th content="Partner">Partner</th>
                  <th content="Target">Target by Partner</th>
                  <th content="Total">Total Results</th>
-                <th content="Status">Status</th>
+<!--                <th content="Status">Status</th>-->
                 {% for month, month_name in months %}
                 <th content="{{ month_name }}"><span>{{ month_name }}</span></th>
                 {% endfor %}
@@ -130,16 +136,16 @@
                  {% to_display_indicator True cumulative_value as display_indicator %}
                 {% if display_indicator %}
               <tr>
-                <td>{{ partner.partner_label }}</td>
+                <td><b>{{ partner.partner_label }}</b></td>
                   <td class="w-20">
                  0
                 </td>
                 <td class="w-10 text-bold">
                   {{ cumulative_value }}
                 </td>
-                 <td class="w-10">
-                  <div class='badge badge-danger'>OFF TRACK</div>
-                </td>
+<!--                 <td class="w-10">-->
+<!--                 <div class='badge badge-danger'>OFF TRACK</div>-->
+<!--                </td>-->
                 {% for month, month_name in months %}
                 <td class="w-10" >
                   {% get_indicator_value indicator month partner.partner_id  as value %}
@@ -154,7 +160,7 @@
           </div>
           </div>
 
-
+<!-----------------------Code used to print excel sheet ---------------------->
           <div class="row col-md-12 mb-3" style="display:none;">
                <table  content="Total Results"
                       data-tableName="Dashboard - {{ database.label }} of {{ current_month }}- {{ database.reporting_year }}"
@@ -165,28 +171,28 @@
                  <th content="Partner">Partner</th>
                  <th content="Target">Target by Partner</th>
                  <th content="Total">Total Results</th>
-                <th content="Status">Status</th>
+<!--                <th content="Status">Status</th>-->
                 {% for month, month_name in months %}
                 <th content="{{ month_name }}"><span>{{ month_name }}</span></th>
                 {% endfor %}
               </tr>
               </thead>
               <tbody>
-                {% for indicator in indicators %}
-                {% for partner in partners %}
-                {% get_indicator_partner_cumulative indicator partner.partner_id  as cumulative_value %}
-                {% to_display_indicator True cumulative_value as display_indicator %}
-                {% if display_indicator %}
-              <tr>
+              {% for indicator in indicators %}
+                 {% for partner in partners %}
+                    {% get_indicator_partner_cumulative indicator partner.partner_id  as cumulative_value %}
+                    {% to_display_indicator True cumulative_value as display_indicator %}
+                    {% if display_indicator %}
+                     <tr>
                 <td >{{ indicator.name }}</td>
                 <td>{{ partner.partner_label }}</td>
                   <td class="w-10">0</td>
                 <td class="w-10 text-bold">
                   {{ cumulative_value }}
                 </td>
-                 <td class="w-10">
-                <div class='badge badge-danger'>OFF TRACK</div>
-                </td>
+<!--                 <td class="w-10">-->
+<!--              <div class='badge badge-danger'>OFF TRACK</div>-->
+<!--                </td>-->
                 {% for month, month_name in months %}
                 <td class="w-10" >
                   {% get_indicator_value indicator month partner.partner_id  as value %}
@@ -194,8 +200,9 @@
                 </td>
                 {% endfor %}
               </tr>
-                {% endif %}
-              {% endfor %}  {% endfor %}
+                 {% endif %}
+                 {% endfor %}
+              {% endfor %}
               </tbody>
             </table>
             {% for gov in governorates %}
@@ -216,7 +223,7 @@
 
               <tbody>
                 {% for indicator in indicators %}
-              {% for partner in partners %}
+                {% for partner in partners %}
                 {% get_indicator_partner_cumulative indicator  partner.partner_id  gov.location_adminlevel_governorate_code  as cumulative_value %}
                 {% to_display_indicator True cumulative_value as display_indicator %}
                 {% if display_indicator %}
@@ -224,7 +231,6 @@
                 <td >{{ indicator.name }}</td>
                 <td>{{ partner.partner_label }}</td>
                 <td class="w-10 text-bold">
-
                   {{ cumulative_value }}
                 </td>
                 {% for month, month_name in months %}
@@ -244,15 +250,50 @@
 
             {% endfor %}
           </div>
-
+<!----------------------- End Code used to print excel sheet ---------------------->
         </div>
       </div>
+
       <div class="main-card mb-3 card">
          <div class="card-body">
          <div class="card-title mt-3"  style="text-transform: none;">
              The Selected Indicator and Its Activities Were Implemented In The Following Governorates:
           </div>
-               <div class="row col-md-12 mb-3">
+
+           <form action="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}" method="get" id="govform">
+              <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
+              <input type="hidden" name="partner" value="" id="partner_input"/>
+                 <input type="hidden" name="indicator_id" id="indicator_id" value="{{ indicator.id }}"/>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="d-inline-block indicator_select_title mr-3">
+                    <i class="fa fa-fw text-primary" aria-hidden="true"></i> Filter By Partner:
+                  </div>
+                  <div class="dropdown d-inline-block ml-3">
+                    <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown"
+                            name="partners" id="filter_partner" style="min-width:200px;"
+                            class="mb-2 dropdown-toggle btn btn-outline-primary">{{selected_partner_name}}
+                    </button>
+                    <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu governorates-drp">
+                      <a class="dropdown-item" data-value="0" href=""> All Partners</a>
+                      {% for partner_id,partner_label in partners_list %}
+                      <a value="{{ partner_id }}"
+                         onclick="selectGov('{{partner_label}}')"
+                         {% if partner.partner_label == selected_partner %} class="dropdown-item active"
+                         {% else %}class="dropdown-item" {% endif %}>
+                        {{ partner_label }}</a>
+                      {% endfor %}
+                    </div>
+                    <a href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}&indicator_id={{ indicator.id }}"
+                      title="Cancel"
+                      class="btn btn-light d-inline-block" id="btn_cancel"><i class="fa fa-fw" aria-hidden="true"></i></a>
+                  </div>
+                </div>
+
+              </div>
+         </form>
+
+           <div class="row col-md-12 mb-3">
              <div class="table-responsive">
             <table id="exporttable2"
                    data-tableName="Dashboard - {{ database.label }} - {{reporting_year}}"
@@ -269,17 +310,17 @@
               </thead>
               <tbody>
               {% for gov in governorates %}
-              {% get_indicator_partner_cumulative indicator  partner.partner_id gov.location_adminlevel_governorate_code as cumulative_value %}
-               {% to_display_indicator selected_filters cumulative_value as display_indicator %}
+              {% get_indicator_partner_cumulative indicator  selected_partner gov.location_adminlevel_governorate_code as cumulative_value %}
+               {% to_display_indicator True cumulative_value as display_indicator %}
                 {% if display_indicator %}
               <tr>
-                <td class="w-10" style="text-align:left">{{ gov.location_adminlevel_governorate }}</td>
+                <td class="w-10 text-bold" style="text-align:left">{{ gov.location_adminlevel_governorate }}</td>
                 <td class="w-10 text-bold" >
                   {{ cumulative_value }}
                 </td>
                 {% for month, month_name in months %}
                 <td class="w-10">
-                  {% get_indicator_value indicator month partner.partner_id gov.location_adminlevel_governorate_code as value %}
+                  {% get_indicator_value indicator month selected_partner gov.location_adminlevel_governorate_code as value %}
                   {{ value }}
                 </td>
                 {% endfor %}
@@ -304,8 +345,6 @@
 <script lang="javascript" src="{% static 'js/xlsx.full.min.js' %}"></script>
 <link href="{% static 'css/select2.min.css'%}" rel="stylesheet"/>
 <script  src="{% static 'js/select2.min.js' %}"></script>
-
-
 
 <script>
         var wbook;
@@ -373,8 +412,8 @@ var removeURLParameter = function removeURLParameter(url, parameter) {
     }
 }
 
-function selectGov(gov){
-$("#govform #governorateinput").val(gov);
+function selectGov(partner){
+$("#govform #partner_input").val(partner);
 $("#govform").submit();
 }
   $(document).ready(function () {
@@ -387,6 +426,18 @@ $("#govform").submit();
 
   var rep_year= getUrlParameter('rep_year');
 
+  var indicator_id = getUrlParameter('indicator_id');
+   var drp_partners = $('#filter_partner');
+  if (indicator_id){
+    drp_partners.attr("disabled", false)
+    $('#btn_cancel').attr("disabled", false)
+    $('#btn_cancel').removeClass("disabled");
+   }
+   else{
+     drp_partners.attr("disabled", true)
+     $('#btn_cancel').attr("disabled", true)
+     $('#btn_cancel').addClass("disabled");
+   }
 
 $("#indicators").on("change", function () {
     var url  = window.location.href;
@@ -398,26 +449,12 @@ $("#indicators").on("change", function () {
 function download_csv(csv, filename) {
     var csvFile;
     var downloadLink;
-
-    // CSV FILE
     csvFile = new Blob([csv], {type: "text/csv"});
-
-    // Download link
     downloadLink = document.createElement("a");
-
-    // File name
     downloadLink.download = filename;
-
-    // We have to create a link to the file
     downloadLink.href = window.URL.createObjectURL(csvFile);
-
-    // Make sure that the link is not displayed
     downloadLink.style.display = "none";
-
-    // Add the link to your DOM
     document.body.appendChild(downloadLink);
-
-    // Lanzamos
     downloadLink.click();
 }
 

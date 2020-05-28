@@ -6,9 +6,11 @@
 
 <div class="app-main__inner">
   <div class="app-page-title">
-      <div class="page-title-wrapper">
-         <form action="{% url 'activityinfo:live_report' %}" method="get">
-        <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
+    <div class="page-title-wrapper">
+      <form id="filterForm" action="{% url 'activityinfo:live_report' %}" method="get"
+            data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"
+            data-govs-url="{% url 'activityinfo:ajax_load_govs' %}">
+        <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
         <div class="page-title-heading" data-step="4" data-intro="Filter options by partner or governorate">
           <div class="page-title-icon">
             <i class=" fa fa-rss icon-gradient bg-malibu-beach">
@@ -18,7 +20,7 @@
             <div class="page-title-subheading">
             </div>
           </div>
-              <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
+          <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
             {% for partner in partners %}
             <option class="dropdown-item" value="{{ partner.partner_id }}" {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
             </option>
@@ -31,55 +33,54 @@
             </option>
             {% endfor %}
           </select>
-<!--          <button type="submit" class="btn btn-primary mr-left-5">Search</button>-->
-<!--          <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"-->
-<!--             class="btn btn-light d-inline-block">Cancel</a>-->
+          <!--          <button type="submit" class="btn btn-primary mr-left-5">Search</button>-->
+          <!--          <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"-->
+          <!--             class="btn btn-light d-inline-block">Cancel</a>-->
 
-           <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
-              <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}"title="Cancel"
-                 class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
+          <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i
+            style="font-weight:bolder" class="pe-7s-search"></i></button>
+          <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" title="Cancel"
+             class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
         </div>
-         </form>
-           <div class="page-title-actions">
-          <div class="d-inline-block" data-step="5"
-               data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
-            <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
+      </form>
+      <div class="page-title-actions">
+        <div class="d-inline-block" data-step="5"
+             data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+          <button type="button" data-toggle="tooltip" title="Database focal point: {{ database.focal_point }}
             <br />
             email: {{ database.focal_point.email }} " data-placement="bottom" data-html="true"
-                    class="btn-shadow mr-3 btn btn-outline-primary">
-              <i class="fa fa-user"></i>
-            </button>
+                  class="btn-shadow mr-3 btn btn-outline-primary">
+            <i class="fa fa-user"></i>
+          </button>
 
-            <a class="btn shadow mr-3 btn-outline-dark"
-               href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database"
-               data-toggle="tooltip" data-placement="bottom" title="Send email to the database focal point">
-              <i class="fa fa-envelope"></i>
-            </a>
-            <a class="btn shadow mr-3 btn-outline-warning" href="javascript:void(0);"
-               onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip"
-               data-placement="bottom" title="Show me some tips">
-              <i class="fa fa-lightbulb" aria-hidden="true"></i>
-            </a>
-          </div>
+          <a class="btn shadow mr-3 btn-outline-dark"
+             href="mailto:{{ database.focal_point.email }}?subject=ActivityInfo: Inquiry about {{ database.label }} database"
+             data-toggle="tooltip" data-placement="bottom" title="Send email to the database focal point">
+            <i class="fa fa-envelope"></i>
+          </a>
+          <a class="btn shadow mr-3 btn-outline-warning" href="javascript:void(0);"
+             onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip"
+             data-placement="bottom" title="Show me some tips">
+            <i class="fa fa-lightbulb" aria-hidden="true"></i>
+          </a>
         </div>
       </div>
+    </div>
   </div>
   <div class="row">
     <div class="col-lg-12">
       <div class="main-card mb-3 card">
-        <div class="card-body">
-           <div class="text-danger fsize-1 mb-1 mt-2">
-            <i class="fa fa-fw" aria-hidden="true" title=""></i>
-          These numbers are only for monitoring purposes, don't use it in any official report.
-       </div>
-          <div class="card-title d-inline-block">
+        <div class="card-header">
+          <div class="d-inline-block">
+            <i class="header-icon">
+                 <span data-step="6" data-intro="Collapse / Expand master indicators">
+                            <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
+                            <a href="#" class="expanded-all"><i
+                              class="fa fa-bars"></i></a>
+                          </span>
+            </i>
 
-            <span data-step="6" data-intro="Collapse / Expand master indicators">
-              <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
-              <a href="#" class="expanded-all"><i
-                class="fa fa-bars"></i></a>
-            </span>
-             Live Dashboard - {{ database.label }} - 2020
+            Live Dashboard - {{ database.label }} - {{database.reporting_year.year}}
             <div class="dropdown d-inline-block" data-intro="Download Dashboard report and raw data">
               <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
                       data-toggle="dropdown" class="mb-2 mr-2 dropdown-toggle btn btn-link">
@@ -91,17 +92,24 @@
                 <div tabindex="-1" class="dropdown-divider"></div>
                 <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
                    href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
-                 Raw Data
+                  Raw Data
                 </a>
                 <div tabindex="-1" class="dropdown-divider"></div>
               </div>
             </div>
           </div>
+        </div>
+        <div class="card-body">
+          <div class="text-danger fsize-1 mb-1 mt-2">
+            <i class="fa fa-fw" aria-hidden="true" title=""></i>
+            These numbers are only for monitoring purposes, don't use it in any official report.
+          </div>
+
 
           <div class="table-responsive">
             <table class="mb-0 table table-striped table-hover" id="exportheader"
                    content="{{ day_number }}_{{ month_number }}_{{ database.reporting_year.name }}_{{ database.label }} Dashboard - Live data.csv"
-                   data-tableName="Dashboard - {{ database.label }} - 2020">
+                   data-tableName="Dashboard - {{ database.label }} - {{ database.reporting_year.year }}">
               <thead>
               <tr>
                 <th content="Indicator Name"> Indicator Name</th>
@@ -109,142 +117,153 @@
                 <th content="Target">Target</th>
                 <th content="As of today" data-toggle="tooltip" data-placement="top"
                     title="As of today (Starting January)">
-                  As of today <i class="fa fa-question-circle-o"></i>
+                  As of today
                 </th>
                 <th content="Total Percentage achieved of all months" data-toggle="tooltip" data-placement="top"
                     title="Total Percentage achieved of all months">
                   Percentage Achieved <i class="fa fa-question-circle-o"></i>
                 </th>
                 <th content="Status">Status</th>
-                <th content="{{ month_name }}">{{ month_name }}</th>
+                <!--                <th content="{{ month_name }}">{{ month_name }}</th>-->
               </tr>
               </thead>
-             <tbody>
-                        {% for item in master_indicators %}
-                          {% get_indicator_live_cumulative item month selected_partner selected_governorate as cumulative_value %}
-                          {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+              <tbody>
+              {% for item in master_indicators %}
+              {% if item.is_cumulative %}
+              {% get_indicator_live_cumulative item month selected_partner selected_governorate as cumulative_value %}
+              {% else %}
+              {% get_indicator_highest_value item as cumulative_value %}
+              {% endif %}
+              {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+              {% if display_indicator %}
+              <tr itemid="{{ item.id }}" {% if item.master_indicator %}class="level1 master_indicator" {% elif
+                  item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
+                {% if item.master_indicator %}
+                <td class="w-150">
+                  {{ item.name }}
+                </td>
+                {% else %}
 
-                          {% if display_indicator %}
-                          <tr itemid="{{ item.id }}" {% if item.master_indicator %}class="level1 master_indicator"{% elif item.individual_indicator %}class="level1 individual_indicator"{% endif %}>
-                              <!--<td>{{ item.id }}</td>-->
-                              {% if item.master_indicator %}
-                                <td  class="w-150">
-                                  {{ item.name }}
-                                  {% if item.explication %}
-                                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item.explication }}"></i>
-                                  {% endif %}
-                                </td>
-                              {% else %}
+                <td class="w-150">
+                  {{ item.name }}
 
-                                <td class="w-150">
-                                  {{ item.name }}
-                                  {% if item.explication %}
-                                  <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item.explication }}"></i>
-                                  {% endif %}
-                                </td>
-                              {% endif %}
-                              <!--<td>Site</td>-->
-                              <td class="w-10">{{ item.awp_code }}</td>
-                              <td class="w-10">
-                                {% if item.measurement_type == 'percentage' %}
-                                  {{ item.target }}%
-                                {% else %}
-                                  {{ item.target|number_format }}
-                                {% endif %}
-                              </td>
-                              <td class="w-10">
-                                {{ cumulative_value }}
-                              </td>
-                              <td class="w-10">
-                                {% get_indicator_live_achieved item month selected_partner selected_governorate as achieved %}
-                                {{ achieved }}%
-                              </td>
-                              <td class="w-10" ><div class='badge {{ item.status_color }}'>{{ item.status }}</div></td>
-                              <td class="w-10">
-                                {% get_indicator_live_value item month selected_partner selected_governorate as value %}
-                                {{ value }}
-                              </td>
-                          </tr>
-                          {% get_sub_indicators_data item.id as sub_indicators %}
-                          {% for item1 in sub_indicators %}
-                            <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}" {% if item1.master_indicator_sub %}style="background-color: #ca292940;"{% endif %}>
-                                <!--<td>{{ item1.id }}</td>-->
-                                {% if item1.master_indicator_sub %}
-                                  <td  class="w-150">
-                                    {{ item1.name }}
-                                    {% if item1.explication %}
-                                    <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item1.explication }}"></i>
-                                    {% endif %}
-                                  </td>
-                                {% else %}
-                                  <td class="w-150">
-                                    {{ item1.name }}
-                                    {% if item1.explication %}
-                                    <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item1.explication }}"></i>
-                                    {% endif %}
-                                  </td>
-                                {% endif %}
-                                <!--<td>Site</td>-->
-                                <td class="w-10">{{ item1.awp_code }}</td>
-                                <td class="w-10">{{ item1.target|number_format }}</td>
-                                <td class="w-10">
-                                   {% get_indicator_live_cumulative item1 month selected_partner selected_governorate as cumulative_value %}
-                                   {{ cumulative_value }}
-                                </td>
-                                <td class="w-10">
-                                  {% get_indicator_live_achieved item1 month selected_partner selected_governorate as achieved %}
-                                  {{ achieved }}%
-                                </td>
-                              <td class="w-10" ><div class='badge {{ item.status_color }}'>{{ item.status }}</div></td>
-                                <td class="w-10">
-                                    {% get_indicator_live_value item1 month selected_partner selected_governorate as value %}
-                                    {{ value }}
-                                </td>
-                            </tr>
-                            {% get_sub_indicators_data item1.id as sub_indicators1 %}
-                            {% for item2 in sub_indicators1 %}
-                              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
-                              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}" itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
-                                  <!--<td>{{ item2.id }}</td>-->
-                                  {% if item2.master_indicator_sub_sub %}
-                                    <td class="w-150" >
-                                      {{ item2.name }}
-                                      {% if item2.explication %}
-                                      <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
-                                      {% endif %}
-                                    </td>
-                                  {% else %}
+                </td>
+                {% endif %}
+                <!--<td>Site</td>-->
+                <td class="w-10">{{ item.awp_code }}</td>
+                <td class="w-10">
+                  {% if item.measurement_type == 'percentage' %}
+                  {{ item.target }}%
+                  {% else %}
+                  {{ item.target|number_format }}
+                  {% endif %}
+                </td>
+                <td class="w-10">
+                  {{ cumulative_value }}
+                </td>
+                <td class="w-10">
 
-                                    <td class="w-150">
-                                      {{ item2.name }}
-                                      {% if item2.explication %}
-                                      <i class="fa fa-question-circle-o" style="font-size:16px;" data-toggle="tooltip" data-placement="top" title="{{ item2.explication }}"></i>
-                                      {% endif %}
-                                    </td>
-                                  {% endif %}
-                                  <!--<td>Site</td>-->
-                                  <td class="w-10">{{ item2.awp_code }}</td>
-                                  <td class="w-10">{{ item2.target|number_format }}</td>
-                                  <td class="w-10">
-                                     {% get_indicator_live_cumulative item2 month selected_partner selected_governorate as cumulative_value %}
-                                     {{ cumulative_value }}
-                                  </td>
-                                  <td class="w-10">
-                                    {% get_indicator_live_achieved item2 month selected_partner selected_governorate as achieved %}
-                                    {{ achieved }}%
-                                  </td>
-                               <td class="w-10" ><div class='badge {{ item.status_color }}'>{{ item.status }}</div></td>
-                                  <td class="w-10">
-                                    {% get_indicator_live_value item2 month selected_partner selected_governorate as value %}
-                                    {{ value }}
-                                  </td>
-                              </tr>
-                              {% endif %}
-                            {% endfor %}
-                          {% endfor %}
-                        {% endif %}
-                        {% endfor %}
-                      </tbody>
+                  {% calculate_achievement_new item.target cumulative_value as achieved %}
+                  {{ achieved }}%
+                </td>
+                <td class="w-10">
+                  <div class='badge {{ item.status_color }}'>{{ item.status }}</div>
+                </td>
+                <!--                              <td class="w-10">-->
+                <!--                                {% get_indicator_live_value item month selected_partner selected_governorate as value %}-->
+                <!--                                {{ value }}-->
+                <!--                              </td>-->
+              </tr>
+              {% get_sub_indicators_data item.id as sub_indicators %}
+              {% for item1 in sub_indicators %}
+              <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
+                  {% if item1.master_indicator_sub %}style="background-color: #ca292940;" {% endif %}>
+                <td class="w-150">
+                  {{ item1.name }}
+                </td>
+                <td class="w-10">
+                  {% if item1.master_indicator_sub %}
+                  {{ item1.awp_code }}
+                  {% endif %}
+                </td>
+                <td class="w-10">
+                  {% if item1.master_indicator_sub %}
+                  {{ item1.target|number_format }}
+                  {% endif %}
+                </td>
+                <td class="w-10">
+                  {% if item.is_cumulative %}
+                  {% get_indicator_live_cumulative item1 month selected_partner selected_governorate as cumulative_value %}
+                  {{ cumulative_value }}
+                  {% else %}
+                  {% get_indicator_highest_value item1 as highest_value %}
+                  {{ highest_value }}
+                  {% endif %}
+                </td>
+                <td class="w-10">
+                  {% if item1.master_indicator_sub %}
+                  {% if item.is_cumulative %}
+                  {% calculate_achievement_new item1.target cumulative_value as achieved %}
+                  {{ achieved }}%
+                  {% else %}
+                  {% calculate_achievement_new item1.target highest_value as achieved %}
+                  {{ achieved }}
+                  {% endif %}
+                  {% endif %}
+
+                </td>
+                <td class="w-10">
+
+                  {% if item1.master_indicator_sub %}
+                  <div class='badge {{ item.status_color }}'>{{ item.status }}</div>
+                  {% endif %}
+                </td>
+                <!--                                <td class="w-10">-->
+                <!--                                    {% get_indicator_live_value item1 month selected_partner selected_governorate as value %}-->
+                <!--                                    {{ value }}-->
+                <!--                                </td>-->
+              </tr>
+              {% get_sub_indicators_data item1.id as sub_indicators1 %}
+              {% for item2 in sub_indicators1 %}
+              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
+              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
+                  itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
+                <td class="w-150">{{ item2.name }}</td>
+                <td class="w-10"></td>
+                <td class="w-10"></td>
+                <td class="w-10">
+                  {% if item.is_cumulative %}
+                  {% get_indicator_live_cumulative item2 month selected_partner selected_governorate as cumulative_value %}
+                  {{ cumulative_value }}
+                  {% else %}
+                  {% get_indicator_highest_value item2 as highest_value %}
+                  {{ highest_value }}
+                  {% endif %}
+
+                </td>
+                <td class="w-10">
+                  <!--                                      {% if item.is_cumulative %}-->
+                  <!--                                    {% calculate_achievement_new item2.target cumulative_value  as achieved %}-->
+                  <!--                                    {{ achieved }}%-->
+                  <!--                                    {% else %}-->
+                  <!--                                       {% calculate_achievement_new item2.target highest_value  as achieved %}-->
+                  <!--                                    {{ achieved }}-->
+                  <!--                                    {% endif %}-->
+                </td>
+                <td class="w-10">
+
+                </td>
+                <!--                                  <td class="w-10">-->
+                <!--                                    {% get_indicator_live_value item2 month selected_partner selected_governorate as value %}-->
+                <!--                                    {{ value }}-->
+                <!--                                  </td>-->
+              </tr>
+              {% endif %}
+              {% endfor %}
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+              </tbody>
             </table>
           </div>
         </div>
@@ -529,17 +548,70 @@ function search() {
     buttonWidth : '180px',
     includeSelectAllOption : true,
 		nonSelectedText: 'Partners',
-		nSelectedText:'selected partners'
+		nSelectedText:'selected partners',
+		 maxHeight: 350
   });
  $('#filter_governorates').multiselect({
     buttonWidth : '200px',
     includeSelectAllOption : true,
 		nonSelectedText: 'Governorates',
-		nSelectedText:'selected governorates'
+		nSelectedText:'selected governorates',
+		 maxHeight: 350
   });
 
 
 
-</script>
 
+</script>
+<script>
+
+    $("#filter_partners").change(function () {
+
+    var partnerId = $(this).val();
+    var ai_id = $('#ai_id').val();
+    var gov_Id = $('#filter_governorates').val();
+
+    var gov_url = $("#filterForm").attr("data-govs-url");
+    if(gov_Id == null){
+      $.ajax({
+          url: gov_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'type':'live'
+           },
+          success: function (data) {
+            $("#filter_governorates").html(data);
+            $("#filter_governorates").multiselect('rebuild');
+          }
+      });
+    }
+
+ });
+
+    $('#filter_governorates').change(function () {
+
+      var partnerId=$("#filter_partners").val();
+      var gov_Id = $(this).val();
+      var ai_id = $('#ai_id').val();
+      var partner_url = $("#filterForm").attr("data-partner-url");
+
+      if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'type':'live'
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
+    });
+
+
+</script>
 {% endblock %}

@@ -1,0 +1,5 @@
+   {% for month, month_name in months %}
+    <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
+      {{ month_name }}
+    </option>
+    {% endfor %}

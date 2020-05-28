@@ -218,6 +218,22 @@ icon-wrapper {
                             </div>
    </div>
 
+  <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+      <li class="nav-item">
+         <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
+          <span>Economy</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" href="#tab-content-1">
+          <span>Other</span>
+        </a>
+      </li>
+  </ul>
+
+ <div class="tab-content">
+    <div class="tab-pane tabs-animation active show" id="tab-content-0" role="tabpanel">
+
 <div class="mb-3 card">
   <div class="no-gutters row">
     <div class="col-sm-6 col-md-4 col-xl-4">
@@ -291,8 +307,9 @@ icon-wrapper {
   </div>
 </div>
 
-  <div class="row">
+<div class="row">
     <div class="col-lg-12">
+
       <div class="main-card mb-3 card">
           <div class="card-body watermark">
               <div class="table-responsive">
@@ -318,6 +335,33 @@ icon-wrapper {
       </div>
   </div>
 
+    </div>
+
+   <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
+
+      <div class="main-card mb-3 card">
+          <div class="card-body watermark">
+              <div class="table-responsive">
+
+<figure class="highcharts-figure">
+    <div id="cp_chart1"></div>
+    <p class="highcharts-description">
+
+    </p>
+</figure>
+
+
+<figure class="highcharts-figure">
+    <div id="cp_chart2"></div>
+    <p class="highcharts-description">
+
+    </p>
+</figure>
+              </div></div></div>
+
+   </div>
+ </div>
+
 </div>
 
 {% endblock content %}
@@ -339,8 +383,8 @@ icon-wrapper {
     var fuel_data = '{{ fuel_data|safe }}';
     fuel_data = JSON.parse(fuel_data);
 
-    createChart(food_data, 'food_chart', 'Price of essential food in WFP contracted shops', 'Source: WFP M&E unit', 'Price in LBP', 'Date');
-    createChart(fuel_data, 'fuel_chart', 'Price of fuel', 'Source: Ministry of Energy & Water', 'Price in LBP', 'Date');
+    createChart(food_data, 'food_chart', 'Price of essential food in WFP contracted shops', 'Source: WFP M&E unit', 'Price in LBP', 'Date', 'LBP');
+    createChart(fuel_data, 'fuel_chart', 'Price of fuel', 'Source: Ministry of Energy & Water', 'Price in LBP', 'Date', 'LBP');
 
 </script>
 
