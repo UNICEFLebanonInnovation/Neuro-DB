@@ -1,6 +1,7 @@
 
 import json
 import logging
+from datetime import datetime
 
 from internos.taskapp.celery import app
 from .client import ActivityInfoClient
@@ -129,7 +130,7 @@ def import_data_and_generate_live_report(database):
 
     log = ImportLog.start(name='ActivityInfo: Monthly live report, ' + str(database))
 
-    databases = Database.objects.filter(reporting_year__current=True)
+    databases = Database.objects.filter(reporting_year__year=datetime.now().year)
     if database:
         databases = Database.objects.filter(ai_id=database)
 
@@ -143,6 +144,25 @@ def import_data_and_generate_live_report(database):
         calculate_indicators_values(db, report_type='live')
 
     log.end()
+
+
+@app.task
+def import_data_and_generate_weekly_report(database):
+    from internos.activityinfo.models import Database
+    from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values
+
+    databases = []
+    if database:
+        databases = Database.objects.filter(ai_id=database)
+
+    for db in databases:
+        print(db.name)
+        print('1. Import report: '+db.name)
+        import_data_via_r_script(db, report_type='weekly')
+        print('2. Link data: ' + db.name)
+        link_indicators_data(db, report_type='weekly')
+        print('3. Calculate indicator values')
+        calculate_indicators_values(db, report_type='weekly')
 
 
 @app.task

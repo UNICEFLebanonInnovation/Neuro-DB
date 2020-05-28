@@ -4,15 +4,9 @@ from django.contrib import admin
 from suit.admin import RelatedFieldAdmin, get_related_field
 import nested_admin
 from import_export import resources, fields
-from import_export import fields
-from django.db import models
 from import_export.admin import ImportExportModelAdmin
 from django.contrib.postgres.fields import JSONField
 from django_json_widget.widgets import JSONEditorWidget
-from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.forms import widgets
-from django import forms
-from prettyjson import PrettyJSONWidget
 from import_export.widgets import *
 from .models import *
 from .utils import *
@@ -403,6 +397,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'description',
                 'explication',
                 'activity',
+                'second_activity',
                 'list_header',
                 'type',
                 'reporting_level',
@@ -688,6 +683,15 @@ class ActivityReportAdmin(RelatedFieldAdmin):
     )
     date_hierarchy = 'start_date'
 
+    # def get_readonly_fields(self, request, obj=None):
+    #     if request.user.is_superuser:
+    #         return list(set(
+    #             [field.name for field in self.opts.local_fields] +
+    #             [field.name for field in self.opts.local_many_to_many]
+    #         ))
+    #
+    #     return self.readonly_fields
+
 
 class LiveActivityReportAdmin(RelatedFieldAdmin):
     # resources = ActivityReportResource
@@ -843,19 +847,27 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'mapped_db',
                 'is_funded_by_unicef',
                 'is_sector',
+                'is_current_extraction',
                 'display',
                 'description',
                 'country_name',
                 'ai_country_id',
-                'dashboard_link',
+                'have_partners',
+                'have_governorates',
+                'have_covid',
+                'have_offices',
+                'have_internal_reporting',
+                'have_sections',
+                'support_covid',
+                # 'dashboard_link',
             ]
         }),
         ('Extraction mapping', {
             'classes': ('suit-tab', 'suit-tab-general',),
             'fields': [
-                'mapping_extraction1',
-                'mapping_extraction2',
-                'mapping_extraction3',
+                # 'mapping_extraction1',
+                # 'mapping_extraction2',
+                # 'mapping_extraction3',
             ]
         }),
         ('Activities', {
@@ -873,6 +885,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                     )
 
     def re_formatting_json(self, request, queryset):
+
         from .utilities import import_data_v4
         objects = 0
         for db in queryset:
@@ -891,6 +904,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             request,
             "Partners imported successfully"
         )
+
+
 
     def import_basic_data(self, request, queryset):
         objects = 0
@@ -1030,7 +1045,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
     def calculate_indicators_values(self, request, queryset):
         for db in queryset:
-            reports = calculate_indicators_values(db)
+            reports = calculate_indicators_values(db,'weekly')
             self.message_user(
                 request,
                 "{} indicators values calculated for database {}".format(reports, db.name)

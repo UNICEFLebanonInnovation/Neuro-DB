@@ -25,7 +25,7 @@
           </div>
           <div style="width:100%; margin-top:12px">
             <div class="row">
-              <div class="col-lg-10 col-sm-12">
+              <div class="col-lg-12 col-sm-12">
                 <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
                 {% for partner in partners %}
                 <option class="dropdown-item" value="{{ partner.partner_id }}"
@@ -33,7 +33,11 @@
                 </option>
                 {% endfor %}
               </select>
+
                 <select id="filter_section" class="btn btn-outline-primary" multiple="multiple" name="sections">
+                    {% for reporting_section in sections %}
+                    <option value="{{ reporting_section.reporting_section }}" {% if reporting_section.reporting_section in selected_sections %} selected {% endif %}>{{ reporting_section.reporting_section }}</option>
+                  {% endfor %}
                 </select>
 
               <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">
@@ -44,8 +48,22 @@
               {% endfor %}
               </select>
 
+                <select class="btn btn-outline-primary" id="filter_type" name="filter_type">
+                    <option class="dropdown-item"  value="">Global / Local </option>
+                     {% if selected_type == 'Global' %}
+                      <option class="dropdown-item"  selected value="Global">Global</option>
+                      {% else %}
+                      <option class="dropdown-item"   value="Global">Global</option>
+                    {% endif %}
+                    {% if selected_type == 'Local' %}
+                      <option class="dropdown-item" selected  value="Local">Local</option>
+                      {% else %}
+                      <option class="dropdown-item"   value="Local">Local</option>
+                    {% endif %}
+              </select>
+
             <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
-              <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ database.ai_id }}"title="Cancel"
+              <a href="{% url 'activityinfo:report_crisis_live' %}?ai_id={{ database.ai_id }}"title="Cancel"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
 
             </div>
@@ -121,7 +139,7 @@
               <tr>
                 <th content="Indicator Name"> Indicator Name</th>
                 <th content="Pillars">Pillar</th>
-                <th content="Global/LCO">Global/LCO</th>
+                <th content="Global/LCO">Global/Local</th>
                 <th content="Unit">Unit</th>
                 <th content="As of today" data-toggle="tooltip" data-placement="top" title="As of today (Starting January)">As of today
                 </th>
@@ -130,7 +148,7 @@
               </thead>
               <tbody>
               {% for item in indicators %}
-              {% get_indicator_live_cumulative item month selected_partners selected_governorates as cumulative_value %}
+              {% get_indicator_live_cumulative_section item month selected_partners selected_governorates selected_sections as cumulative_value %}
               {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% if display_indicator %}
               <tr itemid="{{ item.id }}"
@@ -168,21 +186,26 @@
                 <td class="w-150">
                   {{ item1.name }}
                 </td>
-                    <td class="w-5">{{ item1.category}}</td>
+                    <td class="w-5">
+                       {% if item1.master_indicator_sub %}
+                      {{ item1.category}}
+                    {% endif %}
+                    </td>
                  <td class="w-5">
+                    {% if item1.master_indicator_sub %}
                   {% get_tag_name item.tag_focus as tag_name %}
                   {{ tag_name }}
+                    {% endif %}
                  </td>
                  <td class="w-5">
                    {% if item1.master_indicator_sub %}
                    {{ item1.units }}
-                   {% else %}
-                   {% get_indicator_reporting_unit item.id %}
+
                    {% endif %}
 
                  </td>
                  <td class="w-5">
-                  {% get_indicator_live_cumulative item1 month selected_partners selected_governorates as cumulative_value %}
+                  {% get_indicator_live_cumulative_section item1 month selected_partners selected_governorates selected_sections as cumulative_value %}
                   {{ cumulative_value }}
                  </td>
 <!--                <td class="w-5">-->
@@ -202,7 +225,7 @@
                 <td class="w-5"></td>
                 <td class="w-5"></td>
                  <td class="w-5">
-                   {% get_indicator_reporting_unit item.id %}
+
                  </td>
                  <td></td>
 <!--                <td class="w-5">-->
@@ -236,9 +259,7 @@
                   {% endif %}
                 </td>
                 <td class="w-5"></td>
-                <td class="w-5">
-                  {% get_tag_name item.tag_focus as tag_name %}
-                  {{ tag_name }}</td>
+                <td class="w-5"></td>
                 <td class="w-5">{{ item.units }}</td>
                 <td class="w-5">{{ cumulative_value }}</td>
 
@@ -258,7 +279,7 @@
                 <td class="w-5"></td>
                 <td class="w-5"></td>
                  <td class="w-5">
-                   {% get_indicator_reporting_unit item.id %}
+
                  </td>
                 <td class="w-5">
                     {% get_indicator_live_cumulative item1 month selected_partners selected_governorates as cumulative_value %}
@@ -280,7 +301,7 @@
                 <td class="w-150">{{ item2.name }}</td>
                  <td class="w-5"></td>
                 <td class="w-5"></td>
-                <td class="w-5">{% get_indicator_reporting_unit item.id %}</td>
+                <td class="w-5"></td>
                 <td class="w-5"></td>
 <!--                <td class="w-5">-->
 <!--                  {% get_indicator_live_value item2 month selected_partners selected_governorates as value %}-->
@@ -394,7 +415,8 @@
     includeSelectAllOption : true,
     nonSelectedText: 'Partners',
     nSelectedText:'selected partners',
-    numberDisplayed:1
+    numberDisplayed:1,
+    maxHeight: 350
   });
 
    $('#filter_governorates').multiselect({
@@ -402,7 +424,8 @@
     includeSelectAllOption : true,
     nonSelectedText: 'Governorates',
     nSelectedText:'selected governorates',
-    numberDisplayed:1
+    numberDisplayed:1,
+    maxHeight: 350
   });
 
   $('#filter_section').multiselect({
@@ -410,7 +433,16 @@
     includeSelectAllOption : true,
     nonSelectedText: 'Sections',
     nSelectedText:'selected Sections',
-    numberDisplayed:1
+    numberDisplayed:1,
+    maxHeight: 350
+  });
+
+    $('#filter_type').multiselect({
+    buttonWidth : '160px',
+    includeSelectAllOption : true,
+    nonSelectedText: 'Global / Local',
+    numberDisplayed:1,
+     maxHeight: 350
   });
 });
 
@@ -522,50 +554,6 @@ function download_csv(csv, filename) {
 </script>
 
  <script>
- $('#filter_month').on('change', function() {
-
-      var partnerId=$("#filter_partners").val();
-      var section_Id = $('#filter_section').val();
-      var gov_Id = $('#filter_governorates').val();
-      var ai_id = $('#ai_id').val();
-      var month_Id = $(this).val();
-
-      var partner_url = $("#filterForm").attr("data-partner-url");
-      var gov_url = $("#filterForm").attr("data-govs-url");
-      if (partnerId == null){
-
-         $.ajax({
-            url: partner_url,
-            data: {
-            'ai_id':ai_id,
-            'month_id':month_Id,
-            'gov_id':gov_Id,
-             },
-            success: function (data) {
-              $("#filter_partners").html(data);
-              $("#filter_partners").multiselect('rebuild');
-            }
-         });
-      }
-      if (gov_Id == null){
-
-           $.ajax({
-              url: gov_url,
-              data: {
-              'ai_id':ai_id,
-              'month_id':month_Id,
-              'partner_id':partnerId,
-              'section_id':section_Id,
-               },
-              success: function (data) {
-
-                $("#filter_governorates").html(data);
-                $("#filter_governorates").multiselect('rebuild');
-              }
-           });
-      }
-
-    });
 
     $('#filter_governorates').change(function () {
 
@@ -573,18 +561,18 @@ function download_csv(csv, filename) {
       var section_Id = $('#filter_section').val();
       var gov_Id = $(this).val();
       var ai_id = $('#ai_id').val();
-      var month_Id = $('#filter_month').val();
 
       var partner_url = $("#filterForm").attr("data-partner-url");
-      var month_url = $("#filterForm").attr("data-month-url");
+      var sec_url = $("#filterForm").attr("data-sections-url");
 
       if ( partnerId == null ){
          $.ajax({
             url: partner_url,
             data: {
+            'type':'live',
             'ai_id':ai_id,
             'gov_id':gov_Id,
-            'month_id':month_Id
+            'section_id':section_Id
              },
             success: function (data) {
               $("#filter_partners").html(data);
@@ -592,111 +580,107 @@ function download_csv(csv, filename) {
             }
         });
       }
-      if ( month_Id == null ){
+      if ( section_Id == null ){
 
         $.ajax({
-            url: month_url,
+            url: sec_url,
             data: {
+            'type':'live',
             'partner_id':partnerId,
             'ai_id':ai_id,
-            'section_id':section_Id,
-            'gov_id':gov_Id
+            'gov_id':gov_Id,
              },
             success: function (data) {
-              $("#filter_month").html(data);
-              $("#filter_month").multiselect('rebuild');
+              $("#filter_section").html(data);
+              $("#filter_section").multiselect('rebuild');
             }
         });
       }
+
     });
 
     $('#filter_section').change(function () {
 
-    var partnerId=$("#filter_partners").val();
-    var section_Id = $(this).val();
-    var ai_id = $('#ai_id').val();
+     var partnerId=$("#filter_partners").val();
+     var gov_Id = $('#filter_governorates').val();
+     var section_Id = $(this).val();
+     var ai_id = $('#ai_id').val();
 
-    var gov_url = $("#filterForm").attr("data-govs-url");
-    $.ajax({
-        url: gov_url,
-        data: {
-        'partner_id':partnerId,
-        'ai_id':ai_id,
-        'section_id':section_Id
-         },
-        success: function (data) {
-          $("#filter_governorates").html(data);
-          $("#filter_governorates").multiselect('rebuild');
-        }
-    });
-    var month_url = $("#filterForm").attr("data-month-url");
-    $.ajax({
-        url: month_url,
-        data: {
-        'partner_id':partnerId,
-        'ai_id':ai_id,
-        'section_id':section_Id
-         },
-        success: function (data) {
-          $("#filter_month").html(data);
-          $("#filter_month").multiselect('rebuild');
-        }
-    });
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+      var ai_id = $('#ai_id').val();
 
+       if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'type':'live',
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'section_id':section_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
+       if(gov_Id == null){
+        $.ajax({
+            url: gov_url,
+            data: {
+            'type':'live',
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'section_id':section_Id
+
+             },
+            success: function (data) {
+              $("#filter_governorates").html(data);
+              $("#filter_governorates").multiselect('rebuild');
+            }
+        });
+      }
     });
     $("#filter_partners").change(function () {
 
     var partnerId = $(this).val();
     var ai_id = $('#ai_id').val();
-    var month_Id = $('#filter_month').val();
+
     var gov_Id = $('#filter_governorates').val();
+    var section_Id= $('#filter_section').val();
 
     var url = $("#filterForm").attr("data-sections-url");
     var gov_url = $("#filterForm").attr("data-govs-url");
-    var month_url = $("#filterForm").attr("data-month-url");
 
-    if (partnerId == 'UNICEF'){
+    if(section_Id == null){
       $.ajax({
         url: url,
         data: {
-          'partnerId': partnerId
+
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'type':'live',
+          'gov_id':gov_Id
         },
         success: function (data) {
           $("#filter_section").html(data);
           $("#filter_section").multiselect('rebuild');
         }
       });
-     }
-    else
-    {
-       $("#filter_section").html('');
-       $("#filter_section").multiselect('rebuild');
     }
     if(gov_Id == null){
       $.ajax({
           url: gov_url,
           data: {
+          'type':'live',
           'partner_id':partnerId,
           'ai_id':ai_id,
-          'month_id':month_Id
+          'section_id':section_Id
            },
           success: function (data) {
             $("#filter_governorates").html(data);
             $("#filter_governorates").multiselect('rebuild');
-          }
-      });
-    }
-    if( month_Id ==  null){
-      $.ajax({
-          url: month_url,
-          data: {
-          'partner_id':partnerId,
-          'ai_id':ai_id,
-          'gov_id':gov_Id
-           },
-          success: function (data) {
-            $("#filter_month").html(data);
-            $("#filter_month").multiselect('rebuild');
           }
       });
     }

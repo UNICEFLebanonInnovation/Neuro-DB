@@ -21,14 +21,14 @@
 
       <div class="page-title-wrapper">
         <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
-        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
+        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter by multiple Partners, Locations, and/or Months">
           <div class="page-title-icon">
             <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
           </div>
           <div style="width:100%; margin-top:12px">
             <div class="row">
-              <div class="col-lg-10 col-sm-12">
-
+              <div class="col-lg-12 col-sm-12">
+                {% if database.have_partners %}
                 <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
                   {% for partner in partners %}
                 <option class="dropdown-item" value="{{ partner.partner_id }}"
@@ -36,13 +36,27 @@
                 </option>
                 {% endfor %}
               </select>
-              <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">
+                {% endif %}
+                {% if database.have_governorates %}
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates" data-name="Governorates" data-title="Selected Governorates">
                 {% for gov in governorates %}
                 <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
                   {{ gov.location_adminlevel_governorate }}
                 </option>
                 {% endfor %}
               </select>
+                {% endif %}
+
+                {% if database.have_offices %}
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates" data-name="Field Offices" data-title="Selected Offices">
+                {% for gov in governorates %}
+                <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
+                  {{ gov.location_adminlevel_governorate }}
+                </option>
+                {% endfor %}
+              </select>
+                {% endif %}
+
               <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
                  {% for month, month_name in months %}
                 <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
@@ -50,15 +64,23 @@
                 </option>
                 {% endfor %}
               </select>
+                {% if database.have_covid %}
                 <select class="btn btn-outline-danger" id="filter_covid" name="support_covid" >
                      <option class="dropdown-item"  value="-1">Support COVID</option>
                      <option class="dropdown-item" {% if support_covid == 1 %} selected {% endif %} value="1">Yes</option>
                      <option class="dropdown-item"  {% if support_covid == 0 %} selected {% endif %} value="0">NO</option>
                 </select>
-            </div>
-              <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
-              <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
+                {% endif %}
+                <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search" onclick="$('#loading').show();">
+                  <i style="font-weight:bolder" class="pe-7s-search"></i>
+                </button>
+                 <div  id="loading" class="d-inline-block"  style="display:none !important" >
+                  <img src="{% static 'images/loader.gif' %}" width="40px" height="40px" alt="" />
+                </div>
+
+                <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
                  class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
+            </div>
           </div>
             <div class="page-title-subheading">
             Filter by multiple Partners, Locations, and/or Months
@@ -91,17 +113,14 @@
                  data-placement="top" title="Indicators Data Disaggregated" class="text-success">
                 <i class="fa fa-tags animated"></i>
               </a>
+              {% if database.have_partners %}
                <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}"
                     target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
                     <i class="fa fa-users" aria-hidden="true" title=""></i>
                </a>
-              <a class="disabled" href="#" data-toggle="tooltip" data-placement="top"
-                 title="Data Analysis (Under Construction)"
-                 style=" color:currentColor;cursor: not-allowed; opacity: 0.5;text-decoration: none;"
-                 data-step="15" data-intro="Reported Indicators on Map">
-                <i class="fa fa-map"></i>
-              </a>
+              {% endif %}
+
               <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
                  data-placement="top" title="Disability Report" class="text-warning"
                  data-step="16" data-intro="Disability report">
@@ -115,7 +134,7 @@
 
               </button>
               <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
-                <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>
+                <button type="button" tabindex="0" id="export1" class="dropdown-item">Current Dashboard</button>
                 <div tabindex="-1" class="dropdown-divider"></div>
                 <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
                    href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
@@ -124,11 +143,12 @@
               </div>
             </div>
           <div class="btn-actions-pane-right">
-<!--            {% url 'activityinfo:report_internal' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}-->
-              <a href="#" class="link">
+              {% if database.have_internal_reporting %}
+              <a href=" {% url 'activityinfo:report_internal' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}" class="link">
              <i class="nav-link-icon fa fa-fw"></i>
              <span>Internal Reporting</span>
             </a>
+            {% endif %}
 
           </div>
       </div>
@@ -164,7 +184,7 @@
               {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% if display_indicator %}
               <tr itemid="{{ item.id }}"
-                  {% if item.master_indicator %}class="level1 master_indicator"
+                  {% if item.master_indicator or not database.mapped_db %}class="level1 master_indicator"
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
 
                 <td class="w-150">
@@ -215,12 +235,13 @@
               {% for item1 in sub_indicators %}
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
                   {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
-                  {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
+                  {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
                 <td class="w-150">
                   {{ item1.name }}
                 </td>
-                <td class="w-10">{{ item1.awp_code }}</td>
+
                   {% if item1.master_indicator_sub %}
+                 <td class="w-10">{{ item1.awp_code }}</td>
                 <td class="w-10">
                    {% if item1.measurement_type == 'percentage' %}
                   {{ item1.target }}%
@@ -229,12 +250,12 @@
                   {% endif %}
                 </td>
                 {% else %}
-
+                <td class="w-10"></td>
                 <td class="w-10"></td>
                 {% endif %}
 
                 <td class="w-10">
-                  {% if item1.is_cumulative %}
+                  {% if item.is_cumulative %}
                     {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
                   {% else %}
@@ -244,8 +265,13 @@
                 </td>
                 <td class="w-10">
                   {% if item1.master_indicator_sub %}
-                 {% calculate_achievement_new item.target cumulative_value  as achieved %}
+                  {% if item.is_cumulative %}
+                  {% calculate_achievement_new item1.target cumulative_value  as achieved %}
                   {{ achieved }}%
+                  {% else %}
+                  {% get_indicator_highest_value item1 as highest_value %}
+                  {{ highest_value }}
+                  {% endif %}
                   {% endif %}
                 </td>
                   {% if item1.master_indicator_sub %}
@@ -267,13 +293,17 @@
               {% for item2 in sub_indicators1 %}
               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
               <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
-                  {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
+                  {% if item2.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                   itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                 <td class="w-150">{{ item2.name }}</td>
-                <td class="w-10">{{ item2.awp_code }}</td>
+                <td class="w-10">
+                   {% if item2.individual_indicator %}
+                  {{ item2.awp_code }}
+                  {% endif %}
+                </td>
                 <td class="w-10"></td>
                 <td class="w-10">
-                  {% if item2.is_cumulative %}
+                  {% if item.is_cumulative %}
                   {% get_indicator_cumulative_months item2 selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
                   {% else %}
@@ -536,14 +566,16 @@
     includeSelectAllOption : true,
 		nonSelectedText: 'Partners',
 		nSelectedText:'selected partners',
-		numberDisplayed:1
+		numberDisplayed:1,
+		 maxHeight: 350
   });
  $('#filter_governorates').multiselect({
     buttonWidth : '190px',
     includeSelectAllOption : true,
-		nonSelectedText: 'Governorates',
-		nSelectedText:'selected governorates',
-		numberDisplayed:1
+		nonSelectedText: $('#filter_governorates').attr('data-name'),
+		nSelectedText: $('#filter_governorates').attr('data-title'),
+		numberDisplayed:1,
+		 maxHeight: 350
   });
 
 $('#filter_month').multiselect({
@@ -551,7 +583,8 @@ $('#filter_month').multiselect({
     includeSelectAllOption : true,
 		nonSelectedText: 'Months',
 		nSelectedText:'selected months',
-		numberDisplayed:1
+		numberDisplayed:1,
+		 maxHeight: 350
   });
 
       $('.level1').addClass('collapsed');

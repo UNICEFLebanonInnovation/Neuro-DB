@@ -24,9 +24,9 @@
                                 </div>
                             </div>
    </div>
-  <div class="row">
+  <div class="row" style="padding: 5%;">
     {% for db in ai_databases %}
-      <div class="col-md-6 col-xl-4">
+      <div class="col-md-6 col-xl-3">
           <div class="card mb-2">
               <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="widget-content">
               <div class="widget-content-wrapper">
@@ -36,19 +36,14 @@
                       </div>
                       <div class="widget-subheading">
                         {{ db.label }}
-                      <!--   <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip" data-placement="top" title="Display live data monitoring">-->
-                      <!--   <i class="fa fa-rss faa-flash animated" style="font-size: 15px; color: #d23900;"></i>-->
-                       <!--</a>-->
                       </div>
                   </div>
                   <div class="widget-content-right">
-<!--                       <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">-->
                         {% if db.section.logo %}
                         <img alt="100%x200" src="{% static db.section.logo %}" data-holder-rendered="true" style="height: 90px; width: 90px; display: block;" />
                         {% else %}
-                        <img alt="100%x200" src="{% static 'images/unicef-logo.png' %}" data-holder-rendered="true" style="height: 90px; width: 90px; display: block;" />
+                        <img alt="100%x200" src="{% static 'images/unicef.png' %}" data-holder-rendered="true" style="height: 90px; width: 110px; display: block;" />
                         {% endif %}
-<!--                        </a>-->
                   </div>
               </div>
                 <div class="card-footer d-inline-block dashboard_icons">
@@ -56,33 +51,28 @@
                         <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
                            data-placement="top" title="Live Data Monitoring" class="text-danger"
                            data-step="9" data-intro="Open live ActivityInfo Dashboard">
-                          <i class="fa fa-rss faa-flash "></i>
+                          <i class="fa fa-rss faa-flash " style="opacity: 0.7;"></i>
                         </a>
                         <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
                            data-placement="top" title="Indicators Data Disaggregated" class="text-success">
-                          <i class="fa fa-tags animated"></i>
+                          <i class="fa fa-tags animated" style="opacity: 0.7;"></i>
                         </a>
                          <a
                           href="{% url 'activityinfo:report_partner' %}?rep_year={{ db.reporting_year }}&ai_id={{ db.ai_id }}"
                           target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
-                          <i class="fa fa-users" aria-hidden="true" title=""></i>
+                          <i class="fa fa-users" aria-hidden="true" title="" style="opacity: 0.7;"></i>
                         </a>
-                        <a class="disabled" href="#" data-toggle="tooltip" data-placement="top"
-                           title="Data Analysis (Under Construction)"
-                           style=" color:currentColor;cursor: not-allowed; opacity: 0.5;text-decoration: none;"
-                           data-step="15" data-intro="Data Analysis (Under Construction)">
-                          <i class="fa fa-map"></i>
-                        </a>
+
                         <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
                            data-placement="top" title="Disability Report" class="text-warning"
                            data-step="16" data-intro="Disability report">
-                          <i class="fa fa-wheelchair"></i>
+                          <i class="fa fa-wheelchair" style="opacity: 0.7;"></i>
                         </a>
 
                         <a href="{% url 'activityinfo:export' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
                            data-placement="top" title="Raw data" class="text-primary"
                            data-step="16" data-intro="Raw data">
-                          <i class="fa fa-download"></i>
+                          <i class="fa fa-download" style="opacity: 0.7;"></i>
                         </a>
 
                 </div>

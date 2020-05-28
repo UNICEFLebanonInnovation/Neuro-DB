@@ -75,7 +75,17 @@ class Database(models.Model):
     is_funded_by_unicef = models.BooleanField(default=False)
     display = models.BooleanField(default=False)
     is_sector = models.BooleanField(default=False)
-
+    # used to differentiate between databases
+    # that need extraction till current month
+    is_current_extraction = models.BooleanField(default=False)
+    have_partners = models.BooleanField(default=True)
+    have_governorates = models.BooleanField(default=True)
+    have_covid = models.BooleanField(default=True)
+    have_offices = models.BooleanField(default=False)
+    have_internal_reporting = models.BooleanField(default=True)
+    support_covid = models.BooleanField(default=False)
+    have_sections = models.BooleanField(default=False)
+    configs = JSONField(blank=True, null=True, default={})
     reporting_year = models.ForeignKey(
         ReportingYear,
         blank=True,
@@ -367,7 +377,8 @@ class IndicatorCategory(models.Model):
 class Indicator(models.Model):
 
     ai_id = models.PositiveIntegerField(blank=True, null=True)
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, related_name='+')
+    second_activity = models.ForeignKey(Activity, blank=True, null=True, related_name='+')
     name = models.CharField(max_length=5000)
     label = models.CharField(max_length=5000, blank=True, null=True)
     hpm_label = models.CharField(max_length=5000, blank=True, null=True)
@@ -467,6 +478,11 @@ class Indicator(models.Model):
     values_partners_sector = JSONField(blank=True, null=True)
     values_partners_sites_sector = JSONField(blank=True, null=True)
     cumulative_values_sector = JSONField(blank=True, null=True)
+    values_weekly = JSONField(blank=True, null=True, default={})
+    values_gov_weekly = JSONField(blank=True, null=True, default={})
+    values_partners_weekly = JSONField(blank=True, null=True, default={})
+    values_partners_gov_weekly = JSONField(blank=True, null=True, default={})
+    values_cumulative_weekly = JSONField(blank=True, null=True, default={})
 
 
     def __unicode__(self):
@@ -593,6 +609,7 @@ class ActivityReport(TimeStampedModel):
     location_governorate = models.ForeignKey('activityinfo.AdminLevels', blank=True, null=True, related_name='+')
 
     programme_document = models.ForeignKey('etools.pca', blank=True, null=True, related_name='+')
+    support_covid = models.BooleanField(default=False)
 
 
 class ActivityReportLive(ActivityReport):
@@ -653,7 +670,7 @@ class LiveActivityReport(TimeStampedModel):
     order = models.PositiveIntegerField(default=0)
     pending = models.BooleanField(default=False)
     reporting_section = models.CharField(max_length=250, blank=True, null=True)
-
+    support_covid =  models.BooleanField(default=False)
     class Meta:
         ordering = ['id']
         # models.Index(fields=['indicator_id', 'partner_id', 'start_date', 'location_adminlevel_governorate_code', 'funded_by'])
