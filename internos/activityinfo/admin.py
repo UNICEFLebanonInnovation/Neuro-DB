@@ -354,7 +354,8 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'sequence',
         'is_sector',
         'is_section',
-        'support_COVID'
+        'support_COVID',
+        'is_imported'
         # 'support_disability',
         # 'values_tags'
     )
@@ -375,6 +376,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'sequence',
         'is_sector',
         'support_COVID',
+        'is_imported'
         # 'is_section',
         # 'support_disability',
         # 'values_tags'
@@ -1045,7 +1047,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
     def calculate_indicators_values(self, request, queryset):
         for db in queryset:
-            reports = calculate_indicators_values(db,'weekly')
+            reports = calculate_indicators_values(db)
             self.message_user(
                 request,
                 "{} indicators values calculated for database {}".format(reports, db.name)

@@ -483,7 +483,12 @@ class Indicator(models.Model):
     values_partners_weekly = JSONField(blank=True, null=True, default={})
     values_partners_gov_weekly = JSONField(blank=True, null=True, default={})
     values_cumulative_weekly = JSONField(blank=True, null=True, default={})
-
+    values_crisis_live = JSONField(blank=True, null=True, default={})
+    values_crisis_gov_live = JSONField(blank=True, null=True, default={})
+    values_crisis_partners_live = JSONField(blank=True, null=True, default={})
+    values_crisis_partners_gov_live = JSONField(blank=True, null=True, default={})
+    values_crisis_cumulative_live = JSONField(blank=True, null=True, default={})
+    is_imported = models.BooleanField(default=False)
 
     def __unicode__(self):
         if self.ai_indicator:

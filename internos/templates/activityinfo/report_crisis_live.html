@@ -227,7 +227,10 @@
                  <td class="w-5">
 
                  </td>
-                 <td></td>
+                 <td class="w-5">
+                     {% get_indicator_live_cumulative_section item2 month selected_partners selected_governorates selected_sections as cumulative_value %}
+                  {{ cumulative_value }}
+                 </td>
 <!--                <td class="w-5">-->
 <!--                  {% get_indicator_live_value item2 month selected_partners selected_governorates as value %}-->
 <!--                  {{ value }}-->

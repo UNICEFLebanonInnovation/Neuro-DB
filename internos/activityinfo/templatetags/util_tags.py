@@ -230,86 +230,163 @@ def get_indicator_cumulative(indicator, month=None, partner=None, gov=None):
 
 
 @register.assignment_tag
-def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=None):
-    try:
-        value = 0
-        cumulative_values = indicator['cumulative_values']
-        if partner and gov and month:
-            for par in partner:
-                for g in gov:
-                    for m in month:
+def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=None,start_month=None):
+    # try:
+
+    if start_month:
+        month_list =[]
+        for i in range(start_month,13):
+            month_list.append(i)
+    value = 0
+    cumulative_values = indicator['cumulative_values']
+    if partner and gov and month:
+        for par in partner:
+            for g in gov:
+                for m in month:
+                    if start_month:
+                        if m in start_month:
+                            key = "{}-{}-{}".format(m, g, par)
+                            if key in indicator['values_partners_gov']:
+                                value += indicator['values_partners_gov'][key]
+                        else:
+                            continue
+                    else:
                         key = "{}-{}-{}".format(m, g, par)
                         if key in indicator['values_partners_gov']:
                             value += indicator['values_partners_gov'][key]
-            return get_indicator_unit(indicator, value)
+        return get_indicator_unit(indicator, value)
 
-        if partner and gov and not month:
+    if partner and gov and not month:
+        if start_month:
+            for par in partner:
+                for g in gov:
+                    for m in month_list:
+                         key = "{}-{}-{}".format(m, g, par)
+                         if key in indicator['values_partners_gov']:
+                            value += indicator['values_partners_gov'][key]
+        else:
             cumulative_values = cumulative_values.get('partners_govs')
             for par in partner:
                 for g in gov:
                     key = "{}-{}".format(g, par)
                     if key in cumulative_values:
                         value += cumulative_values[key]
-            return get_indicator_unit(indicator, value)
+        return get_indicator_unit(indicator, value)
 
-        if partner and month and not gov:
-            if type(partner) == unicode:
-                for m in month:
+    if partner and month and not gov:
+        if type(partner) == unicode:
+            for m in month:
+                if start_month:
+                    if m in month_list:
+                        key = "{}-{}".format(m, partner)
+                        if key in indicator['values_partners']:
+                            value += indicator['values_partners'][key]
+                else:
                     key = "{}-{}".format(m, partner)
                     if key in indicator['values_partners']:
                         value += indicator['values_partners'][key]
-                return get_indicator_unit(indicator, value)
-            else:
-                for par in partner:
-                    for m in month:
+            return get_indicator_unit(indicator, value)
+        else:
+            for par in partner:
+                for m in month:
+                    if start_month:
+                        if m in month_list:
+                            key = "{}-{}".format(m, par)
+                            if key in indicator['values_partners']:
+                                value += indicator['values_partners'][key]
+                        else:
+                            continue
+                    else:
                         key = "{}-{}".format(m, par)
                         if key in indicator['values_partners']:
                             value += indicator['values_partners'][key]
-                return get_indicator_unit(indicator, value)
+            return get_indicator_unit(indicator, value)
 
-        if gov and month and not partner:
+    if gov and month and not partner:
             if type(gov) == unicode:
                 for m in month:
-                    key = "{}-{}".format(m, gov)
-                    if key in indicator['values_gov']:
-                        value += indicator['values_gov'][key]
+                    if start_month:
+                        if m in month_list:
+                            key = "{}-{}".format(m, gov)
+                            if key in indicator['values_gov']:
+                                value += indicator['values_gov'][key]
+                    else:
+                        key = "{}-{}".format(m, gov)
+                        if key in indicator['values_gov']:
+                            value += indicator['values_gov'][key]
                 return get_indicator_unit(indicator, value)
             else:
                 for g in gov:
                     for m in month:
-                        key = "{}-{}".format(m, g)
-                        if key in indicator['values_gov']:
-                             value += indicator['values_gov'][key]
+                        if start_month:
+                            if m in month_list:
+                                key = "{}-{}".format(m, g)
+                                if key in indicator['values_gov']:
+                                    value += indicator['values_gov'][key]
+                            else:
+                                continue
+                        else:
+                            key = "{}-{}".format(m, g)
+                            if key in indicator['values_gov']:
+                                 value += indicator['values_gov'][key]
                 return get_indicator_unit(indicator, value)
 
-        if partner and 'partners' in cumulative_values:
+    if partner and 'partners' in cumulative_values:
+        if start_month:
+            for par in partner:
+                for m in month_list:
+                     key = "{}-{}".format(m, par)
+                     if key in indicator['values_partners']:
+                            value += indicator['values_partners'][key]
+        else:
             cumulative_values = cumulative_values.get('partners')
             for par in partner:
                 if par in cumulative_values:
                     value += cumulative_values[par]
-            return get_indicator_unit(indicator, value)
+        return get_indicator_unit(indicator, value)
 
-        if gov and 'govs' in cumulative_values:
+    if gov and 'govs' in cumulative_values:
+        if start_month:
+            for gv in gov:
+                for m in month_list:
+                     key = "{}-{}".format(m, gv)
+                     if key in indicator['values_gov']:
+                            value += indicator['values_gov'][key]
+        else:
             cumulative_values = cumulative_values.get('govs')
             for gv in gov:
                 if gv in cumulative_values:
                     value += cumulative_values[gv]
-            return get_indicator_unit(indicator, value)
+        return get_indicator_unit(indicator, value)
 
-        if month and indicator['values']:
-            for i in month:
+    if month and indicator['values']:
+        for i in month:
+            if start_month:
+                if i in month_list:
+                    if str(i) in indicator['values']:
+                        value = value + float(indicator['values'][str(i)])
+                else:
+                    continue
+            else:
                 if str(i) in indicator['values']:
                     value = value + float(indicator['values'][str(i)])
-            return get_indicator_unit(indicator, value)
+        return get_indicator_unit(indicator, value)
 
+    if start_month:
+        if i in month_list:
+            if indicator['values']:
+                if str(i) in indicator['values']:
+                    value = value + float(indicator['values'][str(i)])
+                    return get_indicator_unit(indicator, value)
+    else:
         if cumulative_values and 'months' in cumulative_values:
             return get_indicator_unit(indicator, cumulative_values.get('months'))
 
-        return get_indicator_unit(indicator, 0)
+    return get_indicator_unit(indicator, 0)
 
-    except Exception as ex:
-        logger.error('get_indicator_cumulative_months error ' + ex.message)
-        return get_indicator_unit(indicator, 0)
+    # except Exception as ex:
+    #     logger.error('get_indicator_cumulative_months error ' + ex.message)
+    #     return get_indicator_unit(indicator, 0)
 
 
 @register.assignment_tag
@@ -659,7 +736,7 @@ def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None)
 @register.assignment_tag
 def get_indicator_live_cumulative_section(indicator, month=None, partner=None, gov=None,section=None):
     try:
-        value= 0
+        value = 0
         cumulative_values = indicator['cumulative_values_live']
         if partner and gov and section:
             cumulative_values = cumulative_values.get('sections_partners_gov')
@@ -1299,11 +1376,14 @@ def get_hpm_sub_indicators(indicator_id):
 
 
 @register.assignment_tag
-def get_sub_indicators_data(ai_id, is_sector=False):
+def get_sub_indicators_data(ai_id, is_sector=False, ai_db=None):
     from internos.activityinfo.models import Indicator
     indicators = {}
     try:
-        indicators = Indicator.objects.filter(sub_indicators=ai_id)
+        if ai_db:
+            indicators = Indicator.objects.filter(sub_indicators=ai_id,activity__database =ai_db)
+        else:
+            indicators = Indicator.objects.filter(sub_indicators=ai_id)
         indicators=indicators.values(
             'id',
             'ai_id',
@@ -1349,7 +1429,8 @@ def get_sub_indicators_data(ai_id, is_sector=False):
             'values_partners_weekly',
             'values_partners_gov_weekly',
             'values_cumulative_weekly',
-        ).distinct()
+            'activity'
+        ).order_by('id').distinct('id')
 
         if is_sector:
             indicators = indicators.exclude(calculated_indicator=True)
@@ -1468,8 +1549,8 @@ def get_indicator_value_section(indicator, month=None, partner=None, gov=None,se
            for par in partner:
                for gv in gov:
                     key = "{}-{}-{}".format(month,gv,par)
-                    if key in indicator['values_partners_gov']:
-                        value += indicator['values_partners_gov'][key]
+                    if key in indicator['values_partners_gov_weekly']:
+                        value += indicator['values_partners_gov_weekly'][key]
            return get_indicator_unit(indicator, value)
 
         if partner and section and not gov:
@@ -1511,7 +1592,7 @@ def get_indicator_value_section(indicator, month=None, partner=None, gov=None,se
 
         if not gov and not partner and not section:
              if str(month) in indicator['values_weekly']:
-                return get_indicator_unit(indicator, indicator['values'][str(month)])
+                return get_indicator_unit(indicator, indicator['values_weekly'][str(month)])
 
         return get_indicator_unit(indicator, 0)
       except Exception as ex:
@@ -1890,7 +1971,7 @@ def get_database_by_activity(activity_id):
         activity = Activity.objects.get(id=activity_id)
         return activity.database
     except Exception as ex:
-        print('get_database_by_activity error' + ex.message)
+         print('get_database_by_activity error' + ex.message)
     return database
 
 
@@ -1922,5 +2003,6 @@ def get_indicator_reporting_unit(indicator_id):
     except Exception as ex :
         # print('get_indicator_reporting_unit error' + ex.message)
         return unit
+
 
 
