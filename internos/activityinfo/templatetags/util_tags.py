@@ -316,7 +316,7 @@ def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=Non
 def get_indicator_cumulative_months_sections(indicator, month=None, partner=None, gov=None,section=None):
     try:
         value = 0
-        cumulative_values = indicator['cumulative_values']
+        cumulative_values = indicator['values_cumulative_weekly']
 
         if partner and gov and month and section:
             for sec in section:
@@ -411,30 +411,30 @@ def get_indicator_cumulative_months_sections(indicator, month=None, partner=None
             if type(partner) == unicode:
                 for m in month:
                     key = "{}-{}".format(m, partner)
-                    if key in indicator['values_partners']:
-                        value += indicator['values_partners'][key]
+                    if key in indicator['values_partners_weekly']:
+                        value += indicator['values_partners_weekly'][key]
                 return get_indicator_unit(indicator, value)
             else:
                 for par in partner:
                     for m in month:
                         key = "{}-{}".format(m, par)
-                        if key in indicator['values_partners']:
-                             value += indicator['values_partners'][key]
+                        if key in indicator['values_partners_weekly']:
+                             value += indicator['values_partners_weekly'][key]
                 return get_indicator_unit(indicator, value)
 
         if gov and month and not partner and not section:
             if type(gov) == unicode:
                 for m in month:
                     key = "{}-{}".format(m, gov)
-                    if key in indicator['values_gov']:
-                         value += indicator['values_gov'][key]
+                    if key in indicator['values_gov_weekly']:
+                         value += indicator['values_gov_weekly'][key]
                 return get_indicator_unit(indicator, value)
             else:
                 for g in gov:
                     for m in month:
                         key = "{}-{}".format(m, g)
-                        if key in indicator['values_gov']:
-                             value += indicator['values_gov'][key]
+                        if key in indicator['values_gov_weekly']:
+                             value += indicator['values_gov_weekly'][key]
                 return get_indicator_unit(indicator, value)
 
         if partner and gov and not month and not section:
@@ -467,10 +467,10 @@ def get_indicator_cumulative_months_sections(indicator, month=None, partner=None
                     value += cumulative_values[sec]
             return get_indicator_unit(indicator, value)
 
-        if month and indicator['values']:
+        if month and indicator['values_weekly']:
             for i in month:
-                if str(i) in indicator['values']:
-                    value = value + float(indicator['values'][str(i)])
+                if str(i) in indicator['values_weekly']:
+                    value = value + float(indicator['values_weekly'][str(i)])
             return get_indicator_unit(indicator, value)
 
         if cumulative_values and 'months' in cumulative_values:
@@ -480,7 +480,7 @@ def get_indicator_cumulative_months_sections(indicator, month=None, partner=None
         return get_indicator_unit(indicator, 0)
 
     except Exception as ex:
-        # print('error ' + ex.message)
+        logger.error('get_indicator_cumulative_months_sections ' + ex.message)
         return get_indicator_unit(indicator, 0)
 
 @register.assignment_tag
@@ -1303,7 +1303,8 @@ def get_sub_indicators_data(ai_id, is_sector=False):
     from internos.activityinfo.models import Indicator
     indicators = {}
     try:
-        indicators = Indicator.objects.filter(sub_indicators=ai_id).values(
+        indicators = Indicator.objects.filter(sub_indicators=ai_id)
+        indicators=indicators.values(
             'id',
             'ai_id',
             'name',
@@ -1342,7 +1343,12 @@ def get_sub_indicators_data(ai_id, is_sector=False):
             'values_sections',
             'values_sections_partners',
             'values_sections_gov',
-            'values_sections_partners_gov'
+            'values_sections_partners_gov',
+            'values_weekly',
+            'values_gov_weekly',
+            'values_partners_weekly',
+            'values_partners_gov_weekly',
+            'values_cumulative_weekly',
         ).distinct()
 
         if is_sector:
@@ -1485,15 +1491,15 @@ def get_indicator_value_section(indicator, month=None, partner=None, gov=None,se
         if partner and not gov and not section:
             for par in partner:
                 key = "{}-{}".format(month, par)
-                if key in indicator['values_partners']:
-                    value += indicator['values_partners'][key]
+                if key in indicator['values_partners_weekly']:
+                    value += indicator['values_partners_weekly'][key]
             return get_indicator_unit(indicator, value)
 
         if gov and not partner and not section:
             for gv in gov:
                 key = "{}-{}".format(month, gv)
-                if key in indicator['values_gov']:
-                    value += indicator['values_gov'][key]
+                if key in indicator['values_gov_weekly']:
+                    value += indicator['values_gov_weekly'][key]
             return get_indicator_unit(indicator, value)
 
         if section and not partner and not gov:
@@ -1504,7 +1510,7 @@ def get_indicator_value_section(indicator, month=None, partner=None, gov=None,se
             return get_indicator_unit(indicator, value)
 
         if not gov and not partner and not section:
-             if str(month) in indicator['values']:
+             if str(month) in indicator['values_weekly']:
                 return get_indicator_unit(indicator, indicator['values'][str(month)])
 
         return get_indicator_unit(indicator, 0)

@@ -315,19 +315,11 @@ class ReportCrisisView(TemplateView):
             'awp_code',
             'measurement_type',
             'units',
-            'target',
-            'status_color',
-            'status',
             'cumulative_values',
             'values_partners_gov',
             'values_partners',
             'values_gov',
             'values',
-            'values_live',
-            'values_gov_live',
-            'values_partners_live',
-            'values_partners_gov_live',
-            'cumulative_values_live',
             'is_cumulative',
             'activity',
             'tag_focus',
@@ -337,7 +329,13 @@ class ReportCrisisView(TemplateView):
             'values_sections',
             'values_sections_partners',
             'values_sections_gov',
-            'values_sections_partners_gov'
+            'values_sections_partners_gov',
+            'values_weekly',
+            'values_gov_weekly',
+            'values_partners_weekly',
+            'values_partners_gov_weekly',
+            'values_cumulative_weekly',
+
         ).distinct()
 
         covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=True).values(
@@ -2621,15 +2619,18 @@ class IndicatorsListVisualView(TemplateView):
     def get_context_data(self, **kwargs):
         pillar = self.request.GET.get('pillar', 0)
         reporting_level = self.request.GET.get('reporting_level', 0)
+        focus_name = self.request.GET.get('focus_name', 0)
         color = self.request.GET.get('color', 0)
 
         indicators = Indicator.objects.filter(activity__database__ai_id='202020',
-                                              master_indicator=True)
+                                              master_indicator=True).order_by('sequence')
 
         if pillar:
             indicators = indicators.filter(category=pillar)
         if reporting_level:
             indicators = indicators.filter(reporting_level__contains=reporting_level)
+        if focus_name:
+            indicators = indicators.filter(tag_focus__name=focus_name)
 
         indicators = indicators.values(
             'id',
@@ -2659,6 +2660,7 @@ class IndicatorsListVisualView(TemplateView):
             'category',
             'tag_focus__name',
             'values_tags',
+            'reporting_level',
         ).distinct().order_by('sequence')
 
         return {
@@ -2711,6 +2713,7 @@ class IndicatorsSubListVisualView(TemplateView):
             'category',
             'tag_focus__name',
             'values_tags',
+            'reporting_level',
         ).distinct().order_by('sequence')
 
         return {

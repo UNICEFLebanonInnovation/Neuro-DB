@@ -254,7 +254,7 @@
 }
 .tabs-rounded-lg .nav-link {
     margin-bottom: 0 !important;
-    font-size: 1.1rem;
+    font-size: 1rem;
     padding: 0.75rem 0.5rem;
 }
 .nav-item .nav-link {
@@ -545,7 +545,7 @@
 	}
 </style>
 
-<div class="app-main__inner watermark">
+<div class="app-main__inner">
    <div class="app-page-title">
      <div class="page-title-wrapper">
                                 <div class="page-title-heading">
@@ -553,7 +553,7 @@
                                         <i class="pe-7s-keypad icon-gradient bg-mean-fruit">
                                         </i>
                                     </div>
-                                    <div>COVID-19 Response | Reporting Database
+                                    <div>COVID-19 Response | Overview Dashboard
                                         <div class="page-title-subheading">
                                         </div>
                                     </div>
@@ -697,32 +697,24 @@
 </div>
 
 
+<div id="level5" class="tabs-animated tabs-animated-shadow tabs-rounded-lg">
+  <ul class="nav nav-tabs nav-justified">
+    <li class="nav-item" data-data="LCO">
+      <a role="tab" class="nav-link level5-filter" data-data="LCO" data-toggle="tab" href="#tab-content-0"><span>LCO</span></a>
+    </li>
+    <li class="nav-item" data-data="Global">
+      <a role="tab" class="nav-link level5-filter" data-data="Global" data-toggle="tab" href="#tab-content-0"><span>Global</span></a>
+    </li>
+    <li class="nav-item" data-data="">
+      <a role="tab" class="nav-link level5-filter" data-data="" data-toggle="tab" href="#tab-content-0"><span>All</span></a>
+    </li>
+  </ul>
+</div>
+
+
  <div class="tab-content">
 
-
-
     <div class="tab-pane tabs-animation fade" id="tab-content-0" role="tabpanel">
-      <div id="loading-content" style="display: none;">
-          <div class="timeline-wrapper">
-            <div class="timeline-item">
-              <div class="animated-background facebook">
-                <div class="background-masker header-top"></div>
-                <div class="background-masker header-left"></div>
-                <div class="background-masker header-right"></div>
-                <div class="background-masker header-bottom"></div>
-                <div class="background-masker subheader-left"></div>
-                <div class="background-masker subheader-right"></div>
-                <div class="background-masker subheader-bottom"></div>
-                <div class="background-masker content-top"></div>
-                <div class="background-masker content-first-end"></div>
-                <div class="background-masker content-second-line"></div>
-                <div class="background-masker content-second-end"></div>
-                <div class="background-masker content-third-line"></div>
-                <div class="background-masker content-third-end"></div>
-              </div>
-            </div>
-          </div>
-      </div>
 
       <div class="row">
 
@@ -737,6 +729,9 @@
             <div class="card-body">
                 <ul class="list-group list-group-flush" id="loaded-content" style="max-height: 500px; overflow: scroll;"></ul>
             </div>
+            <div id="loader-box-1" class="loader-box" style="display: none;">
+                <div class="loader"></div>
+            </div>
           </div>
         </div>
 
@@ -746,7 +741,7 @@
             <div class="card-body">
                 <ul class="list-group list-group-flush" id="loaded-dependent-content" style="max-height: 500px; overflow: scroll;"></ul>
             </div>
-            <div class="loader-box" style="display: none;">
+            <div id="loader-box-2" class="loader-box" style="display: none;">
                 <div class="loader"></div>
             </div>
           </div>
@@ -774,12 +769,26 @@
   $(document).ready(function(){
 
       $('.level1-filter').click(function(){
-          load_data($(this).attr('data-data'), $('#level2').find('a.active').attr('data-data'), $(this).attr('data-fgColor'));
+          load_data($(this).attr('data-data'),
+                    $('#level2').find('a.active').attr('data-data'),
+                    $('#level5').find('a.active').attr('data-data'),
+                    $(this).attr('data-fgColor'));
       });
 
       $('.level2-filter').click(function(){
-          load_data($('#level1').find('a.active').attr('data-data'), $(this).attr('data-data'), $('#level1').find('a.active').attr('data-fgColor'));
+          load_data($('#level1').find('a.active').attr('data-data'),
+                    $(this).attr('data-data'),
+                    $('#level5').find('a.active').attr('data-data'),
+                    $('#level1').find('a.active').attr('data-fgColor'));
       });
+
+      $('.level5-filter').click(function(){
+          load_data($('#level1').find('a.active').attr('data-data'),
+                    $('#level2').find('a.active').attr('data-data'),
+                    $(this).attr('data-data'),
+                    $('#level1').find('a.active').attr('data-fgColor'));
+      });
+
   });
 
   $(document).on('click', '.level3-filter', function(){
@@ -788,7 +797,8 @@
       load_sub_data($(this).attr('data-data'), $('#level1').find('a.active').attr('data-fgColor'));
   });
 
-  function load_data(pillar_name, reporting_level, color){
+  function load_data(pillar_name, reporting_level, focus_name, color){
+      $('#loader-box-1').show();
       $('#loaded-dependent-content').empty();
       $('#loaded-content').empty();
 
@@ -798,16 +808,18 @@
           data: {
               pillar: pillar_name,
               reporting_level: reporting_level,
+              focus_name: focus_name,
               color: color
           },
           success: function (data) {
+              $('#loader-box-1').hide();
               $('#loaded-content').html(data);
           }
       });
   }
 
   function load_sub_data(parent_id, color){
-      $('.loader-box').show();
+      $('#loader-box-2').show();
 
       $.ajax({
           url: visual_sub_url,
@@ -817,7 +829,7 @@
               color: color
           },
           success: function (data) {
-              $('.loader-box').hide();
+              $('#loader-box-2').hide();
               $('#loaded-dependent-content').html(data);
           }
       });
