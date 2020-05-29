@@ -14,11 +14,15 @@
 <div class="app-main__inner">
   <div class="app-page-title">
 
-      <form action="{% url 'activityinfo:report_crisis' %}" method="get" id="filterForm" data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"  data-sections-url="{% url 'activityinfo:ajax_load_sections' %}"
-            data-govs-url="{% url 'activityinfo:ajax_load_govs' %}" data-month-url="{% url 'activityinfo:ajax_load_months' %}">
+    <form action="{% url 'activityinfo:report_crisis' %}" method="get" id="filterForm"
+          data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"
+          data-sections-url="{% url 'activityinfo:ajax_load_sections' %}"
+          data-govs-url="{% url 'activityinfo:ajax_load_govs' %}"
+          data-month-url="{% url 'activityinfo:ajax_load_months' %}">
       <div class="page-title-wrapper">
         <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
-        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
+        <div class="page-title-heading" style="width:100%" data-step="4"
+             data-intro="Filter options by partner or governorate or month">
           <div class="page-title-icon">
             <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
           </div>
@@ -26,54 +30,59 @@
             <div class="row">
               <div class="col-lg-12 col-sm-12">
                 <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
-                {% for partner in partners %}
-                <option class="dropdown-item" value="{{ partner.partner_id }}"
-                        {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
-                </option>
-                {% endfor %}
-              </select>
-                <select id="filter_section" class="btn btn-outline-primary" multiple="multiple" name="sections">
-                  {% for reporting_section in sections %}
-                    <option value="{{ reporting_section.reporting_section }}" {% if reporting_section.reporting_section in selected_sections %} selected {% endif %}>{{ reporting_section.reporting_section }}</option>
+                  {% for partner in partners %}
+                  <option class="dropdown-item" value="{{ partner.partner_id }}"
+                          {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label
+                    }}
+                  </option>
                   {% endfor %}
                 </select>
-              <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">
-              {% for gov in governorates %}
-              <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
-                {{ gov.location_adminlevel_governorate }}
-              </option>
-              {% endfor %}
-              </select>
-              <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
-               {% for month, month_name in months %}
-                <option class="dropdown-item" value="{{ month }}" {% if month in selected_months %} selected {% endif %}>
-                  {{ month_name }}
-                </option>
-                {% endfor %}
-              </select>
-              <select class="btn btn-outline-primary" id="filter_type" name="filter_type">
-                    <option class="dropdown-item"  value="">Global / Local </option>
-                     {% if selected_type == 'Global' %}
-                      <option class="dropdown-item"  selected value="Global">Global</option>
-                      {% else %}
-                      <option class="dropdown-item"   value="Global">Global</option>
-                    {% endif %}
-                    {% if selected_type == 'Local' %}
-                      <option class="dropdown-item" selected  value="Local">Local</option>
-                      {% else %}
-                      <option class="dropdown-item"   value="Local">Local</option>
-                    {% endif %}
-              </select>
-            <button type="submit" class="btn btn shadow btn-primary mr-left-5" onclick="$('#loading').show();" title="Search">
-              <i style="font-weight:bolder" class="pe-7s-search"></i>
-            </button>
-                <div  id="loading" class="d-inline-block"  style="display:none !important" >
-                  <img  src="/static/images/loader.gif" width="40px" height="40px" alt="" />
+                <select id="filter_section" class="btn btn-outline-primary" multiple="multiple" name="sections">
+                  {% for reporting_section in sections %}
+                  <option value="{{ reporting_section.reporting_section }}" {% if reporting_section.reporting_section in selected_sections %} selected {% endif %}>{{ reporting_section.reporting_section }}
+                  </option>
+                  {% endfor %}
+                </select>
+                <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates"
+                        name="governorates">
+                  {% for gov in governorates %}
+                  <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
+                    {{ gov.location_adminlevel_governorate }}
+                  </option>
+                  {% endfor %}
+                </select>
+                <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
+                  {% for month, month_name in months %}
+                  <option class="dropdown-item" value="{{ month }}" {% if month in selected_months %} selected {% endif %}>
+                    {{ month_name }}
+                  </option>
+                  {% endfor %}
+                </select>
+                <select class="btn btn-outline-primary" id="filter_type" name="filter_type">
+                  <option class="dropdown-item" value="">Global / Local</option>
+                  {% if selected_type == 'Global' %}
+                  <option class="dropdown-item" selected value="Global">Global</option>
+                  {% else %}
+                  <option class="dropdown-item" value="Global">Global</option>
+                  {% endif %}
+                  {% if selected_type == 'Local' %}
+                  <option class="dropdown-item" selected value="Local">Local</option>
+                  {% else %}
+                  <option class="dropdown-item" value="Local">Local</option>
+                  {% endif %}
+                </select>
+                <button type="submit" class="btn btn shadow btn-primary mr-left-5" onclick="$('#loading').show();"
+                        title="Search">
+                  <i style="font-weight:bolder" class="pe-7s-search"></i>
+                    <div id="loading" class="d-inline-block" style="display:none !important">
+                  <img src="/static/images/loader.gif" width="40px" height="40px" alt=""/>
                 </div>
-              <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ database.ai_id }}"title="Cancel"
-                 class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
+                </button>
+
+                <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ database.ai_id }}" title="Cancel"
+                   class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
+              </div>
             </div>
-          </div>
             <div class="page-title-subheading">
               Filter by multiple Partners, Governorates, and Months
             </div>
@@ -84,9 +93,9 @@
   </div>
   <div class="row">
     <div class="col-lg-12">
-       <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+      <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
         <li class="nav-item">
-           <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
+          <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
             <span>Quantitative Dashboard</span>
           </a>
         </li>
@@ -95,110 +104,251 @@
             <span>Qualitative Dashboard</span>
           </a>
         </li>
-    </ul>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane tabs-animation active show" id="tab-content-0" role="tabpanel">
 
+          <div class="main-card mb-3 card">
+            <div class="card-header">
 
- <div class="tab-content">
-    <div class="tab-pane tabs-animation active show" id="tab-content-0" role="tabpanel">
-
-      <div class="main-card mb-3 card">
-        <div class="card-header">
-
-          <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
+              <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
               <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
               <a href="#" class="expanded-all"><i
                 class="fa fa-bars"></i></a>
             </span> </i>
 
               {{ database.label }}
-                <div class="d-inline-block dashboard_icons">
-                 <a href="{% url 'activityinfo:report_crisis_live' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
+              <div class="d-inline-block dashboard_icons">
+                <a href="{% url 'activityinfo:report_crisis_live' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
                    data-placement="top" title="Live Data Monitoring" class="text-danger"
                    data-step="9" data-intro="Open live ActivityInfo Dashboard">
                   <i class="fa fa-rss faa-flash "></i>
-                   </a>
-                   <a href="{% url 'activityinfo:report_crisis_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
-                    data-placement="top" title="Indicators Data Disaggregated" class="text-success">
-                    <i class="fa fa-tags animated"></i>
-                  </a>
-                  <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
-                  data-placement="top" title="Disability Report" class="text-warning"
-                  data-step="16" data-intro="Disability report">
+                </a>
+                <a href="{% url 'activityinfo:report_crisis_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
+                   data-placement="top" title="Indicators Data Disaggregated" class="text-success">
+                  <i class="fa fa-tags animated"></i>
+                </a>
+                <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
+                   data-placement="top" title="Disability Report" class="text-warning"
+                   data-step="16" data-intro="Disability report">
                   <i class="fa fa-wheelchair"></i>
-                   </a>
+                </a>
 
-                  <a href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year.year }}&ai_id={{ database.ai_id }}"
-                    target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
-                  </a>
+                <a
+                  href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year.year }}&ai_id={{ database.ai_id }}"
+                  target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
+                  <i class="fa fa-users" aria-hidden="true" title=""></i>
+                </a>
 
-                </div>
+              </div>
               <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Raw Data">
-              <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
-                      data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">
-                <i class="fa fa-download"></i>
-              </button>
-              <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
-                <a type="button" tabindex="0" id="export1" class="dropdown-item"  style="text-transform: none;">Current Dashboard</a>
-                <div tabindex="-1" class="dropdown-divider"></div>
-                <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
-                   href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
-                  Raw Data</a>
-                <div tabindex="-1" class="dropdown-divider"></div>
+                <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
+                        data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">
+                  <i class="fa fa-download"></i>
+                </button>
+                <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
+                  <a type="button" tabindex="0" id="export1" class="dropdown-item" style="text-transform: none;">Current
+                    Dashboard</a>
+                  <div tabindex="-1" class="dropdown-divider"></div>
+                  <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                     href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
+                    Raw Data</a>
+                  <div tabindex="-1" class="dropdown-divider"></div>
+                </div>
+              </div>
+              <div class="btn-actions-pane-right">
+                <a href="{% url 'activityinfo:report_internal' %}?rep_year=2020&ai_id={{ database.ai_id }}"
+                   class="link">
+                  <i class="nav-link-icon fa fa-fw"></i>
+                  <span>Internal Reporting</span>
+                </a>
               </div>
             </div>
-             <div class="btn-actions-pane-right">
-            <a href="{% url 'activityinfo:report_internal' %}?rep_year=2020&ai_id={{ database.ai_id }}" class="link">
-             <i class="nav-link-icon fa fa-fw"></i>
-             <span>Internal Reporting</span>
-            </a>
-          </div>
-      </div>
-        <div class="card-body">
+            <div class="card-body">
 
-           <div class="table-responsive">
-            <table class="mb-0 table table-striped table-hover" id="exportheader"
-              content="{{ database.label }}_Dashboard_ {{ current_month_name}}_{{ database.reporting_year.year }}.csv"
-                   data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.year }}">
-              <thead>
-              <tr>
-                <th content="Indicator Name"> Indicator Name</th>
-                <th content="Pillars">Pillar</th>
-                <th content="Global/LCO">Global/Local</th>
-                <th content="Unit">Unit</th>
-                <th content="Cumulative Results of All Months" title="Cumulative Results of All Months">Cumulative Results</th>
-                {% for month, month_name in months %}
-                <th content="{{ month_name }}">{{ month_name }}</th>
-                {% endfor %}
-              </tr>
-              </thead>
-              <tbody>
-              {% for item in indicators %}
-              {% get_indicator_cumulative_months_sections item selected_months selected_partners selected_governorates selected_sections as cumulative_value %}
+              <div class="table-responsive">
+                <table class="mb-0 table table-striped table-hover" id="exportheader"
+                       content="{{ database.label }}_Dashboard_ {{ current_month_name}}_{{ database.reporting_year.year }}.csv"
+                       data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.year }}">
+                  <thead>
+                  <tr>
+                    <th content="Indicator Name"> Indicator Name</th>
+                    <th content="Pillars">Pillar</th>
+                    <th content="Global/LCO">Global/Local</th>
+                    <th content="Unit">Unit</th>
+                    <th content="Cumulative Results of All Months" title="Cumulative Results of All Months">Cumulative
+                      Results
+                    </th>
+                    {% for month, month_name in months %}
+                    <th content="{{ month_name }}">{{ month_name }}</th>
+                    {% endfor %}
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for item in indicators %}
+
+                    {% get_indicator_cumulative_months_sections item selected_months selected_partners selected_governorates selected_sections as cumulative_value %}
+                    {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+                    {% if display_indicator  %}
+                      <tr itemid="{{ item.id }}"
+                                {% if item.master_indicator %}class="level1 master_indicator"
+                                {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
+                              <td class="w-150">{{ item.name }}
+                                {% if item.hpm_global_indicator %}
+                                <a data-toggle="tooltip" data-placement="right" title="HPM" style="cursor:pointer">
+                                  <i class="pe-7s-global text-primary"> </i>
+                                </a>
+                                {% endif %}
+                              </td>
+                              <td class="w-5">{{ item.category}}</td>
+                              <td class="w-5">
+                                {{ item.tag_focus__label }}
+                              </td>
+                              <td class="w-5">
+                                {{ item.units }}
+                              </td>
+                              <td class="w-5">{{ cumulative_value }}</td>
+
+                              {% for month, month_name in months %}
+                              <td class="w-5">
+                                {% get_indicator_value_section item month selected_partners selected_governorates selected_sections as value %}
+                                {{ value }}
+                              </td>
+                              {% endfor %}
+                            </tr>
+                      {% get_sub_indicators_data item.id as sub_indicators %}
+                      {% for item1 in sub_indicators %}
+
+                      <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
+                                {% if item1.master_indicator %}style="background-color:rgba(252, 255, 174, 0.38); border-bottom:2px solid #fff"
+                                {% elif item1.master_indicator_sub %}style="background-image:linear-gradient(#ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);border-bottom:2px solid #fff"
+                                {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
+                              <td class="w-150">
+                                {{ item1.name }}
+                                 {% if item1.master_indicator %}
+                                 {% get_database_by_activity item1.activity as db_name %}
+                                 <a  data-toggle="tooltip" data-placement="right" title="{{db_name.label}}" style="cursor:pointer">
+                                 <img alt="" src="{% static db_name.section.logo %}"  style="height: 30px; width: 30px; display: inline-block;" />
+                                 </a>
+                                {% endif %}
+
+                              </td>
+                              <td class="w-5">
+                                {% if item1.master_indicator_sub %}
+                                {{ item1.category}}
+                                {% endif %}
+                              </td>
+                              <td class="w-5">
+                                {% if item1.master_indicator_sub %}
+                                {{ item.tag_focus__label }}
+                                {% endif %}
+                              </td>
+                              <td class="w-5">
+                                {% if  item1.master_indicator or item1.master_indicator_sub %}
+                                {{ item1.units }}
+                                {% endif %}
+
+                              </td>
+                              <td class="w-5">
+                                {% get_indicator_cumulative_months_sections item1 selected_months selected_partners selected_governorates selected_sections as cumulative_value1 %}
+                                {{ cumulative_value1 }}
+                              </td>
+                              {% for month, month_name in months %}
+                              <td class="w-5">
+                                {% get_indicator_value_section item1 month selected_partners selected_governorates selected_sections as value %}
+                                {{ value }}
+                              </td>
+                              {% endfor %}
+                            </tr>
+                        {% get_sub_indicators_data item1.id as sub_indicators1 %}
+                        {% for item2 in sub_indicators1 %}
+                          {% if item2.master_indicator == 0   %}
+                        <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
+                      {% if item2.master_indicator_sub %}style="background-image:linear-gradient(#ff9a9e 0%, #fad0c4 99%, #fad0c4 100%); border-bottom:2px solid #fff"{% endif %}
+                      {% if item2.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
+                      itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
+                    <td class="w-150"> {{item2.name }}</td>
+                    <td class="w-5"></td>
+                    <td class="w-5"></td>
+                    <td class="w-5">
+
+                     {% if item2.master_indicator_sub %}
+                      {{ item2.units }}
+                      {% endif %}
+                    </td>
+                    <td class="w-5">
+                      {% get_indicator_cumulative_months_sections item2 selected_months selected_partners selected_governorates selected_sections as cumulative_value2 %}
+                      {{ cumulative_value2 }}
+                    </td>
+                    {% for month, month_name in months %}
+                    <td class="w-5">
+                      {% get_indicator_value_section item2 month selected_partners selected_governorates selected_sections as value %}
+                      {{ value }}
+                    </td>
+                    {% endfor %}
+                  </tr>
+                     {% endif %}
+ {% if item2.master_indicator == 0  %}
+                  {% get_sub_indicators_data item2.id as sub_indicators2 %}
+                     {% for item3 in sub_indicators2 %}
+                    {% if item3.master_indicator == 0 and item3.master_indicator_sub == 0 %}
+                  <tr class="level4 level4-{{ item.id }} level4-{{ item.id }}-{{ item1.id }}-{{ item2.id }}"
+                        {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
+                        itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}-{{ item3.id }}">
+                      <td class="w-150">{{ item3.name}}</td>
+                      <td class="w-5"></td>
+                      <td class="w-5"></td>
+                      <td class="w-5">
+                      </td>
+                      <td class="w-5">
+                        {% get_indicator_cumulative_months_sections item3 selected_months selected_partners selected_governorates selected_sections as cumulative_value3 %}
+                        {{ cumulative_value3 }}
+                      </td>
+                      {% for month, month_name in months %}
+                      <td class="w-5">
+                        {% get_indicator_value_section item3 month selected_partners selected_governorates selected_sections as value %}
+                        {{ value }}
+                      </td>
+                      {% endfor %}
+                    </tr>
+                  {% endif %}
+                  {% endfor %}
+ {% endif %}
+                  {% endfor %}
+                   {% endfor %}
+
+                  {% endif %}
+              {% endfor %}
+              {% for item in covid_indicators %}
+              {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates start_month as cumulative_value %}
               {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+              {% get_database_by_activity item.activity as db_name %}
               {% if display_indicator %}
               <tr itemid="{{ item.id }}"
                   {% if item.master_indicator %}class="level1 master_indicator"
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
                 <td class="w-150">{{ item.name }}
-                {% if item.hpm_global_indicator %}
-                  <a  data-toggle="tooltip" data-placement="right" title="HPM" style="cursor:pointer">
+                  <a  data-toggle="tooltip" data-placement="right" title="{{db_name.label}}" style="cursor:pointer">
+                   <img alt="" src="{% static db_name.section.logo %}"  style="height: 30px; width: 30px; display: inline-block;" />
+                  </a>
+                 {% if item.hpm_global_indicator %}
+                  <a data-toggle="tooltip" data-placement="right" title="HPM" style="cursor:pointer">
                      <i class="pe-7s-global text-primary"> </i>
                   </a>
                   {% endif %}
                 </td>
-                 <td class="w-5">{{ item.category}}</td>
+                <td class="w-5"></td>
                 <td class="w-5">
-                  {{ item.tag_focus__label }}
-                </td>
-                 <td class="w-5">
-                 {{ item.units }}
-                 </td>
+                  </td>
+                <td class="w-5">{{ item.units }}</td>
                 <td class="w-5">{{ cumulative_value }}</td>
 
-                {% for month, month_name in months %}
+                <td class="w-5">0</td>
+                <td class="w-5">0</td>
+                <td class="w-5">0</td>
+                {% for month, month_name in sliced_months %}
                 <td class="w-5">
-                  {% get_indicator_value_section item month selected_partners selected_governorates selected_sections as value %}
+                  {% get_indicator_value item month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
                 {% endfor %}
@@ -206,212 +356,118 @@
               {% get_sub_indicators_data item.id as sub_indicators %}
               {% for item1 in sub_indicators %}
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
-                  {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
+                  {% if item1.master_indicator_sub %}style="background-image:linear-gradient(#ff9a9e 0%, #fad0c4 99%, #fad0c4 100%); border-bottom:2px solid #fff"
                   {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
-
-                <td class="w-150">
+                 <td class="w-150">
                   {{ item1.name }}
                 </td>
-                    <td class="w-5">
-                       {% if item1.master_indicator_sub %}
-                      {{ item1.category}}
-                      {% endif %}
-                    </td>
+                <td class="w-5"></td>
+                <td class="w-5"></td>
                  <td class="w-5">
-                   {% if item1.master_indicator_sub %}
-                   {{ item.tag_focus__label }}
-                    {% endif %}
-                 </td>
-                 <td class="w-5">
-                   {% if item1.master_indicator_sub %}
+                    {% if item1.master_indicator_sub %}
                    {{ item1.units }}
                    {% endif %}
-
                  </td>
-                 <td class="w-5">
-
-                 </td>
-                {% for month, month_name in months %}
                 <td class="w-5">
-                  {% get_indicator_value_section item1 month selected_partners selected_governorates selected_sections as value %}
+                    {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates start_month as cumulative_value %}
+                  {{ cumulative_value }}
+                </td>
+
+                <td class="w-5">0</td>
+                <td class="w-5">0</td>
+                <td class="w-5">0</td>
+                {% for month, month_name in sliced_months %}
+                <td class="w-5">
+                  {% get_indicator_value item1 month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
                 {% endfor %}
               </tr>
+               {% endfor %}
               {% get_sub_indicators_data item1.id as sub_indicators1 %}
               {% for item2 in sub_indicators1 %}
-              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
-              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
-                  {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
-                  itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
-                <td class="w-150">{{ item2.name }}</td>
-                <td class="w-5"></td>
-                <td class="w-5"></td>
-                 <td class="w-5">
-                 </td>
-                 <td></td>
-                {% for month, month_name in months %}
-                <td class="w-5">
-                  {% get_indicator_value_section item2 month selected_partners selected_governorates selected_sections as value %}
-                  {{ value }}
-                </td>
-                {% endfor %}
-              </tr>
+                {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
+                <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
+                    {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
+                    itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
+                  <td class="w-150">{{ item2.name }}</td>
+                   <td class="w-5"></td>
+                  <td class="w-5"></td>
+                  <td class="w-5"></td>
+                  <td class="w-5"></td>
+
+                  <td class="w-5">0</td>
+                  <td class="w-5">0</td>
+                  <td class="w-5">0</td>
+                  {% for month, month_name in sliced_months %}
+                  <td class="w-5">
+                    {% get_indicator_value item2 month selected_partners selected_governorates as value %}
+                    {{ value }}
+                  </td>
+                  {% endfor %}
+                </tr>
+                {% endif %}
+              {% endfor %}
               {% endif %}
               {% endfor %}
-              {% endfor %}
 
-              {% endif %}
-              {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
+          <div class="main-card mb-3 card">
+            <div class="card-header">
+              <div class="card-title">{{ database.label }}
+                <!--           <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Raw Data">-->
+                <!--              <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"-->
+                <!--                      data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">-->
+                <!--                <i class="fa fa-download"></i>-->
+                <!--              </button>-->
+                <!--              <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">-->
+                <!--                <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>-->
+                <!--                <div tabindex="-1" class="dropdown-divider"></div>-->
+                <!--                <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"-->
+                <!--                   href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">-->
+                <!--                  Raw Data</a>-->
+                <!--                <div tabindex="-1" class="dropdown-divider"></div>-->
+                <!--              </div>-->
+                <!--            </div>-->
+              </div>
+              <div class="btn-actions-pane-right">
+                <!--            <a href="{% url 'activityinfo:report_internal' %}?rep_year=2020&ai_id={{ database.ai_id }}" class="link">-->
+                <!--             <i class="nav-link-icon fa fa-fw"></i>-->
+                <!--             <span>Internal Reporting</span>-->
+                <!--            </a>-->
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="mb-0 table table-striped table-hover" id="exportheader"
+                       content="{{ database.label }}_Dashboard_ {{ current_month_name}}_{{ database.reporting_year.year }}.csv"
+                       data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.year }}">
+                  <thead>
+                  <tr>
+                    <th content="Indicator Name"> Indicator Name</th>
+                    <th content="Global/LCO">Global/LCO</th>
+                    <th content="Result" title="Result">Results
+                    </th>
+                    {% for month, month_name in months %}
+                    <th content="{{ month_name }}">{{ month_name }}</th>
+                    {% endfor %}
+                  </tr>
+                  </thead>
+                  <tbody>
 
-<!--               {% for item in covid_indicators %}-->
-<!--              {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates as cumulative_value %}-->
-<!--              {% to_display_indicator selected_filter cumulative_value as display_indicator %}-->
-<!--              {% get_database_by_activity item.activity as db_name %}-->
-<!--              {% if display_indicator %}-->
-<!--              <tr itemid="{{ item.id }}"-->
-<!--                  {% if item.master_indicator %}class="level1 master_indicator"-->
-<!--                  {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>-->
-<!--                <td class="w-150">{{ item.name }}-->
-<!--                  <a  data-toggle="tooltip" data-placement="right" title="{{db_name.label}}" style="cursor:pointer">-->
-<!--                   <img alt="" src="{% static db_name.section.logo %}"  style="height: 30px; width: 30px; display: inline-block;" />-->
-<!--                  </a>-->
-<!--                 {% if item.hpm_global_indicator %}-->
-<!--                  <a data-toggle="tooltip" data-placement="right" title="HPM" style="cursor:pointer">-->
-<!--                     <i class="pe-7s-global text-primary"> </i>-->
-<!--                  </a>-->
-<!--                  {% endif %}-->
-<!--                </td>-->
-<!--                <td class="w-5"></td>-->
-<!--                <td class="w-5">-->
-<!--                  </td>-->
-<!--                <td class="w-5">{{ item.units }}</td>-->
-<!--                <td class="w-5">{{ cumulative_value }}</td>-->
-
-<!--                <td class="w-5">0</td>-->
-<!--                <td class="w-5">0</td>-->
-<!--                <td class="w-5">0</td>-->
-<!--                {% for month, month_name in sliced_months %}-->
-<!--                <td class="w-5">-->
-<!--                  {% get_indicator_value item month selected_partners selected_governorates as value %}-->
-<!--                  {{ value }}-->
-<!--                </td>-->
-<!--                {% endfor %}-->
-<!--              </tr>-->
-<!--              {% get_sub_indicators_data item.id as sub_indicators %}-->
-<!--              {% for item1 in sub_indicators %}-->
-<!--              <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"-->
-<!--                  {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"-->
-<!--                  {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>-->
-<!--                 <td class="w-150">-->
-<!--                  {{ item1.name }}-->
-<!--                </td>-->
-<!--                <td class="w-5"></td>-->
-<!--                <td class="w-5"></td>-->
-<!--                 <td class="w-5">-->
-<!--                    {% if item1.master_indicator_sub %}-->
-<!--                   {{ item1.units }}-->
-<!--                   {% endif %}-->
-<!--                 </td>-->
-<!--                <td class="w-5">-->
-<!--                    {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}-->
-<!--                  {{ cumulative_value }}-->
-<!--                </td>-->
-
-<!--                <td class="w-5">0</td>-->
-<!--                <td class="w-5">0</td>-->
-<!--                <td class="w-5">0</td>-->
-<!--                {% for month, month_name in sliced_months %}-->
-<!--                <td class="w-5">-->
-<!--                  {% get_indicator_value item1 month selected_partners selected_governorates as value %}-->
-<!--                  {{ value }}-->
-<!--                </td>-->
-<!--                {% endfor %}-->
-<!--              </tr>-->
-<!--               {% endfor %}-->
-<!--              {% get_sub_indicators_data item1.id as sub_indicators1 %}-->
-<!--              {% for item2 in sub_indicators1 %}-->
-<!--              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}-->
-<!--              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"-->
-<!--                  {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}-->
-<!--                  itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">-->
-<!--                <td class="w-150">{{ item2.name }}</td>-->
-<!--                 <td class="w-5"></td>-->
-<!--                <td class="w-5"></td>-->
-<!--                <td class="w-5"></td>-->
-<!--                <td class="w-5"></td>-->
-
-<!--                <td class="w-5">0</td>-->
-<!--                <td class="w-5">0</td>-->
-<!--                <td class="w-5">0</td>-->
-<!--                {% for month, month_name in sliced_months %}-->
-<!--                <td class="w-5">-->
-<!--                  {% get_indicator_value item2 month selected_partners selected_governorates as value %}-->
-<!--                  {{ value }}-->
-<!--                </td>-->
-<!--                {% endfor %}-->
-<!--              </tr>-->
-<!--              {% endif %}-->
-<!--              {% endfor %}-->
-<!--              {% endif %}-->
-<!--              {% endfor %}-->
-              </tbody>
-            </table>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-     <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
- <div class="main-card mb-3 card">
-        <div class="card-header">
-            <div class="card-title">{{ database.label }}
-<!--           <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Raw Data">-->
-<!--              <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"-->
-<!--                      data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">-->
-<!--                <i class="fa fa-download"></i>-->
-<!--              </button>-->
-<!--              <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">-->
-<!--                <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>-->
-<!--                <div tabindex="-1" class="dropdown-divider"></div>-->
-<!--                <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"-->
-<!--                   href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">-->
-<!--                  Raw Data</a>-->
-<!--                <div tabindex="-1" class="dropdown-divider"></div>-->
-<!--              </div>-->
-<!--            </div>-->
-        </div>
-             <div class="btn-actions-pane-right">
-<!--            <a href="{% url 'activityinfo:report_internal' %}?rep_year=2020&ai_id={{ database.ai_id }}" class="link">-->
-<!--             <i class="nav-link-icon fa fa-fw"></i>-->
-<!--             <span>Internal Reporting</span>-->
-<!--            </a>-->
-          </div>
-      </div>
-        <div class="card-body">
-        <div class="table-responsive">
-            <table class="mb-0 table table-striped table-hover" id="exportheader"
-              content="{{ database.label }}_Dashboard_ {{ current_month_name}}_{{ database.reporting_year.year }}.csv"
-                   data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.year }}">
-              <thead>
-              <tr>
-                <th content="Indicator Name"> Indicator Name</th>
-                <th content="Global/LCO">Global/LCO</th>
-                <th content="Result" title="Result">Results
-                </th>
-                {% for month, month_name in months %}
-                <th content="{{ month_name }}">{{ month_name }}</th>
-                {% endfor %}
-              </tr>
-              </thead>
-              <tbody>
-
-              </tbody>
-            </table>
-          </div>
-</div>
-</div>
-     </div>
- </div>
 
 
     </div>
@@ -501,9 +557,11 @@
   $('.level1').addClass('collapsed');
   $('.level2').addClass('collapsed');
   $('.level3').addClass('collapsed');
+  $('.level4').addClass('collapsed');
 
   $('.level2').hide();
   $('.level3').hide();
+  $('.level4').hide();
 
   $('.expanded-all').click(function () {
     $('.expanded-all').addClass('active');
@@ -512,10 +570,12 @@
     $('.level1').removeClass('collapsed');
     $('.level2').removeClass('collapsed');
     $('.level3').removeClass('collapsed');
+    $('.level4').removeClass('collapsed');
 
     $('.level1').show();
     $('.level2').show();
     $('.level3').show();
+    $('.level4').show();
   });
 
   $('.collapse-all').click(function () {
@@ -525,15 +585,18 @@
     $('.level1').addClass('collapsed');
     $('.level2').addClass('collapsed');
     $('.level3').addClass('collapsed');
+    $('.level4').addClass('collapsed');
 
     $('.level2').hide();
     $('.level3').hide();
+    $('.level4').hide();
   });
 
   $('.level1').dblclick(function () {
     var itemid = $(this).attr('itemid');
     var sub_items = 'tr.level2-' + itemid;
     var sub_sub_items = 'tr.level3-' + itemid;
+    var sub_sub_sub_items = 'tr.level4-' + itemid;
 
     if ($(this).hasClass('collapsed')) {
       $(sub_items).show();
@@ -542,23 +605,42 @@
       $(sub_items).hide();
       $(sub_items).addClass('collapsed');
       $(sub_sub_items).hide();
+      $(sub_sub_sub_items).hide();
       $(this).addClass('collapsed');
+
+
     }
   });
 
   $('.level2').dblclick(function () {
     var itemid = $(this).attr('itemid');
     var sub_items = 'tr.level3-' + itemid;
+    var sub_sub_sub_items = 'tr.level4-' + itemid;
 
     if ($(this).hasClass('collapsed')) {
       $(sub_items).show();
       $(this).removeClass('collapsed');
     } else {
       $(sub_items).hide();
+      $(sub_sub_sub_items).hide();
       $(this).addClass('collapsed');
     }
   });
+    $('.level3').dblclick(function () {
+    var itemid = $(this).attr('itemid');
+    var sub_items = 'tr.level4-' + itemid;
+    var sub_sub_sub_items = 'tr.level4-' + itemid;
 
+    if ($(this).hasClass('collapsed')) {
+      $(sub_items).show();
+      $(this).removeClass('collapsed');
+    } else {
+      $(sub_items).hide();
+      $(sub_sub_sub_items).hide();
+
+      $(this).addClass('collapsed');
+    }
+  });
 function download_csv(csv, filename) {
     var csvFile;
     var downloadLink;
@@ -603,9 +685,10 @@ function download_csv(csv, filename) {
     export_table_to_csv(html, file_name);
   });
 
+
 </script>
 
- <script>
+<script>
  $('#filter_month').on('change', function() {
 
       var partnerId=$("#filter_partners").val();
@@ -854,6 +937,7 @@ function download_csv(csv, filename) {
     }
 
  });
-  </script>
+
+</script>
 
 {% endblock %}

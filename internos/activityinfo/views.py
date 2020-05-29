@@ -338,7 +338,7 @@ class ReportCrisisView(TemplateView):
 
         ).distinct()
 
-        covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=True).values(
+        covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_imported=True).values(
             'id',
             'ai_id',
             'name',
@@ -366,8 +366,10 @@ class ReportCrisisView(TemplateView):
             'activity',
             'tag_focus',
             'tag_focus__label',
-            'hpm_global_indicator'
+            'hpm_global_indicator',
         ).distinct()
+
+        start_month = 4   # used to get cumulative values starting this month for covid reporting
 
         months = []
         if selected_months is not None and len(selected_months) > 0:
@@ -398,7 +400,8 @@ class ReportCrisisView(TemplateView):
             'selected_months': selected_months,
             'sections': sections,
             'selected_sections': selected_sections,
-            'selected_type': selected_type
+            'selected_type': selected_type,
+            'start_month':start_month
         }
 
 

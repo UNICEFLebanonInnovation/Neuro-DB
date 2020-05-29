@@ -231,10 +231,10 @@
                 </td>
                 {% endfor %}
               </tr>
-              {% get_sub_indicators_data item.id as sub_indicators %}
+              {% get_sub_indicators_data item.id False database as sub_indicators %}
               {% for item1 in sub_indicators %}
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
-                  {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
+                  {% if item1.master_indicator_sub %}style="background-image:linear-gradient(#ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);  border-bottom:2px solid #fff"
                   {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
                 <td class="w-150">
                   {{ item1.name }}
@@ -289,7 +289,7 @@
                 </td>
                 {% endfor %}
               </tr>
-              {% get_sub_indicators_data item1.id as sub_indicators1 %}
+              {% get_sub_indicators_data item1.id False database as sub_indicators1 %}
               {% for item2 in sub_indicators1 %}
               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
               <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"

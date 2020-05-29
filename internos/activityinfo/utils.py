@@ -616,7 +616,10 @@ def calculate_indicators_values(ai_db, report_type=None):
     reset_indicators_values(ai_db.ai_id, report_type)
     print('calculate_individual_indicators_values_2')
     if report_type == 'live':
-        calculate_individual_indicators_values_2(ai_db)
+        # calculate live values totally for all dbs
+        calculate_individual_indicators_values_2(ai_db,False)
+        # calculate live values for support covid reportings for all dbs supporting covid
+        calculate_individual_indicators_values_2(ai_db, True)
     elif report_type == 'weekly':
         calculate_individual_indicators_weekly_values(ai_db)
     else:
@@ -867,8 +870,9 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
         "ai.values_partners_gov, ai.values_partners_gov_live , ai.values_sections, ai.values_sections_live, "
         "ai.values_sections_partners, ai.values_sections_partners_live, ai.values_sections_gov, "
         "ai.values_sections_gov_live, ai.values_sections_partners_gov, "
-        "ai.values_sections_partners_gov_live , ai.values_weekly ,ai.values_gov_weekly, ai.values_partners_gov_weekly,  "
-        "ai.values_cumulative_weekly  FROM public.activityinfo_indicator ai, public.activityinfo_activity aa "
+        "ai.values_sections_partners_gov_live , ai.values_weekly ,ai.values_gov_weekly,ai.values_partners_weekly, "
+        "ai.values_partners_gov_weekly "
+        "  FROM public.activityinfo_indicator ai, public.activityinfo_activity aa "
         "WHERE ai.activity_id = aa.id AND aa.database_id = %s",
         [ai_db.id])
 
@@ -980,41 +984,45 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
             if values4:
                 for key, value in values4.items():
                     keys = key.split('-')
-                    section = keys[1]
-                    if section in values_sections:
-                        values_sections[section] = values_sections[section] + value
-                    else:
-                        values_sections[section] = value
+                    if len(keys) == 2:
+                        section = keys[1]
+                        if section in values_sections:
+                            values_sections[section] = values_sections[section] + value
+                        else:
+                            values_sections[section] = value
 
             if values5:
                 for key, value in values5.items():
                     keys = key.split('-')
-                    section_partner = '{}-{}'.format(keys[1], keys[2])
-                    if section_partner in values_sections_partners:
-                        values_sections_partners[section_partner] = values_sections_partners[section_partner] + value
-                    else:
-                        values_sections_partners[section_partner] = value
+                    if len(keys)== 3 :
+                        section_partner = '{}-{}'.format(keys[1], keys[2])
+                        if section_partner in values_sections_partners:
+                            values_sections_partners[section_partner] = values_sections_partners[section_partner] + value
+                        else:
+                            values_sections_partners[section_partner] = value
 
 
             if values6:
                 for key, value in values6.items():
                     keys = key.split('-')
-                    section_gov = '{}-{}'.format(keys[1], keys[2])
-                    if section_gov in values_sections_gov:
-                        values_sections_gov[section_gov] = values_sections_gov[section_gov] + value
-                    else:
-                        values_sections_gov[section_gov] = value
+                    if len(keys)==3:
+                        section_gov = '{}-{}'.format(keys[1], keys[2])
+                        if section_gov in values_sections_gov:
+                            values_sections_gov[section_gov] = values_sections_gov[section_gov] + value
+                        else:
+                            values_sections_gov[section_gov] = value
 
 
             if values7:
                 for key, value in values7.items():
                     keys = key.split('-')
-                    section_partner_gov = '{}-{}-{}'.format(keys[1], keys[2], keys[3])
-                    if section_partner_gov in values_sections_partners_gov:
-                        values_sections_partners_gov[section_partner_gov] = values_sections_partners_gov[
-                                                                                section_partner_gov] + value
-                    else:
-                        values_sections_partners_gov[section_partner_gov] = value
+                    if len(keys) == 4:
+                        section_partner_gov = '{}-{}-{}'.format(keys[1], keys[2], keys[3])
+                        if section_partner_gov in values_sections_partners_gov:
+                            values_sections_partners_gov[section_partner_gov] = values_sections_partners_gov[
+                                                                                    section_partner_gov] + value
+                        else:
+                            values_sections_partners_gov[section_partner_gov] = value
 
             if report_type == 'live':
                 indicator.cumulative_values_live = {
@@ -2469,53 +2477,60 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
                                               master_indicator=True)
 
     indicators = indicators.only(
-        'summation_sub_indicators',
-        'values',
-        'values_gov',
-        'values_partners',
-        'values_partners_gov',
-        'values_live',
-        'values_gov_live',
-        'values_partners_live',
-        'values_partners_gov_live',
-        'values_hpm',
-        'values_sections',
-        'values_sections_partners',
-        'values_sections_gov',
-        'values_sections_partners_gov',
-        'values_sections_live',
-        'values_sections_partners_live',
-        'values_sections_gov_live',
-        'values_sections_partners_gov_live',
-        'values_weekly',
-        'values_gov_weekly',
-        'values_partners_weekly',
-        'values_partners_gov_weekly',
-
+            'id',
+            'values',
+            'values_gov',
+            'values_partners',
+            'values_partners_gov',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'values_sections',
+            'values_sections_partners',
+            'values_sections_gov',
+            'values_sections_partners_gov',
+            'values_sections_live',
+            'values_sections_partners_live',
+            'values_sections_gov_live',
+            'values_sections_partners_gov_live',
+            'values_weekly',
+            'values_gov_weekly',
+            'values_partners_weekly',
+            'values_partners_gov_weekly',
+            'values_crisis_live',
+            'values_crisis_gov_live',
+            'values_crisis_partners_live',
+            'values_crisis_partners_gov_live',
     )
+
+    new_list = []
+    for ind in indicators:
+        value = ind.id
+        new_list.append(value)
+
+    ids_condition = ','.join((str(n) for n in new_list))
 
     rows_data = {}
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT distinct a1.id, a1.ai_indicator, ai.ai_indicator, ai.id, ai.values, ai.values_live, "
+        "SELECT distinct a1.id, ai.id, ai.values, ai.values_live, "
         "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, ai.values_partners_gov, "
         "ai.values_partners_gov_live, ai.values_sections, ai.values_sections_live, ai.values_sections_partners, "
         "ai.values_sections_partners_live, ai.values_sections_gov, ai.values_sections_gov_live, ai.values_sections_partners_gov,  "
         "ai.values_sections_partners_gov_live, ai.values_weekly ,ai.values_gov_weekly, ai.values_partners_weekly, "
-        "ai.values_partners_gov_weekly, ai.values_cumulative_weekly, "
-        "a1.master_indicator, a1.master_indicator_sub "
-        "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, "
+        "ai.values_partners_gov_weekly ,ai.values_crisis_live , ai.values_crisis_gov_live , "
+        "ai.values_crisis_partners_live ,ai.values_crisis_partners_gov_live , ai.values_crisis_cumulative_live "
+        "FROM public.activityinfo_indicator a1, "
         "public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator ai "
-        "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id "
-        "AND aa.database_id = %s AND (a1.master_indicator = true or a1.master_indicator_sub = true)",
-        [ai_db.id])
+        "where ai.id= ais.from_indicator_id and a1.id=ais.to_indicator_id and a1.id in  ("+ ids_condition + ")")
 
     rows = cursor.fetchall()
     for row in rows:
         if row[0] not in rows_data:
             rows_data[row[0]] = {}
 
-        rows_data[row[0]][row[3]] = row
+        rows_data[row[0]][row[1]] = row
 
     for indicator in indicators.iterator():
         values_month = {}
@@ -2526,6 +2541,10 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
         values_sections_partners = {}
         values_sections_gov = {}
         values_sections_partners_gov = {}
+        values_crisis_live = {}
+        values_crisis_partners = {}
+        values_crisis_govs = {}
+        values_crisis_govs_partners = {}
 
         if indicator.id in rows_data:
             indicator_values = rows_data[indicator.id]
@@ -2533,33 +2552,39 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
                 sub_indicator_values = indicator_values[key]
 
                 if report_type == 'live':
-                    values = sub_indicator_values[5]  # values_live
-                    values1 = sub_indicator_values[7]  # values_gov_live
-                    values2 = sub_indicator_values[9]  # values_partners_live
-                    values3 = sub_indicator_values[11]  # values_partners_gov_live
-                    values4 = sub_indicator_values[13]  # values_sections_live
-                    values5 = sub_indicator_values[15]  # values_sections_partners_live
-                    values6 = sub_indicator_values[17]  # values_sections_gov_live
-                    values7 = sub_indicator_values[19]  # values_sections_partners_gov_live
+                    values = sub_indicator_values[3]  # values_live
+                    values1 = sub_indicator_values[5]  # values_gov_live
+                    values2 = sub_indicator_values[7]  # values_partners_live
+                    values3 = sub_indicator_values[9]  # values_partners_gov_live
+                    values4 = sub_indicator_values[11]  # values_sections_live
+                    values5 = sub_indicator_values[13]  # values_sections_partners_live
+                    values6 = sub_indicator_values[15]  # values_sections_gov_live
+                    values7 = sub_indicator_values[17]  # values_sections_partners_gov_live
+
+                    if ai_db.support_covid:
+                        values8 = sub_indicator_values[22]  # values_crisis_live
+                        values9 = sub_indicator_values[23]  # values_crisis_gov_live
+                        values10 = sub_indicator_values[24]  # values_crisis_partners_live
+                        values11 = sub_indicator_values[25]  # values_crisis_partners_gov_live
 
                 elif report_type == 'weekly':
-                    values = sub_indicator_values[20]  # values_weekly
-                    values1 = sub_indicator_values[21]  # values_gov_weekly
-                    values2 = sub_indicator_values[22]  # values_partners_weekly
-                    values3 = sub_indicator_values[23]  # values_partners_gov_weekly
+                    values = sub_indicator_values[18]  # values_weekly
+                    values1 = sub_indicator_values[19]  # values_gov_weekly
+                    values2 = sub_indicator_values[20]  # values_partners_weekly
+                    values3 = sub_indicator_values[21]  # values_partners_gov_weekly
                     values4 = sub_indicator_values[12]  # values_sections
                     values5 = sub_indicator_values[14]  # values_sections_partners
                     values6 = sub_indicator_values[16]  # values_sections_gov
                     values7 = sub_indicator_values[18]  # values_sections_partners_gov
                 else:
-                    values = sub_indicator_values[4]  # values
-                    values1 = sub_indicator_values[6]  # values_gov
-                    values2 = sub_indicator_values[8]  # values_partners
-                    values3 = sub_indicator_values[10]  # values_partners_gov
-                    values4 = sub_indicator_values[12]  # values_sections
-                    values5 = sub_indicator_values[14]  # values_sections_partners
-                    values6 = sub_indicator_values[16]  # values_sections_gov
-                    values7 = sub_indicator_values[18]  # values_sections_partners_gov
+                    values = sub_indicator_values[2]  # values
+                    values1 = sub_indicator_values[4]  # values_gov
+                    values2 = sub_indicator_values[6]  # values_partners
+                    values3 = sub_indicator_values[8]  # values_partners_gov
+                    values4 = sub_indicator_values[10]  # values_sections
+                    values5 = sub_indicator_values[12]  # values_sections_partners
+                    values6 = sub_indicator_values[14]  # values_sections_gov
+                    values7 = sub_indicator_values[16]  # values_sections_partners_gov
 
                 for key in values:
                     val = values[key]
@@ -2615,6 +2640,33 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
                             val = values_sections_partners_gov[key] + val
                         values_sections_partners_gov[key] = val
 
+                if ai_db.support_covid:
+                    if values8:
+                        for key in values8:
+                            val = values8[key]
+                            if key in values_crisis_live:
+                                val = values_crisis_live[key] + val
+                            values_crisis_live[key] = val
+                    if values9:
+                        for key in values9:
+                            val = values9[key]
+                            if key in values_crisis_govs:
+                                val = values_crisis_govs[key] + val
+                            values_crisis_govs[key] = val
+                    if values10:
+                        for key in values10:
+                            val = values10[key]
+                            if key in values_crisis_partners:
+                                val = values_crisis_partners[key] + val
+                            values_crisis_partners[key] = val
+
+                    if values11:
+                        for key in values11:
+                            val = values11[key]
+                            if key in values_crisis_govs_partners:
+                                val = values_crisis_govs_partners[key] + val
+                            values_crisis_govs_partners[key] = val
+
                 if report_type == 'live':
                     indicator.values_live = values_month
                     indicator.values_gov_live = values_gov
@@ -2624,6 +2676,11 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
                     indicator.values_sections_partners_live = values_sections_partners
                     indicator.values_sections_gov_live = values_sections_gov
                     indicator.values_sections_partners_gov_live = values_sections_partners_gov
+                    if ai_db.support_covid:
+                        indicator.values_crisis_live = values_crisis_live
+                        indicator.values_crisis_partners_live = values_crisis_partners
+                        indicator.values_crisis_gov_live = values_crisis_govs
+                        indicator.values_crisis_partners_gov_live = values_crisis_govs_partners
 
                 elif report_type == 'weekly':
                     indicator.values_weekly = values_month
@@ -3776,92 +3833,94 @@ def calculate_individual_indicators_values_1(ai_db):
             key = "{}-{}-{}".format(month, row[2], row[3])
             rows_partners_govs[row[0]][key] = row[1]
 
-        if ai_db.is_funded_by_unicef:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
-                "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
-                "GROUP BY indicator_id, reporting_section",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
-                "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
-                "GROUP BY indicator_id, reporting_section",
-                [month, ai_id])
-        rows = cursor.fetchall()
-        for row in rows:
-            if row[0] not in rows_sections:
-                rows_sections[row[0]] = {}
-            key = "{}-{}".format(month, row[2])
-            rows_sections[row[0]][key] = row[1]
+        if ai_db.have_sections:
 
-        if ai_db.is_funded_by_unicef:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
-                "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
-                "GROUP BY indicator_id, reporting_section ,partner_id",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
-                "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
-                "GROUP BY indicator_id, reporting_section ,partner_id",
-                [month, ai_id])
-        rows = cursor.fetchall()
-        for row in rows:
-            if row[0] not in rows_sections_partners:
-                rows_sections_partners[row[0]] = {}
-            key = "{}-{}-{}".format(month, row[2], row[3])
-            rows_sections_partners[row[0]][key] = row[1]
+            if ai_db.is_funded_by_unicef:
+                cursor.execute(
+                    "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
+                    "FROM activityinfo_activityreport "
+                    "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                    "GROUP BY indicator_id, reporting_section",
+                    [month, ai_id, 'UNICEF'])
+            else:
+                cursor.execute(
+                    "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
+                    "FROM activityinfo_activityreport "
+                    "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                    "GROUP BY indicator_id, reporting_section",
+                    [month, ai_id])
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[0] not in rows_sections:
+                    rows_sections[row[0]] = {}
+                key = "{}-{}".format(month, row[2])
+                rows_sections[row[0]][key] = row[1]
 
-        if ai_db.is_funded_by_unicef:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
-                "location_adminlevel_governorate_code "
-                "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
-                "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
-                "location_adminlevel_governorate_code "
-                "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
-                "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
-                [month, ai_id])
-        rows = cursor.fetchall()
-        for row in rows:
-            if row[0] not in rows_sections_gov:
-                rows_sections_gov[row[0]] = {}
-            key = "{}-{}-{}".format(month, row[2], row[3])
-            rows_sections_gov[row[0]][key] = row[1]
+            if ai_db.is_funded_by_unicef:
+                cursor.execute(
+                    "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
+                    "FROM activityinfo_activityreport "
+                    "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                    "GROUP BY indicator_id, reporting_section ,partner_id",
+                    [month, ai_id, 'UNICEF'])
+            else:
+                cursor.execute(
+                    "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
+                    "FROM activityinfo_activityreport "
+                    "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                    "GROUP BY indicator_id, reporting_section ,partner_id",
+                    [month, ai_id])
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[0] not in rows_sections_partners:
+                    rows_sections_partners[row[0]] = {}
+                key = "{}-{}-{}".format(month, row[2], row[3])
+                rows_sections_partners[row[0]][key] = row[1]
 
-        if ai_db.is_funded_by_unicef:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
-                "location_adminlevel_governorate_code, partner_id "
-                "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
-                "GROUP BY indicator_id, reporting_section , partner_id ,location_adminlevel_governorate_code",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section , partner_id, location_adminlevel_governorate_code "
-                "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
-                "GROUP BY indicator_id, reporting_section ,partner_id , location_adminlevel_governorate_code",
-                [month, ai_id])
-        rows = cursor.fetchall()
-        for row in rows:
-            if row[0] not in rows_sections_partners_gov:
-                rows_sections_partners_gov[row[0]] = {}
-            key = "{}-{}-{}-{}".format(month, row[2], row[3], row[4])
-            rows_sections_partners_gov[row[0]][key] = row[1]
+            if ai_db.is_funded_by_unicef:
+                cursor.execute(
+                    "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
+                    "location_adminlevel_governorate_code "
+                    "FROM activityinfo_activityreport "
+                    "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                    "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
+                    [month, ai_id, 'UNICEF'])
+            else:
+                cursor.execute(
+                    "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
+                    "location_adminlevel_governorate_code "
+                    "FROM activityinfo_activityreport "
+                    "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                    "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
+                    [month, ai_id])
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[0] not in rows_sections_gov:
+                    rows_sections_gov[row[0]] = {}
+                key = "{}-{}-{}".format(month, row[2], row[3])
+                rows_sections_gov[row[0]][key] = row[1]
+
+            if ai_db.is_funded_by_unicef:
+                cursor.execute(
+                    "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
+                    "location_adminlevel_governorate_code, partner_id "
+                    "FROM activityinfo_activityreport "
+                    "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                    "GROUP BY indicator_id, reporting_section , partner_id ,location_adminlevel_governorate_code",
+                    [month, ai_id, 'UNICEF'])
+            else:
+                cursor.execute(
+                    "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section , partner_id, location_adminlevel_governorate_code "
+                    "FROM activityinfo_activityreport "
+                    "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                    "GROUP BY indicator_id, reporting_section ,partner_id , location_adminlevel_governorate_code",
+                    [month, ai_id])
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[0] not in rows_sections_partners_gov:
+                    rows_sections_partners_gov[row[0]] = {}
+                key = "{}-{}-{}-{}".format(month, row[2], row[3], row[4])
+                rows_sections_partners_gov[row[0]][key] = row[1]
 
     for indicator in indicators.iterator():
         if indicator.ai_indicator in rows_months:
@@ -3894,7 +3953,7 @@ def calculate_individual_indicators_values_1(ai_db):
         indicator.save()
 
 
-def calculate_individual_indicators_values_2(ai_db):
+def calculate_individual_indicators_values_2(ai_db,support_covid):
     from django.db import connection
     from internos.activityinfo.models import Indicator
 
@@ -3920,7 +3979,12 @@ def calculate_individual_indicators_values_2(ai_db):
         'values_sections_live',
         'values_sections_partners_live',
         'values_sections_gov_live',
-        'values_sections_partners_gov_live'
+        'values_sections_partners_gov_live',
+        'values_crisis_live',
+        'values_crisis_gov_live',
+        'values_crisis_partners_live',
+        'values_crisis_partners_gov_live',
+        'values_crisis_cumulative_live'
     )
 
     rows_months = {}
@@ -3933,22 +3997,24 @@ def calculate_individual_indicators_values_2(ai_db):
     rows_sections_partners_gov = {}
 
     cursor = connection.cursor()
+    covid_condition = ""
+
+    if ai_db.support_covid and support_covid:
+        covid_condition = "AND support_covid = true "
+
+    funded_condition = ""
+
+    if ai_db.is_funded_by_unicef:
+        funded_condition = "AND funded_by = 'UNICEF' "
+
+    query_condition = " WHERE date_part('month', start_date) = %s AND database_id = %s " + funded_condition + covid_condition
+
     for month in range(1, last_month):
         month = str(month)
-        if ai_db.is_funded_by_unicef:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
-                "GROUP BY indicator_id",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
-                "GROUP BY indicator_id",
-                [month, ai_id])
+        cursor.execute("SELECT indicator_id, SUM(indicator_value) as indicator_value "
+                       "FROM activityinfo_liveactivityreport "
+                       + query_condition +
+                       " GROUP BY indicator_id", [month, ai_id])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -3956,20 +4022,12 @@ def calculate_individual_indicators_values_2(ai_db):
                 rows_months[row[0]] = {}
             rows_months[row[0]][month] = row[1]
 
-        if ai_db.is_funded_by_unicef:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
-                "GROUP BY indicator_id, location_adminlevel_governorate_code",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
-                "GROUP BY indicator_id, location_adminlevel_governorate_code",
-                [month, ai_id])
+        cursor.execute(
+            "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code"
+            " FROM activityinfo_liveactivityreport "
+            + query_condition +
+            "GROUP BY indicator_id, location_adminlevel_governorate_code", [month, ai_id])
+
         rows = cursor.fetchall()
 
         for row in rows:
@@ -3978,20 +4036,13 @@ def calculate_individual_indicators_values_2(ai_db):
             key = "{}-{}".format(month, row[2])
             rows_govs[row[0]][key] = row[1]
 
-        if ai_db.is_funded_by_unicef:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
-                "GROUP BY indicator_id, partner_id",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
-                "GROUP BY indicator_id, partner_id",
-                [month, ai_id])
+        cursor.execute(
+            "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
+            "FROM activityinfo_liveactivityreport "
+            + query_condition +
+            "GROUP BY indicator_id, partner_id",
+            [month, ai_id])
+
         rows = cursor.fetchall()
 
         for row in rows:
@@ -4000,137 +4051,127 @@ def calculate_individual_indicators_values_2(ai_db):
             key = "{}-{}".format(month, row[2])
             rows_partners[row[0]][key] = row[1]
 
-        if ai_db.is_funded_by_unicef:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
-                "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
-                "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
-                [month, ai_id])
-        rows = cursor.fetchall()
+        cursor.execute(
+            "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
+            "FROM activityinfo_liveactivityreport "
+            + query_condition +
+            "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
+            [month, ai_id])
 
+        rows = cursor.fetchall()
         for row in rows:
             if row[0] not in rows_partners_govs:
                 rows_partners_govs[row[0]] = {}
             key = "{}-{}-{}".format(month, row[2], row[3])
             rows_partners_govs[row[0]][key] = row[1]
 
-        if ai_db.is_funded_by_unicef:
+        if ai_db.have_sections:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
-                "GROUP BY indicator_id, reporting_section",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                + query_condition +
                 "GROUP BY indicator_id, reporting_section",
                 [month, ai_id])
-        rows = cursor.fetchall()
-        for row in rows:
-            if row[0] not in rows_sections:
-                rows_sections[row[0]] = {}
-            key = "{}-{}".format(month, row[2])
-            rows_sections[row[0]][key] = row[1]
 
-        if ai_db.is_funded_by_unicef:
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[0] not in rows_sections:
+                    rows_sections[row[0]] = {}
+                key = "{}-{}".format(month, row[2])
+                rows_sections[row[0]][key] = row[1]
+
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
-                "GROUP BY indicator_id, reporting_section ,partner_id",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                + query_condition +
                 "GROUP BY indicator_id, reporting_section ,partner_id",
                 [month, ai_id])
-        rows = cursor.fetchall()
-        for row in rows:
-            if row[0] not in rows_sections_partners:
-                rows_sections_partners[row[0]] = {}
-            key = "{}-{}-{}".format(month, row[2], row[3])
-            rows_sections_partners[row[0]][key] = row[1]
 
-        if ai_db.is_funded_by_unicef:
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[0] not in rows_sections_partners:
+                    rows_sections_partners[row[0]] = {}
+                key = "{}-{}-{}".format(month, row[2], row[3])
+                rows_sections_partners[row[0]][key] = row[1]
+
             cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,location_adminlevel_governorate_code "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
-                "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,location_adminlevel_governorate_code "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
+                "location_adminlevel_governorate_code "
+                "FROM activityinfo_activityreport "
+                + query_condition +
                 "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
                 [month, ai_id])
-        rows = cursor.fetchall()
-        for row in rows:
-            if row[0] not in rows_sections_gov:
-                rows_sections_gov[row[0]] = {}
-            key = "{}-{}-{}".format(month, row[2], row[3])
-            rows_sections_gov[row[0]][key] = row[1]
 
-        if ai_db.is_funded_by_unicef:
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[0] not in rows_sections_gov:
+                    rows_sections_gov[row[0]] = {}
+                key = "{}-{}-{}".format(month, row[2], row[3])
+                rows_sections_gov[row[0]][key] = row[1]
+
             cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section , "
-                "location_adminlevel_governorate_code ,partner_id "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
+                "location_adminlevel_governorate_code, partner_id "
+                "FROM activityinfo_activityreport "
+                + query_condition +
                 "GROUP BY indicator_id, reporting_section , partner_id ,location_adminlevel_governorate_code",
-                [month, ai_id, 'UNICEF'])
-        else:
-            cursor.execute(
-                "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section , partner_id ,location_adminlevel_governorate_code "
-                "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
-                "GROUP BY indicator_id, reporting_section ,partner_id , location_adminlevel_governorate_code",
                 [month, ai_id])
-        rows = cursor.fetchall()
-        for row in rows:
-            if row[0] not in rows_sections_partners_gov:
-                rows_sections_partners_gov[row[0]] = {}
-            key = "{}-{}-{}-{}".format(month, row[2], row[3], row[4])
-            rows_sections_partners_gov[row[0]][key] = row[1]
+
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[0] not in rows_sections_partners_gov:
+                    rows_sections_partners_gov[row[0]] = {}
+                key = "{}-{}-{}-{}".format(month, row[2], row[3], row[4])
+                rows_sections_partners_gov[row[0]][key] = row[1]
 
     for indicator in indicators.iterator():
         if indicator.ai_indicator in rows_months:
-            indicator.values_live = rows_months[indicator.ai_indicator]
+            if ai_db.support_covid and support_covid:
+                indicator.values_crisis_live = rows_months[indicator.ai_indicator]
+            else:
+                indicator.values_live = rows_months[indicator.ai_indicator]
 
         if indicator.ai_indicator in rows_partners:
-            indicator.values_partners_live = rows_partners[indicator.ai_indicator]
+            if ai_db.support_covid and support_covid:
+                indicator.values_crisis_partners_live = rows_partners[indicator.ai_indicator]
+            else:
+                indicator.values_partners_live = rows_partners[indicator.ai_indicator]
 
         if indicator.ai_indicator in rows_govs:
-            indicator.values_gov_live = rows_govs[indicator.ai_indicator]
+            if ai_db.support_covid and support_covid:
+                indicator.values_crisis_gov_live = rows_govs[indicator.ai_indicator]
+            else:
+                indicator.values_gov_live = rows_govs[indicator.ai_indicator]
 
         if indicator.ai_indicator in rows_partners_govs:
-            indicator.values_partners_gov_live = rows_partners_govs[indicator.ai_indicator]
+            if ai_db.support_covid and support_covid:
+                indicator.values_crisis_partners_gov_live = rows_partners_govs[indicator.ai_indicator]
+            else:
+                indicator.values_partners_gov_live = rows_partners_govs[indicator.ai_indicator]
 
         if indicator.ai_indicator in rows_sections:
-            indicator.values_sections_live = rows_sections[indicator.ai_indicator]
+            if ai_db.support_covid and support_covid:
+                indicator.values_crisis_sections_live = rows_sections[indicator.ai_indicator]
+            else:
+                indicator.values_sections_live = rows_sections[indicator.ai_indicator]
 
         if indicator.ai_indicator in rows_sections_gov:
-            indicator.values_sections_gov_live = rows_sections_gov[indicator.ai_indicator]
+            if ai_db.support_covid and support_covid:
+                indicator.values_crisis_sections_gov_live = rows_sections_gov[indicator.ai_indicator]
+            else:
+                indicator.values_sections_gov_live = rows_sections_gov[indicator.ai_indicator]
 
         if indicator.ai_indicator in rows_sections_partners:
-            indicator.values_sections_partners_live = rows_sections_partners[indicator.ai_indicator]
+            if ai_db.support_covid and support_covid:
+                indicator.values_crisis_sections_partners_live = rows_sections_partners[indicator.ai_indicator]
+            else:
+                indicator.values_sections_partners_live = rows_sections_partners[indicator.ai_indicator]
 
         if indicator.ai_indicator in rows_sections_partners_gov:
-            indicator.values_sections_partners_gov_live = rows_sections_partners_gov[indicator.ai_indicator]
+            if ai_db.support_covid and support_covid:
+                indicator.values_crisis_sections_partners_gov_live = rows_sections_partners_gov[indicator.ai_indicator]
+            else:
+                indicator.values_sections_partners_gov_live = rows_sections_partners_gov[indicator.ai_indicator]
 
         indicator.save()
 
