@@ -418,7 +418,8 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'is_section',
                 'support_disability',
                 'support_COVID',
-                'is_cumulative'
+                'is_cumulative',
+                'targets',
             ]
         }),
         ('Tags', {
