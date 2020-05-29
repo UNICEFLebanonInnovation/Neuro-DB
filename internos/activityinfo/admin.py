@@ -400,6 +400,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'explication',
                 'activity',
                 'second_activity',
+                'third_activity',
                 'list_header',
                 'type',
                 'reporting_level',

@@ -57,7 +57,7 @@ urlpatterns = [
         name='report_crisis_tags'
     ),
     url(
-        regex=r'^report-crisis-visual/$',
+        regex=r'^COVID-19-Overview-Dashboard/$',
         view=views.ReportCrisisVisualView.as_view(),
         name='report_crisis_visual'
     ),

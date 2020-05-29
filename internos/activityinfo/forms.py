@@ -76,6 +76,12 @@ class IndicatorForm(forms.ModelForm):
         # queryset=Activity.objects.none(),
         widget=autocomplete.ModelSelect2(url='activity_autocomplete')
     )
+    third_activity = forms.ModelChoiceField(
+        required=False,
+        queryset=Activity.objects.filter(database__reporting_year__year=datetime.datetime.now().year),
+        # queryset=Activity.objects.none(),
+        widget=autocomplete.ModelSelect2(url='activity_autocomplete')
+    )
     # denominator_summation = forms.ModelMultipleChoiceField(
     #     required=False,
     #     queryset=Indicator.objects.all(),
@@ -101,11 +107,19 @@ class IndicatorForm(forms.ModelForm):
         super(IndicatorForm, self).__init__(*args, **kwargs)
 
         if self.instance and hasattr(self.instance, 'activity') and self.instance.activity and \
+           hasattr(self.instance, 'second_activity') and self.instance.second_activity and \
+           hasattr(self.instance, 'third_activity') and self.instance.third_activity:
+            queryset = Indicator.objects.filter(
+               Q(activity__database_id=self.instance.activity.database_id) |
+               Q(activity__database_id=self.instance.second_activity.database_id) |
+               Q(activity__database_id=self.instance.third_activity.database_id)
+            )
+
+        elif self.instance and hasattr(self.instance, 'activity') and self.instance.activity and \
            hasattr(self.instance, 'second_activity') and self.instance.second_activity:
             queryset = Indicator.objects.filter(
                Q(activity__database_id=self.instance.activity.database_id) |
                Q(activity__database_id=self.instance.second_activity.database_id)
-               # Q(second_activity__database_id=self.instance.second_activity.database_id)
             )
 
         elif self.instance and hasattr(self.instance, 'activity') and self.instance.activity:
