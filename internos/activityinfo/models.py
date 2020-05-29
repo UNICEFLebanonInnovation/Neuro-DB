@@ -379,6 +379,7 @@ class Indicator(models.Model):
     ai_id = models.PositiveIntegerField(blank=True, null=True)
     activity = models.ForeignKey(Activity, related_name='+')
     second_activity = models.ForeignKey(Activity, blank=True, null=True, related_name='+')
+    third_activity = models.ForeignKey(Activity, blank=True, null=True, related_name='+')
     name = models.CharField(max_length=5000)
     label = models.CharField(max_length=5000, blank=True, null=True)
     hpm_label = models.CharField(max_length=5000, blank=True, null=True)
