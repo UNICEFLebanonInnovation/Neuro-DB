@@ -278,10 +278,10 @@ def calculate_indicators_values(ai_db, report_type=None):
     calculate_master_indicators_values_denominator_multiplication(ai_db, report_type)
     print('calculate_indicators_values_percentage_1')
     calculate_indicators_values_percentage_1(ai_db, report_type)  # DONE
-    print('calculate_indicators_cumulative_results_1')
-    calculate_indicators_cumulative_results_1(ai_db, report_type)
     print('calculate_master_imported_indicators')
     calculate_master_imported_indicators(ai_db)
+    print('calculate_indicators_cumulative_results_1')
+    calculate_indicators_cumulative_results_1(ai_db, report_type)
     print('calculate_indicators_status')
     calculate_indicators_status(ai_db)
 
@@ -539,7 +539,6 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
         values_partners_weekly = {}
         values_gov_weekly = {}
         values_partners_gov_weekly = {}
-
 
         if indicator.id in rows_data:
             indicator_values = rows_data[indicator.id]
