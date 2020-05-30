@@ -395,6 +395,7 @@ class Indicator(models.Model):
     awp_code = models.CharField(max_length=1500, blank=True, null=True, verbose_name='RWP')
     awp_sector_code = models.CharField(max_length=1500, blank=True, null=True, verbose_name='RWP_Sector')
     target = models.PositiveIntegerField(default=0)
+    targets = JSONField(blank=True, null=True)
     target_sector = models.PositiveIntegerField(default=0)
     target_hpm = models.PositiveIntegerField(default=0)
     target_sub_total = models.PositiveIntegerField(default=0)

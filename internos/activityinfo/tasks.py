@@ -132,6 +132,7 @@ def import_data_and_generate_live_report(database):
         print('3. Calculate indicator values')
         calculate_indicators_values(db, report_type='live')
 
+
 @app.task
 def import_data_and_generate_weekly_report(database):
     from internos.activityinfo.models import Database
