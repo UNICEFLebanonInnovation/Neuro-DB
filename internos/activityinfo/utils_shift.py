@@ -263,9 +263,7 @@ def calculate_indicators_values(ai_db, report_type=None):
     reset_indicators_values(ai_db.ai_id, report_type)
     print('calculate_individual_indicators_values_2')
     if report_type == 'live':
-        # calculate live values totally for all dbs
         calculate_individual_indicators_values_2(ai_db,False)
-        # calculate live values for support covid reportings for all dbs supporting covid
         calculate_individual_indicators_values_2(ai_db, True)
     elif report_type == 'weekly':
         calculate_individual_indicators_weekly_values(ai_db)
@@ -3541,42 +3539,23 @@ def calculate_master_imported_indicators(ai_db):
     )
 
     rows_data = {}
-    linked_indicators = list(master_indicators)
+    linked_indicators = []
+
+    for ind in master_indicators:
+        value = ind.id
+        linked_indicators.append(value)
+
+    ids_condition = ', '.join((str(n) for n in linked_indicators))
 
     cursor = connection.cursor()
-    # cursor.execute("SELECT distinct ai.id,a1.id ,ai.values ,ai.values_gov, ai.values_partners, "
-    #                "ai.values_partners_gov "
-    #                "FROM public.activityinfo_activity aa, public.activityinfo_indicator a1, "
-    #                "public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator ai "
-    #                "WHERE ais.to_indicator_id = ai.id and ai.activity_id = aa.id AND aa.database_id <> %s "
-    #                "AND ais.from_indicator_id = a1.id and ais.from_indicator_id in %s" [str(ai_db.ai_id),linked_indicators])
-
-    #  todo option 1
-    cursor.execute("SELECT distinct ai.id,a1.id ,ai.values ,ai.values_gov, ai.values_partners, "
-                   "ai.values_partners_gov "
-                   "FROM public.activityinfo_activity aa, public.activityinfo_indicator a1, "
-                   "public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator ai "
-                   "WHERE ais.from_indicator_id in %s" [linked_indicators])
-
-    #  todo option 2
-    sub_indicators = Indicator.objects.filter(summation_top_indicator__in=linked_indicators)
-
-    #  todo option 3
-    sub_indicators = Indicator.objects.filter(summation_top_indicator__in=master_indicators)
-
-    sub_indicators = sub_indicators.only(
-        'id',
-        'values',
-        'values_gov',
-        'values_partners',
-        'values_partners_gov',
-        'values_weekly',
-        'values_gov_weekly',
-        'values_partners_weekly',
-        'values_partners_gov_weekly',
-    )
+    cursor.execute("SELECT distinct ai.id, a1.id, ai.values, ai.values_gov, ai.values_partners, ai.values_partners_gov "
+                   "ai.values_weekly, ai.values_gov_weekly, ai.values_partners_weekly, ai.values_partners_gov_weekly "
+                   "FROM public.activityinfo_indicator ai, public.activityinfo_indicator_sub_indicators ais, public.activityinfo_indicator a1 "
+                   "WHERE ai.id = ais.to_indicator_id and ais.from_indicator_id = a1.id "
+                   "and a1.id in ("+ids_condition+")")
 
     rows = cursor.fetchall()
+
     for row in rows:
         if row[0] not in rows_data:
             rows_data[row[0]] = {}
@@ -3594,10 +3573,10 @@ def calculate_master_imported_indicators(ai_db):
             for key, key_values in indicator_values.items():
                 sub_indicator_values = indicator_values[key]
 
-                values = sub_indicator_values[2]  # values_weekly
-                values1 = sub_indicator_values[3]  # values_gov_weekly
-                values2 = sub_indicator_values[4]  # values_partners_weekly
-                values3 = sub_indicator_values[5]  # values_partners_gov_weekly
+                values = sub_indicator_values[2] if sub_indicator_values[2] else sub_indicator_values[6]  # values_weekly
+                values1 = sub_indicator_values[3] if sub_indicator_values[3] else sub_indicator_values[7]  # values_gov_weekly
+                values2 = sub_indicator_values[4] if sub_indicator_values[4] else sub_indicator_values[8]  # values_partners_weekly
+                values3 = sub_indicator_values[5] if sub_indicator_values[5] else sub_indicator_values[9]  # values_partners_gov_weekly
 
             for key in values:
                 val = values[key]
