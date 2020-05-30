@@ -1048,7 +1048,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
     def calculate_indicators_values(self, request, queryset):
         for db in queryset:
-            reports = calculate_indicators_values(db)
+            reports = calculate_indicators_values(db,'weekly')
             self.message_user(
                 request,
                 "{} indicators values calculated for database {}".format(reports, db.name)
