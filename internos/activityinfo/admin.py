@@ -457,14 +457,38 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'summation_sub_indicators',
             ]
         }),
-        ('Calculated Values', {
+        ('Calculated Monthly Values', {
             'classes': ('suit-tab', 'suit-tab-report-values',),
             'fields': [
                 'values',
+                'values_sections',
+                'values_sections_partners',
+                'values_sections_gov',
+                'values_sections_partners_gov',
                 'values_gov',
                 'values_partners',
                 'values_partners_gov',
                 'cumulative_values',
+            ]
+        }),
+        ('Calculated Weekly Values', {
+            'classes': ('suit-tab', 'suit-tab-weekly-values',),
+            'fields': [
+                'values_weekly',
+                'values_gov_weekly',
+                'values_partners_weekly',
+                'values_partners_gov_weekly',
+                'values_cumulative_weekly',
+            ]
+        }),
+        ('Calculated Live Values', {
+            'classes': ('suit-tab', 'suit-tab-live-values',),
+            'fields': [
+                'values_live',
+                'values_gov_live',
+                'values_partners_live',
+                'values_partners_gov_live',
+                'cumulative_values_live',
             ]
         }),
         ('Calculated Values sector', {
@@ -486,16 +510,6 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'cumulative_values_hpm',
             ]
         }),
-        ('Calculated Values live', {
-            'classes': ('suit-tab', 'suit-tab-live-values',),
-            'fields': [
-                'values_live',
-                'values_gov_live',
-                'values_partners_live',
-                'values_partners_gov_live',
-                'cumulative_values_live',
-            ]
-        }),
         ('Partner Targets', {
             'classes': ('suit-tab', 'suit-tab-partner-targets',),
             'fields': [
@@ -505,10 +519,11 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
     suit_form_tabs = (
                       ('general', 'Indicator'),
-                      ('report-values', 'Report values'),
-                      ('report-values-sector', 'Report values sector'),
+                      ('report-values', 'Monthly Values'),
+                      ('weekly-values', 'Weekly Values'),
+                      ('live-values', 'Live Values'),
+                      ('report-values-sector', 'Sector Values'),
                       ('hpm-values', 'HPM values'),
-                      ('live-values', 'Live values'),
                       ('partner-targets', 'Partner Targets'),
                     )
 
