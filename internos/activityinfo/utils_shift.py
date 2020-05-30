@@ -3548,7 +3548,7 @@ def calculate_master_imported_indicators(ai_db):
     ids_condition = ', '.join((str(n) for n in linked_indicators))
 
     cursor = connection.cursor()
-    cursor.execute("SELECT distinct ai.id, a1.id, ai.values, ai.values_gov, ai.values_partners, ai.values_partners_gov, "
+    cursor.execute("SELECT distinct a1.id, ai.id, ai.values, ai.values_gov, ai.values_partners, ai.values_partners_gov, "
                    "ai.values_weekly, ai.values_gov_weekly, ai.values_partners_weekly, ai.values_partners_gov_weekly "
                    "FROM public.activityinfo_indicator ai, public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator a1 "
                    "WHERE ai.id = ais.to_indicator_id and ais.from_indicator_id = a1.id "
@@ -3578,35 +3578,34 @@ def calculate_master_imported_indicators(ai_db):
                 values2 = sub_indicator_values[4] if sub_indicator_values[4] else sub_indicator_values[8]  # values_partners_weekly
                 values3 = sub_indicator_values[5] if sub_indicator_values[5] else sub_indicator_values[9]  # values_partners_gov_weekly
 
-            for key in values:
-                val = values[key]
-                if key in values_month:
-                    val = values_month[key] + val
-                values_month[key] = val
+                for key in values:
+                    val = values[key]
+                    if key in values_month:
+                        val = values_month[key] + val
+                    values_month[key] = val
 
-            for key in values1:
+                for key in values1:
                     val = values1[key]
                     if key in values_gov:
                         val = values_gov[key] + val
                     values_gov[key] = val
 
-            for key in values2:
+                for key in values2:
                     val = values2[key]
 
                     if key in values_partners:
                         val = values_partners[key] + val
                     values_partners[key] = val
 
-            for key in values3:
+                for key in values3:
                     val = values3[key]
                     if key in values_partners_gov:
                         val = values_partners_gov[key] + val
                     values_partners_gov[key] = val
 
-            indicator.values_weekly = values_month
-            indicator.values_gov_weekly = values_gov
-            indicator.values_partners_weekly = values_partners
-            indicator.values_partners_gov_weekly = values_partners_gov
+                indicator.values_weekly = values_month
+                indicator.values_gov_weekly = values_gov
+                indicator.values_partners_weekly = values_partners
+                indicator.values_partners_gov_weekly = values_partners_gov
 
-            indicator.save()
-
+                indicator.save()
