@@ -898,10 +898,6 @@ def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
         values_gov_weekly = {}
         values_partners_gov_weekly = {}
 
-        values8 = ""
-        values9 = ""
-        values10 = ""
-        values11 = ""
 
         if indicator.id in rows_data:
             indicator_values = rows_data[indicator.id]
@@ -3591,53 +3587,31 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
             'values_crisis_partners_gov_live',
     )
 
-    new_list = []
-    if indicators:
-        for ind in indicators:
-            value = ind.id
-            new_list.append(value)
+    rows_data = {}
+    cursor = connection.cursor()
+    cursor.execute(
+             "SELECT distinct a1.id, ai.id, ai.values, ai.values_live, "
+            "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, ai.values_partners_gov, "
+            "ai.values_partners_gov_live, ai.values_sections, ai.values_sections_live, ai.values_sections_partners, "
+            "ai.values_sections_partners_live, ai.values_sections_gov, ai.values_sections_gov_live, ai.values_sections_partners_gov,  "
+            "ai.values_sections_partners_gov_live, ai.values_weekly ,ai.values_gov_weekly, ai.values_partners_weekly, "
+            "ai.values_partners_gov_weekly ,ai.values_crisis_live , ai.values_crisis_gov_live , "
+            "ai.values_crisis_partners_live ,ai.values_crisis_partners_gov_live , ai.values_crisis_cumulative_live, "
+            "a1.master_indicator, a1.master_indicator_sub "
+            "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, "
+            "public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator ai "
+            "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id "
+            "AND aa.database_id = %s AND (a1.master_indicator = true or a1.master_indicator_sub = true)",
+            [ai_db.id])
 
-        ids_condition = ','.join((str(n) for n in new_list))
-
-        rows_data = {}
-        cursor = connection.cursor()
-
-        if ai_db.support_covid:
-            cursor.execute(
-                 "SELECT distinct a1.id, ai.id, ai.values, ai.values_live, "
-                "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, ai.values_partners_gov, "
-                "ai.values_partners_gov_live, ai.values_sections, ai.values_sections_live, ai.values_sections_partners, "
-                "ai.values_sections_partners_live, ai.values_sections_gov, ai.values_sections_gov_live, ai.values_sections_partners_gov,  "
-                "ai.values_sections_partners_gov_live, ai.values_weekly ,ai.values_gov_weekly, ai.values_partners_weekly, "
-                "ai.values_partners_gov_weekly ,ai.values_crisis_live , ai.values_crisis_gov_live , "
-                "ai.values_crisis_partners_live ,ai.values_crisis_partners_gov_live , ai.values_crisis_cumulative_live, "
-                "a1.master_indicator, a1.master_indicator_sub "
-                "FROM public.activityinfo_indicator a1, public.activityinfo_activity aa, "
-                "public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator ai "
-                "WHERE ai.activity_id = aa.id AND a1.id = ais.from_indicator_id AND ais.to_indicator_id = ai.id "
-                "AND aa.database_id = %s AND (a1.master_indicator = true or a1.master_indicator_sub = true)",
-                [ai_db.id])
-        else:
-            cursor.execute(
-                "SELECT distinct a1.id, ai.id, ai.values, ai.values_live, "
-                "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, ai.values_partners_gov, "
-                "ai.values_partners_gov_live, ai.values_sections, ai.values_sections_live, ai.values_sections_partners, "
-                "ai.values_sections_partners_live, ai.values_sections_gov, ai.values_sections_gov_live, ai.values_sections_partners_gov,  "
-                "ai.values_sections_partners_gov_live, ai.values_weekly ,ai.values_gov_weekly, ai.values_partners_weekly, "
-                "ai.values_partners_gov_weekly ,ai.values_crisis_live , ai.values_crisis_gov_live , "
-                "ai.values_crisis_partners_live ,ai.values_crisis_partners_gov_live , ai.values_crisis_cumulative_live "
-                "FROM public.activityinfo_indicator a1, "
-                "public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator ai "
-                "where ai.id= ais.from_indicator_id and a1.id=ais.to_indicator_id and a1.id in  ("+ ids_condition + ")")
-
-        rows = cursor.fetchall()
-        for row in rows:
+    rows = cursor.fetchall()
+    for row in rows:
             if row[0] not in rows_data:
                 rows_data[row[0]] = {}
 
             rows_data[row[0]][row[1]] = row
 
-        for indicator in indicators.iterator():
+    for indicator in indicators.iterator():
             values_month = {}
             values_partners = {}
             values_gov = {}
@@ -3646,19 +3620,10 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
             values_sections_partners = {}
             values_sections_gov = {}
             values_sections_partners_gov = {}
-            values_crisis_live = {}
-            values_crisis_partners = {}
-            values_crisis_govs = {}
-            values_crisis_govs_partners = {}
             values_weekly = {}
             values_partners_weekly ={}
             values_gov_weekly ={}
             values_partners_gov_weekly={}
-
-            values8=""
-            values9=""
-            values10=""
-            values11=""
 
             if indicator.id in rows_data:
                 indicator_values = rows_data[indicator.id]
@@ -3674,12 +3639,6 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
                         values5 = sub_indicator_values[13]  # values_sections_partners_live
                         values6 = sub_indicator_values[15]  # values_sections_gov_live
                         values7 = sub_indicator_values[17]  # values_sections_partners_gov_live
-
-                        if ai_db.support_covid:
-                            values8 = sub_indicator_values[22]  # values_crisis_live
-                            values9 = sub_indicator_values[23]  # values_crisis_gov_live
-                            values10 = sub_indicator_values[24]  # values_crisis_partners_live
-                            values11 = sub_indicator_values[25]  # values_crisis_partners_gov_live
 
                     elif report_type == 'weekly':
                         values = sub_indicator_values[18]  # values_weekly
@@ -3711,8 +3670,6 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
                             if key in values_month:
                                 val = values_month[key] + val
                             values_month[key] = val
-                        # if str(key) == str(reporting_month):
-                        #     indicator.values_hpm[reporting_month] = val
 
                     for key in values1:
                         val = values1[key]
@@ -3775,33 +3732,6 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
                                 val = values_sections_partners_gov[key] + val
                             values_sections_partners_gov[key] = val
 
-                    if ai_db.support_covid and report_type=='live':
-                        if values8:
-                            for key in values8:
-                                val = values8[key]
-                                if key in values_crisis_live:
-                                    val = values_crisis_live[key] + val
-                                values_crisis_live[key] = val
-                        if values9:
-                            for key in values9:
-                                val = values9[key]
-                                if key in values_crisis_govs:
-                                    val = values_crisis_govs[key] + val
-                                values_crisis_govs[key] = val
-                        if values10:
-                            for key in values10:
-                                val = values10[key]
-                                if key in values_crisis_partners:
-                                    val = values_crisis_partners[key] + val
-                                values_crisis_partners[key] = val
-
-                        if values11:
-                            for key in values11:
-                                val = values11[key]
-                                if key in values_crisis_govs_partners:
-                                    val = values_crisis_govs_partners[key] + val
-                                values_crisis_govs_partners[key] = val
-
                     if report_type == 'live':
                         indicator.values_live = values_month
                         indicator.values_gov_live = values_gov
@@ -3811,11 +3741,6 @@ def calculate_master_indicators_values_1(ai_db, report_type=None, sub_indicators
                         indicator.values_sections_partners_live = values_sections_partners
                         indicator.values_sections_gov_live = values_sections_gov
                         indicator.values_sections_partners_gov_live = values_sections_partners_gov
-                        if ai_db.support_covid:
-                            indicator.values_crisis_live = values_crisis_live
-                            indicator.values_crisis_partners_live = values_crisis_partners
-                            indicator.values_crisis_gov_live = values_crisis_govs
-                            indicator.values_crisis_partners_gov_live = values_crisis_govs_partners
 
                     elif report_type == 'weekly':
                         indicator.values_weekly = values_weekly
