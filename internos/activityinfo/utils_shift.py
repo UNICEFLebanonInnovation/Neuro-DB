@@ -3550,7 +3550,7 @@ def calculate_master_imported_indicators(ai_db):
     cursor = connection.cursor()
     cursor.execute("SELECT distinct ai.id, a1.id, ai.values, ai.values_gov, ai.values_partners, ai.values_partners_gov, "
                    "ai.values_weekly, ai.values_gov_weekly, ai.values_partners_weekly, ai.values_partners_gov_weekly "
-                   "FROM public.activityinfo_indicator ai, public.activityinfo_indicator_sub_indicators ais, public.activityinfo_indicator a1 "
+                   "FROM public.activityinfo_indicator ai, public.activityinfo_indicator_summation_sub_indicators ais, public.activityinfo_indicator a1 "
                    "WHERE ai.id = ais.to_indicator_id and ais.from_indicator_id = a1.id "
                    "and a1.id in ("+ids_condition+")")
 
