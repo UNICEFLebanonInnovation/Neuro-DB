@@ -3536,10 +3536,15 @@ def calculate_master_imported_indicators(ai_db):
             for key, key_values in indicator_values.items():
                 sub_indicator_values = indicator_values[key]
 
-                values = sub_indicator_values[2] if sub_indicator_values[2] else sub_indicator_values[6]  # values_weekly
-                values1 = sub_indicator_values[3] if sub_indicator_values[3] else sub_indicator_values[7]  # values_gov_weekly
-                values2 = sub_indicator_values[4] if sub_indicator_values[4] else sub_indicator_values[8]  # values_partners_weekly
-                values3 = sub_indicator_values[5] if sub_indicator_values[5] else sub_indicator_values[9]  # values_partners_gov_weekly
+                # values = sub_indicator_values[2] if sub_indicator_values[2] else sub_indicator_values[6]  # values_weekly
+                # values1 = sub_indicator_values[3] if sub_indicator_values[3] else sub_indicator_values[7]  # values_gov_weekly
+                # values2 = sub_indicator_values[4] if sub_indicator_values[4] else sub_indicator_values[8]  # values_partners_weekly
+                # values3 = sub_indicator_values[5] if sub_indicator_values[5] else sub_indicator_values[9]  # values_partners_gov_weekly
+
+                values = sub_indicator_values[6]  # values_weekly
+                values1 = sub_indicator_values[7]  # values_gov_weekly
+                values2 = sub_indicator_values[8]  # values_partners_weekly
+                values3 = sub_indicator_values[9]  # values_partners_gov_weekly
 
                 for key in values:
                     val = values[key]
