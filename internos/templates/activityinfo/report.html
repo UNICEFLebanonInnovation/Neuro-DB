@@ -74,12 +74,11 @@
                 <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search" onclick="$('#loading').show();">
                   <i style="font-weight:bolder" class="pe-7s-search"></i>
                 </button>
+                <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
+                 class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
                  <div  id="loading" class="d-inline-block"  style="display:none !important" >
                   <img src="{% static 'images/loader.gif' %}" width="40px" height="40px" alt="" />
                 </div>
-
-                <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
-                 class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
             </div>
           </div>
             <div class="page-title-subheading">
