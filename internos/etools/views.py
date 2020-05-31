@@ -125,14 +125,16 @@ class PartnerProfileView(TemplateView):
             for section in item['section_names']:
                 sections[section] = section
 
-        # engagements = Engagement.objects.filter(start_date__year=now.year).exclude(status=Engagement.CANCELLED)
-        engagements = Engagement.objects.exclude(status=Engagement.CANCELLED)
+        years = (now.year, now.year - 1)
+        engagements = Engagement.objects.filter(start_date__year__in=years).exclude(status=Engagement.CANCELLED)
+        # engagements = Engagement.objects.exclude(status=Engagement.CANCELLED)
         spot_checks = engagements.filter(engagement_type='sc')
         audits = engagements.filter(engagement_type='audit')
         micro_assessments = engagements.filter(engagement_type='ma')
         special_audits = engagements.filter(engagement_type='sa')
 
-        interventions = PCA.objects.filter(end__year=now.year).exclude(status=PCA.CANCELLED)
+        interventions = PCA.objects.filter(end__year__in=years).exclude(status=PCA.CANCELLED)
+        # interventions = PCA.objects.filter(end__year=now.year).exclude(status=PCA.CANCELLED)
         active_interventions = interventions.filter(status=PCA.ACTIVE)
 
         interventions_pd = interventions.filter(document_type=PCA.PD)
@@ -141,7 +143,8 @@ class PartnerProfileView(TemplateView):
         interventions_sffa = interventions.filter(document_type=PCA.SSFA)
         active_interventions_sffa = interventions_sffa.filter(status=PCA.ACTIVE)
 
-        visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING, travel__start_date__year=now.year)
+        # visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING, travel__start_date__year=now.year)
+        visits = TravelActivity.objects.filter(travel_type=TravelType.PROGRAMME_MONITORING, travel__start_date__year__in=years)
         programmatic_visits = visits.exclude(travel__status=Travel.CANCELLED).exclude(travel__status=Travel.REJECTED)
         programmatic_visits_planned = visits.filter(travel__status=Travel.PLANNED)
         programmatic_visits_submitted = visits.filter(travel__status=Travel.SUBMITTED)

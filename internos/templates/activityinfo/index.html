@@ -51,28 +51,29 @@
                         <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
                            data-placement="top" title="Live Data Monitoring" class="text-danger"
                            data-step="9" data-intro="Open live ActivityInfo Dashboard">
-                          <i class="fa fa-rss faa-flash " style="opacity: 0.7;"></i>
+                          <i class="pe-7s-signal" style="opacity: 0.7;"></i>
                         </a>
                         <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
                            data-placement="top" title="Indicators Data Disaggregated" class="text-success">
-                          <i class="fa fa-tags animated" style="opacity: 0.7;"></i>
-                        </a>
-                         <a
-                          href="{% url 'activityinfo:report_partner' %}?rep_year={{ db.reporting_year }}&ai_id={{ db.ai_id }}"
-                          target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
-                          <i class="fa fa-users" aria-hidden="true" title="" style="opacity: 0.7;"></i>
+                          <i class="pe-7s-ticket" style="opacity: 0.7;"></i>
                         </a>
 
                         <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
                            data-placement="top" title="Disability Report" class="text-warning"
                            data-step="16" data-intro="Disability report">
-                          <i class="fa fa-wheelchair" style="opacity: 0.7;"></i>
+                          <i class="pe-7s-delete-user" style="opacity: 0.7;"></i>
+                        </a>
+
+                         <a
+                          href="{% url 'activityinfo:report_partner' %}?rep_year={{ db.reporting_year }}&ai_id={{ db.ai_id }}"
+                          target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
+                          <i class="pe-7s-users" aria-hidden="true" title="" style="opacity: 0.7;"></i>
                         </a>
 
                         <a href="{% url 'activityinfo:export' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
                            data-placement="top" title="Raw data" class="text-primary"
                            data-step="16" data-intro="Raw data">
-                          <i class="fa fa-download" style="opacity: 0.7;"></i>
+                          <i class="pe-7s-download" style="opacity: 0.7;"></i>
                         </a>
 
                 </div>

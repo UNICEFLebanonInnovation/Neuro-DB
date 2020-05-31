@@ -410,8 +410,27 @@ def link_indicators_data(ai_db, report_type=None):
     result = link_indicators_activity_report(ai_db, report_type)
     # link_ai_partners(report_type)
     # link_etools_partners()
+    link_indicators_project(ai_db)
 
     return result
+
+
+def link_indicators_project(ai_db):
+    from internos.activityinfo.models import Indicator
+    from internos.etools.models import PCA
+
+    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
+                                          master_indictor=True).exclude(project_code__isnull=True).only(
+        'project'
+    )
+
+    for item in indicators.iterator():
+        try:
+            project = PCA.objects.get(reference_number=item.project_code)
+            item.project = project
+            item.save()
+        except Exception:
+            continue
 
 
 def link_indicators_activity_report(ai_db, report_type=None):
@@ -440,6 +459,17 @@ def link_indicators_activity_report(ai_db, report_type=None):
             continue
         ctr += ai_values.count()
         ai_values.update(ai_indicator_id=item.id)
+
+        item.project_code = ai_values.first().project_label
+        item.project_name = ai_values.first().project_description
+
+        item.save()
+
+        main_master_indicator = item.main_master_indicator
+        if main_master_indicator:
+            main_master_indicator.project_code = item.project_code
+            main_master_indicator.project_name = item.project_name
+            main_master_indicator.save()
 
     return ctr
 
@@ -3872,7 +3902,6 @@ def assign_main_master_indicator():
         'sub_indicators',
         'main_master_indicator',
     )
-    print(top_indicators1.count())
 
     for indicator in top_indicators1.iterator():
         sub_indicators = indicator.sub_indicators.all()
