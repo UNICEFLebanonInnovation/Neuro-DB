@@ -1082,6 +1082,8 @@ def calculate_indicators_tags(ai_db):
 
         if isinstance(m_value, dict):
             m_value = 0
+
+        indicator.values_tags = {}
         sub_indicators = indicator.summation_sub_indicators.all().only(
             'values',
             'values_partners',
@@ -1265,6 +1267,46 @@ def calculate_indicators_tags(ai_db):
                                             '{}--{}--{}--{}'.format(sec, par, gv, tag.name)] = par_gov_sec_cum_value
                 indicator.values_tags['cum_sec_par_gov_' + tag.name] = cum_partner_gov_section
 
+                # -------------- tags cumulative calculations per partner ----------
+                cum_partner = {}
+                for par in partners:
+                    par = par['partner_id']
+                    par_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(par)
+                        if 'partners' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['partners']:
+                                par_cum_value += ind_tag.values_cumulative_weekly['partners'][key]
+                                cum_partner['{}--{}'.format(par, tag.name)] = par_cum_value
+                indicator.values_tags['cum_partners_' + tag.name] = cum_partner
+
+                # -------------- tags cumulative calculations per gov ----------
+                cum_gov = {}
+                for gv in governorates:
+                    gv = gv['location_adminlevel_governorate_code']
+                    gov_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(gov)
+                        if 'govs' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['govs']:
+                                gov_cum_value += ind_tag.values_cumulative_weekly['govs'][key]
+                                cum_gov['{}--{}'.format(gv, tag.name)] = gov_cum_value
+                indicator.values_tags['cum_govs_' + tag.name] = cum_gov
+
+                # -------------- tags cumulative calculations per section ----------
+                cum_sec = {}
+                for sec in sections:
+                    sec = sec['reporting_section']
+                    sec_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(sec)
+                        if 'sections' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['sections']:
+                                sec_cum_value += ind_tag.values_cumulative_weekly['sections'][key]
+                                cum_sec['{}--{}'.format(sec, tag.name)] = sec_cum_value
+                indicator.values_tags['cum_sections_' + tag.name] = cum_sec
+
+
                 indicator.save()
 
                 # -----------------------------  tags calculations General value and percentage  -----------------------
@@ -1447,6 +1489,47 @@ def calculate_indicators_tags(ai_db):
                                             '{}--{}--{}--{}'.format(sec, par, gv, tag.name)] = par_gov_sec_cum_value
                 indicator.values_tags['cum_sec_par_gov_' + tag.name] = cum_partner_gov_section
 
+
+
+                # -------------- tags cumulative calculations per partner ----------
+                cum_partner = {}
+                for par in partners:
+                    par = par['partner_id']
+                    par_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(par)
+                        if 'partners' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['partners']:
+                                par_cum_value += ind_tag.values_cumulative_weekly['partners'][key]
+                                cum_partner['{}--{}'.format(par, tag.name)] = par_cum_value
+                indicator.values_tags['cum_partners_' + tag.name] = cum_partner
+
+                # -------------- tags cumulative calculations per gov ----------
+                cum_gov = {}
+                for gv in governorates:
+                    gv = gv['location_adminlevel_governorate_code']
+                    gov_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(gov)
+                        if 'govs' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['govs']:
+                                gov_cum_value += ind_tag.values_cumulative_weekly['govs'][key]
+                                cum_gov['{}--{}'.format(gv, tag.name)] = gov_cum_value
+                indicator.values_tags['cum_govs_' + tag.name] = cum_gov
+
+                # -------------- tags cumulative calculations per section ----------
+                cum_sec = {}
+                for sec in sections:
+                    sec = sec['reporting_section']
+                    sec_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(sec)
+                        if 'sections' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['sections']:
+                                sec_cum_value += ind_tag.values_cumulative_weekly['sections'][key]
+                                cum_sec['{}--{}'.format(sec, tag.name)] = sec_cum_value
+                indicator.values_tags['cum_sections_' + tag.name] = cum_sec
+
                 indicator.save()
 
                 value = 0
@@ -1626,6 +1709,48 @@ def calculate_indicators_tags(ai_db):
                                             '{}--{}--{}--{}'.format(sec, par, gv, tag.name)] = par_gov_sec_cum_value
                 indicator.values_tags['cum_sec_par_gov_' + tag.name] = cum_partner_gov_section
 
+
+                # -------------- tags cumulative calculations per partner ----------
+                cum_partner = {}
+                for par in partners:
+                    par = par['partner_id']
+                    par_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(par)
+                        if 'partners' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['partners']:
+                                par_cum_value += ind_tag.values_cumulative_weekly['partners'][key]
+                                cum_partner['{}--{}'.format(par, tag.name)] = par_cum_value
+                indicator.values_tags['cum_partners_' + tag.name] = cum_partner
+
+                # -------------- tags cumulative calculations per gov ----------
+                cum_gov = {}
+                for gv in governorates:
+                    gv = gv['location_adminlevel_governorate_code']
+                    gov_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(gov)
+                        if 'govs' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['govs']:
+                                gov_cum_value += ind_tag.values_cumulative_weekly['govs'][key]
+                                cum_gov['{}--{}'.format(gv, tag.name)] = gov_cum_value
+                indicator.values_tags['cum_govs_' + tag.name] = cum_gov
+
+                # -------------- tags cumulative calculations per section ----------
+                cum_sec = {}
+                for sec in sections:
+                    sec = sec['reporting_section']
+                    sec_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(sec)
+                        if 'sections' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['sections']:
+                                sec_cum_value += ind_tag.values_cumulative_weekly['sections'][key]
+                                cum_sec['{}--{}'.format(sec, tag.name)] = sec_cum_value
+                indicator.values_tags['cum_sections_' + tag.name] = cum_sec
+
+
+
                 indicator.save()
 
                 value = 0
@@ -1804,6 +1929,45 @@ def calculate_indicators_tags(ai_db):
                                             '{}--{}--{}--{}'.format(sec, par, gv, tag.name)] = par_gov_sec_cum_value
                 indicator.values_tags['cum_sec_par_gov_' + tag.name] = cum_partner_gov_section
 
+                # -------------- tags cumulative calculations per partner ----------
+                cum_partner = {}
+                for par in partners:
+                    par = par['partner_id']
+                    par_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(par)
+                        if 'partners' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['partners']:
+                                par_cum_value += ind_tag.values_cumulative_weekly['partners'][key]
+                                cum_partner['{}--{}'.format(par, tag.name)] = par_cum_value
+                indicator.values_tags['cum_partners_' + tag.name] = cum_partner
+
+                # -------------- tags cumulative calculations per gov ----------
+                cum_gov = {}
+                for gv in governorates:
+                    gv = gv['location_adminlevel_governorate_code']
+                    gov_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(gov)
+                        if 'govs' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['govs']:
+                                gov_cum_value += ind_tag.values_cumulative_weekly['govs'][key]
+                                cum_gov['{}--{}'.format(gv, tag.name)] = gov_cum_value
+                indicator.values_tags['cum_govs_' + tag.name] = cum_gov
+
+                # -------------- tags cumulative calculations per section ----------
+                cum_sec = {}
+                for sec in sections:
+                    sec = sec['reporting_section']
+                    sec_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(sec)
+                        if 'sections' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['sections']:
+                                sec_cum_value += ind_tag.values_cumulative_weekly['sections'][key]
+                                cum_sec['{}--{}'.format(sec, tag.name)] = sec_cum_value
+                indicator.values_tags['cum_sections_' + tag.name] = cum_sec
+
                 indicator.save()
 
                 value = 0
@@ -1980,6 +2144,45 @@ def calculate_indicators_tags(ai_db):
                                         par_gov_sec_cum_value += ind_tag.cumulative_values['sections_partners_govs'][key]
                                         cum_partner_gov_section['{}--{}--{}--{}'.format(sec,par, gv, tag.name)] = par_gov_sec_cum_value
                 indicator.values_tags['cum_sec_par_gov_' + tag.name] = cum_partner_gov_section
+
+                # -------------- tags cumulative calculations per partner ----------
+                cum_partner = {}
+                for par in partners:
+                    par = par['partner_id']
+                    par_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(par)
+                        if 'partners' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['partners']:
+                                par_cum_value += ind_tag.values_cumulative_weekly['partners'][key]
+                                cum_partner['{}--{}'.format(par, tag.name)] = par_cum_value
+                indicator.values_tags['cum_partners_' + tag.name] = cum_partner
+
+                # -------------- tags cumulative calculations per gov ----------
+                cum_gov = {}
+                for gv in governorates:
+                    gv = gv['location_adminlevel_governorate_code']
+                    gov_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(gov)
+                        if 'govs' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['govs']:
+                                gov_cum_value += ind_tag.values_cumulative_weekly['govs'][key]
+                                cum_gov['{}--{}'.format(gv, tag.name)] = gov_cum_value
+                indicator.values_tags['cum_govs_' + tag.name] = cum_gov
+
+                # -------------- tags cumulative calculations per section ----------
+                cum_sec = {}
+                for sec in sections:
+                    sec = sec['reporting_section']
+                    sec_cum_value = 0
+                    for ind_tag in tag_sub_indicators:
+                        key = '{}'.format(sec)
+                        if 'sections' in ind_tag.values_cumulative_weekly:
+                            if key in ind_tag.values_cumulative_weekly['sections']:
+                                sec_cum_value += ind_tag.values_cumulative_weekly['sections'][key]
+                                cum_sec['{}--{}'.format(sec, tag.name)] = sec_cum_value
+                indicator.values_tags['cum_sections_' + tag.name] = cum_sec
 
                 indicator.save()
 

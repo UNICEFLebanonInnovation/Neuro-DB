@@ -32,8 +32,7 @@
                 <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
                   {% for partner in partners %}
                   <option class="dropdown-item" value="{{ partner.partner_id }}"
-                          {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label
-                    }}
+                          {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
                   </option>
                   {% endfor %}
                 </select>
@@ -74,13 +73,14 @@
                 <button type="submit" class="btn btn shadow btn-primary mr-left-5" onclick="$('#loading').show();"
                         title="Search">
                   <i style="font-weight:bolder" class="pe-7s-search"></i>
-                    <div id="loading" class="d-inline-block" style="display:none !important">
-                  <img src="/static/images/loader.gif" width="40px" height="40px" alt=""/>
-                </div>
+
                 </button>
 
                 <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ database.ai_id }}" title="Cancel"
                    class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
+                  <div id="loading" class="d-inline-block" style="display:none !important">
+                  <img src="/static/images/loader.gif" width="40px" height="40px" alt=""/>
+                </div>
               </div>
             </div>
             <div class="page-title-subheading">
