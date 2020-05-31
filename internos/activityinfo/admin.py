@@ -839,6 +839,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'calculate_indicators_cumulative_hpm',
         'calculate_indicators_tags_hpm',
         'calculate_indicators_tags',
+        'calculate_indicators_tags_weekly',
         'update_partner_data',
         'generate_indicator_tags',
         'calculate_sum_target',
@@ -1063,6 +1064,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     update_indicators_hpm.short_description = 'Step 1: Update HPM indicators values'
 
     def calculate_indicators_values(self, request, queryset):
+        from .utils_shift import calculate_indicators_values
         for db in queryset:
             reports = calculate_indicators_values(db,'weekly')
             self.message_user(
@@ -1106,6 +1108,17 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             self.message_user(
                 request,
                 "{} indicators values Tag".format(reports)
+        )
+
+    def calculate_indicators_tags_weekly(self, request, queryset):
+        # from.utils_shift import calculate_indicators_tags_weekly
+        for db in queryset:
+            # reports = calculate_indicators_tags_weekly(db)
+            reports = calculate_indicators_tags(db)
+
+            self.message_user(
+                request,
+                "{} indicators weekly values Tag Calculated".format(reports)
         )
 
     def calculate_indicators_status(self, request, queryset):
