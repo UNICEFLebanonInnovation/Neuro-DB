@@ -235,6 +235,12 @@
                 <div class="scrollbar-sidebar">
                     <div class="app-sidebar__inner" data-step="2" data-intro="Navigation menu for other sections">
                         <ul class="vertical-nav-menu">
+                          <li class="app-sidebar__heading">
+                              <a href="{% url 'dashboard' %}"> Overall Dashboard
+                                <i class="metismenu-icon pe-7s-graph2 text-primary"></i>
+                                <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
+                              </a>
+                          </li>
                            <li class="app-sidebar__heading text-danger">Crisis Response</li>
 
                               {% get_Crisis_db as databases %}
