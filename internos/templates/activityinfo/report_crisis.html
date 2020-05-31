@@ -228,7 +228,7 @@
 
                       <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
                                 {% if item1.master_indicator %}style="background-color:rgba(252, 255, 174, 0.38); border-bottom:2px solid #fff"
-                                {% elif item1.master_indicator_sub %}style="background-image:linear-gradient(#ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);border-bottom:2px solid #fff"
+                                {% elif item1.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"
                                 {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
                               <td class="w-150">
                                 {{ item1.name }}
@@ -271,7 +271,7 @@
                         {% for item2 in sub_indicators1 %}
                           {% if item2.master_indicator == 0   %}
                         <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
-                      {% if item2.master_indicator_sub %}style="background-image:linear-gradient(#ff9a9e 0%, #fad0c4 99%, #fad0c4 100%); border-bottom:2px solid #fff"{% endif %}
+                      {% if item2.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"{% endif %}
                       {% if item2.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                       itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                     <td class="w-150"> {{item2.name }}</td>
@@ -363,7 +363,7 @@
               {% get_sub_indicators_data item.id as sub_indicators %}
               {% for item1 in sub_indicators %}
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
-                  {% if item1.master_indicator_sub %}style="background-image:linear-gradient(#ff9a9e 0%, #fad0c4 99%, #fad0c4 100%); border-bottom:2px solid #fff"
+                  {% if item1.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"
                   {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
                  <td class="w-150">
                   {{ item1.name }}
