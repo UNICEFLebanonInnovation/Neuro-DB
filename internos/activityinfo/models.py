@@ -492,6 +492,10 @@ class Indicator(models.Model):
     values_crisis_cumulative_live = JSONField(blank=True, null=True, default={})
     is_imported = models.BooleanField(default=False)
 
+    project_code = models.CharField(max_length=500, blank=True, null=True)
+    project_name = models.CharField(max_length=1500, blank=True, null=True)
+    project = models.ForeignKey('etools.pca', blank=True, null=True, related_name='+')
+
     def __unicode__(self):
         if self.ai_indicator:
             return u'{} {}'.format(self.name, self.ai_indicator)
