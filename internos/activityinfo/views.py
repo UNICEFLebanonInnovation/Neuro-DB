@@ -18,6 +18,60 @@ from .utils import get_partners_list, get_governorates_list, get_reporting_secti
 from .utils import calculate_internal_indicators_values, calculate_internal_cumulative_results
 
 
+class HomeView(TemplateView):
+    template_name = 'pages/home.html'
+
+    def get_context_data(self, **kwargs):
+        from internos.etools.models import PCA
+
+        now = datetime.datetime.now()
+
+        interventions = PCA.objects.filter(end__year=now.year, status=PCA.ACTIVE)
+        partners = PCA.objects.filter(end__year=now.year, status=PCA.ACTIVE).values('partner_name').distinct()
+
+        donors_set = PCA.objects.filter(end__year=now.year,
+                                        status=PCA.ACTIVE,
+                                        donors__isnull=False,
+                                        donors__len__gt=0).values('number', 'donors').distinct()
+
+        donors = {}
+        for item in donors_set:
+            for donor in item['donors']:
+                if donor not in donors:
+                    donors[donor] = donor
+
+        indicators = Indicator.objects.filter(activity__database__reporting_year__year=now.year,
+                                              hpm_indicator=True,
+                                              master_indicator=True).order_by('sequence')
+        # indicators = indicators.values(
+        #     'id',
+        #     'ai_id',
+        #     'name',
+        #     'units',
+        #     'target',
+        #     'activity',
+        #     'target_sector',
+        #     'cumulative_values',
+        #     'measurement_type',
+        #     'values',
+        #     'values_sector',
+        #     'values_tags',
+        #     'cumulative_values_sector',
+        #     'comment',
+        #     'hpm_label',
+        #     'has_hpm_note',
+        #     'target_hpm',
+        #     'hpm_additional_cumulative',
+        # ).distinct()
+
+        return {
+            'interventions': interventions.count(),
+            'donors': len(donors),
+            'partners': partners.count(),
+            'indicators': indicators
+        }
+
+
 class IndexView(TemplateView):
     template_name = 'activityinfo/index.html'
 
@@ -269,20 +323,9 @@ class ReportCrisisView(TemplateView):
         selected_filter = False
 
         reporting_year = database.reporting_year.year
-        # report = ActivityReport.objects.filter(database_id=database.ai_id).only(
-        #     'partner_label', 'partner_id',
-        #     'location_adminlevel_governorate_code',
-        #     'location_adminlevel_governorate',
-        #     'reporting_section'
-        # )
 
         if selected_partners or selected_governorates or selected_months or selected_sections:
             selected_filter = True
-
-        # partners = report.values('partner_label', 'partner_id').distinct()
-        # governorates = report.values('location_adminlevel_governorate_code',
-        #                              'location_adminlevel_governorate').distinct()
-        # sections = report.values('reporting_section').distinct()
 
         partners = get_partners_list(database)
         governorates = get_governorates_list(database)
@@ -293,14 +336,6 @@ class ReportCrisisView(TemplateView):
 
         if len(selected_type) > 0:
             master_indicators = master_indicators.filter(tag_focus__label=selected_type)
-
-
-        # if database.mapped_db:
-            # master_indicators1 = master_indicators.filter(master_indicator=True)
-            # master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
-            # master_indicators = master_indicators1 | master_indicators2
-            # master_indicators = master_indicators.filter(Q(master_indicator=True) |
-            #                                              Q(sub_indicators__isnull=True, individual_indicator=True))
 
         master_indicators = master_indicators.filter(Q(master_indicator=True) |
                                                      Q(sub_indicators__isnull=True, individual_indicator=True))\
