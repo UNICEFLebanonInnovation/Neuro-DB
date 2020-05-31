@@ -755,7 +755,18 @@ icon-wrapper {
 
   padding: 0px !important;
 }
-
+.widget-chart .widget-chart-actions {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    z-index: 12;
+}
+.widget-chart .widget-chart-actions .btn-link {
+    font-size: 1.1rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: .7;
+}
 
 </style>
 
@@ -772,6 +783,7 @@ icon-wrapper {
 
 
   <div class="col-md-6 col-lg-4"><div class="card mb-3 widget-chart text-left">
+    <div class="widget-chart-actions"><a href="{% url 'survey:population_figures' %}" class="btn btn-link" type="button"><fa name="ellipsis-h" _nghost-serverapp-c2="" ng-reflect-name="ellipsis-h"><i _ngcontent-serverapp-c2="" aria-hidden="true" class="fa fa-ellipsis-h" ng-reflect-klass="fa fa-ellipsis-h" ng-reflect-ng-class=""></i></fa></a></div>
     <div class="icon-wrapper rounded-circle">
       <div class="icon-wrapper-bg"></div>
       <i class="metismenu-icon pe-7s-attention text-danger"></i></div>
@@ -779,6 +791,7 @@ icon-wrapper {
   </div>
 
   <div class="col-md-6 col-lg-4"><div class="card mb-3 widget-chart text-left">
+    <div class="widget-chart-actions"><a class="btn btn-link" type="button"><fa name="ellipsis-h" _nghost-serverapp-c2="" ng-reflect-name="ellipsis-h"><i _ngcontent-serverapp-c2="" aria-hidden="true" class="fa fa-ellipsis-h" ng-reflect-klass="fa fa-ellipsis-h" ng-reflect-ng-class=""></i></fa></a></div>
     <div class="icon-wrapper rounded-circle">
       <div class="icon-wrapper-bg"></div>
       <i class="metismenu-icon pe-7s-cash text-success"></i></div>
@@ -786,6 +799,7 @@ icon-wrapper {
   </div>
 
   <div class="col-md-6 col-lg-4"><div class="card mb-3 widget-chart text-left">
+    <div class="widget-chart-actions"><a href="{% url 'etools:partnership' %}" class="btn btn-link" type="button"><fa name="ellipsis-h" _nghost-serverapp-c2="" ng-reflect-name="ellipsis-h"><i _ngcontent-serverapp-c2="" aria-hidden="true" class="fa fa-ellipsis-h" ng-reflect-klass="fa fa-ellipsis-h" ng-reflect-ng-class=""></i></fa></a></div>
     <div class="icon-wrapper rounded-circle">
       <div class="icon-wrapper-bg"></div>
       <i class="metismenu-icon pe-7s-link text-primary"></i></div>
@@ -793,6 +807,7 @@ icon-wrapper {
   </div>
 
   <div class="col-md-6 col-lg-4"><div class="card mb-3 widget-chart text-left">
+    <div class="widget-chart-actions"><a href="{% url 'etools:partnership' %}" class="btn btn-link" type="button"><fa name="ellipsis-h" _nghost-serverapp-c2="" ng-reflect-name="ellipsis-h"><i _ngcontent-serverapp-c2="" aria-hidden="true" class="fa fa-ellipsis-h" ng-reflect-klass="fa fa-ellipsis-h" ng-reflect-ng-class=""></i></fa></a></div>
     <div class="icon-wrapper rounded-circle">
       <div class="icon-wrapper-bg"></div>
       <i class="metismenu-icon pe-7s-user text-primary"></i></div>
@@ -800,6 +815,7 @@ icon-wrapper {
   </div>
 
   <div class="col-md-6 col-lg-4"><div class="card mb-3 widget-chart text-left">
+    <div class="widget-chart-actions"><a class="btn btn-link" type="button"><fa name="ellipsis-h" _nghost-serverapp-c2="" ng-reflect-name="ellipsis-h"><i _ngcontent-serverapp-c2="" aria-hidden="true" class="fa fa-ellipsis-h" ng-reflect-klass="fa fa-ellipsis-h" ng-reflect-ng-class=""></i></fa></a></div>
     <div class="icon-wrapper rounded-circle">
       <div class="icon-wrapper-bg"></div>
       <i class="metismenu-icon pe-7s-culture text-warning"></i></div>
@@ -807,6 +823,7 @@ icon-wrapper {
   </div>
 
   <div class="col-md-6 col-lg-4"><div class="card mb-3 widget-chart text-left">
+    <div class="widget-chart-actions"><a href="{% url 'activityinfo:report_crisis' %}?ai_id=202020" class="btn btn-link" type="button"><fa name="ellipsis-h" _nghost-serverapp-c2="" ng-reflect-name="ellipsis-h"><i _ngcontent-serverapp-c2="" aria-hidden="true" class="fa fa-ellipsis-h" ng-reflect-klass="fa fa-ellipsis-h" ng-reflect-ng-class=""></i></fa></a></div>
     <div class="icon-wrapper rounded-circle">
       <div class="icon-wrapper-bg"></div>
       <i class="metismenu-icon pe-7s-settings text-danger"></i></div>
@@ -860,8 +877,20 @@ icon-wrapper {
     </div>
 
     <div class="col-md-6 col-lg-4">
-      <div class="no-gutters row" style="height: 358px;">
-          <div id="populations_per_nationality"></div>
+        <div id="populations_per_nationality" style="height: 358px;"></div>
+    </div>
+
+    <div class="col-md-6 col-lg-4" id="intervention_map">
+      <div class="main-card mb-3 card">
+        <div class="card-header">
+          <i class="header-icon pe-7s-map-2 icon-gradient bg-ripe-malin"></i> Interventions Map
+          <div class="btn-actions-pane-right actions-icon-btn">
+            <a href="" class="btn-wide btn-outline-2x btn btn-outline-focus btn-sm">View All</a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="mapView" style="height: 270px;"></div>
+        </div>
       </div>
     </div>
 
@@ -880,6 +909,9 @@ icon-wrapper {
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <script type="text/javascript" src="{% static 'js/Highcharts.chart.js' %}"></script>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+<script src="https://js.arcgis.com/4.11/"></script>
 
 <script type="text/javascript">
 
@@ -951,5 +983,132 @@ Highcharts.chart('populations_per_nationality', {
 
 
 </script>
+
+<script>
+    var points = '{{ locations|safe }}';
+    points = JSON.parse(points);
+
+    var symbol = {
+      style: "square",
+      color: "blue",
+      size: "8px",  // pixels
+      outline: {  // autocasts as new SimpleLineSymbol()
+        color: [ 255, 255, 0 ],
+        width: 3  // points
+      }
+    };
+
+    var symbol_icon = {
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    var markerSymbol = {
+      type: "picture-marker", // autocasts as new SimpleMarkerSymbol()
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    $(document).ready(function(){
+
+        $('ul.child_menu').hide();
+
+        require([
+          "esri/Map",
+          "esri/views/MapView",
+          "esri/symbols/SimpleMarkerSymbol",
+          "esri/symbols/PictureMarkerSymbol",
+          "esri/geometry/Point",
+          "esri/Graphic",
+        ], function(Map, MapView, SimpleMarkerSymbol, PictureMarkerSymbol, Point, Graphic) {
+
+          var map = new Map({
+              basemap: "topo-vector"
+          });
+
+          var view = new MapView({
+            container: "mapView",
+            map: map,
+            center: [35.82685, 34.3461],
+            zoom: 8
+          });
+
+          $(points).each(function(i, item){
+
+              var url = '<a href="'+item.url+'" target="_blank"><i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;">'+item.number+'</i></a>';
+
+              var lineAtt = {
+                Number: url,
+                Title: item.title,
+                Site: item.name,
+                Type: item.document_type,
+                Partner: item.partner_name,
+                Status: item.status,
+                Start: item.start,
+                End: item.end,
+                Budget: item.total_budget,
+                Sections: item.section_names,
+                Offices: item.offices_names,
+              };
+
+              var pointGraphic = new Graphic({
+                geometry: {
+                  type: "point",
+                  longitude: item.longitude,
+                  latitude: item.latitude
+                },
+                symbol: markerSymbol,
+                attributes: lineAtt,
+                popupTemplate: {
+                  title: "{Type} {Number}",
+                  content: [
+                    {
+                      type: "fields",
+                      fieldInfos: [
+                        {
+                          fieldName: "Site"
+                        },
+                        {
+                          fieldName: "Title"
+                        },
+                        {
+                          fieldName: "Partner"
+                        },
+                        {
+                          fieldName: "Status"
+                        },
+                        {
+                          fieldName: "Start"
+                        },
+                        {
+                          fieldName: "End"
+                        },
+                        {
+                          fieldName: "Budget"
+                        },
+                        {
+                          fieldName: "Sections"
+                        },
+                        {
+                          fieldName: "Offices"
+                        },
+                      ]
+                    }
+                  ]
+                }
+              });
+
+              view.graphics.add(pointGraphic);
+
+          });
+
+        });
+    });
+
+
+</script>
+
 
 {% endblock %}

@@ -23,6 +23,7 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         from internos.etools.models import PCA
+        from internos.etools.utils import get_interventions_details
 
         now = datetime.datetime.now()
 
@@ -43,11 +44,15 @@ class HomeView(TemplateView):
         indicators = Indicator.objects.filter(activity__database__reporting_year__year=now.year,
                                               hpm_indicator=True,
                                               master_indicator=True).order_by('sequence')
+
+        locations = get_interventions_details(interventions)
+
         return {
             'interventions': interventions.count(),
             'donors': len(donors),
             'partners': partners.count(),
-            'indicators': indicators
+            'indicators': indicators,
+            'locations': locations
         }
 
 
@@ -404,8 +409,8 @@ class ReportCrisisView(TemplateView):
             'sliced_months': sliced_months,
             'partners': partners,
             'governorates': governorates,
-            'indicators': [],
-            'covid_indicators': [],
+            'indicators': master_indicators,
+            'covid_indicators': covid_indicators,
             'selected_filter': selected_filter,
             'selected_partners': selected_partners,
             'selected_partner_name': selected_partner_name,
