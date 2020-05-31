@@ -43,27 +43,6 @@ class HomeView(TemplateView):
         indicators = Indicator.objects.filter(activity__database__reporting_year__year=now.year,
                                               hpm_indicator=True,
                                               master_indicator=True).order_by('sequence')
-        # indicators = indicators.values(
-        #     'id',
-        #     'ai_id',
-        #     'name',
-        #     'units',
-        #     'target',
-        #     'activity',
-        #     'target_sector',
-        #     'cumulative_values',
-        #     'measurement_type',
-        #     'values',
-        #     'values_sector',
-        #     'values_tags',
-        #     'cumulative_values_sector',
-        #     'comment',
-        #     'hpm_label',
-        #     'has_hpm_note',
-        #     'target_hpm',
-        #     'hpm_additional_cumulative',
-        # ).distinct()
-
         return {
             'interventions': interventions.count(),
             'donors': len(donors),
@@ -425,8 +404,8 @@ class ReportCrisisView(TemplateView):
             'sliced_months': sliced_months,
             'partners': partners,
             'governorates': governorates,
-            'indicators': master_indicators,
-            'covid_indicators': covid_indicators,
+            'indicators': [],
+            'covid_indicators': [],
             'selected_filter': selected_filter,
             'selected_partners': selected_partners,
             'selected_partner_name': selected_partner_name,
