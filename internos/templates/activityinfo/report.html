@@ -233,8 +233,8 @@
               {% get_sub_indicators_data item.id False database as sub_indicators %}
               {% for item1 in sub_indicators %}
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
-                  {% if item1.master_indicator_sub %}style="background-image:linear-gradient(#ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);  border-bottom:2px solid #fff"
-                  {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
+                  {% if item1.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"
+                  {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff;" {% endif %}>
                 <td class="w-150">
                   {{ item1.name }}
                 </td>
@@ -352,7 +352,7 @@
                 <i class="fa fa-user" style="color: #0089d2;"></i>
                 <a href="https://etools.unicef.org/pmp/partners/{{ partner_info.etl_id }}/details" target="_blank"
                    class="text-info">
-                  {{ partner_info.name }} <i class="fa fa-fw" aria-hidden="true" title=""></i></i>
+                  {{ partner_info.name }} <i class="fa fa-fw" aria-hidden="true" title=""></i>
                 </a>
               </div>
             </div>
