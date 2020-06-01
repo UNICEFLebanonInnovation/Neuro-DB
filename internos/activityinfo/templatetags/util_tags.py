@@ -1382,6 +1382,11 @@ def get_sub_indicators_data(ai_id, is_sector=False, ai_db=None):
         if ai_db:
             indicators = Indicator.objects.filter(sub_indicators=ai_id,activity__database =ai_db)
         else:
+            # cursor = connection.cursor()
+            # cursor.execute("SELECT DISTINCT ON (activityinfo_indicator.id) activityinfo_indicator.id, activityinfo_indicator.ai_id, activityinfo_indicator.name, activityinfo_indicator.master_indicator, activityinfo_indicator.master_indicator_sub, activityinfo_indicator.master_indicator_sub_sub, activityinfo_indicator.individual_indicator, activityinfo_indicator.explication, activityinfo_indicator.awp_code, activityinfo_indicator.measurement_type, activityinfo_indicator.units, activityinfo_indicator.target, activityinfo_indicator.target_sector, activityinfo_indicator.status_color, activityinfo_indicator.status_color_sector, activityinfo_indicator.status, activityinfo_indicator.status_sector, activityinfo_indicator.cumulative_values, activityinfo_indicator.values_partners_gov, activityinfo_indicator.values_partners, activityinfo_indicator.values_gov, activityinfo_indicator.values, activityinfo_indicator.values_live, activityinfo_indicator.values_gov_live, activityinfo_indicator.values_partners_live, activityinfo_indicator.values_partners_gov_live, activityinfo_indicator.cumulative_values_live, activityinfo_indicator.values_tags, activityinfo_indicator.cumulative_values_sector, activityinfo_indicator.values_partners_sites_sector, activityinfo_indicator.values_partners_sector, activityinfo_indicator.values_sites_sector, activityinfo_indicator.values_sector, activityinfo_indicator.is_cumulative, activityinfo_indicator.category, activityinfo_indicator.values_sections, activityinfo_indicator.values_sections_partners, activityinfo_indicator.values_sections_gov, activityinfo_indicator.values_sections_partners_gov, activityinfo_indicator.values_weekly, activityinfo_indicator.values_gov_weekly, activityinfo_indicator.values_partners_weekly, activityinfo_indicator.values_partners_gov_weekly, activityinfo_indicator.values_cumulative_weekly, activityinfo_indicator.activity_id FROM activityinfo_indicator INNER JOIN activityinfo_indicator_sub_indicators ON (activityinfo_indicator.id = activityinfo_indicator_sub_indicators.from_indicator_id) WHERE activityinfo_indicator_sub_indicators.to_indicator_id = "+str(ai_id)+" ORDER BY activityinfo_indicator.id ASC")
+            # rows = cursor.fetchall()
+            # print(json.dumps(rows))
+
             indicators = Indicator.objects.filter(sub_indicators=ai_id)
         indicators=indicators.values(
             'id',
@@ -1435,6 +1440,7 @@ def get_sub_indicators_data(ai_id, is_sector=False, ai_db=None):
             indicators = indicators.exclude(calculated_indicator=True)
         return indicators
     except Exception as ex:
+        print(ex.message)
         logger.error('get_sub_indicators_data error' + ex.message)
         return indicators
 

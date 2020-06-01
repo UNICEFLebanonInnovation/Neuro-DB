@@ -105,31 +105,31 @@
               <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
                  data-placement="top" title="Live Data Monitoring" class="text-danger"
                  data-step="9" data-intro="Open live ActivityInfo Dashboard">
-                <i class="fa fa-rss faa-flash "></i>
+                <i class="pe-7s-signal"></i>
               </a>
               {% endif%}
               <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
                  data-placement="top" title="Indicators Data Disaggregated" class="text-success">
-                <i class="fa fa-tags animated"></i>
+                <i class="pe-7s-ticket"></i>
+              </a>
+
+              <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
+                 data-placement="top" title="Disability Report" class="text-warning"
+                 data-step="16" data-intro="Disability report">
+                <i class="pe-7s-delete-user"></i>
               </a>
               {% if database.have_partners %}
                <a
                     href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}"
                     target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
-                    <i class="fa fa-users" aria-hidden="true" title=""></i>
+                    <i class="pe-7s-users" aria-hidden="true" title=""></i>
                </a>
               {% endif %}
-
-              <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
-                 data-placement="top" title="Disability Report" class="text-warning"
-                 data-step="16" data-intro="Disability report">
-                <i class="fa fa-wheelchair"></i>
-              </a>
             </div>
             <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Raw Data">
               <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
                       data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">
-                <i class="fa fa-download"></i>
+                <i class="pe-7s-download"></i>
 
               </button>
               <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
@@ -144,7 +144,7 @@
           <div class="btn-actions-pane-right">
               {% if database.have_internal_reporting %}
               <a href=" {% url 'activityinfo:report_internal' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}" class="link">
-             <i class="nav-link-icon fa fa-fw"></i>
+             <i class="nav-link-icon pe-7s-edit" style="font-size:25px;"></i>
              <span>Internal Reporting</span>
             </a>
             {% endif %}
@@ -233,8 +233,8 @@
               {% get_sub_indicators_data item.id False database as sub_indicators %}
               {% for item1 in sub_indicators %}
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
-                  {% if item1.master_indicator_sub %}style="background-image:linear-gradient(#ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);  border-bottom:2px solid #fff"
-                  {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
+                  {% if item1.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"
+                  {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff;" {% endif %}>
                 <td class="w-150">
                   {{ item1.name }}
                 </td>
@@ -352,7 +352,7 @@
                 <i class="fa fa-user" style="color: #0089d2;"></i>
                 <a href="https://etools.unicef.org/pmp/partners/{{ partner_info.etl_id }}/details" target="_blank"
                    class="text-info">
-                  {{ partner_info.name }} <i class="fa fa-fw" aria-hidden="true" title=""></i></i>
+                  {{ partner_info.name }} <i class="fa fa-fw" aria-hidden="true" title=""></i>
                 </a>
               </div>
             </div>

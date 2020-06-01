@@ -31,6 +31,8 @@ def get_partner_profile_details():
     special_audits = []
     now = datetime.datetime.now()
 
+    years = (now.year, now.year - 1)
+
     cursor = connection.cursor()
     cursor.execute(
         "SELECT id, etl_id, name, short_name, description, partner_type, rating, vendor_number, comments, "
@@ -82,8 +84,8 @@ def get_partner_profile_details():
         "budget_currency, total_budget, offices_names, location_p_codes, status, "
         "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
-        "WHERE date_part('year', end_date) = %s AND status <> %s "
-        "ORDER BY start", [now.year, PCA.CANCELLED])
+        "WHERE date_part('year', end_date) IN %s AND status <> %s "
+        "ORDER BY start", [years, PCA.CANCELLED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -111,8 +113,8 @@ def get_partner_profile_details():
         "budget_currency, total_budget, offices_names, location_p_codes, status, "
         "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
-        "WHERE date_part('year', end_date) = %s AND status = %s "
-        "ORDER BY start", [now.year, PCA.ACTIVE])
+        "WHERE date_part('year', end_date) IN %s AND status = %s "
+        "ORDER BY start", [years, PCA.ACTIVE])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -140,8 +142,8 @@ def get_partner_profile_details():
         "budget_currency, total_budget, offices_names, location_p_codes, status, "
         "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
-        "WHERE date_part('year', end_date) = %s AND status <> %s AND document_type = %s "
-        "ORDER BY start", [now.year, PCA.CANCELLED, PCA.PD])
+        "WHERE date_part('year', end_date) IN %s AND status <> %s AND document_type = %s "
+        "ORDER BY start", [years, PCA.CANCELLED, PCA.PD])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -169,8 +171,8 @@ def get_partner_profile_details():
         "budget_currency, total_budget, offices_names, location_p_codes, status, " 
         "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
-        "WHERE date_part('year', end_date) = %s AND status = %s AND document_type = %s "
-        "ORDER BY start", [now.year, PCA.ACTIVE, PCA.PD])
+        "WHERE date_part('year', end_date) IN %s AND status = %s AND document_type = %s "
+        "ORDER BY start", [years, PCA.ACTIVE, PCA.PD])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -198,8 +200,8 @@ def get_partner_profile_details():
         "budget_currency, total_budget, offices_names, location_p_codes, status, " 
         "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
-        "WHERE date_part('year', end_date) = %s AND status <> %s AND document_type = %s "
-        "ORDER BY start", [now.year, PCA.CANCELLED, PCA.SSFA])
+        "WHERE date_part('year', end_date) IN %s AND status <> %s AND document_type = %s "
+        "ORDER BY start", [years, PCA.CANCELLED, PCA.SSFA])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -227,8 +229,8 @@ def get_partner_profile_details():
         "budget_currency, total_budget, offices_names, location_p_codes, status, "
         "array_to_string(section_names, '; '), array_to_string(donors, '; ') "
         "FROM public.etools_pca "
-        "WHERE date_part('year', end_date) = %s AND status = %s AND document_type = %s "
-        "ORDER BY start", [now.year, PCA.ACTIVE, PCA.SSFA])
+        "WHERE date_part('year', end_date) IN %s AND status = %s AND document_type = %s "
+        "ORDER BY start", [years, PCA.ACTIVE, PCA.SSFA])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -255,9 +257,9 @@ def get_partner_profile_details():
         "SELECT ta.id, ta.partner_id, ta.partnership_id, pc.number, tl.status, tl.attachments_sets " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type = %s AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type = %s AND date_part('year', ta.date) IN %s "
         "AND (tl.status = %s OR tl.status = %s OR tl.status = %s OR tl.status = %s)"
-        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.PLANNED, Travel.SUBMITTED, Travel.APPROVED, Travel.COMPLETED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, years, Travel.PLANNED, Travel.SUBMITTED, Travel.APPROVED, Travel.COMPLETED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -277,9 +279,9 @@ def get_partner_profile_details():
         "tl.reference_number, ta.date " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) IN %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.PLANNED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, years, Travel.PLANNED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -300,9 +302,9 @@ def get_partner_profile_details():
         "tl.reference_number, ta.date " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) IN %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.SUBMITTED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, years, Travel.SUBMITTED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -323,9 +325,9 @@ def get_partner_profile_details():
         "tl.reference_number, ta.date " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) IN %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.APPROVED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, years, Travel.APPROVED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -347,9 +349,9 @@ def get_partner_profile_details():
         "FROM public.etools_travelactivity ta "
         "LEFT JOIN public.etools_pca pc ON ta.partnership_id = pc.id "
         "LEFT JOIN public.etools_travel tl ON ta.travel_id = tl.id "
-        "WHERE ta.travel_type= %s AND date_part('year', tl.start_date) = %s "
+        "WHERE ta.travel_type= %s AND date_part('year', tl.start_date) IN %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.COMPLETED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, years, Travel.COMPLETED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -370,9 +372,9 @@ def get_partner_profile_details():
         "tl.reference_number, ta.date " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) IN %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.CANCELLED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, years, Travel.CANCELLED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -393,9 +395,9 @@ def get_partner_profile_details():
         "tl.reference_number, ta.date " 
         "FROM public.etools_travelactivity ta, public.etools_pca pc, public.etools_travel tl "
         "WHERE ta.partnership_id = pc.id AND ta.travel_id = tl.id "
-        "AND ta.travel_type=%s AND date_part('year', ta.date) = %s "
+        "AND ta.travel_type=%s AND date_part('year', ta.date) IN %s "
         "AND tl.status = %s "
-        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, now.year, Travel.REJECTED])
+        "ORDER BY ta.date", [TravelType.PROGRAMME_MONITORING, years, Travel.REJECTED])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -414,8 +416,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
-        "ORDER BY start_date", [Engagement.TYPE_MICRO_ASSESSMENT, Engagement.CANCELLED, now.year])
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) IN %s "
+        "ORDER BY start_date", [Engagement.TYPE_MICRO_ASSESSMENT, Engagement.CANCELLED, years])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -432,8 +434,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
-        "ORDER BY start_date", [Engagement.TYPE_SPOT_CHECK, Engagement.CANCELLED, now.year])
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) IN %s "
+        "ORDER BY start_date", [Engagement.TYPE_SPOT_CHECK, Engagement.CANCELLED, years])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -451,8 +453,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s AND status = %s AND date_part('year', start_date) = %s "
-        "ORDER BY start_date", [Engagement.TYPE_SPOT_CHECK, Engagement.FINAL, now.year])
+        "WHERE engagement_type = %s AND status = %s AND date_part('year', start_date) IN %s "
+        "ORDER BY start_date", [Engagement.TYPE_SPOT_CHECK, Engagement.FINAL, years])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -469,8 +471,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
-        "ORDER BY start_date", [Engagement.TYPE_AUDIT, Engagement.CANCELLED, now.year])
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) IN %s "
+        "ORDER BY start_date", [Engagement.TYPE_AUDIT, Engagement.CANCELLED, years])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -487,8 +489,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s AND status = %s AND date_part('year', start_date) = %s "
-        "ORDER BY start_date", [Engagement.TYPE_AUDIT, Engagement.FINAL, now.year])
+        "WHERE engagement_type = %s AND status = %s AND date_part('year', start_date) IN %s "
+        "ORDER BY start_date", [Engagement.TYPE_AUDIT, Engagement.FINAL, years])
 
     rows = cursor.fetchall()
     for row in rows:
@@ -505,8 +507,8 @@ def get_partner_profile_details():
     cursor.execute(
         "SELECT id, partner_id, findings_sets, internal_controls, displayed_name " 
         "FROM public.etools_engagement "
-        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) = %s "
-        "ORDER BY start_date", [Engagement.TYPE_SPECIAL_AUDIT, Engagement.CANCELLED, now.year])
+        "WHERE engagement_type = %s AND status <> %s AND date_part('year', start_date) IN %s "
+        "ORDER BY start_date", [Engagement.TYPE_SPECIAL_AUDIT, Engagement.CANCELLED, years])
 
     rows = cursor.fetchall()
     for row in rows:

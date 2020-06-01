@@ -1,11 +1,14 @@
 {% load staticfiles i18n %}
 
 <div class="btn-group dropdown" placement="bottom" id="calendar_btn">
-                        <button aria-haspopup="true" class="btn btn-link p-0 mr-2" type="button" aria-expanded="true">
-                            <div class="font-icon-wrapper">
-                                <i class="fa fa-fw" aria-hidden="true" title="Click to Calendar"></i>
-                            </div>
-                        </button>
+
+                    <div class="d-inline-block mr-3">
+
+                      <button aria-haspopup="true" type="button" aria-expanded="true" class="btn-shadow  btn btn-outline-primary">
+                          <i class="pe-7s-date"></i>
+                      </button>
+                    </div>
+
                         <div class="dropdown-menu-xl dropdown-menu" x-placement="bottom"
                             style="top: 0px; left: 0px; position: absolute; transform: translate(-300px, 46px);">
                             <div class="dropdown-menu-header">
