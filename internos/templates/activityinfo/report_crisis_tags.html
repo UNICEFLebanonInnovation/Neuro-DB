@@ -64,7 +64,7 @@
                 </select>
               <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
                  {% for month, month_name in months %}
-                <option class="dropdown-item" value="{{ month }}" {% if month in selected_months %} selected {% endif %}>
+                <option class="dropdown-item" value="{{ month }}" {% if  month|stringformat:"i" in selected_months %} selected {% endif %}>
                   {{ month_name }}
                 </option>
                 {% endfor %}
@@ -147,7 +147,8 @@
             <tbody>
             {% for item in master_indicators %}
             {% get_indicator_cumulative_months_sections item selected_months selected_partners selected_governorates selected_sections as cumulative_value %}
-
+            {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+            {% if display_indicator  %}
             <tr class="level1" itemid="{{ item.id }}">
               <th class="w-150">{{ item.name }} </th>
               <td class="w-10">{{ item.awp_code }}</td>
@@ -190,6 +191,61 @@
               </td>
               {% endfor %}
             </tr>
+            {% endif %}
+            {% endfor %}
+
+            {% for item in covid_indicators %}
+            {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates start_month as cumulative_value %}
+            {% get_database_by_activity item.activity as db_name %}
+            {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+            {% if display_indicator  %}
+            <tr class="level1" itemid="{{ item.id }}">
+              <th class="w-150">{{ item.name }}
+               <a  data-toggle="tooltip" data-placement="right" title="{{db_name.label}}" style="cursor:pointer">
+                   <img alt="" src="{% static db_name.section.logo %}"  style="height: 30px; width: 30px; display: inline-block;" />
+                  </a>
+              </th>
+              <td class="w-10">{{ item.awp_code }}</td>
+              <td class="w-10">
+                {{ cumulative_value }}
+              </td>
+              {% for tag in tags_gender %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_gender__name  selected_months  selected_partners  selected_governorates   as value %}
+                 {{ value | number_format }}
+                <br/>
+               {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_nationality %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_nationality__name selected_months selected_partners selected_governorates  as value %}
+                {{ value | number_format }}
+                <br/>
+               {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_age %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_age__name selected_months selected_partners selected_governorates  as value %}
+                 {{ value | number_format }}
+                <br/>
+               {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_disability %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_disability__name selected_months selected_partners selected_governorates  as value %}
+                 {{ value | number_format }}
+                <br/>
+               {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
+              </td>
+              {% endfor %}
+            </tr>
+            {% endif %}
             {% endfor %}
             </tbody>
           </table>

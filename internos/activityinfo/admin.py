@@ -1064,9 +1064,10 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     update_indicators_hpm.short_description = 'Step 1: Update HPM indicators values'
 
     def calculate_indicators_values(self, request, queryset):
-        from .utils_shift import calculate_indicators_values
+        # from .utils_shift import calculate_indicators_values
         for db in queryset:
-            reports = calculate_indicators_values(db,'weekly')
+            reports = calculate_indicators_values(db)
+            # reports = calculate_indicators_values(db,'weekly')
             self.message_user(
                 request,
                 "{} indicators values calculated for database {}".format(reports, db.name)
@@ -1111,10 +1112,10 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         )
 
     def calculate_indicators_tags_weekly(self, request, queryset):
-        # from.utils_shift import calculate_indicators_tags_weekly
+        from.utils_shift import calculate_indicators_tags_weekly
         for db in queryset:
-            # reports = calculate_indicators_tags_weekly(db)
-            reports = calculate_indicators_tags(db)
+            reports = calculate_indicators_tags_weekly(db)
+            # reports = calculate_indicators_tags(db)
 
             self.message_user(
                 request,

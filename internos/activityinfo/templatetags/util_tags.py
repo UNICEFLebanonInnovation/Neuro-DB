@@ -86,7 +86,7 @@ def percentage_float(number, total):
     try:
         total = total.replace(",", "")
         if number and not isinstance(total, dict):
-            return float(round((float(number) * 100.0) / float(total), 2))
+            return float(round((float(number) * 100.0) / float(total), 3))
         return 0
     except Exception:
         return 0
@@ -372,7 +372,7 @@ def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=Non
         return get_indicator_unit(indicator, value)
 
     if start_month:
-        if i in month_list:
+        for i in month_list:
             if indicator['values']:
                 if str(i) in indicator['values']:
                     value = value + float(indicator['values'][str(i)])
@@ -409,7 +409,7 @@ def get_indicator_cumulative_months_sections(indicator, month=None, partner=None
             for sec in section:
                 for par in partner:
                     for g in gov:
-                        key = "{}-{}-{}".format(sec,par,g)
+                        key = "{}-{}-{}".format(sec,g,par)
                         if key in values:
                             value += values[key]
             return get_indicator_unit(indicator, value)
@@ -1688,120 +1688,151 @@ def get_indicator_value_sector(indicator, month=None, partner=None, site=None):
 @register.assignment_tag
 def get_indicator_tag_value(indicator, tag, month=None, partners=None, governorates=None, sections=None):
     # try:
-        value = 0
-        values_tags = indicator['values_tags']
-        if partners and governorates and sections and month:
-            for par in partners:
-                for gov in governorates:
+
+            value = 0
+            values_tags = indicator['values_tags']
+
+            if partners and governorates and sections and month:
+                for par in partners:
+                    for gov in governorates:
+                        for sec in sections:
+                            for m in month:
+                                key= '{}--{}--{}--{}-{}'.format(m, sec, par,gov,tag)
+                                if 'partners_govs_sections_'+tag in values_tags:
+                                    if key in values_tags['partners_govs_sections_'+tag]:
+                                        value += values_tags['partners_govs_sections_'+tag][key]
+                return str(round(value)).replace('.0', '')
+
+            if partners and governorates and month:
+                for par in partners:
+                    for gov in governorates:
+                        for m in month:
+                            key = '{}--{}--{}--{}'.format(m, gov, par,tag)
+                            if 'partners_govs_'+ tag in values_tags:
+                                if key in values_tags['partners_govs_'+ tag]:
+                                    value += values_tags['partners_govs_'+tag][key]
+                return str(round(value)).replace('.0', '')
+
+            if partners and sections and month:
+                for par in partners:
                     for sec in sections:
                         for m in month:
-                            key= '{}--{}--{}--{}-{}'.format(m, sec, par,gov,tag)
-                            if 'partners_govs_sections_'+tag in values_tags:
-                                if key in values_tags['partners_govs_sections_'+tag]:
-                                    value += values_tags['partners_govs_sections_'+tag][key]
-                                return str(round(value)).replace('.0', '')
+                            key = '{}--{}--{}--{}'.format(m, sec, par,tag)
+                            if 'partners_sections_'+ tag in values_tags:
+                                if key in values_tags['partners_sections_'+ tag]:
+                                    value += values_tags['partners_sections_'+tag][key]
+                return str(round(value)).replace('.0', '')
 
-        if partners and governorates and month:
-            for par in partners:
-                for gov in governorates:
-                    for m in month:
-                        key = '{}--{}--{}--{}'.format(m, gov, par,tag)
-                        if 'partners_govs_'+ tag in values_tags:
-                            if key in values_tags['partners_govs_'+ tag]:
-                                value += values_tags['partners_govs_'+tag][key]
-                            return str(round(value)).replace('.0', '')
-
-        if partners and sections and month:
-            for par in partners:
-                for sec in sections:
-                    for m in month:
-                        key = '{}--{}--{}--{}'.format(m, sec, par,tag)
-                        if 'partners_sections_'+ tag in values_tags:
-                            if key in values_tags['partners_sections_'+ tag]:
-                                value += values_tags['partners_sections_'+tag][key]
-                            return str(round(value)).replace('.0', '')
-
-        if governorates and sections and month:
-            for gv in governorates:
-                for sec in sections:
-                    for m in month:
-                        key = '{}--{}--{}--{}'.format(m, sec, gv,tag)
-                        if 'govs_sections_'+ tag in values_tags:
-                            if key in values_tags['govs_sections_'+ tag]:
-                                value += values_tags['govs_sections_'+tag][key]
-                            return str(round(value)).replace('.0', '')
-
-        if partners and governorates and sections:
-            for par in partners:
-                for gov in governorates:
+            if governorates and sections and month:
+                for gv in governorates:
                     for sec in sections:
-                        key = '{}--{}--{}--{}'.format(sec, par, gov,tag)
-                        if 'cum_section_par_gov_' + tag in values_tags:
-                            if key in values_tags['cum_section_par_gov_' + tag]:
-                                value += values_tags['cum_section_par_gov_' + tag][key]
-                        return str(round(value)).replace('.0', '')
+                        for m in month:
+                            key = '{}--{}--{}--{}'.format(m, sec, gv,tag)
+                            if 'govs_sections_'+ tag in values_tags:
+                                if key in values_tags['govs_sections_'+ tag]:
+                                    value += values_tags['govs_sections_'+tag][key]
+                return str(round(value)).replace('.0', '')
 
-        if partners and governorates:
-            for par in partners:
-                for gov in governorates:
-                    key = '{}--{}--{}'.format(par,gov,tag)
-                    if 'cum_partner_gov_' + tag in values_tags:
-                        if key in values_tags['cum_partner_gov_' + tag]:
-                            value += values_tags['cum_partner_gov_' + tag][key]
-                        return str(round(value)).replace('.0', '')
+            if partners and governorates and sections:
+                for par in partners:
+                    for gov in governorates:
+                        for sec in sections:
+                            key = '{}--{}--{}--{}'.format(sec, par, gov,tag)
+                            if 'cum_section_par_gov_' + tag in values_tags:
+                                if key in values_tags['cum_section_par_gov_' + tag]:
+                                    value += values_tags['cum_section_par_gov_' + tag][key]
+                return str(round(value)).replace('.0', '')
 
-        if partners and sections:
-            for par in partners:
+            if partners and governorates:
+                for par in partners:
+                    for gov in governorates:
+                        key = '{}--{}--{}'.format(par,gov,tag)
+                        if 'cum_partner_gov_' + tag in values_tags:
+                            if key in values_tags['cum_partner_gov_' + tag]:
+                                value += values_tags['cum_partner_gov_' + tag][key]
+                return str(round(value)).replace('.0', '')
+
+            if partners and sections:
+                for par in partners:
+                    for sec in sections:
+                        key = '{}--{}--{}'.format(sec, par,tag)
+                        if 'cum_section_partner_' + tag in values_tags:
+                            if key in values_tags['cum_section_partner_' + tag]:
+                                value += values_tags['cum_section_partner_' + tag][key]
+                return str(round(value)).replace('.0', '')
+
+            if governorates and sections:
+                for gv in governorates:
+                    for sec in sections:
+                        key = '{}--{}--{}'.format(sec, gv,tag)
+                        if 'cum_sec_gov_' + tag in values_tags:
+                            if key in values_tags['cum_sec_gov_' + tag]:
+                                value += values_tags['cum_sec_gov_' + tag][key]
+                return str(round(value)).replace('.0', '')
+
+            if partners and month:
+                for par in partners:
+                    for m in month:
+                        key = '{}--{}--{}'.format(m, par,tag)
+                        if 'partners_' + tag in values_tags:
+                            if key in values_tags['partners_' + tag]:
+                                value += values_tags['partners_' + tag][key]
+                return str(round(value)).replace('.0', '')
+
+            if governorates and month:
+                for gv in governorates:
+                    for m in month:
+                        key = '{}--{}--{}'.format(m, gv, tag)
+                        if 'partners_' + tag in values_tags:
+                            if key in values_tags['govs_' + tag]:
+                                value += values_tags['govs_' + tag][key]
+                return str(round(value)).replace('.0', '')
+
+
+            if sections and month:
                 for sec in sections:
-                    key = '{}--{}--{}'.format(sec, par,tag)
-                    if 'cum_section_partner_' + tag in values_tags:
-                        if key in values_tags['cum_section_partner_' + tag]:
-                            value += values_tags['cum_section_partner_' + tag][key]
-                        return str(round(value)).replace('.0', '')
+                    for m in month:
+                        key = '{}--{}--{}'.format(m, sec, tag)
+                        if 'sections_' + tag in values_tags:
+                            if key in values_tags['sections_' + tag]:
+                                value += values_tags['sections_' + tag][key]
+                return str(round(value)).replace('.0', '')
 
-        if governorates and sections:
-            for gv in governorates:
+            if partners:
+                for par in partners:
+                    key = '{}--{}'.format(par,tag)
+                    if 'cum_partners_' + tag in values_tags:
+                        if key in values_tags['cum_partners_' + tag]:
+                            value += values_tags['cum_partners_' + tag][key]
+                return str(round(value)).replace('.0', '')
+
+            if governorates:
+                for gv in governorates:
+                    key = '{}--{}'.format(gv,tag)
+                    if 'cum_govs_' + tag in values_tags:
+                        if key in values_tags['cum_govs_' + tag]:
+                            value += values_tags['cum_govs_' + tag][key]
+                return str(round(value)).replace('.0', '')
+
+            if sections:
                 for sec in sections:
-                    key = '{}--{}--{}'.format(sec, gv,tag)
-                    if 'cum_sec_gov_' + tag in values_tags:
-                        if key in values_tags['cum_sec_gov_' + tag]:
-                            value += values_tags['cum_sec_gov_' + tag][key]
-                        return str(round(value)).replace('.0', '')
+                    key = '{}--{}'.format(sec,tag)
+                    if 'cum_sections_' + tag in values_tags:
+                        if key in values_tags['cum_sections_' + tag]:
+                            value += values_tags['cum_sections_' + tag][key]
+                return str(round(value)).replace('.0', '')
 
-        if partners:
-            for par in partners:
-                key = '{}--{}'.format(par,tag)
-                if 'cum_partners_' + tag in values_tags:
-                    if key in values_tags['cum_partners_' + tag]:
-                        value += values_tags['cum_partners_' + tag][key]
-                    return str(round(value)).replace('.0', '')
-        if governorates:
-            for gv in governorates:
-                key = '{}--{}'.format(gv,tag)
-                if 'cum_govs_' + tag in values_tags:
-                    if key in values_tags['cum_govs_' + tag]:
-                        value += values_tags['cum_govs_' + tag][key]
-                    return str(round(value)).replace('.0', '')
+            if month:
+                for m in month:
+                    key = '{}--{}'.format(m,tag)
+                    if 'months_'+ tag in values_tags:
+                        if key in values_tags['months_' + tag]:
+                            value += values_tags['months_' + tag][key]
+                return str(round(value)).replace('.0', '')
 
-        if sections:
-            for sec in sections:
-                key = '{}--{}'.format(sec,tag)
-                if 'cum_sections_' + tag in values_tags:
-                    if key in values_tags['cum_sections_' + tag]:
-                        value += values_tags['cum_sections_' + tag][key]
-                    return str(round(value)).replace('.0', '')
-
-        if month:
-            for m in month:
-                key = '{}--{}'.format(m,tag)
-                if 'months_'+ tag in values_tags:
-                    if key in values_tags['months_' + tag]:
-                        value += values_tags['months_' + tag][key]
-                    return str(round(value)).replace('.0', '')
-
-        if tag in values_tags:
-            value = values_tags[tag]
-        return str(round(value)).replace('.0', '')
+            if tag in values_tags:
+                value = values_tags[tag]
+            return str(round(value)).replace('.0', '')
     # except Exception as ex:
     #     logger.error('get_indicator_tag_value error' + ex.message)
     #     return 0
