@@ -241,18 +241,20 @@ text-decoration:none;
 .card-footer.dashboard_icons {
     margin: 0px; padding: 7px;
 }
-table tbody tr.master_indicator{
-background-color:#e0f3ff !important;
-font-weight: bold;
-font-size: 13px;
-border-bottom:2px solid #fff;
+table tbody tr {
+  font-size: 13px;
+  border-bottom:2px solid #fff;
+  text-transform: uppercase;
 }
-table tbody tr.individual_indicator{
+table tbody tr.master_indicator{
+font-size: 13px;
+}
+/*table tbody tr.individual_indicator{
 background-color:#dadada !important;
 font-weight: bold;
 font-size: 13px;
 border-bottom:2px solid #fff;
-}
+}*/
 
 .tag-widget{
 margin-right:20px;

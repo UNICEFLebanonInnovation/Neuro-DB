@@ -198,14 +198,22 @@
                     {% to_display_indicator selected_filter cumulative_value as display_indicator %}
                     {% if display_indicator  %}
                       <tr itemid="{{ item.id }}"
-                                {% if item.master_indicator %}class="level1 master_indicator"
-                                {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
-                              <td class="w-150">{{ item.name }}
+                                {% if item.master_indicator %}class="level1 master_indicator text-primary"
+                                {% elif item.individual_indicator %}class="level1 individual_indicator text-secondary" {% endif %}>
+                              <td class="w-150">
+                                {% if item.master_indicator %}
+                                <div style="border-left: 9px solid #3f6ad8; padding: 5px; padding-left: 15px;">
+                                  {% else %}
+                                <div>
+                                  {% endif %}
+
+                                {{ item.name }}
                                 {% if item.hpm_global_indicator %}
                                 <a data-toggle="tooltip" data-placement="right" title="HPM" style="cursor:pointer">
                                   <i class="pe-7s-global text-primary"> </i>
                                 </a>
                                 {% endif %}
+                                  </div>
                               </td>
                               <td class="w-5">{{ item.category}}</td>
                               <td class="w-5">
@@ -227,10 +235,17 @@
                       {% for item1 in sub_indicators %}
 
                       <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
-                                {% if item1.master_indicator %}style="background-color:rgba(252, 255, 174, 0.38); border-bottom:2px solid #fff"
-                                {% elif item1.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"
-                                {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
+                                {% if item1.master_indicator %}style="color: #3f6ad8;"
+                                {% elif item1.master_indicator_sub %}style="color: #f7b924;"
+                                {% elif item1.individual_indicator %}style="color: #6c757d;" {% endif %}>
                               <td class="w-150">
+                                    {% if item1.master_indicator %}
+                                    <div style="border-left: 9px solid #3f6ad8; padding: 5px; padding-left: 15px;">
+                                    {% elif item1.master_indicator_sub %}
+                                    <div style="border-left: 9px solid #f7b924; padding: 5px; padding-left: 15px;">
+                                    {% else %}
+                                    <div>
+                                    {% endif %}
                                 {{ item1.name }}
                                  {% if item1.master_indicator %}
                                  {% get_database_by_activity item1.activity as db_name %}
@@ -238,6 +253,7 @@
                                  <img alt="" src="{% static db_name.section.logo %}"  style="height: 30px; width: 30px; display: inline-block;" />
                                  </a>
                                 {% endif %}
+                                  </div>
 
                               </td>
                               <td class="w-5">
@@ -271,10 +287,22 @@
                         {% for item2 in sub_indicators1 %}
                           {% if item2.master_indicator == 0   %}
                         <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
-                      {% if item2.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"{% endif %}
-                      {% if item2.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
+                      {% if item2.master_indicator_sub %}style="color: #16aaff;"{% endif %}
+                      {% if item2.individual_indicator %} class="individual" style="color: #6c757d;"{% endif %}
                       itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
-                    <td class="w-150"> {{item2.name }}</td>
+                    <td class="w-150">
+
+                                    {% if item2.master_indicator %}
+                                    <div style="border-left: 9px solid #3f6ad8; padding: 5px; padding-left: 15px;">
+                                    {% elif item2.master_indicator_sub %}
+                                    <div style="border-left: 9px solid #16aaff; padding: 5px; padding-left: 15px;">
+                                    {% else %}
+                                    <div>
+                                    {% endif %}
+                                      {{ item2.name }}
+                                    </div>
+
+                    </td>
                     <td class="w-5"></td>
                     <td class="w-5"></td>
                     <td class="w-5">
@@ -302,7 +330,18 @@
                   <tr class="level4 level4-{{ item.id }} level4-{{ item.id }}-{{ item1.id }}-{{ item2.id }}"
                         {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                         itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}-{{ item3.id }}">
-                      <td class="w-150">{{ item3.name}}</td>
+                      <td class="w-150">
+                                    {% if item3.master_indicator %}
+                                    <div style="border-left: 9px solid #3f6ad8; padding: 5px; padding-left: 15px;">
+                                    {% elif item3.master_indicator_sub %}
+                                    <div style="border-left: 9px solid #16aaff; padding: 5px; padding-left: 15px;">
+                                    {% else %}
+                                    <div>
+                                    {% endif %}
+                                      {{ item3.name }}
+                                    </div>
+
+                      </td>
                       <td class="w-5"></td>
                       <td class="w-5"></td>
                       <td class="w-5">
