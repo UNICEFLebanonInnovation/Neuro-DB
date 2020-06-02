@@ -1,0 +1,300 @@
+{% extends "base2.html" %}
+{% load staticfiles i18n %}
+{% block project_title %}{% endblock %}
+{% load util_tags %}
+
+{% block content %}
+
+<style>
+
+.mat-tab-body-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    transition: height .5s cubic-bezier(.35,0,.25,1);
+}
+.mat-tab-body {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    display: block;
+    overflow: hidden;
+    flex-basis: 100%;
+}
+
+.mat-tab-body.mat-tab-body-active {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 1;
+    flex-grow: 1;
+}
+.mat-tab-body-content {
+    height: 100%;
+    overflow: auto;
+}
+.ml-auto, .mx-auto {
+    margin-left: auto !important;
+}
+.mr-auto, .mx-auto {
+    margin-right: auto !important;
+}
+.card-border {
+    box-shadow: 0 0 0 transparent;
+    border-width: 1px;
+}
+.icon-wrapper {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.icon-wrapper {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.rounded-circle {
+    border-radius: 50% !important;
+}
+.icon-wrapper .icon-wrapper-bg {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 3;
+    opacity: .2;
+}
+.opacity-1 {
+    opacity: .1 !important;
+}
+.bg-white {
+    background-color: #fff !important;
+}
+.icon-wrapper i {
+    margin: 0 auto;
+    font-size: 1.7rem;
+    position: relative;
+    z-index: 5;
+}
+
+[class^="lnr-"], [class*=" lnr-"] {
+    font-family: 'Linearicons-Free';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.icon-wrapper i:before {
+    margin-top: -3px;
+}
+.lnr-cog:before {
+    content: "\e810";
+}
+.widget-chart .widget-numbers {
+    font-weight: bold;
+    font-size: 2.5rem;
+    display: block;
+    line-height: 1;
+    margin: 1rem auto;
+}
+.widget-chart .widget-numbers + .widget-chart-flex, .widget-chart .widget-numbers + .widget-description, .widget-chart .widget-numbers + .widget-subheading {
+    margin-top: -0.5rem;
+}
+.widget-chart .widget-subheading {
+    margin: -0.5rem 0 0;
+    display: block;
+    opacity: .6;
+}
+.widget-chart .widget-description {
+    margin: 1rem 0 0;
+}
+
+</style>
+
+<div class="app-main__inner">
+
+<div class="app-page-title"><div class="page-title-wrapper"><div class="page-title-heading"><div class="page-title-icon"><i class="icon pe-7s-home icon-gradient bg-ripe-malin"></i></div><div> HOME
+
+                                        <div class="page-title-subheading">
+                                        </div>
+
+</div></div><div class="page-title-actions">
+
+</div></div></div>
+
+
+
+<div class="mat-tab-body-wrapper" style="padding: 50px;">
+  <div class="row mx-auto ng-star-inserted">
+      <div id="slide5" title="ActivityInfo: Partner monthly reporting dashboard" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">ActivityInfo </div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
+      <div id="slide6" title="eTools: Partnerships, HACT and Audits" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">eTools</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
+      <div id="slide7" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Vision</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
+      <div id="slide8" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Populations</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
+      <div id="slide9" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Surveys</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
+      <div id="slide10" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Maps</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
+      <div id="slide11" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">COVID-19</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
+      <div id="slide12" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Economy</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
+      <div id="slide13" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Donors</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
+  </div>
+</div>
+
+
+
+<div id="slide1" style="display: none;">
+
+    <div class="col-md-6 col-lg-4">
+      <div class="main-card mb-3 card" style="width: 500px; height: 500px;">
+        <div class="card-header bg-primary text-white">
+          <i class="header-icon pe-7s-light text-white" style="font-size: 25px;"></i> NEURO-DB
+          <div class="btn-actions-pane-right actions-icon-btn">
+          </div>
+        </div>
+        <div class="card-body text-center">
+          <img src="/static/images/logo.png" width="300px" height="300px"/>
+          <p class="text-center">Through science to make better impact</p>
+        </div>
+      </div>
+    </div>
+
+</div>
+
+<div id="slide2" style="display: none;">
+
+    <div class="col-md-6 col-lg-4">
+      <div class="main-card mb-3 card" style="width: 500px; height: 500px;">
+        <div class="card-header bg-primary text-white">
+          <i class="header-icon pe-7s-light text-white" style="font-size: 25px;"></i> WHAT IS NEURO-DB?
+          <div class="btn-actions-pane-right actions-icon-btn">
+          </div>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Neuro-DB is a data warehouse/centralized online database tool to gather, organize,
+            manage, map and analyze data from different sources of UNICEF programmes.
+            The objective is to create sort of an inter-relation between these data that allow staff to access
+            information in an easy and secured way and to generate customized reports based on data from different
+            programmes/sources that can help UNICEF staff to make a better decision based on evidence base data/indicators.</h5>
+          <img src="/static/images/central_data.png" width="300px" height="300px"/>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div id="slide3" style="display: none;">
+
+    <div class="col-md-6 col-lg-4">
+      <div class="main-card mb-3 card" style="width: 500px; height: 500px;">
+        <div class="card-header bg-primary text-white">
+          <i class="header-icon pe-7s-light text-white" style="font-size: 25px;"></i> WHAT IS NEURO-DB?
+          <div class="btn-actions-pane-right actions-icon-btn">
+          </div>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">As the graph shows below, Neuro-DB will be equipped by an internal engine to fetch data from external databases as Input and provide a new indicator as Output.</h5>
+          <img src="/static/images/neuron.png" width="300px" height="300px"/>
+          <ul>
+            <li>Data/Indicators from different sources as an Input</li>
+            <li>Linking between these data in the middle</li>
+            <li>Coming up with new Indicators as Output</li>
+          </ul>
+        </div>
+        </div>
+      </div>
+</div>
+
+<div id="slide4" style="display: none;">
+
+    <div class="col-md-6 col-lg-4">
+      <div class="main-card mb-3 card" style="width: 500px; height: 500px;">
+        <div class="card-header bg-primary text-white">
+          <i class="header-icon pe-7s-light text-white" style="font-size: 25px;"></i> WHY NEURO-DB?
+          <div class="btn-actions-pane-right actions-icon-btn">
+          </div>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush" id="loaded-content">
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-info text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            Data collected and stored in different places
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-info text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            Absence of reports or data not accessible in an easy way
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-info text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            Help with the decision based on new indicators
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+            </ul>
+      </div>
+    </div>
+    </div>
+
+</div>
+
+</div>
+
+{% endblock %}

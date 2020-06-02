@@ -18,44 +18,6 @@ from .utils import get_partners_list, get_governorates_list, get_reporting_secti
 from .utils import calculate_internal_indicators_values, calculate_internal_cumulative_results
 
 
-class HomeView(TemplateView):
-    template_name = 'pages/home.html'
-
-    def get_context_data(self, **kwargs):
-        from internos.etools.models import PCA
-        from internos.etools.utils import get_interventions_details
-
-        now = datetime.datetime.now()
-
-        interventions = PCA.objects.filter(end__year=now.year, status=PCA.ACTIVE)
-        partners = PCA.objects.filter(end__year=now.year, status=PCA.ACTIVE).values('partner_name').distinct()
-
-        donors_set = PCA.objects.filter(end__year=now.year,
-                                        status=PCA.ACTIVE,
-                                        donors__isnull=False,
-                                        donors__len__gt=0).values('number', 'donors').distinct()
-
-        donors = {}
-        for item in donors_set:
-            for donor in item['donors']:
-                if donor not in donors:
-                    donors[donor] = donor
-
-        indicators = Indicator.objects.filter(activity__database__reporting_year__year=now.year,
-                                              hpm_indicator=True,
-                                              master_indicator=True).order_by('sequence')
-
-        locations = get_interventions_details(interventions)
-
-        return {
-            'interventions': interventions.count(),
-            'donors': len(donors),
-            'partners': partners.count(),
-            'indicators': indicators,
-            'locations': locations
-        }
-
-
 class IndexView(TemplateView):
     template_name = 'activityinfo/index.html'
 
