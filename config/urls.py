@@ -10,7 +10,8 @@ from django.views import defaults as default_views
 from rest_framework_nested import routers
 from rest_framework_swagger.views import get_swagger_view
 
-from internos.activityinfo.views import IndexView, HomeView, ActivityAutocomplete
+from internos.activityinfo.views import IndexView, ActivityAutocomplete
+from internos.backends.views import HomeView, DashboardView
 from internos.etools.views import CommentUpdateViewSet
 
 api = routers.SimpleRouter()
@@ -19,7 +20,8 @@ schema_view = get_swagger_view(title='Neuro-DB API')
 
 urlpatterns = [
     # url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
-    url(r'^dashboard$', view=HomeView.as_view(), name='dashboard'),
+    url(r'^dashboard$', view=DashboardView.as_view(), name='dashboard'),
+    url(r'^home', view=HomeView.as_view(), name='home'),
     url(r'^$', view=IndexView.as_view(), name='index'),
     url(r'^activityinfo/', include('internos.activityinfo.urls', namespace='activityinfo'), name='activityinfo'),
     url(r'^etools/', include('internos.etools.urls', namespace='etools'), name='etools'),

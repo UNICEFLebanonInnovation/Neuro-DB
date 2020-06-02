@@ -141,9 +141,16 @@
                               Ali Chamseddine or Mohamad Karnib">
                           <i class="pe-7s-call"></i>
                       </a>
+
                     </div>
 
-                  {% block filter %}{% endblock filter %}
+                  {% block filter %}
+                      <a class="btn shadow  btn-outline-warning" href="javascript:void(0);"
+                         onclick="startIntro();" data-toggle="tooltip"
+                         data-placement="bottom" title="Show me some tips">
+                        <i class="pe-7s-magic-wand" aria-hidden="true"></i>
+                      </a>
+                  {% endblock filter %}
 
                     <div class="header-btn-lg pr-0" style="padding-left: 20px;margin-left: 10px;border-left: 1.5px solid #dee2e6;">
                         <div class="widget-content p-0">
@@ -433,6 +440,72 @@
             });
         });
 
+    </script>
+<script type="text/javascript">
+      function startIntro(){
+        var intro = introJs();
+          intro.setOptions({
+            steps: [
+              {
+                element: '#step1',
+                intro: $('#slide1').html()
+              },
+              {
+                element: '#step2',
+                intro: $('#slide2').html()
+                <!--position: 'right'-->
+              },
+              {
+                element: '#step3',
+                intro: $('#slide3').html(),
+                position: 'left'
+              },
+              {
+                element: '#step4',
+                intro: $('#slide4').html(),
+                position: 'bottom'
+              },
+              {
+                element: '#slide5',
+                intro: $('#slide5').attr('title'),
+              },
+              {
+                element: '#slide6',
+                intro: $('#slide6').attr('title'),
+              },
+              {
+                element: '#slide7',
+                intro: $('#slide7').attr('title'),
+              },
+              {
+                element: '#slide8',
+                intro: $('#slide8').attr('title'),
+              },
+              {
+                element: '#slide9',
+                intro: $('#slide9').attr('title'),
+              },
+              {
+                element: '#slide10',
+                intro: $('#slide10').attr('title'),
+              },
+              {
+                element: '#slide11',
+                intro: $('#slide11').attr('title'),
+              },
+              {
+                element: '#slide12',
+                intro: $('#slide12').attr('title'),
+              },
+              {
+                element: '#slide13',
+                intro: $('#slide13').attr('title'),
+              },
+            ]
+          });
+
+          intro.start();
+      }
     </script>
     {% block modal %}{% endblock %}
 </body>

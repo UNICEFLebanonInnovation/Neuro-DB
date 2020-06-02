@@ -115,6 +115,8 @@ def get_list_indicators_v4(ai_db, form_id):
                 ai_sub_indicator = Indicator.objects.get(ai_indicator=sub_indicator['id'])
             except Indicator.DoesNotExist:
                 ai_sub_indicator = Indicator(ai_indicator=sub_indicator['id'])
+            except Indicator.MultipleObjectsReturned:
+                continue
             ai_sub_indicator.description = sub_indicator['description'] if 'description' in sub_indicator else ''
             ai_sub_indicator.label = sub_indicator['label']
             ai_sub_indicator.name = sub_indicator['label']
