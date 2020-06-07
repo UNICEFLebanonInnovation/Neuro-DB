@@ -1,0 +1,52 @@
+{% load staticfiles i18n %}
+{% load util_tags %}
+
+          <div class="main-card mb-3 card">
+            <div class="card-header">
+              <i class="header-icon pe-7s-menu icon-gradient bg-ripe-malin"></i> Funded programmes 2019/2020
+
+              <div class="btn-actions-pane-right actions-icon-btn">
+                <span class="badge badge-pill badge-danger text-right">{{ count }}</span>
+              </div>
+
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush" style="max-height: 300px; overflow: scroll;">
+
+
+{% for item in interventions %}
+
+              <li class="list-group-item level3-filter" data-data="">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            {{ item.title }}
+                        </div>
+                        <div class="widget-subheading">
+                          {{ item.document_type }} - {{ item.status }} - {{ item.number }}
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-info">
+                            {% get_list_value item.donors_set 'donor_code' selected_donor 'value' as budget %}
+                            ${{ budget|number_format }}
+                          </div>
+                      </div>
+<div>
+  {% for section in inter.section_names %}
+  <button class="mb-2 mr-2 btn btn-light">section<span class="badge badge-pill badge-light"></span></button>
+  {% endfor %}
+</div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+{% endfor %}
+
+
+</ul>
+            </div>
+          </div>
+

@@ -414,11 +414,10 @@ def generate_indicators_number(ai_db):
 
 
 def link_indicators_data(ai_db, report_type=None):
-    # generate_indicators_number(ai_db)
-    result = link_indicators_activity_report(ai_db, report_type)
-    # link_ai_partners(report_type)
-    # link_etools_partners()
+    result = 0
+    # result = link_indicators_activity_report(ai_db, report_type)
     link_indicators_project(ai_db)
+    link_etools_partnerships(ai_db)
 
     return result
 
@@ -428,7 +427,7 @@ def link_indicators_project(ai_db):
     from internos.etools.models import PCA
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
-                                          master_indictor=True).exclude(project_code__isnull=True).only(
+                                          master_indicator=True).exclude(project_code__isnull=True).only(
         'project'
     )
 
@@ -450,7 +449,7 @@ def link_indicators_activity_report(ai_db, report_type=None):
     else:
         reports = ActivityReport.objects.filter(database_id=ai_db.ai_id)
 
-    reports = reports.exclude(ai_indicator__isnull=False)
+    # reports = reports.exclude(ai_indicator__isnull=False)
 
     # if ai_db.is_funded_by_unicef:
     #     reports = reports.filter(funded_by='UNICEF')
@@ -576,12 +575,12 @@ def link_etools_partners():
         ai_partners.update(partner_etools=partner)
 
 
-def link_etools_partnerships():
+def link_etools_partnerships(ai_db):
     from internos.activityinfo.models import ActivityReport
     from internos.etools.models import PCA
 
     programmes = PCA.objects.all()
-    ai_reports = ActivityReport.objects.filter(project_label__isnull=False)
+    ai_reports = ActivityReport.objects.filter(database_id=ai_db.ai_id, project_label__isnull=False)
 
     for programme in programmes:
         reports = ai_reports.filter(project_label=programme.number)

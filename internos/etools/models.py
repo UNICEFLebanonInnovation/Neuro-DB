@@ -1336,6 +1336,11 @@ class DonorFunding(models.Model):
         blank=True,
         null=True
     )
+    donor_code = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
     grant = models.CharField(
         max_length=255,
         blank=True,

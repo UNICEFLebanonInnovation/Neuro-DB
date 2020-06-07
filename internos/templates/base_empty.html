@@ -1,0 +1,261 @@
+{% load staticfiles i18n %}
+{% load util_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'images/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'images/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'images/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'images/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'images/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{% static 'images/ms-icon-144x144.png' %}">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Neuro-DB |</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="This is an example dashboard created using build-in elements and components.">
+    <meta name="msapplication-tap-highlight" content="no">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <link href="{% static 'css/editedStyle.css' %}" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <!--<link href="{% static 'css/custom.min.css' %}" rel="stylesheet">-->
+    <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
+    <link href="{% static 'tellme/feedback.min.css' %}" rel="stylesheet">
+    <style>
+
+        #toTop {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .vertical-right-aligned {
+            transform: rotate(-90deg);
+            transform-origin: 100% 100%;
+            position: fixed;
+            right: 0;
+            top: 50%;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button type="button" id="feedback-btn" class="btn btn-outline-primary vertical-right-aligned">
+        Feedback <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
+    </button>
+
+    <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
+        <div class="app-header header-shadow">
+            <div class="app-header__logo">
+                <a href="/" class="logo-src" data-step="1" data-intro="Go to home page" >
+                    <img src="{% static 'images/logo2.png' %}" width="170" height="40" alt="Neuro-DB-logo" />
+                </a>
+                <div class="header__pane ml-auto">
+                    <div>
+                        <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                            data-class="closed-sidebar">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="app-header__mobile-menu">
+                <div>
+                    <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="app-header__menu">
+                <span>
+                    <button type="button"
+                        class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                        <span class="btn-icon-wrapper">
+                            <i class="fa fa-ellipsis-v fa-w-6"></i>
+                        </span>
+                    </button>
+                </span>
+            </div>
+            <div class="app-header__content">
+                <input id="reporting_year" hidden value="{{ reporting_year }}">
+                <div class="app-header-left">
+                    <div class="search-wrapper" data-step="8" data-intro="Search for a specific Indicator">
+                        <div class="input-holder" id="searchdiv">
+                            <input type="text" class="search-input" id="search-input" onkeyup="search()"
+                                placeholder="Type to search">
+                            <button class="search-icon"><span></span></button>
+                        </div>
+                        <button class="close" id="close-search"></button>
+                    </div>
+                    <ul class="header-menu nav">
+                        <li class="nav-item"></li>
+                    </ul>
+                </div>
+
+                <div class="app-header-right">
+
+                    <div class="d-inline-block mr-3">
+
+                      <a aria-haspopup="true" type="button" aria-expanded="true" class="btn-shadow btn btn-outline-alternate"
+                                    href="mailto:achamseddine@unicef.org;mkarnib@unicef.org?subject=ActivityInfo: Technical issue"
+                                    data-toggle="tooltip" data-placement="right" data-html="true" title="For technical issue please call: <br />
+                              Ali Chamseddine or Mohamad Karnib">
+                          <i class="pe-7s-call"></i>
+                      </a>
+
+                    </div>
+
+                  {% block filter %}
+                      <a class="btn shadow  btn-outline-warning" href="javascript:void(0);"
+                         onclick="startIntro();" data-toggle="tooltip"
+                         data-placement="bottom" title="Show me some tips">
+                        <i class="pe-7s-magic-wand" aria-hidden="true"></i>
+                      </a>
+                  {% endblock filter %}
+
+                    <div class="header-btn-lg pr-0" style="padding-left: 20px;margin-left: 10px;border-left: 1.5px solid #dee2e6;">
+                        <div class="widget-content p-0">
+                            <div class="widget-content-wrapper">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="app-main">
+            <div class="app-main__outer">
+                {% block content %}
+                {% endblock content %}
+                <div class="app-wrapper-footer">
+                    <div class="app-footer">
+                        <div class="app-footer__inner">
+                            <div class="app-footer-left">
+                                <ul class="nav">
+                                    <li class="nav-item">
+                                        <img src="{% static 'images/unicef-logo.png' %}" height="50"
+                                            style="margin-top: -7px;" alt="" />
+                                    </li>
+                                    <li class="nav-item">
+                                        <div class="nav-link">
+                                            Neuro-DB 2020
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="app-footer-right">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'vendors/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <!-- Custom Theme Scripts -->
+    <!--<script src="{% static 'js/custom.min.js' %}"></script>-->
+    <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>
+    {% include 'tellme/js_inc.html' %}
+    {% block extra_js %}{% endblock %}
+
+    <script>
+        $(document).on("click", function (event) {
+            var $trigger = $(".dropdown");
+            if ($trigger !== event.target && !$trigger.has(event.target).length) {
+                $(".dropdown-menu-xl").slideUp("fast");
+            }
+        });
+
+        $(document).ready(function () {
+            $(window).scroll(function () {
+                if ($(this).scrollTop() != 0) {
+                    $('#toTop').fadeIn();
+                } else { $('#toTop').fadeOut(); }
+            });
+            $('#toTop').click(function () {
+                $("html,body").animate({ scrollTop: 0 }, 600); return false;
+            }); $('.print-page').click(function () {
+                $('.expanded-all').trigger('click'); $('.read-more').hide(); window.print();
+            });
+        });
+
+    </script>
+<script type="text/javascript">
+      function startIntro(){
+        var intro = introJs();
+          intro.setOptions({
+            steps: [
+              {
+                element: '#step1',
+                intro: $('#slide1').html()
+              },
+              {
+                element: '#step1a',
+                intro: $('#slide1a').html()
+              },
+              {
+                element: '#step2',
+                intro: $('#slide2').html()
+                <!--position: 'right'-->
+              },
+              {
+                element: '#step3',
+                intro: $('#slide3').html(),
+              },
+              {
+                element: '#step3a',
+                intro: $('#slide3a').html(),
+              },
+              {
+                element: '#step3b',
+                intro: $('#slide3b').html(),
+              },
+              {
+                element: '#blocks',
+                intro: $('#blocks').attr('title'),
+              },
+              {
+                element: '#step4',
+                intro: $('#slide3c').html(),
+              },
+              {
+                element: '#step4a',
+                intro: $('#slide4a').html(),
+              }
+            ]
+          });
+
+          intro.start();
+      }
+    </script>
+    {% block modal %}{% endblock %}
+</body>
+
+</html>
