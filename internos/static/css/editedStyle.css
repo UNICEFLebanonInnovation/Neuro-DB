@@ -579,9 +579,9 @@ padding: 0 .5rem 0;
 .modal-dialog{
     margin: 3.75rem auto;
 }
-sup{
+/*sup{
   position :unset;
-  }
+  }*/
 .edit_model{
 cursor: pointer;
 text-align:left;
