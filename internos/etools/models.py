@@ -563,6 +563,7 @@ class PCA(models.Model):
 
     sectors = models.CharField(max_length=255, null=True, blank=True)
     offices_names = models.CharField(max_length=255, null=True, blank=True)
+    offices_set = ArrayField(models.CharField(max_length=200), blank=True, null=True)
     current = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

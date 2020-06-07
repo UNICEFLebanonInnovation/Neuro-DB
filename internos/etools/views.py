@@ -109,6 +109,7 @@ class DonorProgrammeResultsView(TemplateView):
             .values('ai_indicator__main_master_indicator__id',
                     'ai_indicator__main_master_indicator__measurement_type',
                     'ai_indicator__main_master_indicator__name',
+                    'ai_indicator__activity__database__section__logo',
                     'ai_indicator__main_master_indicator__units',
                     'ai_indicator__main_master_indicator__reporting_level',
                     'ai_indicator__main_master_indicator__target',

@@ -417,7 +417,7 @@ def link_indicators_data(ai_db, report_type=None):
     result = 0
     # result = link_indicators_activity_report(ai_db, report_type)
     link_indicators_project(ai_db)
-    link_etools_partnerships(ai_db)
+    # link_etools_partnerships(ai_db)
 
     return result
 
@@ -575,12 +575,15 @@ def link_etools_partners():
         ai_partners.update(partner_etools=partner)
 
 
-def link_etools_partnerships(ai_db):
+def link_etools_partnerships(ai_db=None):
     from internos.activityinfo.models import ActivityReport
     from internos.etools.models import PCA
 
     programmes = PCA.objects.all()
-    ai_reports = ActivityReport.objects.filter(database_id=ai_db.ai_id, project_label__isnull=False)
+
+    ai_reports = ActivityReport.objects.filter(project_label__isnull=False)
+    if ai_db:
+        ai_reports = ai_reports.filter(database_id=ai_db.ai_id)
 
     for programme in programmes:
         reports = ai_reports.filter(project_label=programme.number)

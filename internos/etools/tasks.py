@@ -168,6 +168,7 @@ def sync_intervention_data():
         instance.offices = item['offices']
         instance.actual_amount = item['actual_amount']
         instance.offices_names = item['offices_names']
+        instance.offices_set = item['offices_names']
         instance.total_unicef_budget = item['total_unicef_budget']
         instance.total_budget = item['total_budget']
         instance.metadata = item['metadata']

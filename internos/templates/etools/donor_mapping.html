@@ -379,6 +379,19 @@
     background-color: #E0F3FF;
     color: #495057;
 }
+.item-block .card-body {
+    padding: 0px !important;
+}
+.item-block .list-group-item {
+    padding: 5px;
+    padding-right: 10px;
+}
+.item-block .star {
+    font-size: 30px;
+}
+.item-block .widget-progress-wrapper {
+    padding-left: 40px;
+}
 
 </style>
 
@@ -583,7 +596,7 @@
 
       <div class="row">
 
-        <div class="col-md-6" style="margin: 0 auto;" id="interventions_list">
+        <div class="col-md-6 item-block" style="margin: 0 auto;" id="interventions_list">
           <div class="main-card mb-3 card" style="min-height: 200px;">
             <div class="card-header">
               <i class="header-icon pe-7s-link icon-gradient bg-ripe-malin"></i> Funded programmes
@@ -597,7 +610,7 @@
           </div>
         </div>
 
-        <div class="col-md-6" style="margin: 0 auto;">
+        <div class="col-md-6 item-block" style="margin: 0 auto;">
           <div class="main-card mb-3 card" style="min-height: 200px;">
             <div class="card-header"><i class="header-icon pe-7s-map-2 icon-gradient bg-ripe-malin"></i>Intervention map</div>
             <div class="card-body">
@@ -609,7 +622,7 @@
           </div>
         </div>
 
-        <div class="col-md-6" style="margin: 0 auto;" id="results_list">
+        <div class="col-md-6 item-block" style="margin: 0 auto;" id="results_list">
           <div class="main-card mb-3 card" style="min-height: 200px;">
             <div class="card-header"><i class="header-icon pe-7s-menu icon-gradient bg-ripe-malin"></i>Reported Indicators</div>
             <div class="card-body">
@@ -621,7 +634,7 @@
           </div>
         </div>
 
-        <div class="col-md-6" style="margin: 0 auto;">
+        <div class="col-md-6 item-block" style="margin: 0 auto;">
           <div class="main-card mb-3 card" style="min-height: 200px;">
             <div class="card-header"><i class="header-icon pe-7s-cash icon-gradient bg-ripe-malin"></i>Funding History</div>
             <div class="card-body">
@@ -703,48 +716,27 @@
           load_blocks_data(item.key);
       });
 
-      $('.level1-filter').click(function(){
-          load_data($(this).attr('data-data'),
-                    $('#level2').find('a.active').attr('data-data'),
-                    $('#level5').find('a.active').attr('data-data'),
-                    $(this).attr('data-fgColor'));
-      });
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/symbols/PictureMarkerSymbol",
+        "esri/geometry/Point",
+        "esri/Graphic",
+      ], function(Map, MapView, SimpleMarkerSymbol, PictureMarkerSymbol, Point, Graphic) {
 
-      $('.level2-filter').click(function(){
-          load_data($('#level1').find('a.active').attr('data-data'),
-                    $(this).attr('data-data'),
-                    $('#level5').find('a.active').attr('data-data'),
-                    $('#level1').find('a.active').attr('data-fgColor'));
-      });
-
-      $('.level5-filter').click(function(){
-          load_data($('#level1').find('a.active').attr('data-data'),
-                    $('#level2').find('a.active').attr('data-data'),
-                    $(this).attr('data-data'),
-                    $('#level1').find('a.active').attr('data-fgColor'));
-      });
-
-        require([
-          "esri/Map",
-          "esri/views/MapView",
-          "esri/symbols/SimpleMarkerSymbol",
-          "esri/symbols/PictureMarkerSymbol",
-          "esri/geometry/Point",
-          "esri/Graphic",
-        ], function(Map, MapView, SimpleMarkerSymbol, PictureMarkerSymbol, Point, Graphic) {
-
-          var map = new Map({
-              basemap: "topo-vector"
-          });
-
-          view = new MapView({
-            container: "mapView",
-            map: map,
-            center: [35.8411, 33.6513],
-            zoom: 8
-          });
-
+        var map = new Map({
+            basemap: "topo-vector"
         });
+
+        view = new MapView({
+          container: "mapView",
+          map: map,
+          center: [35.8411, 33.6513],
+          zoom: 8
+        });
+
+      });
   });
 
   $(document).on('click', '.level3-filter', function(){
