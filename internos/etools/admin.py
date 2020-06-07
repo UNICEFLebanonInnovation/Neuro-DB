@@ -16,7 +16,8 @@ from .models import (
     ItineraryItem,
     Engagement,
     ActionPoint,
-    Category
+    Category,
+    DonorFunding
 )
 
 
@@ -379,3 +380,4 @@ admin.site.register(PCA, PCAAdmin)
 # admin.site.register(Travel)
 # admin.site.register(Engagement)
 admin.site.register(PartnerStaffMember, PartnerStaffMemberAdmin)
+admin.site.register(DonorFunding)

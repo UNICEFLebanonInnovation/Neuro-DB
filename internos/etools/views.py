@@ -14,7 +14,7 @@ from rest_framework import viewsets, mixins, permissions
 
 from internos.backends.djqscsv import render_to_csv_response
 from braces.views import GroupRequiredMixin, SuperuserRequiredMixin
-from .models import PartnerOrganization, PCA, Engagement, Travel, TravelType, TravelActivity
+from .models import PartnerOrganization, PCA, Engagement, Travel, TravelType, TravelActivity, DonorFunding
 from .utils import get_partner_profile_details, get_trip_details, get_interventions_details
 from .serializers import PartnerOrganizationSerializer
 from internos.users.models import Section, Office
@@ -32,6 +32,122 @@ class PartnershipView(TemplateView):
 
 
 class DonorMappingView(TemplateView):
+
+    template_name = 'etools/donor_mapping.html'
+
+    def get_context_data(self, **kwargs):
+
+        now = datetime.datetime.now()
+
+        donors_set = PCA.objects.filter(end__year=now.year,
+                                        donors__isnull=False,
+                                        donors__len__gt=0).values('donors_set').distinct()
+
+        donors = {}
+        for item in donors_set:
+            for donor in item['donors_set']:
+                donors[donor['donor_code']] = {
+                    'code': donor['donor_code'],
+                    'name': donor['donor']
+                }
+
+        return {
+            'donors': donors.values(),
+        }
+
+
+class DonorInterventionsView(TemplateView):
+
+    template_name = 'etools/interventions_block.html'
+
+    def get_context_data(self, **kwargs):
+
+        selected_donor = self.request.GET.get('donor', 'G45301')
+        now = datetime.datetime.now()
+
+        years = (now.year, now.year - 1)
+
+        interventions = PCA.objects.filter(start__year__in=years).extra(where=["'"+selected_donor+"' = ANY (donor_codes)"]).order_by('-start')
+
+        return {
+            'interventions': interventions,
+            'count': interventions.count(),
+            'selected_donor': selected_donor
+        }
+
+
+def load_donor_locations(request):
+    selected_donor = request.GET.get('donor', 'G45301')
+
+    now = datetime.datetime.now()
+
+    years = (now.year, now.year - 1)
+
+    interventions = PCA.objects.filter(start__year__in=years).extra(where=["'"+selected_donor+"' = ANY (donor_codes)"]).order_by('-start')
+
+    locations = get_interventions_details(interventions)
+
+    return JsonResponse({'result': locations})
+
+
+class DonorProgrammeResultsView(TemplateView):
+
+    template_name = 'etools/donor_results.html'
+
+    def get_context_data(self, **kwargs):
+
+        selected_donor = self.request.GET.get('donor', 'G45301')
+
+        now = datetime.datetime.now()
+
+        years = (now.year, now.year - 1)
+
+        interventions = PCA.objects.filter(start__year__in=years).extra(where=["'"+selected_donor+"' = ANY (donor_codes)"]).order_by('-start')
+
+        indicators = ActivityReport.objects.filter(programme_document__in=interventions,
+                                                   ai_indicator__main_master_indicator__master_indicator=True)\
+            .values('ai_indicator__main_master_indicator__id',
+                    'ai_indicator__main_master_indicator__measurement_type',
+                    'ai_indicator__main_master_indicator__name',
+                    'ai_indicator__activity__database__section__logo',
+                    'ai_indicator__main_master_indicator__units',
+                    'ai_indicator__main_master_indicator__reporting_level',
+                    'ai_indicator__main_master_indicator__target',
+                    'ai_indicator__main_master_indicator__status_color',
+                    'ai_indicator__main_master_indicator__status',
+                    'ai_indicator__main_master_indicator__cumulative_values',
+                    'ai_indicator__main_master_indicator__values_tags').distinct()
+
+        return {
+            'indicators': indicators,
+            'count': indicators.count(),
+        }
+
+
+class DonorFundingView(TemplateView):
+    template_name = 'etools/donor_funding.html'
+
+    def get_context_data(self, **kwargs):
+
+        selected_donor = self.request.GET.get('donor', 'G45301')
+
+        data_set1 = {}
+        data_category1 = DonorFunding.objects.filter(donor_code=selected_donor).order_by('year')
+        for item in data_category1:
+            if item.donor_code not in data_set1:
+                data_set1[item.donor_code] = {}
+                data_set1[item.donor_code] = {
+                    'name': item.donor,
+                    'data': []
+                }
+            data_set1[item.donor_code]['data'].append((item.year, item.total))
+
+        return {
+            'data_set1': json.dumps(data_set1.values()),
+        }
+
+
+class DonorMapping2View(TemplateView):
 
     template_name = 'etools/donor_mapping.html'
 

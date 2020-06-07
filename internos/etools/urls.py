@@ -22,6 +22,26 @@ urlpatterns = [
         name='donor_mapping'
     ),
     url(
+        regex=r'^donor-interventions/$',
+        view=views.DonorInterventionsView.as_view(),
+        name='donor_interventions'
+    ),
+    url(
+        regex=r'^donor-programme-results/$',
+        view=views.DonorProgrammeResultsView.as_view(),
+        name='donor_programme_results'
+    ),
+    url(
+        regex=r'^donor-funding/$',
+        view=views.DonorFundingView.as_view(),
+        name='donor_funding'
+    ),
+    url(
+        'load-donor-locations/$',
+        views.load_donor_locations,
+        name='load_donor_locations'
+    ),
+    url(
         regex=r'^partner-profile-map/$',
         view=views.PartnerProfileMapView.as_view(),
         name='partner_profile_map'

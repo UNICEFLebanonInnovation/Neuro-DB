@@ -1,4 +1,4 @@
-{% extends "base2.html" %}
+{% extends "base_empty.html" %}
 {% load staticfiles i18n %}
 {% block project_title %}{% endblock %}
 {% load util_tags %}
@@ -7,6 +7,9 @@
 
 <style>
 
+.fixed-sidebar .app-main .app-main__outer {
+    padding-left: 0px;
+}
 .mat-tab-body-wrapper {
     position: relative;
     overflow: hidden;
@@ -129,16 +132,6 @@
 </style>
 
 <div class="app-main__inner">
-
-<div class="app-page-title"><div class="page-title-wrapper"><div class="page-title-heading"><div class="page-title-icon"><i class="icon pe-7s-home icon-gradient bg-ripe-malin"></i></div><div> HOME
-
-                                        <div class="page-title-subheading">
-                                        </div>
-
-</div></div><div class="page-title-actions">
-
-</div></div></div>
-
 
 
 <div class="mat-tab-body-wrapper" style="padding: 50px;" id="blocks" title="Current Achievement">

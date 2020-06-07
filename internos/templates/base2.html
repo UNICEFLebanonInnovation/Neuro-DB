@@ -243,22 +243,20 @@
                     <div class="app-sidebar__inner" data-step="2" data-intro="Navigation menu for other sections">
                         <ul class="vertical-nav-menu">
                           <li class="app-sidebar__heading">
-                            <a href="{% url 'dashboard' %}"> Dashboard <b>+</b>
+                            <a href="{% url 'dashboard' %}">Dashboard<sup style="font-size: 17px;">+</sup>
                                 <i class="metismenu-icon pe-7s-graph2 text-primary"></i>
                                 <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
                               </a>
                           </li>
-                           <li class="app-sidebar__heading text-danger">Crisis Response</li>
+                           <li class="app-sidebar__heading">Crisis Response</li>
 
                               {% get_Crisis_db as databases %}
                               {% for db in databases %}
                            <li id="{{ db.ai_id }}">
-                            <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ db.ai_id }}" class="crisis_link">
-                              <b>
+                            <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ db.ai_id }}" class="crisis_link text-danger">
                                 <i class="metismenu-icon pe-7s-settings"></i>
                               {{ db.name }}
                                 <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
-                              </b>
                             </a>
                             </li>
                           {% endfor %}
@@ -269,11 +267,11 @@
                               <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
                             </a>
                             </li>
-                            <li class="app-sidebar__heading">Activity Info Results</li>
+                            <li class="app-sidebar__heading">ActivityInfo</li>
                             <li>
                                 <a href="/">
                                     <i class="metismenu-icon pe-7s-menu"></i>
-                                    Dashboards
+                                    AI Results
                                     <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                                 </a>
                                 <ul id="databases_list">
@@ -334,7 +332,7 @@
                                     <!--<i class="metismenu-icon pe-7s-monitor"></i>-->
                                     <!--Programmatic Visits  </a>-->
                             <!--</li>-->
-                          <li class="app-sidebar__heading">Survey</li>
+                          <li class="app-sidebar__heading">Other Resources</li>
                            <li>
                               <a href="{% url 'survey:population_figures' %}">
                                   <i class="metismenu-icon pe-7s-users" aria-hidden="true"></i>
@@ -345,24 +343,81 @@
                            <li>
                               <a href="{% url 'survey:child_protection' %}">
                                   <i class="metismenu-icon pe-7s-leaf" aria-hidden="true"></i>
-                                  Child Protection
+                                  CPWG RT. Monitoring
                                   <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
                               </a>
                             </li>
-                           <li>
-                              <a href="https://interagency.herokuapp.com/" target="_blank">
-                                  <i class="metismenu-icon pe-7s-map" aria-hidden="true"></i>
-                                  UNICEF MAPS
-                                  <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
-                              </a>
-                            </li>
-                           <li>
-                              <a href="https://interagency.herokuapp.com/admin" target="_blank">
-                                  <i class="metismenu-icon pe-7s-repeat" aria-hidden="true"></i>
-                                  RESEARCH TRACKER
-                                  <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
-                              </a>
-                            </li>
+                             <li>
+                                <a href="https://interagency.herokuapp.com/Dashboard/Researches/" target="_blank">
+                                    <i class="metismenu-icon pe-7s-repeat" aria-hidden="true"></i>
+                                    Research Tracker
+                                    <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
+                                </a>
+                              </li>
+                             <li>
+                                <a href="https://data.unicef.org/" target="_blank">
+                                    <i class="metismenu-icon pe-7s-server" aria-hidden="true"></i>
+                                    Data.UNICEF
+                                    <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
+                                </a>
+                              </li>
+                             <li>
+                                <a href="https://www.dropbox.com/sh/htj0ijgn0031xq4/AAC5OuoeQnAy3Urrph1WJBawa?dl=0" target="_blank">
+                                    <i class="metismenu-icon pe-7s-box2" aria-hidden="true"></i>
+                                    IM Dropbox
+                                    <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
+                                </a>
+                              </li>
+                              <li>
+                                  <a href="">
+                                      <i class="metismenu-icon pe-7s-map-2"></i>
+                                      Maps
+                                      <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                  </a>
+                                  <ul id="maps_list">
+                                       <li>
+                                          <a href="https://interagency.herokuapp.com/Dashboard/Maps/" target="_blank">
+                                              UNICEF Maps
+                                              <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
+                                          </a>
+                                        </li>
+                                        <li>
+                                          <a href="" target="_blank">
+                                              Donor Maps
+                                              <div class="ml-auto badge badge-info" style="padding: 2px;font-size: 10px;">soon</div>
+                                          </a>
+                                        </li>
+                                        <li>
+                                          <a href="" target="_blank">
+                                               Vulnerability Maps
+                                              <div class="ml-auto badge badge-info" style="padding: 2px;font-size: 10px;">soon</div>
+                                          </a>
+                                        </li>
+                                  </ul>
+                              </li>
+
+                          <!--<li class="app-sidebar__heading">Maps</li>-->
+                           <!--<li>-->
+                              <!--<a href="https://interagency.herokuapp.com/Dashboard/Maps/" target="_blank">-->
+                                  <!--<i class="metismenu-icon pe-7s-map-2" aria-hidden="true"></i>-->
+                                  <!--UNICEF Maps-->
+                                  <!--<div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>-->
+                              <!--</a>-->
+                            <!--</li>-->
+                           <!--<li>-->
+                              <!--<a href="" target="_blank">-->
+                                  <!--<i class="metismenu-icon pe-7s-map-2" aria-hidden="true"></i>-->
+                                  <!--Donor Maps-->
+                                  <!--<div class="ml-auto badge badge-info" style="padding: 2px;font-size: 10px;">soon</div>-->
+                              <!--</a>-->
+                            <!--</li>-->
+                           <!--<li>-->
+                              <!--<a href="" target="_blank">-->
+                                  <!--<i class="metismenu-icon pe-7s-map-2" aria-hidden="true"></i>-->
+                                  <!--Vulnerability Maps-->
+                                  <!--<div class="ml-auto badge badge-info" style="padding: 2px;font-size: 10px;">soon</div>-->
+                              <!--</a>-->
+                            <!--</li>-->
                         </ul>
                     </div>
 
