@@ -1,0 +1,403 @@
+{% extends "base2.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}{% endblock %}
+
+{% block content %}
+
+<link href="{% static 'css/tail.select-default.css' %}" rel="stylesheet">
+<style>
+  #mapView {
+    height: 500px;
+    border: 1px solid;
+  }
+</style>
+
+
+<div class="app-main__inner">
+  <div class="app-page-title">
+    <form action="{% url 'activityinfo:report' %}" method="get">
+      <div class="page-title-wrapper">
+        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or donor">
+          <div class="page-title-icon">
+            <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
+          </div>
+          <div style="width:100%; margin-top:12px">
+            <div class="row">
+              <div class="col-lg-10 col-sm-12" style="height: 40px;">
+                <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
+                {% for partner in partners %}
+                <option class="dropdown-item" value="{{ partner.partner_id }}"
+                        {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
+                </option>
+                {% endfor %}
+              </select>
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">
+                {% for gov in governorates %}
+                <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
+                  {{ gov.location_adminlevel_governorate }}
+                </option>
+                {% endfor %}
+              </select>
+              <select class="btn btn-outline-primary" multiple="multiple" id="filter_donors" name="donors">
+                 {% for donor in donors %}
+                <option class="dropdown-item" value="{{ donor }}" {% if donor in selected_donors %} selected {% endif %}>
+                  {{ donor }}
+                </option>
+                {% endfor %}
+              </select>
+            <button type="submit" class="btn btn shadow btn-primary mr-left-5" title="Search" style="margin-top: -22px;"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
+              <a href="" title="Cancel" style="margin-top: -22px;"
+                 class="btn btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
+
+            </div>
+
+            <a class="btn shadow  btn-outline-warning" href="javascript:void(0);"
+               onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip"
+               data-placement="bottom" title="Show me some tips">
+              <i class="fa fa-lightbulb" aria-hidden="true"></i>
+            </a>
+            </div>
+          </div>
+
+          </div>
+
+        </div>
+    </form>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="main-card mb-3 card">
+           <div class="card-header">
+
+          <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
+              <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
+              <a href="#" class="expanded-all"><i
+                class="fa fa-bars"></i></a>
+            </span> </i>
+
+            Donor mapping
+              <!--<div class="d-inline-block dashboard_icons">-->
+<!---->
+              <!--</div>-->
+
+            </div>
+          <div class="card-body">
+              <div class="table-responsive">
+                <div id="mapView" class="col-lg-3"></div>
+                <div id="activities" class="col-lg-3">
+                  <h2 class="card-title">Programmes, Activities & results</h2>
+                  <div class="card-content">
+
+                  </div>
+                </div>
+              </div>
+          </div>
+      </div>
+      </div>
+  </div>
+
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
+<!--<script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>-->
+<script src="{% static 'js/tail.select.min.js' %}"></script>
+<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+
+<script>
+
+$(document).ready(function () {
+
+    var getUrlParameter = function getUrlParameter(sParam) {
+      var sPageURL = window.location.search.substring(1),
+          sURLVariables = sPageURL.split('&'),
+          sParameterName,
+          i;
+
+      for (i = 0; i < sURLVariables.length; i++) {
+          sParameterName = sURLVariables[i].split('=');
+
+          if (sParameterName[0] === sParam) {
+              return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+          }
+      }
+    };
+
+    var id = getUrlParameter('ai_id');
+    var selected_li=$('li#'+id).find('a');
+    var parent = selected_li.parent();
+    parent.addClass("mm-active");
+    selected_li.addClass("mm-active");
+
+tail.select("#filter_partners", {
+    search: true,
+    placeholder: "Partners",
+});
+
+tail.select("#filter_governorates", {
+    search: true,
+    placeholder: "Governorates",
+});
+
+tail.select("#filter_donors", {
+    search: true,
+    placeholder: "Donors",
+});
+
+    <!--$('#filter_partners').multiselect({-->
+        <!--buttonWidth : '180px',-->
+        <!--includeSelectAllOption : true,-->
+        <!--nonSelectedText: 'Partners',-->
+        <!--nSelectedText:'selected partners',-->
+        <!--numberDisplayed:1-->
+    <!--});-->
+<!---->
+    <!--$('#filter_governorates').multiselect({-->
+        <!--buttonWidth : '190px',-->
+        <!--includeSelectAllOption : true,-->
+        <!--nonSelectedText: 'Governorates',-->
+        <!--nSelectedText:'selected governorates',-->
+        <!--numberDisplayed:1-->
+      <!--});-->
+<!---->
+    <!--$('#filter_donors').multiselect({-->
+        <!--buttonWidth : '180px',-->
+        <!--includeSelectAllOption : true,-->
+        <!--nonSelectedText: 'Donors',-->
+        <!--nSelectedText:'selected donors',-->
+        <!--numberDisplayed:1-->
+    <!--});-->
+
+});
+
+
+</script>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.11/"></script>
+  <script type="text/javascript" src="{% static 'js/indexedDB.js' %}"></script>
+
+<script>
+    var user_token = '{{ user_token }}';
+    var href_full_path = '{{ request.build_absolute_uri }}';
+    var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
+    var points = '{{ locations|safe }}';
+    points = JSON.parse(points);
+
+    var symbol = {
+      style: "square",
+      color: "blue",
+      size: "8px",  // pixels
+      outline: {  // autocasts as new SimpleLineSymbol()
+        color: [ 255, 255, 0 ],
+        width: 3  // points
+      }
+    };
+
+    var symbol_icon = {
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    var markerSymbol = {
+      type: "picture-marker", // autocasts as new SimpleMarkerSymbol()
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    var view = null;
+    var pointGraphic = null;
+
+    var oTable = null;
+    var db = null;
+
+    $(document).ready(function(){
+
+        createStores();
+
+        $('ul.child_menu').hide();
+
+        require([
+          "esri/Map",
+          "esri/views/MapView",
+          "esri/symbols/SimpleMarkerSymbol",
+          "esri/symbols/PictureMarkerSymbol",
+          "esri/geometry/Point",
+          "esri/Graphic",
+        ], function(Map, MapView, SimpleMarkerSymbol, PictureMarkerSymbol, Point, Graphic) {
+
+          var map = new Map({
+              basemap: "topo-vector"
+          });
+
+          view = new MapView({
+            container: "mapView",
+            map: map,
+            center: [35.8411, 33.6513],
+            zoom: 8
+          });
+
+          <!--pointGraphic = new Graphic({-->
+            <!--geometry: {-->
+              <!--type: "point",-->
+              <!--longitude: 0,-->
+              <!--latitude: 0-->
+            <!--},-->
+            <!--symbol: markerSymbol,-->
+            <!--attributes: {},-->
+            <!--popupTemplate: {-->
+              <!--title: "",-->
+              <!--content: ""-->
+            <!--}-->
+          <!--});-->
+
+          return true;
+          view.graphics.removeAll();
+
+          setTimeout(function(){
+
+             $(points).each(function(i, item){
+
+                setTimeout(function(){
+
+                    var lineAtt = {
+                      Name: item.location_name,
+                      Caza: item.caza,
+                      Cadastral: item.cadastral,
+                      Governorate: item.governorate,
+                    };
+
+                    var content = '<p>{Governorate} - {Cadastral} - {Caza}</p>';
+                    content = content + '<div class="list-group"><a href="#" class="list-group-item active"><strong>Indicators</a></strong>';
+                    $(item.indicators).each(function(j, item1){
+                        content = content + '<a href="#" class="list-group-item">'+item1.indicator_name+' <span class="label label-primary">'+item1.cumulative_value+'</span> <span class="label label-primary">'+item1.indicator_units+'</span> ('+item1.partner_label+')</a>';
+                    });
+                    content = content + '</div>';
+
+                    var pointGraphic = new Graphic({
+                      geometry: {
+                        type: "point",
+                        longitude: item.location_longitude,
+                        latitude: item.location_latitude
+                      },
+                      symbol: markerSymbol,
+                      attributes: lineAtt,
+                      popupTemplate: {
+                        title: "{Name}",
+                        content: content
+                      }
+                    });
+
+                    view.graphics.add(pointGraphic);
+
+                }, 3000);
+
+            });
+
+          }, 9000);
+
+
+        });
+    });
+
+function createStores()
+{
+    var request = indexedDB.open("mapping", 1);
+    request.onupgradeneeded = function() {
+        // The database did not previously exist, so create object stores and indexes.
+        db = request.result;
+        var flag = false;
+        try {
+            if(!db.objectStoreNames().contains('mapping')) {
+                flag = true;
+            }
+        }catch(err) {
+            flag = true;
+        }
+        if(flag){
+            var store = db.createObjectStore("mapping", {keyPath: "id", autoIncrement:true});
+            store.createIndex('cadastral', 'cadastral');
+            store.createIndex('caza', 'caza');
+            store.createIndex('governorate', 'governorate');
+            <!--store.createIndex('classroomAndSection', ['classroom', 'section']);-->
+        }
+    };
+    request.onsuccess = function() {
+        db = request.result;
+        $(".loader").show();
+        load_map();
+        setTimeout(function(){
+            $(".loader").hide();
+        }, 5000);
+    };
+}
+
+function load_map()
+{
+    $(points).each(function(i, item){
+        var store = getStoreByName('mapping');
+        store.add(item);
+    });
+    <!--draw_map();-->
+}
+
+function draw_map()
+{
+          <!--view.graphics.removeAll();-->
+
+          setTimeout(function(){
+
+             $(points).each(function(i, item){
+
+                setTimeout(function(){
+
+                    var lineAtt = {
+                      Name: item.location_name,
+                      Caza: item.caza,
+                      Cadastral: item.cadastral,
+                      Governorate: item.governorate,
+                    };
+
+                    var content = '<p>{Governorate} - {Cadastral} - {Caza}</p>';
+                    content = content + '<div class="list-group"><a href="#" class="list-group-item active"><strong>Indicators</a></strong>';
+                    $(item.indicators).each(function(j, item1){
+                        content = content + '<a href="#" class="list-group-item">'+item1.indicator_name+' <span class="label label-primary">'+item1.cumulative_value+'</span> <span class="label label-primary">'+item1.indicator_units+'</span> ('+item1.partner_label+')</a>';
+                    });
+                    content = content + '</div>';
+
+                    var pointGraphic = new Graphic({
+                      geometry: {
+                        type: "point",
+                        longitude: item.location_longitude,
+                        latitude: item.location_latitude
+                      },
+                      symbol: markerSymbol,
+                      attributes: lineAtt,
+                      popupTemplate: {
+                        title: "{Name}",
+                        content: content
+                      }
+                    });
+
+                    view.graphics.add(pointGraphic);
+
+                }, 3000);
+
+            });
+
+          }, 9000);
+}
+
+
+</script>
+
+
+{% endblock %}

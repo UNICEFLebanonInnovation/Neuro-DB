@@ -414,21 +414,21 @@ def generate_indicators_number(ai_db):
 
 
 def link_indicators_data(ai_db, report_type=None):
-    # generate_indicators_number(ai_db)
+    result = 0
     result = link_indicators_activity_report(ai_db, report_type)
-    # link_ai_partners(report_type)
-    # link_etools_partners()
-    link_indicators_project(ai_db)
+    # link_indicators_project(ai_db)
+    # link_etools_partnerships(ai_db)
 
     return result
 
 
+#  todo for review
 def link_indicators_project(ai_db):
     from internos.activityinfo.models import Indicator
     from internos.etools.models import PCA
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
-                                          master_indictor=True).exclude(project_code__isnull=True).only(
+                                          master_indicator=True).exclude(project_code__isnull=True).only(
         'project'
     )
 
@@ -468,16 +468,19 @@ def link_indicators_activity_report(ai_db, report_type=None):
         ctr += ai_values.count()
         ai_values.update(ai_indicator_id=item.id)
 
-        item.project_code = ai_values.first().project_label
-        item.project_name = ai_values.first().project_description
+        try:
+            item.project_code = ai_values.first().project_label
+            item.project_name = ai_values.first().project_description
 
-        item.save()
+            item.save()
 
-        main_master_indicator = item.main_master_indicator
-        if main_master_indicator:
-            main_master_indicator.project_code = item.project_code
-            main_master_indicator.project_name = item.project_name
-            main_master_indicator.save()
+            main_master_indicator = item.main_master_indicator
+            if main_master_indicator:
+                main_master_indicator.project_code = item.project_code
+                main_master_indicator.project_name = item.project_name
+                main_master_indicator.save()
+        except Exception:
+            pass
 
     return ctr
 
@@ -575,13 +578,16 @@ def link_etools_partners():
 
         ai_partners.update(partner_etools=partner)
 
-
-def link_etools_partnerships():
+#  todo for review
+def link_etools_partnerships(ai_db=None):
     from internos.activityinfo.models import ActivityReport
     from internos.etools.models import PCA
 
     programmes = PCA.objects.all()
+
     ai_reports = ActivityReport.objects.filter(project_label__isnull=False)
+    if ai_db:
+        ai_reports = ai_reports.filter(database_id=ai_db.ai_id)
 
     for programme in programmes:
         reports = ai_reports.filter(project_label=programme.number)

@@ -873,12 +873,14 @@ def get_indicator_live_cumulative_section(indicator, month=None, partner=None, g
 @register.assignment_tag
 def calculate_achievement_new(target, cumulative_values):
     achieved = 0
-    if int(target) == 0:
+    if not target or int(target) == 0:
         return 0
     try:
-        value = cumulative_values.replace(",","")
-        achieved = round((int(value )* 100.0) / target, 2)
-    except Exception:
+        if not type(cumulative_values) == float:
+            cumulative_values = cumulative_values.replace(",", "")
+        achieved = round((int(cumulative_values) * 100.0) / target, 2)
+    except Exception as ex:
+        # print(ex.message)
         return achieved
     return achieved
 
@@ -2126,19 +2128,13 @@ def get_indicator_highest_value(indicator):
 @register.assignment_tag
 def get_array_value(data, key1=None, key2=None, key3=None):
     try:
-        # key = '0'
 
-        # if key1:
-        #     key = str(key1)
-
-        # if key3:
-        #     key = str(key3)
-
-        # if key2 and key3:
-        #     key = '{}-{}'.format(key2, key3)
-
-        # if key1 and key2 and key3:
-        key = '{}-{}-{}'.format(key1, key2, key3)
+        if key1 and key2 and key3:
+            key = '{}-{}-{}'.format(key1, key2, key3)
+        elif key1 and key2:
+            key = '{}-{}'.format(key1, key2)
+        else:
+            key = key1
 
         if key in data:
             return data[key]
@@ -2146,6 +2142,21 @@ def get_array_value(data, key1=None, key2=None, key3=None):
         return 0
     except Exception as ex:
         logger.error('get_array_value error' + ex.message)
+        return 0
+
+
+@register.assignment_tag
+def get_list_value(data, key_name, key_value, value_name):
+    try:
+        value = 0
+        for item in data:
+            if key_name in item:
+                if key_value == item[key_name]:
+                    value += float(item[value_name])
+
+        return value
+    except Exception as ex:
+        logger.error('get_list_value error' + ex.message)
         return 0
 
 
