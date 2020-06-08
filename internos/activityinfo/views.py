@@ -12,7 +12,6 @@ from .models import ActivityReport, LiveActivityReport, Database, Indicator, Par
 from django.shortcuts import render
 from datetime import date
 from django.http import HttpResponseRedirect
-
 from .templatetags.util_tags import get_sub_indicators_data
 from .utils import get_partners_list, get_governorates_list, get_reporting_sections_list, get_cadastrals_list
 from .utils import calculate_internal_indicators_values, calculate_internal_cumulative_results
@@ -357,7 +356,7 @@ class ReportCrisisView(TemplateView):
             for mon in selected_months:
                 months.append((mon, calendar.month_abbr[int(mon)]))
         else:
-            for i in range(1, current_month + 1):
+            for i in range(1, current_month):
                 months.append((i, calendar.month_abbr[i]))
 
         sliced_months = months[3:]
@@ -436,7 +435,7 @@ class ReportLiveCrisis(TemplateView):
             master_indicators2 = master_indicators.filter(sub_indicators__isnull=True, individual_indicator=True)
             master_indicators = master_indicators1 | master_indicators2
 
-        covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_sector=True)
+        covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_imported=True).exclude(is_sector=True)
 
         master_indicators = master_indicators.values(
             'id',
@@ -449,24 +448,15 @@ class ReportLiveCrisis(TemplateView):
             'awp_code',
             'measurement_type',
             'units',
-            'target',
-            'status_color',
-            'status',
-            'cumulative_values',
-            'values_partners_gov',
-            'values_partners',
-            'values_gov',
-            'values',
-            'values_live',
-            'values_gov_live',
-            'values_partners_live',
-            'values_partners_gov_live',
-            'cumulative_values_live',
-            'is_cumulative',
             'activity',
             'tag_focus',
             'hpm_global_indicator',
-            'category'
+            'category',
+            'values_crisis_live',
+            'values_crisis_gov_live',
+            'values_crisis_partners_live',
+            'values_crisis_partners_gov_live',
+            'values_crisis_cumulative_live'
         ).distinct()
 
         covid_indicators = covid_indicators.values(
@@ -480,14 +470,6 @@ class ReportLiveCrisis(TemplateView):
             'awp_code',
             'measurement_type',
             'units',
-            'target',
-            'status_color',
-            'status',
-            'cumulative_values',
-            'values_partners_gov',
-            'values_partners',
-            'values_gov',
-            'values',
             'values_live',
             'values_gov_live',
             'values_partners_live',
@@ -498,7 +480,7 @@ class ReportLiveCrisis(TemplateView):
             'tag_focus',
             'hpm_global_indicator'
         ).distinct()
-
+        start_month = 4
         return {
 
             'database': database,
@@ -519,7 +501,8 @@ class ReportLiveCrisis(TemplateView):
             'day_number':day_number,
             'sections':sections,
             'selected_sections':selected_sections,
-            'selected_type': selected_type
+            'selected_type': selected_type,
+            'start_month':start_month
         }
 
 
@@ -944,6 +927,180 @@ class ReportPartnerView(TemplateView):
             'selected_partner':selected_partner,
             'selected_partner_name':selected_partner_name,
             'partners_list':partners_list
+
+        }
+
+
+class ReportPartnerCrisisView(TemplateView):
+    template_name = 'activityinfo/report_partner_crisis.html'
+
+    def get_context_data(self, **kwargs):
+
+        selected_filters = False
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        last_month = first - datetime.timedelta(days=1)
+        month_number = last_month.strftime("%m")
+        month = int(last_month.strftime("%m"))
+        month_name = last_month.strftime("%B")
+
+        selected_indicator = int(self.request.GET.get('indicator_id', 0))
+        selected_sub_indicator = self.request.GET.getlist('sub_indicator_id', [])
+        selected_governorate = self.request.GET.get('governorate', 0)
+        selected_governorate_name = self.request.GET.get('governorate_name', 'All Governorates')
+        selected_partner = self.request.GET.get('partner', "")
+        selected_partner_name = self.request.GET.get('partners_name', 'All Partners')
+        selected_section = self.request.GET.get('section', "")
+        selected_section_name = self.request.GET.get('section_name', 'All Sections')
+
+        if selected_indicator or selected_governorate or selected_section:
+            selected_filters = True
+
+        ai_id = int(self.request.GET.get('ai_id', 0))
+        database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year.year
+
+        if selected_indicator:
+            indicator = Indicator.objects.get(id=selected_indicator)
+            indicator = {
+                'id': indicator.id,
+                'ai_id': indicator.ai_id,
+                'name': indicator.name,
+                'ai_indicator':indicator.ai_indicator,
+                'measurement_type': indicator.measurement_type,
+                'units': indicator.units,
+                'cumulative_values': indicator.cumulative_values,
+                'values_cumulative_weekly': indicator.values_cumulative_weekly,
+                'values_partners_gov_weekly': indicator.values_partners_gov_weekly,
+                'values_partners_weekly': indicator.values_partners_weekly,
+                'values_gov_weekly': indicator.values_gov_weekly,
+                'values_weekly': indicator.values_weekly,
+                'values_sections':indicator.values_sections,
+                'values_sections_partners':indicator.values_sections_partners,
+                'values_sections_partners_gov':indicator.values_sections_partners_gov,
+                'values_sections_gov':indicator.values_sections_gov
+            }
+            selected_indicator_name = indicator['name']
+            partners_list=[]
+            if len(selected_section) > 0:
+                partners_values = indicator['values_sections_partners']
+                if partners_values:
+                    for key, value in partners_values.items():
+                        keys = key.split('-')
+                        if keys[1] == selected_section:
+                            p = keys[2]
+                            if (p, p) not in partners_list:
+                                partners_list.append((p, p))
+            else:
+                partners_values = indicator['values_partners_weekly']
+                if partners_values:
+                    for key, value in partners_values.items():
+                        keys = key.split('-')
+                        p = keys[1]
+                        if (p, p) not in partners_list:
+                            partners_list.append((p, p))
+        else:
+            indicator = []
+            selected_indicator_name = ""
+            partners=[]
+            governorates=[]
+            partners_list=[]
+
+        # report = ActivityReport.objects.filter(database_id=database.ai_id)
+        #
+        # if database.is_funded_by_unicef:
+        #    report = report.filter(funded_by__contains='UNICEF')
+
+        partners = get_partners_list(database)
+        governorates = get_governorates_list(database)
+        sections = get_reporting_sections_list(database)
+
+        # partners = report.values('partner_label', 'partner_id').distinct()
+        # governorates = report.values('location_adminlevel_governorate_code',
+        #                              'location_adminlevel_governorate').distinct()
+
+        master_indicators = Indicator.objects.filter(activity__database=database, master_indicator=True).exclude(
+            is_sector=True).order_by('sequence')
+        individual_indicators = Indicator.objects.filter(activity__database=database,
+                                                         individual_indicator=True).exclude(is_sector=True).order_by('sequence')
+        indicators = master_indicators | individual_indicators
+        indicators = indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'measurement_type',
+            'units',
+            'values_cumulative_weekly',
+            'values_partners_gov_weekly',
+            'values_partners_weekly',
+            'values_gov_weekly',
+            'values_weekly',
+            'values_sections',
+            'values_sections_partners',
+            'values_sections_partners_gov',
+            'values_sections_gov',
+        ).distinct()
+
+        selected_sub_indicator = [int(x) for x in selected_sub_indicator]
+        list_selected_sub = Indicator.objects.filter(id__in=selected_sub_indicator)
+        list_selected_sub = list_selected_sub.values(
+            'id',
+            'ai_id',
+            'name',
+            'units',
+            'target',
+            'measurement_type',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+        )
+        months = []
+        for i in range(1, 13):
+            months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
+        # if selected_governorate is not None:
+        #     for x in governorates:
+        #         if x["location_adminlevel_governorate_code"] == selected_governorate:
+        #             selected_governorate_name = x["location_adminlevel_governorate"]
+
+        if selected_partner is not None and len(selected_partner) > 0:
+            for x in partners:
+                if x["partner_id"] == selected_partner:
+                    selected_partner_name = x["partner_label"]
+        if selected_section is not None and len(selected_section) > 0:
+            for x in sections:
+                if x["reporting_section"] == selected_section:
+                    selected_section_name = x["reporting_section"]
+        report_type ='weekly'
+        return {
+            'month': month,
+            'year': today.year,
+            'month_name': month_name,
+            'month_number': month_number,
+            'months': months,
+            'database': database,
+            'partners': partners,
+            'governorates': governorates,
+            'sections':sections,
+            'indicators': indicators,
+            'indicator': indicator,
+            'selected_governorate': selected_governorate,
+            'selected_governorate_name': selected_governorate_name,
+            'selected_section_name': selected_section_name,
+            'selected_section': selected_section,
+            'selected_indicator': selected_indicator,
+            'selected_sub_indicator': selected_sub_indicator,
+            'selected_indicator_name': selected_indicator_name,
+            'list_selected_sub': list_selected_sub,
+            'selected_filters': selected_filters,
+            'current_month': datetime.datetime.now().strftime("%B"),
+            'reporting_year': str(reporting_year),
+            'selected_partner':selected_partner,
+            'selected_partner_name':selected_partner_name,
+            'partners_list':partners_list,
+            'report_type':report_type
 
         }
 
@@ -1868,6 +2025,7 @@ class ReportCrisisTags(TemplateView):
             'measurement_type',
             'units',
             'values_tags',
+            'values_tags_weekly',
             'values_sections',
             'values_sections_partners',
             'values_sections_gov',
@@ -1895,6 +2053,7 @@ class ReportCrisisTags(TemplateView):
             'measurement_type',
             'units',
             'values_tags',
+            'values_tags_weekly',
             'values_sections',
             'values_sections_partners',
             'values_sections_gov',
@@ -1918,6 +2077,7 @@ class ReportCrisisTags(TemplateView):
             'measurement_type',
             'units',
             'values_tags',
+            'values_tags_weekly',
             'values_sections',
             'values_sections_partners',
             'values_sections_gov',
@@ -1939,25 +2099,25 @@ class ReportCrisisTags(TemplateView):
             for tag in tags_gender:
                 if tag['tag_gender__label'] not in gender_calculation:
                     gender_calculation[tag['tag_gender__label']] = 0
-                value = get_indicator_tag_value(item, tag['tag_gender__name'])
+                value = get_indicator_tag_value(item, tag['tag_gender__name'],'weekly')
                 gender_calculation[tag['tag_gender__label']] += float(value)
 
             for tag in tags_nationality:
                 if tag['tag_nationality__label'] not in nationality_calculation:
                     nationality_calculation[tag['tag_nationality__label']] = 0
-                value = get_indicator_tag_value(item, tag['tag_nationality__name'])
+                value = get_indicator_tag_value(item, tag['tag_nationality__name'],'weekly')
                 nationality_calculation[tag['tag_nationality__label']] += float(value)
 
             for tag in tags_disability:
                 if tag['tag_disability__label'] not in disability_calculation:
                     disability_calculation[tag['tag_disability__label']] = 0
-                value = get_indicator_tag_value(item, tag['tag_disability__name'])
+                value = get_indicator_tag_value(item, tag['tag_disability__name'],'weekly')
                 disability_calculation[tag['tag_disability__label']] += float(value)
 
             for tag in tags_age:
                 if tag['tag_age__name'] not in age_calculation:
                     age_calculation[tag['tag_age__name']] = 0
-                value = get_indicator_tag_value(item, tag['tag_age__name'])
+                value = get_indicator_tag_value(item, tag['tag_age__name'],'weekly')
                 age_calculation[tag['tag_age__name']] += float(value)
 
         gender_values = []
@@ -1977,7 +2137,7 @@ class ReportCrisisTags(TemplateView):
             age_values.append({"label": key, "value": value})
 
         start_month = 4
-
+        report_type='weekly'
         # months = []
         # for i in range(1, 13):
         #     months.append((i, datetime.date(2008, i, 1).strftime('%B')))
@@ -2022,7 +2182,8 @@ class ReportCrisisTags(TemplateView):
             'current_month_name': datetime.datetime.now().strftime("%B"),
             'sections':sections,
             'covid_indicators':covid_indicators,
-            'start_month':start_month
+            'start_month':start_month,
+            'report_type':report_type
         }
 
 

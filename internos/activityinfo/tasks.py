@@ -132,6 +132,23 @@ def import_data_and_generate_live_report(database):
         print('3. Calculate indicator values')
         calculate_indicators_values(db, report_type='live')
 
+@app.task
+def import_data_and_generate_live_crisis_report(database):
+    from internos.activityinfo.models import Database
+    from .utils_shift import import_data_via_r_script, link_indicators_data, calculate_indicators_values
+
+    databases = Database.objects.filter(reporting_year__year=datetime.now().year)
+    if database:
+        databases = Database.objects.filter(ai_id=database)
+
+    for db in databases:
+        print(db.name)
+        print('1. Import report: '+db.name)
+        import_data_via_r_script(db, report_type='live')
+        print('2. Link data: ' + db.name)
+        link_indicators_data(db, report_type='live')
+        print('3. Calculate indicator values')
+        calculate_indicators_values(db, report_type='live')
 
 @app.task
 def import_data_and_generate_weekly_report(database):

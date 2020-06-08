@@ -142,7 +142,7 @@
                 </a>
 
                 <a
-                  href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year.year }}&ai_id={{ database.ai_id }}"
+                  href="{% url 'activityinfo:report_partner_crisis' %}?rep_year={{ database.reporting_year.year }}&ai_id={{ database.ai_id }}"
                   target="_blank" class="text-info" data-toggle="tooltip" title="View Partners' Results">
                   <i class="pe-7s-users" aria-hidden="true" title=""></i>
                 </a>
@@ -295,7 +295,7 @@
                     {% endfor %}
                   </tr>
                      {% endif %}
- {% if item2.master_indicator == 0  %}
+                  {% if item2.master_indicator == 0  %}
                   {% get_sub_indicators_data item2.id as sub_indicators2 %}
                      {% for item3 in sub_indicators2 %}
                     {% if item3.master_indicator == 0 and item3.master_indicator_sub == 0 %}
