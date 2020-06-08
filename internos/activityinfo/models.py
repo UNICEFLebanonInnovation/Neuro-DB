@@ -423,6 +423,7 @@ class Indicator(models.Model):
     values = JSONField(blank=True, null=True)
     values_hpm = JSONField(blank=True, null=True, default={})
     values_tags = JSONField(blank=True, null=True, default={})
+    values_tags_weekly = JSONField(blank=True, null=True, default={})
     values_gov = JSONField(blank=True, null=True)
     values_partners = JSONField(blank=True, null=True)
     values_partners_gov = JSONField(blank=True, null=True)

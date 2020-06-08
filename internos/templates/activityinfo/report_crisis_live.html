@@ -179,11 +179,18 @@
               {% get_sub_indicators_data item.id as sub_indicators %}
               {% for item1 in sub_indicators %}
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
-                  {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
+                  {% if item1.master_indicator %}style="background-color:rgba(252, 255, 174, 0.38); border-bottom:2px solid #fff"
+                  {% elif item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
                   {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
 
                 <td class="w-150">
                   {{ item1.name }}
+                   {% if item1.master_indicator %}
+                   {% get_database_by_activity item1.activity as db_name %}
+                   <a  data-toggle="tooltip" data-placement="right" title="{{db_name.label}}" style="cursor:pointer">
+                     <img alt="" src="{% static db_name.section.logo %}"  style="height: 30px; width: 30px; display: inline-block;" />
+                   </a>
+                   {% endif %}
                 </td>
                     <td class="w-5">
                        {% if item1.master_indicator_sub %}
@@ -212,13 +219,12 @@
 <!--                  {{ value }}-->
 <!--                </td>-->
               </tr>
-
-
               {% get_sub_indicators_data item1.id as sub_indicators1 %}
               {% for item2 in sub_indicators1 %}
-              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
+              {% if item2.master_indicator == 0   %}
               <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
-                  {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
+                  {% if item2.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"{% endif %}
+                  {% if item2.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                   itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                 <td class="w-150">{{ item2.name }}</td>
                 <td class="w-5"></td>
@@ -235,6 +241,30 @@
 <!--                  {{ value }}-->
 <!--                </td>-->
               </tr>
+
+              {% if item2.master_indicator == 0  %}
+                  {% get_sub_indicators_data item2.id as sub_indicators2 %}
+                     {% for item3 in sub_indicators2 %}
+                    {% if item3.master_indicator == 0 and item3.master_indicator_sub == 0 %}
+                  <tr class="level4 level4-{{ item.id }} level4-{{ item.id }}-{{ item1.id }}-{{ item2.id }}"
+                        {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
+                        itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}-{{ item3.id }}">
+                      <td class="w-150">{{ item3.name}}</td>
+                      <td class="w-5"></td>
+                      <td class="w-5"></td>
+                      <td class="w-5">
+                      </td>
+                      <td class="w-5">
+                        {% get_indicator_live_cumulative_section item3 selected_months selected_partners selected_governorates selected_sections as cumulative_value3 %}
+                        {{ cumulative_value3 }}
+                      </td>
+
+                    </tr>
+                  {% endif %}
+                  {% endfor %}
+                {% endif %}
+
+
               {% endif %}
               {% endfor %}
               {% endfor %}
@@ -243,7 +273,7 @@
               {% endfor %}
 
               {% for item in covid_indicators %}
-              {% get_indicator_live_cumulative item month selected_partners selected_governorates as cumulative_value %}
+              {% get_indicator_live_cumulative item month selected_partners selected_governorates start_month as cumulative_value  %}
               {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% get_database_by_activity item.activity as db_name %}
               {% if display_indicator %}
@@ -273,18 +303,18 @@
               {% get_sub_indicators_data item.id as sub_indicators %}
               {% for item1 in sub_indicators %}
               <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
-                  {% if item1.master_indicator_sub %}style="background-color: #ca292940; border-bottom:2px solid #fff"
-                  {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
+                           {% if item1.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"
+                  {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
                  <td class="w-150">
                   {{ item1.name }}
+
                 </td>
                 <td class="w-5"></td>
                 <td class="w-5"></td>
                  <td class="w-5">
-
                  </td>
                 <td class="w-5">
-                    {% get_indicator_live_cumulative item1 month selected_partners selected_governorates as cumulative_value %}
+                      {% get_indicator_live_cumulative item1 month selected_partners selected_governorates start_month as cumulative_value  %}
                   {{ cumulative_value }}
                 </td>
 <!--                <td class="w-5">-->
@@ -293,7 +323,7 @@
 <!--                </td>-->
 
               </tr>
-               {% endfor %}
+
               {% get_sub_indicators_data item1.id as sub_indicators1 %}
               {% for item2 in sub_indicators1 %}
               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
@@ -311,6 +341,7 @@
 <!--                </td>-->
               </tr>
               {% endif %}
+             {% endfor %}
               {% endfor %}
               {% endif %}
               {% endfor %}
@@ -448,12 +479,15 @@
   });
 });
 
+
   $('.level1').addClass('collapsed');
   $('.level2').addClass('collapsed');
   $('.level3').addClass('collapsed');
+  $('.level4').addClass('collapsed');
 
   $('.level2').hide();
   $('.level3').hide();
+  $('.level4').hide();
 
   $('.expanded-all').click(function () {
     $('.expanded-all').addClass('active');
@@ -462,10 +496,12 @@
     $('.level1').removeClass('collapsed');
     $('.level2').removeClass('collapsed');
     $('.level3').removeClass('collapsed');
+    $('.level4').removeClass('collapsed');
 
     $('.level1').show();
     $('.level2').show();
     $('.level3').show();
+    $('.level4').show();
   });
 
   $('.collapse-all').click(function () {
@@ -475,15 +511,18 @@
     $('.level1').addClass('collapsed');
     $('.level2').addClass('collapsed');
     $('.level3').addClass('collapsed');
+    $('.level4').addClass('collapsed');
 
     $('.level2').hide();
     $('.level3').hide();
+    $('.level4').hide();
   });
 
   $('.level1').dblclick(function () {
     var itemid = $(this).attr('itemid');
     var sub_items = 'tr.level2-' + itemid;
     var sub_sub_items = 'tr.level3-' + itemid;
+    var sub_sub_sub_items = 'tr.level4-' + itemid;
 
     if ($(this).hasClass('collapsed')) {
       $(sub_items).show();
@@ -492,19 +531,39 @@
       $(sub_items).hide();
       $(sub_items).addClass('collapsed');
       $(sub_sub_items).hide();
+      $(sub_sub_sub_items).hide();
       $(this).addClass('collapsed');
+
+
     }
   });
 
   $('.level2').dblclick(function () {
     var itemid = $(this).attr('itemid');
     var sub_items = 'tr.level3-' + itemid;
+    var sub_sub_sub_items = 'tr.level4-' + itemid;
 
     if ($(this).hasClass('collapsed')) {
       $(sub_items).show();
       $(this).removeClass('collapsed');
     } else {
       $(sub_items).hide();
+      $(sub_sub_sub_items).hide();
+      $(this).addClass('collapsed');
+    }
+  });
+    $('.level3').dblclick(function () {
+    var itemid = $(this).attr('itemid');
+    var sub_items = 'tr.level4-' + itemid;
+    var sub_sub_sub_items = 'tr.level4-' + itemid;
+
+    if ($(this).hasClass('collapsed')) {
+      $(sub_items).show();
+      $(this).removeClass('collapsed');
+    } else {
+      $(sub_items).hide();
+      $(sub_sub_sub_items).hide();
+
       $(this).addClass('collapsed');
     }
   });
