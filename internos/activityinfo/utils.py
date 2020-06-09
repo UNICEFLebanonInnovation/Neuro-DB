@@ -578,6 +578,7 @@ def link_etools_partners():
 
         ai_partners.update(partner_etools=partner)
 
+
 #  todo for review
 def link_etools_partnerships(ai_db=None):
     from internos.activityinfo.models import ActivityReport
@@ -1065,13 +1066,23 @@ def calculate_indicators_tags_hpm(ai_db):
 
     return indicators.count()
 
+def calculate_indicators_all_tags(ai_db):
 
-def calculate_indicators_tags(ai_db):
+    calculate_indicators_tags(ai_db,True)
+    calculate_indicators_tags(ai_db, False)
+
+
+def calculate_indicators_tags(ai_db,sub_master=False):
     from internos.activityinfo.models import Indicator, IndicatorTag , ActivityReport
 
     # indicators = Indicator.objects.filter(hpm_indicator=True)
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).\
-        filter(Q(master_indicator=True) | Q(hpm_indicator=True))
+    if sub_master:
+        indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).\
+            filter(Q(master_indicator_sub=True))
+    else:
+        indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id). \
+            filter(Q(master_indicator=True) | Q(hpm_indicator=True))
+
     report = ActivityReport.objects.filter(database_id= ai_db.ai_id)
 
     if ai_db.is_funded_by_unicef:
