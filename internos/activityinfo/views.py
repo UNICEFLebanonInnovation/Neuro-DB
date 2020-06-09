@@ -356,7 +356,7 @@ class ReportCrisisView(TemplateView):
             for mon in selected_months:
                 months.append((mon, calendar.month_abbr[int(mon)]))
         else:
-            for i in range(1, current_month):
+            for i in range(1, current_month+1):
                 months.append((i, calendar.month_abbr[i]))
 
         sliced_months = months[3:]
