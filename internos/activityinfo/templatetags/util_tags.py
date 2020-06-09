@@ -563,52 +563,52 @@ def get_indicator_cumulative_months_sections(indicator, month=None, partner=None
 def get_indicator_partner_cumulative(indicator, partner=None, gov=None,section=None,report_type=None):
  try:
     value = 0
-    if indicator:
-        if report_type == 'weekly':
-
+    if report_type == 'weekly':
             cumulative_values = indicator['values_cumulative_weekly']
-        else:
+    else:
             cumulative_values = indicator['cumulative_values']
 
-        if partner and gov and section:
-            cumulative_values = cumulative_values.get('sections_partners_gov')
-            key = '{}-{}-{}'.format(section,gov, partner)
-            if key in cumulative_values:
-                value += cumulative_values[key]
-            return get_indicator_unit(indicator, value)
-
-        if partner and gov:
-            cumulative_values = cumulative_values.get('partners_govs')
-            key = '{}-{}'.format(gov, partner)
-            if key in cumulative_values:
-                value += cumulative_values[key]
-            return get_indicator_unit(indicator, value)
-
-        if partner and section:
-            cumulative_values = cumulative_values.get('sections_partners')
-            key = "{}-{}".format(section, partner)
-            if key in cumulative_values:
-                value += cumulative_values[key]
-            return get_indicator_unit(indicator, value)
-
-        if gov and section:
-            cumulative_values = cumulative_values.get('sections_gov')
-            key = "{}-{}".format(section, gov)
-            if key in cumulative_values:
-                value += cumulative_values[key]
-            return get_indicator_unit(indicator, value)
-
-        if partner and 'partners' in cumulative_values:
-            cumulative_values = cumulative_values.get('partners')
-            if partner in cumulative_values:
-                value += cumulative_values[partner]
-            return get_indicator_unit(indicator, value)
-
-        if gov and 'govs' in cumulative_values:
-            cumulative_values = cumulative_values.get('govs')
-            if gov in cumulative_values:
-                value += cumulative_values[gov]
+    if partner and gov and section:
+        cumulative_values = cumulative_values.get('sections_partners_gov')
+        key = '{}-{}-{}'.format(section,gov, partner)
+        if key in cumulative_values:
+            value += cumulative_values[key]
         return get_indicator_unit(indicator, value)
+
+    if partner and gov:
+        cumulative_values = cumulative_values.get('partners_govs')
+        key = '{}-{}'.format(gov, partner)
+        if key in cumulative_values:
+            value += cumulative_values[key]
+        return get_indicator_unit(indicator, value)
+
+    if partner and section:
+        cumulative_values = cumulative_values.get('sections_partners')
+        key = "{}-{}".format(section, partner)
+        if key in cumulative_values:
+            value += cumulative_values[key]
+        return get_indicator_unit(indicator, value)
+
+    if gov and section:
+        cumulative_values = cumulative_values.get('sections_gov')
+        key = "{}-{}".format(section, gov)
+        if key in cumulative_values:
+            value += cumulative_values[key]
+        return get_indicator_unit(indicator, value)
+
+    if partner and 'partners' in cumulative_values:
+        cumulative_values = cumulative_values.get('partners')
+        if partner in cumulative_values:
+            value += cumulative_values[partner]
+        return get_indicator_unit(indicator, value)
+
+    if gov and 'govs' in cumulative_values:
+        cumulative_values = cumulative_values.get('govs')
+        if gov in cumulative_values:
+            value += cumulative_values[gov]
+    return get_indicator_unit(indicator, value)
+
+    return get_indicator_unit(indicator, 0)
  except Exception as ex:
     logger.error('get_indicator_partner_cumulative error ' + ex.message)
     return get_indicator_unit(indicator, 0)
@@ -720,7 +720,7 @@ def get_indicator_cumulative_sector(indicator, month=None, partner=None, site=No
 
 @register.assignment_tag
 def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None,start_month=None):
-    # try:
+    try:
         value= 0
         cumulative_values = indicator['cumulative_values_live']
         month_list=[]
@@ -787,10 +787,10 @@ def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None,
         #     if month in cumulative_values:
         #         return get_indicator_unit(indicator, cumulative_values[month])
 
-    #     return get_indicator_unit(indicator, 0)
-    # except Exception as ex:
-    #     logger.error('get_indicator_live_cumulative error'  + ex.message)
-    #     return get_indicator_unit(indicator, 0)
+        return get_indicator_unit(indicator, 0)
+    except Exception as ex:
+        logger.error('get_indicator_live_cumulative error'  + ex.message)
+        return get_indicator_unit(indicator, 0)
 
 @register.assignment_tag
 def get_indicator_live_cumulative_section(indicator, month=None, partner=None, gov=None,section=None):

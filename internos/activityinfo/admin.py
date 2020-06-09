@@ -1104,7 +1104,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     def calculate_indicators_tags(self, request, queryset):
 
         for db in queryset:
-            reports = calculate_indicators_tags(db)
+            reports = calculate_indicators_all_tags(db)
             # reports = calculate_indicators_monthly_tags(db)
             self.message_user(
                 request,
