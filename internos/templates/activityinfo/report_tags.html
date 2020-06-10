@@ -85,9 +85,11 @@
   <div class="col-lg-12">
     <div class="main-card mb-3 card">
         <div class="card-header">
-       <i class="header-icon">
-         <i class="fa fa-fw icon-gradient  bg-malibu-beach" aria-hidden="true"></i>
-       </i>
+            <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
+              <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
+              <a href="#" class="expanded-all"><i
+                class="fa fa-bars"></i></a>
+            </span> </i>
          Disaggregated AI Results | {{ database.label }}  | {{ reporting_year }}
            <div class=" d-inline-block" data-intro="Download Dashboard report">
               <button type="button" tabindex="0" id="export1" style="font-size:20px;" class="mb-2 mr-2 btn btn-link" data-toggle="tooltip"
@@ -96,13 +98,18 @@
             </div>
         </div>
       <div class="card-body">
+        <div class="text-danger fsize-1 mb-1">
+            <i class="fa fa-fw" aria-hidden="true" title=""></i>
+         <i>  Note that the percentages are rounded to the nearset value.</i>
+        </div>
         <div  class="table-responsive table-scroll">
-          <table class="mb-0 table table-striped table-hover" id="export_tags"
+          <table class="mb-0 table" id="export_tags"
                  content="Disaggregation Dashboard of {{ database.label }}_{{ current_month_name }}_{{ database.reporting_year.name }}.csv"
                  data-tableName="Dashboard - {{ database.label }} - {{ reporting_year}}">
             <thead>
             <tr>
-              <th  content="Indicator Information" colspan="6" >
+              <th></th>
+              <th  content="Indicator Information" colspan="5" >
                 Indicator Information
               </th>
               {% if tags_gender %}
@@ -153,7 +160,7 @@
             {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates as cumulative_value %}
                {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% if display_indicator %}
-            <tr class="level1" itemid="{{ item.id }}">
+            <tr class="level1 master_indicator" itemid="{{ item.id }}">
               <th class="w-150">{{ item.name }}</th>
               <td class="w-10">{{ item.awp_code }}</td>
               <td class="w-10">
@@ -188,9 +195,7 @@
                 {% get_indicator_tag_value item tag.tag_nationality__name selected_months selected_partners selected_governorates as value %}
                 {{ value | number_format }}
                 <br/>
-             {% if item.cumulative_values.months %}
                {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
-                {% endif %}
               </td>
               {% endfor %}
 
@@ -215,6 +220,78 @@
               </td>
               {% endfor %}
             </tr>
+            {% get_sub_master_indicators_data item.id  database as sub_indicators %}
+              {% for item1 in sub_indicators %}
+              <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}">
+                <th class="w-150">
+                  {{ item1.name }}
+                </th>
+                 <td class="w-10">{{ item1.awp_code }}</td>
+                 <td class="w-10">
+                   {% if item1.measurement_type == 'percentage' %}
+                  {{ item1.target }}%
+                  {% else %}
+                  {{ item1.target|number_format }}
+                  {% endif %}
+                </td>
+                <td class="w-10">
+                  {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
+                  {{ cumulative_value }}
+                </td>
+                <td class="w-10">
+                  {% calculate_achievement_new item1.target cumulative_value  as achieved %}
+                  {{ achieved }}%
+                </td>
+                  {% if item1.master_indicator_sub %}
+                <td class="w-10">
+                  <div class='badge {{ item1.status_color }}'>{{ item1.status }}</div>
+                </td>
+                  {% else %}
+                <td class="w-10"></td>
+                {% endif %}
+                {% for tag in tags_gender %}
+              <td class="w-10">
+                {% get_indicator_tag_value item1 tag.tag_gender__name  selected_months selected_partners selected_governorates as value %}
+                 {{ value | number_format }}
+                <br/>
+               {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_nationality %}
+              <td class="w-10">
+                {% get_indicator_tag_value item1 tag.tag_nationality__name selected_months selected_partners selected_governorates as value %}
+                {{ value | number_format }}
+                <br/>
+             {% if item.cumulative_values.months %}
+               {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
+                {% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_age %}
+              <td class="w-10">
+                {% get_indicator_tag_value item1 tag.tag_age__name selected_months selected_partners selected_governorates as value %}
+                 {{ value | number_format }}
+                <br/>
+
+               {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
+
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_disability %}
+              <td class="w-10">
+                {% get_indicator_tag_value item1 tag.tag_disability__name selected_months selected_partners selected_governorates as value %}
+                 {{ value | number_format }}
+                <br/>
+
+               {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
+              </td>
+              {% endfor %}
+
+              </tr>
+            {% endfor %}
             {% endif %}
             {% endfor %}
             </tbody>
@@ -279,7 +356,56 @@ $('#filter_month').multiselect({
     var parent = selected_li.parent();
     parent.addClass("mm-active");
     selected_li.addClass("mm-active");
+
+
+   $('.level1').addClass('collapsed');
+   $('.level2').addClass('collapsed');
+   $('.level2').hide();
+
+
+    $('.expanded-all').click(function () {
+      $('.expanded-all').addClass('active');
+      $('.collapse-all').removeClass('active');
+
+      $('.level1').removeClass('collapsed');
+      $('.level2').removeClass('collapsed');
+
+
+      $('.level1').show();
+      $('.level2').show();
+
     });
+
+    $('.collapse-all').click(function () {
+      $('.expanded-all').removeClass('active');
+      $('.collapse-all').addClass('active');
+
+      $('.level1').addClass('collapsed');
+      $('.level2').addClass('collapsed');
+
+      $('.level2').hide();
+
+    });
+
+    $('.level1').dblclick(function () {
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level2-' + itemid;
+      var sub_sub_items = 'tr.level3-' + itemid;
+
+      if ($(this).hasClass('collapsed')) {
+        $(sub_items).show();
+        $(this).removeClass('collapsed');
+      } else {
+        $(sub_items).hide();
+        $(sub_items).addClass('collapsed');
+        $(sub_sub_items).hide();
+        $(this).addClass('collapsed');
+      }
+    });
+
+ });
+
+
 
 function download_csv(csv, filename) {
     var csvFile;

@@ -276,6 +276,7 @@ def calculate_indicators_values(ai_db, report_type=None):
         calculate_individual_indicators_values_2(ai_db)
     elif report_type == 'weekly':
         calculate_individual_indicators_weekly_values(ai_db)
+        # calculate_individual_indicators_weekly_imported_values(ai_db)
 
     print('calculate_master_indicators_values_1')
     calculate_master_indicators_values_1(ai_db, report_type, True)
@@ -482,6 +483,190 @@ def calculate_individual_indicators_weekly_values(ai_db):
             indicator.values_sections_partners_gov = rows_sections_partners_gov[indicator.ai_indicator]
 
         indicator.save()
+
+# def calculate_individual_indicators_weekly_imported_values(ai_db):
+#     from django.db import connection
+#     from internos.activityinfo.models import Indicator
+#
+#     ai_id = str(ai_db.ai_id)
+#     current_month = int(datetime.datetime.now().strftime("%m")) + 1
+#     master_indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,is_imported_by_calculation=True)
+#
+#     indicators = Indicator.objects.filter(sub_indicators=ai_id).only(
+#     'ai_indicator',
+#     'values_weekly',
+#     'values_gov_weekly',
+#     'values_partners_weekly',
+#     'values_partners_gov_weekly',
+#     'values_sections',
+#     'values_sections_partners',
+#     'values_sections_gov',
+#     'values_sections_partners_gov',
+#     )
+#
+#     rows_months = {}
+#     rows_partners = {}
+#     rows_govs = {}
+#     rows_partners_govs = {}
+#     rows_sections = {}
+#     rows_sections_partners = {}
+#     rows_sections_gov = {}
+#     rows_sections_partners_gov = {}
+#     cursor = connection.cursor()
+#
+#     covid_condition = ""
+#
+#     if ai_db.support_covid:
+#     covid_condition = "AND support_covid = true "
+#
+#     funded_condition = ""
+#
+#     if ai_db.is_funded_by_unicef:
+#         funded_condition = "AND funded_by = 'UNICEF' "
+#
+#     query_condition = " WHERE date_part('month', start_date) = %s AND database_id = %s " + funded_condition + covid_condition
+#
+#     for month in range(1, current_month):
+#     month = str(month)
+#     cursor.execute("SELECT indicator_id, SUM(indicator_value) as indicator_value "
+#                    "FROM activityinfo_activityreport "
+#                    + query_condition +
+#                    " GROUP BY indicator_id", [month, ai_id])
+#     rows = cursor.fetchall()
+#
+#     for row in rows:
+#         if row[0] not in rows_months:
+#             rows_months[row[0]] = {}
+#         rows_months[row[0]][month] = row[1]
+#
+#     cursor.execute(
+#         "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code"
+#         " FROM activityinfo_activityreport "
+#         + query_condition +
+#         "GROUP BY indicator_id, location_adminlevel_governorate_code", [month, ai_id])
+#
+#     rows = cursor.fetchall()
+#
+#     for row in rows:
+#         if row[0] not in rows_govs:
+#             rows_govs[row[0]] = {}
+#         key = "{}-{}".format(month, row[2])
+#         rows_govs[row[0]][key] = row[1]
+#
+#     cursor.execute(
+#         "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
+#         "FROM activityinfo_activityreport "
+#         + query_condition +
+#         "GROUP BY indicator_id, partner_id",
+#         [month, ai_id])
+#
+#     rows = cursor.fetchall()
+#
+#     for row in rows:
+#         if row[0] not in rows_partners:
+#             rows_partners[row[0]] = {}
+#         key = "{}-{}".format(month, row[2])
+#         rows_partners[row[0]][key] = row[1]
+#
+#     cursor.execute(
+#         "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
+#         "FROM activityinfo_activityreport "
+#         + query_condition +
+#         "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
+#         [month, ai_id])
+#
+#     rows = cursor.fetchall()
+#
+#     for row in rows:
+#         if row[0] not in rows_partners_govs:
+#             rows_partners_govs[row[0]] = {}
+#         key = "{}-{}-{}".format(month, row[2], row[3])
+#         rows_partners_govs[row[0]][key] = row[1]
+#
+#     cursor.execute(
+#         "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
+#         "FROM activityinfo_activityreport "
+#         + query_condition +
+#         "GROUP BY indicator_id, reporting_section",
+#         [month, ai_id])
+#
+#     rows = cursor.fetchall()
+#     for row in rows:
+#         if row[0] not in rows_sections:
+#             rows_sections[row[0]] = {}
+#         key = "{}-{}".format(month, row[2])
+#         rows_sections[row[0]][key] = row[1]
+#
+#     cursor.execute(
+#         "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
+#         "FROM activityinfo_activityreport "
+#         + query_condition +
+#         "GROUP BY indicator_id, reporting_section ,partner_id",
+#         [month, ai_id])
+#
+#     rows = cursor.fetchall()
+#     for row in rows:
+#         if row[0] not in rows_sections_partners:
+#             rows_sections_partners[row[0]] = {}
+#         key = "{}-{}-{}".format(month, row[2], row[3])
+#         rows_sections_partners[row[0]][key] = row[1]
+#
+#     cursor.execute(
+#         "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
+#         "location_adminlevel_governorate_code "
+#         "FROM activityinfo_activityreport "
+#         + query_condition +
+#         "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
+#         [month, ai_id])
+#
+#     rows = cursor.fetchall()
+#     for row in rows:
+#         if row[0] not in rows_sections_gov:
+#             rows_sections_gov[row[0]] = {}
+#         key = "{}-{}-{}".format(month, row[2], row[3])
+#         rows_sections_gov[row[0]][key] = row[1]
+#
+#     cursor.execute(
+#         "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
+#         "location_adminlevel_governorate_code, partner_id "
+#         "FROM activityinfo_activityreport "
+#         + query_condition +
+#         "GROUP BY indicator_id, reporting_section , partner_id ,location_adminlevel_governorate_code",
+#         [month, ai_id])
+#
+#     rows = cursor.fetchall()
+#     for row in rows:
+#         if row[0] not in rows_sections_partners_gov:
+#             rows_sections_partners_gov[row[0]] = {}
+#         key = "{}-{}-{}-{}".format(month, row[2], row[3], row[4])
+#         rows_sections_partners_gov[row[0]][key] = row[1]
+#
+#     for indicator in indicators.iterator():
+#     if indicator.ai_indicator in rows_months:
+#         indicator.values_weekly = rows_months[indicator.ai_indicator]
+#
+#     if indicator.ai_indicator in rows_partners:
+#         indicator.values_partners_weekly = rows_partners[indicator.ai_indicator]
+#
+#     if indicator.ai_indicator in rows_govs:
+#         indicator.values_gov_weekly = rows_govs[indicator.ai_indicator]
+#
+#     if indicator.ai_indicator in rows_partners_govs:
+#         indicator.values_partners_gov_weekly = rows_partners_govs[indicator.ai_indicator]
+#
+#     if indicator.ai_indicator in rows_sections:
+#         indicator.values_sections = rows_sections[indicator.ai_indicator]
+#
+#     if indicator.ai_indicator in rows_sections_gov:
+#         indicator.values_sections_gov = rows_sections_gov[indicator.ai_indicator]
+#
+#     if indicator.ai_indicator in rows_sections_partners:
+#         indicator.values_sections_partners = rows_sections_partners[indicator.ai_indicator]
+#
+#     if indicator.ai_indicator in rows_sections_partners_gov:
+#         indicator.values_sections_partners_gov = rows_sections_partners_gov[indicator.ai_indicator]
+#
+#     indicator.save()
 
 
 def calculate_indicators_cumulative_results_1(ai_db, report_type=None):
@@ -746,12 +931,21 @@ def calculate_indicators_cumulative_results(ai_db, report_type=None):
     return indicators.count()
 
 
-def calculate_indicators_tags_weekly(ai_db):
+def calculate_indicators_all_tags_weekly(ai_db):
+
+    calculate_indicators_tags_weekly(ai_db,True)
+    calculate_indicators_tags_weekly(ai_db, False)
+
+
+def calculate_indicators_tags_weekly(ai_db,sub_master=False):
     from internos.activityinfo.models import Indicator, IndicatorTag, ActivityReport
 
-    # indicators = Indicator.objects.filter(hpm_indicator=True)
-    indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).filter(
-        Q(master_indicator=True) | Q(hpm_indicator=True))
+    if sub_master:
+        indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id). \
+            filter(Q(master_indicator_sub=True))
+    else:
+        indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).filter(
+            Q(master_indicator=True) | Q(hpm_indicator=True))
 
     report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
 

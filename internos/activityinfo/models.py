@@ -492,6 +492,7 @@ class Indicator(models.Model):
     values_crisis_partners_gov_live = JSONField(blank=True, null=True, default={})
     values_crisis_cumulative_live = JSONField(blank=True, null=True, default={})
     is_imported = models.BooleanField(default=False)
+    is_imported_by_calculation = models.BooleanField(default=False)
 
     project_code = models.CharField(max_length=500, blank=True, null=True)
     project_name = models.CharField(max_length=1500, blank=True, null=True)

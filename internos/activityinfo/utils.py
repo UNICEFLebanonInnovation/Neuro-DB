@@ -1066,6 +1066,7 @@ def calculate_indicators_tags_hpm(ai_db):
 
     return indicators.count()
 
+
 def calculate_indicators_all_tags(ai_db):
 
     calculate_indicators_tags(ai_db,True)
