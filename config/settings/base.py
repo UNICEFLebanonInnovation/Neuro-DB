@@ -59,6 +59,8 @@ DJANGO_APPS = [
     'internos.apps.SuitConfig',
     # 'jet',
     # 'jet.dashboard',
+    'dal',
+    'dal_select2',
     'django.contrib.admin',
     'django.contrib.gis',
     'django_json_widget',
@@ -149,9 +151,21 @@ MANAGERS = ADMINS
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
+#DATABASES = {
+#    'default': env.db('DATABASE_URL', default='postgres://postgres:ILOVEunicef990@localhost:5432/neurodb'),
     # 'default': env.db('DATABASE_URL', default='postgres://postgres:password1@localhost:5432/internos'),
+#}
+
+
+DATABASES = {
+     'default': {
+         'ENGINE': 'django.contrib.gis.db.backends.postgis',
+         'NAME': 'neurodb',
+         'USER': 'postgres',
+         'PASSWORD': 'ILOVEunicef990',
+         'HOST': 'Lebapostgres01.unicef.org',
+         'PORT': '5432',
+     }
 }
 
 # DATABASES = {
@@ -248,7 +262,7 @@ TEMPLATES = [
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = str(ROOT_DIR('staticfiles'))
+STATIC_ROOT = str(ROOT_DIR('static'))
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'
