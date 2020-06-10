@@ -86,7 +86,8 @@ def percentage_float(number, total):
     try:
         total = total.replace(",", "")
         if number and not isinstance(total, dict):
-            return float(round((float(number) * 100.0) / float(total), 3))
+            result= int(round((float(number) * 100) / float(total)))
+            return result
         return 0
     except Exception:
         return 0
@@ -1479,6 +1480,7 @@ def get_sub_indicators_data(ai_id, is_sector=False, ai_db=None):
             'values_partners_gov_live',
             'cumulative_values_live',
             'values_tags',
+            'values_tags_weekly',
             'cumulative_values_sector',
             'values_partners_sites_sector',
             'values_partners_sector',
