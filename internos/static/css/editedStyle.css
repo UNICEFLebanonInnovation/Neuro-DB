@@ -445,7 +445,7 @@ font-size:20px !important;
 .table-wrap {
   position: relative;
 }
-.table-scroll th
+.table-scroll thead th
 {
   background: #fff;
   vertical-align: center;
@@ -479,11 +479,14 @@ font-size:20px !important;
   z-index: 4;
  }
 
-.table-scroll table tbody tr th ,.table-scroll table tbody tr td {
+.table-scroll table tbody tr.level1 th ,.table-scroll table tbody tr.level1 td {
     background-color: #e0f3ff !important;
     border-bottom:1px solid #fff;
 }
-
+.table-scroll table tbody tr.level2 th ,.table-scroll table tbody tr.level2 td {
+    background-color: #FFD1D1 !important;
+    border-bottom:1px solid #fff;
+}
 
 .logo-src{
 background: none !important;
