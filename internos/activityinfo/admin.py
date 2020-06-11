@@ -419,6 +419,8 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'support_disability',
                 'support_COVID',
                 'is_cumulative',
+                'is_imported',
+                'is_imported_by_calculation',
                 'targets',
             ]
         }),
