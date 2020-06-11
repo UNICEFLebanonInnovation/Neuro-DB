@@ -1086,7 +1086,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 "{} indicators values calculated for database {}".format(reports, db.name)
             )
 
-    calculate_indicators_values_weekly.short_description = 'Step 3: Reset and calculate weekly report, cumulative and status'
+    calculate_indicators_values_weekly.short_description = 'Step 3: Reset and calculate weekly report, cumulative '
 
 
     def calculate_indicators_cumulative_results(self, request, queryset):
