@@ -195,6 +195,8 @@
                   {% for item in indicators %}
 
                     {% get_indicator_cumulative_months_sections item selected_months selected_partners selected_governorates selected_sections as cumulative_value %}
+                    {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+                    {% if display_indicator  %}
                       <tr itemid="{{ item.id }}"
                                 {% if item.master_indicator %}class="level1 master_indicator"
                                 {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
@@ -223,9 +225,7 @@
                             </tr>
                       {% get_sub_indicators_data item.id as sub_indicators %}
                       {% for item1 in sub_indicators %}
-                      {% get_indicator_cumulative_months_sections item1 selected_months selected_partners selected_governorates selected_sections as cumulative_value1 %}
-                      {% to_display_indicator selected_filter cumulative_value1 as display_indicator %}
-                      {% if display_indicator %}
+
                       <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
                                 {% if item1.master_indicator %}style="background-color:rgba(252, 255, 174, 0.38); border-bottom:2px solid #fff"
                                 {% elif item1.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"
@@ -257,7 +257,7 @@
 
                               </td>
                               <td class="w-5">
-
+                                {% get_indicator_cumulative_months_sections item1 selected_months selected_partners selected_governorates selected_sections as cumulative_value1 %}
                                 {{ cumulative_value1 }}
                               </td>
                               {% for month, month_name in months %}
@@ -267,13 +267,9 @@
                               </td>
                               {% endfor %}
                             </tr>
-                      {% endif %}
                         {% get_sub_indicators_data item1.id as sub_indicators1 %}
                         {% for item2 in sub_indicators1 %}
                           {% if item2.master_indicator == 0   %}
-                     {% get_indicator_cumulative_months_sections item2 selected_months selected_partners selected_governorates selected_sections as cumulative_value2 %}
-                      {% to_display_indicator selected_filter cumulative_value2 as display_indicator %}
-                      {% if display_indicator %}
                         <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
                       {% if item2.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"{% endif %}
                       {% if item2.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
@@ -288,6 +284,7 @@
                       {% endif %}
                     </td>
                     <td class="w-5">
+                      {% get_indicator_cumulative_months_sections item2 selected_months selected_partners selected_governorates selected_sections as cumulative_value2 %}
                       {{ cumulative_value2 }}
                     </td>
                     {% for month, month_name in months %}
@@ -297,14 +294,11 @@
                     </td>
                     {% endfor %}
                   </tr>
-                       {% endif %}
                      {% endif %}
                   {% if item2.master_indicator == 0  %}
                   {% get_sub_indicators_data item2.id as sub_indicators2 %}
                      {% for item3 in sub_indicators2 %}
-                    {% if item3.master_indicator == 0 and item3.master_indicator_sub == 0 %} {% get_indicator_cumulative_months_sections item3 selected_months selected_partners selected_governorates selected_sections as cumulative_value3 %}
-                      {% to_display_indicator selected_filter cumulative_value3 as display_indicator %}
-                  {% if display_indicator %}
+                    {% if item3.master_indicator == 0 and item3.master_indicator_sub == 0 %}
                   <tr class="level4 level4-{{ item.id }} level4-{{ item.id }}-{{ item1.id }}-{{ item2.id }}"
                         {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                         itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}-{{ item3.id }}">
@@ -314,6 +308,7 @@
                       <td class="w-5">
                       </td>
                       <td class="w-5">
+                        {% get_indicator_cumulative_months_sections item3 selected_months selected_partners selected_governorates selected_sections as cumulative_value3 %}
                         {{ cumulative_value3 }}
                       </td>
                       {% for month, month_name in months %}
@@ -324,12 +319,11 @@
                       {% endfor %}
                     </tr>
                   {% endif %}
-                  {% endif %}
                   {% endfor %}
                   {% endif %}
                   {% endfor %}
                    {% endfor %}
-
+                  {% endif %}
               {% endfor %}
               {% for item in covid_indicators %}
               {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates start_month as cumulative_value %}
