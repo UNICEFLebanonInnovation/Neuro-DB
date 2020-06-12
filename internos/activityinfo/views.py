@@ -2303,7 +2303,7 @@ class HPMView(TemplateView):
         day_number = int(today.strftime("%d"))
 
         if month == 0:
-            if day_number > 15:
+            if day_number >= 15:
                 month = current_month - 1
             else:
                 month = current_month - 2
