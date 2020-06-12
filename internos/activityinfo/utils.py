@@ -4318,8 +4318,8 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         row_num = row_num + 1
         indicator_1 = get_hpm_indicator_data_new(id, month)
         if indicator_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format(
-                'Boys', indicator_1['male'], 'Girls', indicator_1['female']), indicator_1['comment']
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}%, {}: {}%. '.format(
+                'Boys', indicator_1['male'],'Girls', indicator_1['female']), indicator_1['comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
@@ -4328,8 +4328,8 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         row_num = row_num + 1
         Child_1 = get_hpm_indicator_data_new(indicator.id, month)
         if Child_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format(
-                'Boys', Child_1['male'], 'Girls', Child_1['female']), Child_1['comment']
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
+                'Boys', Child_1['male'],'Girls', Child_1['female']), Child_1['comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
@@ -4340,8 +4340,8 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         row_num = row_num + 1
         Child_3 = get_hpm_indicator_data_new(indicator.id, month)
         if Child_3['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}% , {}: {}%  . '.format(
-                'Boys', Child_3['male'], 'Girls', Child_3['female']), Child_3['comment']
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}%, {}: {}%. '.format(
+                'Boys', Child_3['male'],'Girls', Child_3['female']), Child_3['comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
@@ -4351,9 +4351,9 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         wash_1 = get_hpm_indicator_data_new(indicator.id, month)
         if wash_1['cumulative'] != "0":
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[
-                0].text = '{}: {}% ,{}: {}% , {}: {}% , {}: {}%  . '.format('Boys', wash_1['boys'], 'Girls',
-                                                                            wash_1['girls'], 'Female',
-                                                                            wash_1['female'], 'Male',
+                0].text = '{}: {}%, {}: {}%, {}: {}%, {}: {}%. '.format('Boys', wash_1['boys'], 'Girls',
+                                                                            wash_1['girls'],'Female',
+                                                                            wash_1['female'],'Male',
                                                                             wash_1['male']), wash_1['comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
@@ -4363,8 +4363,8 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         row_num = row_num + 1
         health_1 = get_hpm_indicator_data_new(indicator.id, month)
         if health_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% ,{}: {}%  . '.format(
-                'Male', health_1['male'], 'Female', health_1['female']), health_1['comment']
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
+                'Male', health_1['male'],'Female', health_1['female']), health_1['comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
@@ -4373,8 +4373,8 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         row_num = row_num + 1
         youth_1 = get_hpm_indicator_data_new(indicator.id, month)
         if youth_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% ,{}: {}%  . '.format(
-                'Male', youth_1['male'], 'Female', youth_1['female']), youth_1['comment']
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
+                'Male', youth_1['male'],'Female', youth_1['female']), youth_1['comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
@@ -4384,7 +4384,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         row_num = row_num + 1
         sp_1 = get_hpm_indicator_data_new(indicator.id, month)
         if sp_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% , {}: {}% . '.format(
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
                 'Boys', sp_1['male'], 'Girls', sp_1['female']), sp_1['comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
@@ -4394,7 +4394,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         row_num = row_num + 1
         C4D_1 = get_hpm_indicator_data_new(indicator.id, month)
         if C4D_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% , {}: {}% . '.format(
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
                 'Boys', C4D_1['male'], 'Girls', C4D_1['female']), C4D_1['comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
@@ -4404,7 +4404,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         row_num = row_num + 1
         PPL_1 = get_hpm_indicator_data_new(indicator.id, month)
         if PPL_1['cumulative'] != "0":
-            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}% , {}: {}% . '.format(
+            document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
                 'Boys', PPL_1['male'], 'Girls', PPL_1['female']), PPL_1['comment']
         else:
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"

@@ -34,7 +34,7 @@
             data-govs-url="{% url 'activityinfo:ajax_load_govs' %}" data-month-url="{% url 'activityinfo:ajax_load_months' %}">
         <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
       <div class="page-title-wrapper">
-        <input type="hidden" name="ai_id" value="{{ database.ai_id }}"/>
+
         <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
           <div class="page-title-icon">
             <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
@@ -183,7 +183,7 @@
 
               {% for tag in tags_gender %}
               <td class="w-10">
-                {% get_indicator_tag_value item tag.tag_gender__name  selected_months selected_partners selected_governorates as value %}
+                {% get_indicator_tag_value item tag.tag_gender__name None selected_months selected_partners selected_governorates as value %}
                  {{ value | number_format }}
                 <br/>
                {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
@@ -192,7 +192,7 @@
 
               {% for tag in tags_nationality %}
               <td class="w-10">
-                {% get_indicator_tag_value item tag.tag_nationality__name selected_months selected_partners selected_governorates as value %}
+                {% get_indicator_tag_value item tag.tag_nationality__name None selected_months selected_partners selected_governorates as value %}
                 {{ value | number_format }}
                 <br/>
                {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
@@ -201,7 +201,7 @@
 
               {% for tag in tags_age %}
               <td class="w-10">
-                {% get_indicator_tag_value item tag.tag_age__name selected_months selected_partners selected_governorates as value %}
+                {% get_indicator_tag_value item tag.tag_age__name None selected_months selected_partners selected_governorates as value %}
                  {{ value | number_format }}
                 <br/>
 
@@ -212,7 +212,7 @@
 
               {% for tag in tags_disability %}
               <td class="w-10">
-                {% get_indicator_tag_value item tag.tag_disability__name selected_months selected_partners selected_governorates as value %}
+                {% get_indicator_tag_value item tag.tag_disability__name None selected_months selected_partners selected_governorates as value %}
                  {{ value | number_format }}
                 <br/>
 
@@ -235,7 +235,7 @@
                   {% endif %}
                 </td>
                 <td class="w-10">
-                  {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
+                  {% get_indicator_cumulative_months item1  selected_months selected_partners selected_governorates as cumulative_value %}
                   {{ cumulative_value }}
                 </td>
                 <td class="w-10">
@@ -251,7 +251,7 @@
                 {% endif %}
                 {% for tag in tags_gender %}
               <td class="w-10">
-                {% get_indicator_tag_value item1 tag.tag_gender__name  selected_months selected_partners selected_governorates as value %}
+                {% get_indicator_tag_value item1 tag.tag_gender__name None  selected_months selected_partners selected_governorates as value %}
                  {{ value | number_format }}
                 <br/>
                {{ value|percentage_float:cumulative_value }}{% if value != "0" %}%{% endif %}
@@ -260,7 +260,7 @@
 
               {% for tag in tags_nationality %}
               <td class="w-10">
-                {% get_indicator_tag_value item1 tag.tag_nationality__name selected_months selected_partners selected_governorates as value %}
+                {% get_indicator_tag_value item1 tag.tag_nationality__name None selected_months selected_partners selected_governorates as value %}
                 {{ value | number_format }}
                 <br/>
              {% if item.cumulative_values.months %}
@@ -271,7 +271,7 @@
 
               {% for tag in tags_age %}
               <td class="w-10">
-                {% get_indicator_tag_value item1 tag.tag_age__name selected_months selected_partners selected_governorates as value %}
+                {% get_indicator_tag_value item1 tag.tag_age__name None selected_months selected_partners selected_governorates as value %}
                  {{ value | number_format }}
                 <br/>
 
@@ -282,7 +282,7 @@
 
               {% for tag in tags_disability %}
               <td class="w-10">
-                {% get_indicator_tag_value item1 tag.tag_disability__name selected_months selected_partners selected_governorates as value %}
+                {% get_indicator_tag_value item1 tag.tag_disability__name None selected_months selected_partners selected_governorates as value %}
                  {{ value | number_format }}
                 <br/>
 
