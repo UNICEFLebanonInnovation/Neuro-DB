@@ -7,7 +7,7 @@ from . import views
 urlpatterns = [
 
     url(
-        regex=r'^$',
+        regex=r'^home$',
         view=views.IndexView.as_view(),
         name='index'
     ),

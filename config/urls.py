@@ -21,8 +21,8 @@ schema_view = get_swagger_view(title='Neuro-DB API')
 urlpatterns = [
     # url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
     url(r'^dashboard$', view=DashboardView.as_view(), name='dashboard'),
-    url(r'^home', view=HomeView.as_view(), name='home'),
-    url(r'^$', view=IndexView.as_view(), name='index'),
+    url(r'^$', view=HomeView.as_view(), name='home'),
+    # url(r'^$', view=IndexView.as_view(), name='index'),
     url(r'^activityinfo/', include('internos.activityinfo.urls', namespace='activityinfo'), name='activityinfo'),
     url(r'^etools/', include('internos.etools.urls', namespace='etools'), name='etools'),
     url(r'^chaining/', include('smart_selects.urls')),
