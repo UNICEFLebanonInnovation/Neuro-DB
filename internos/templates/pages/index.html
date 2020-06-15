@@ -898,7 +898,10 @@ icon-wrapper {
   cursor: pointer;
 }
 .v-separator {
-  border: 1px solid #3f6ad8;float: left;height: 125px;margin: auto 0;
+  border: 1px solid #a6b6e1;
+  float: left;
+  height: 125px;
+  margin: auto 0;
 }
 .col-box .widget-numbers {
     font-size: 25px;
@@ -913,11 +916,13 @@ icon-wrapper {
     font-size: 35px;
 }
 .col-box:hover {
-    background-color: #3f6ad8;
-    opacity: .9;
-
+    background-color: #fff;
+    /*opacity: .8;*/
+    z-index: 15;
+    transform: scale(1.15);
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
 }
-.col-box:hover .icon-wrapper-bg {
+/*.col-box:hover .icon-wrapper-bg {
     background-color: white !important;
 }
 .col-box:hover .widget-numbers {
@@ -925,7 +930,7 @@ icon-wrapper {
 }
 .col-box:hover .icon-wrapper i {
     color: white !important;
-}
+}*/
 .btn-icon-vertical {
     padding-top: 1rem;
     padding-bottom: 1rem;
@@ -946,13 +951,27 @@ icon-wrapper {
 }
 
 .card-line {
-  border-radius: 25px; border: 1px solid #3f6ad8; width: 1200px;
+  border-radius: 25px;
+  border: 1px solid #a6b6e1;
+  width: 1200px;
   padding-left: 15px;
+  opacity: 0.9;
 }
+.widget-chart.widget-chart-hover {
+    transition: all .2s;
+}
+
+.widget-chart:hover {
+      z-index: 15;
+      transform: scale(1.15);
+    }
 
 </style>
 
 <div class="app-main__inner">
+
+<!--<style>.embed-container {position: relative; padding-bottom: 80%; height: 0; max-width: 100%;} .embed-container iframe, .embed-container object, .embed-container iframe{position: absolute; top: 0; left: 0; width: 100%; height: 100%;} small{position: absolute; z-index: 40; bottom: 0; margin-bottom: -15px;}</style><div class="embed-container"><small><a href="//uniceflebanon.maps.arcgis.com/apps/Embed/index.html?webmap=585f38331dd84174a73ee8bae797ab75&extent=33.6833,32.8314,39.0666,34.965&home=true&zoom=true&scale=true&legend=true&basemap_gallery=true&disable_scroll=true&theme=light" style="color:#0000FF;text-align:left" target="_blank">View larger map</a></small><br><iframe width="500" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" title="Inter-Agency most Vulnerable Cadasters (251)" src="//uniceflebanon.maps.arcgis.com/apps/Embed/index.html?webmap=585f38331dd84174a73ee8bae797ab75&extent=33.6833,32.8314,39.0666,34.965&home=true&zoom=true&previewImage=false&scale=true&legend=true&basemap_gallery=true&disable_scroll=true&theme=light"></iframe></div>-->
+
 
 <div class="row" style="padding: 30px;">
     <div class="" style="margin: 0 auto;">
@@ -962,8 +981,8 @@ icon-wrapper {
               <div class="col-box" style="border-radius: 25px 0 0 25px;">
                 <div class="widget-chart">
                   <div class="icon-wrapper rounded-circle">
-                    <div class="icon-wrapper-bg bg-primary"></div>
-                    <i class="pe-7s-menu text-primary"></i>
+                    <div class="icon-wrapper-bg bg-tempting-azure"></div>
+                    <i class="pe-7s-menu text-muted"></i>
                   </div>
                   <div class="widget-numbers text-primary">ActivityInfo</div>
                   <div class="widget-subheading">&nbsp;</div>
@@ -986,8 +1005,8 @@ icon-wrapper {
               <div class="col-box">
                 <div class="widget-chart">
                   <div class="icon-wrapper rounded-circle">
-                    <div class="icon-wrapper-bg bg-primary"></div>
-                    <i class="pe-7s-settings text-primary"></i>
+                    <div class="icon-wrapper-bg bg-strong-bliss"></div>
+                    <i class="pe-7s-settings text-muted"></i>
                   </div>
                   <div class="widget-numbers text-primary">COVID-19</div>
                   <div class="widget-subheading">&nbsp;</div>
@@ -1003,8 +1022,8 @@ icon-wrapper {
               <div class="col-box">
                 <div class="widget-chart">
                   <div class="icon-wrapper rounded-circle">
-                    <div class="icon-wrapper-bg bg-primary"></div>
-                    <i class="pe-7s-user text-primary"></i>
+                    <div class="icon-wrapper-bg bg-happy-itmeo"></div>
+                    <i class="pe-7s-user text-muted"></i>
                   </div>
                   <div class="widget-numbers text-primary">Partnerships</div>
                   <div class="widget-subheading">&nbsp;</div>
@@ -1020,8 +1039,8 @@ icon-wrapper {
               <div class="col-box" style="border-radius: 0 25px 25px 0;">
                 <div class="widget-chart">
                   <div class="icon-wrapper rounded-circle">
-                    <div class="icon-wrapper-bg bg-primary"></div>
-                    <i class="pe-7s-users text-primary"></i>
+                    <div class="icon-wrapper-bg bg-mean-fruit"></div>
+                    <i class="pe-7s-users text-muted"></i>
                   </div>
                   <div class="widget-numbers text-primary">Population</div>
                   <div class="widget-subheading">&nbsp;</div>
@@ -1045,8 +1064,8 @@ icon-wrapper {
               <div class="col-box" style="border-radius: 25px 0 0 25px;">
                 <div class="widget-chart">
                   <div class="icon-wrapper rounded-circle">
-                    <div class="icon-wrapper-bg bg-primary"></div>
-                    <i class="pe-7s-leaf text-primary"></i>
+                    <div class="icon-wrapper-bg bg-malibu-beach"></div>
+                    <i class="pe-7s-leaf text-muted"></i>
                   </div>
                   <div class="widget-numbers text-primary">CPWG RT.</div>
                   <div class="widget-subheading">&nbsp;</div>
@@ -1062,8 +1081,8 @@ icon-wrapper {
               <div class="col-box">
                 <div class="widget-chart">
                   <div class="icon-wrapper rounded-circle">
-                    <div class="icon-wrapper-bg bg-primary"></div>
-                    <i class="pe-7s-repeat text-primary"></i>
+                    <div class="icon-wrapper-bg bg-mixed-hopes"></div>
+                    <i class="pe-7s-repeat text-muted"></i>
                   </div>
                   <div class="widget-numbers text-primary">Researches</div>
                   <div class="widget-subheading">&nbsp;</div>
@@ -1079,8 +1098,8 @@ icon-wrapper {
               <div class="col-box">
                 <div class="widget-chart">
                   <div class="icon-wrapper rounded-circle">
-                    <div class="icon-wrapper-bg bg-primary"></div>
-                    <i class="pe-7s-map-2 text-primary"></i>
+                    <div class="icon-wrapper-bg bg-sunny-morning"></div>
+                    <i class="pe-7s-map-2 text-muted"></i>
                   </div>
                   <div class="widget-numbers text-primary">Maps</div>
                   <div class="widget-subheading">&nbsp;</div>
@@ -1096,10 +1115,10 @@ icon-wrapper {
               <div class="col-box" style="border-radius: 0 25px 25px 0;">
                 <div class="widget-chart">
                   <div class="icon-wrapper rounded-circle">
-                    <div class="icon-wrapper-bg bg-primary"></div>
-                    <i class="pe-7s-cash text-primary"></i>
+                    <div class="icon-wrapper-bg bg-happy-green"></div>
+                    <i class="pe-7s-cash text-muted"></i>
                   </div>
-                  <div class="widget-numbers text-primary">Economic</div>
+                  <div class="widget-numbers text-primary">Economy</div>
                   <div class="widget-subheading">&nbsp;</div>
                   <div class="widget-description text-success">
                   </div>
@@ -1113,7 +1132,7 @@ icon-wrapper {
 </div>
 
 <div class="row" style="padding: 30px; padding-top: 20px;">
-    <div class="" style="margin: 0 auto; border: 2px solid #16aaff; width: 60%;">
+    <div class="" style="margin: 0 auto; border: 2px solid #16aaff; width: 60%;opacity: 0.7;">
     </div>
 </div>
 
