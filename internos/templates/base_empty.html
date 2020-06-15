@@ -61,9 +61,9 @@
 
 <body>
 
-    <button type="button" id="feedback-btn" class="btn btn-outline-primary vertical-right-aligned">
-        Feedback <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
-    </button>
+    <!--<button type="button" id="feedback-btn" class="btn btn-outline-primary vertical-right-aligned">-->
+        <!--Feedback <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>-->
+    <!--</button>-->
 
     <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
         <div class="app-header header-shadow">
@@ -121,21 +121,14 @@
 
                     <div class="d-inline-block mr-3">
 
-                      <a aria-haspopup="true" type="button" aria-expanded="true" class="btn-shadow btn btn-outline-alternate"
-                                    href="mailto:achamseddine@unicef.org;mkarnib@unicef.org?subject=ActivityInfo: Technical issue"
-                                    data-toggle="tooltip" data-placement="right" data-html="true" title="For technical issue please call: <br />
-                              Ali Chamseddine or Mohamad Karnib">
-                          <i class="pe-7s-call"></i>
-                      </a>
-
                     </div>
 
                   {% block filter %}
-                      <a class="btn shadow  btn-outline-warning" href="javascript:void(0);"
-                         onclick="startIntro();" data-toggle="tooltip"
-                         data-placement="bottom" title="Show me some tips">
-                        <i class="pe-7s-magic-wand" aria-hidden="true"></i>
-                      </a>
+                      <!--<a class="btn shadow  btn-outline-warning" href="javascript:void(0);"-->
+                         <!--onclick="startIntro();" data-toggle="tooltip"-->
+                         <!--data-placement="bottom" title="Show me some tips">-->
+                        <!--<i class="pe-7s-magic-wand" aria-hidden="true"></i>-->
+                      <!--</a>-->
                   {% endblock filter %}
 
                     <div class="header-btn-lg pr-0" style="padding-left: 20px;margin-left: 10px;border-left: 1.5px solid #dee2e6;">
@@ -238,8 +231,8 @@
                 intro: $('#slide3b').html(),
               },
               {
-                element: '#blocks',
-                intro: $('#blocks').attr('title'),
+                element: '#step3d',
+                intro: $('#slide3d').html(),
               },
               {
                 element: '#step4',

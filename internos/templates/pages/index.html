@@ -6,6 +6,771 @@
 {% block content %}
 
 <style>
+.highcharts-figure, .highcharts-data-table table {
+    min-width: 500px;
+    max-width: 1200px;
+    min-height: 400px;
+    border: 1px solid #eee;
+}
+
+.highcharts-data-table table {
+	font-family: Verdana, sans-serif;
+	border-collapse: collapse;
+	border: 1px solid #EBEBEB;
+	margin: 10px auto;
+	text-align: center;
+	width: 100%;
+	max-width: 500px;
+}
+.highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+}
+.highcharts-data-table th {
+	font-weight: 600;
+    padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+    padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+    background: #f1f7ff;
+}
+
+#level1 .nav {
+    flex-wrap: nowrap;
+}
+
+.widget-chart .widget-numbers {
+    font-weight: bold;
+    font-size: 1.7rem;
+    display: block;
+    line-height: 1;
+    margin: 1rem auto;
+}
+
+.widget-chart .widget-subheading + .widget-numbers {
+    margin-top: 0.5rem;
+}
+
+.widget-chart.text-left .widget-numbers {
+    margin-left: 0;
+}
+
+.widget-chart .widget-subheading:first-child {
+    margin-top: 0;
+}
+
+.widget-chart .widget-subheading {
+    margin: -0.5rem 0 0;
+    display: block;
+    opacity: .6;
+}
+
+.widget-chart.text-left .widget-chart-content .widget-description {
+    -ms-flex-item-align: start;
+    align-self: flex-start;
+}
+
+.widget-chart .widget-numbers + .widget-chart-flex, .widget-chart .widget-numbers + .widget-description, .widget-chart .widget-numbers + .widget-subheading {
+    margin-top: -0.5rem;
+}
+
+.widget-chart .widget-description {
+    margin: 1rem 0 0;
+}
+
+.text-focus {
+    color: #444054 !important;
+}
+
+.widget-chart.text-left .widget-chart-content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    position: relative;
+}
+
+.widget-chart .widget-chart-content {
+    position: relative;
+    z-index: 5;
+}
+.widget-chart.text-left .icon-wrapper {
+    min-width: 50px;
+    height: 50px;
+    margin: 0 1rem 0 0;
+}
+.icon-wrapper {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+.icon-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.rounded-circle {
+    border-radius: 50% !important;
+}
+.icon-wrapper .icon-wrapper-bg {
+    position: absolute;
+    height: 60px;
+    width: 60px;
+    z-index: 3;
+    opacity: .2;
+}
+
+.opacity-9 {
+    opacity: .9 !important;
+}
+.bg-success {
+    background-color: #3ac47d !important;
+}
+.icon-wrapper i {
+    margin: 0 auto;
+    font-size: 2.5rem;
+    position: relative;
+    z-index: 5;
+}
+[class^="lnr-"], [class*=" lnr-"] {
+    font-family: 'Linearicons-Free';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.widget-chart.text-left {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.widget-chart {
+    text-align: center;
+    padding: 0.5rem;
+    position: relative;
+}
+.card {
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+    border-width: 0;
+    -webkit-transition: all .2s;
+    transition: all .2s;
+}
+.bg-transparent {
+    background: transparent !important;
+}
+.no-shadow {
+    box-shadow: 0 0 0 transparent !important;
+}
+.rm-border {
+    border-width: 0 !important;
+}
+
+.modal-backdrop {
+  z-index: -1;
+}
+
+#myModal {
+  top: 100px;
+}
+
+#myModal .modal-dialog {
+    max-width: 800px;
+}
+
+.tabs-rounded-lg {
+    border-radius: 120px;
+    background: #fff;
+    /*padding: 0.75rem;*/
+    margin-bottom: 1.5rem;
+}
+.tabs-rounded-lg .nav-tabs {
+    margin-bottom: 0 !important;
+}
+.tabs-animated > .nav-tabs {
+    border: 0;
+}
+.nav-justified .nav-item {
+    -ms-flex-preferred-size: 0;
+    flex-basis: 0;
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    text-align: center;
+}
+.nav-tabs .nav-item {
+    margin-bottom: -1px;
+}
+.tabs-animated-shadow > .nav-tabs .nav-link.active, .tabs-animated-shadow > .nav-tabs .nav-link:hover {
+    color: #fff !important;
+}
+.tabs-animated > .nav-tabs .nav-link.active, .tabs-animated > .nav-tabs .nav-link:hover {
+    color: #3f6ad8;
+}
+.tabs-animated-shadow > .nav-tabs .nav-link {
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+}
+.tabs-animated > .nav-tabs .nav-link {
+    position: relative;
+    margin: 0 0.75rem 0 0;
+    color: #495057;
+    border: 0;
+}
+.nav-tabs .nav-link.active {
+    color: #3f6ad8;
+}
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+    color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+.tabs-rounded-lg .nav-link {
+    margin-bottom: 0 !important;
+    font-size: 1rem;
+    padding: 0.75rem 0.5rem;
+}
+.nav-item .nav-link {
+    font-weight: normal;
+}
+.nav-tabs .nav-link {
+    border: 1px solid transparent;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+.nav-link {
+    font-weight: bold;
+}
+.nav-link {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+}
+.tabs-animated-shadow > .nav-tabs .nav-link span {
+    position: relative;
+    z-index: 5;
+    display: inline-block;
+    width: 100%;
+}
+#level2 .nav-link::before {
+    border-radius: 50px !important;
+}
+.widget-content .widget-content-left .widget-heading {
+    font-size: 14px;
+    font-weight: normal;
+    text-transform: uppercase;
+}
+#hpm .list-group-item {
+    cursor: pointer;
+    padding: 5px;
+    padding-right: 10px;
+}
+.loader-box {
+    z-index: 1999;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  z-index: 2000;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.btn-icon .btn-icon-wrapper {
+    margin-right: 0.5rem;
+    margin-left: 0;
+    margin-top: 0;
+    font-size: 17px;
+    vertical-align: middle;
+    -webkit-transition: none;
+    transition: none;
+    display: inline-block;
+}
+[class^="pe-7s-"], [class*=" pe-7s-"] {
+    display: inline-block;
+    font-family: 'Pe-icon-7-stroke';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.pe-7s-settings:before {
+    content: "";
+}
+
+.list-group-item.active i {
+    color: #495057;
+}
+
+.font-flag-wrapper {
+    width: 20px;
+    height: 20px;
+    margin-right: 2px !important;
+}
+.flag-icon-lb {
+    background-image: url('{% static 'images/flags/lb.svg' %}');
+}
+.flag-icon-sy {
+    background-image: url('{% static 'images/flags/sy.svg' %}');
+}
+.flag-icon-ps {
+    background-image: url('{% static 'images/flags/ps.svg' %}');
+}
+.flag-icon-background, .flag-icon {
+    background-size: contain;
+    background-position: 50%;
+    background-repeat: no-repeat;
+}
+
+.list-group-item:hover, .list-group-item.active {
+    background-color: #E0F3FF;
+    color: #495057;
+}
+
+</style>
+<script type="text/javascript" src="{% static 'css/highcharts.css' %}"></script>
+<style>
+.highcharts-figure, .highcharts-data-table table {
+    min-width: 500px;
+    max-width: 1200px;
+    min-height: 400px;
+    border: 1px solid #eee;
+}
+
+.highcharts-data-table table {
+	font-family: Verdana, sans-serif;
+	border-collapse: collapse;
+	border: 1px solid #EBEBEB;
+	margin: 10px auto;
+	text-align: center;
+	width: 100%;
+	max-width: 500px;
+}
+.highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+}
+.highcharts-data-table th {
+	font-weight: 600;
+    padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+    padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+    background: #f1f7ff;
+}
+
+
+.widget-chart .widget-numbers {
+    font-weight: bold;
+    font-size: 2rem;
+    display: block;
+    line-height: 1;
+    margin: 1rem auto;
+}
+
+.widget-chart .widget-subheading + .widget-numbers {
+    margin-top: 0.5rem;
+}
+
+.widget-chart.text-left .widget-numbers {
+    margin-left: 0;
+}
+
+.widget-chart .widget-subheading:first-child {
+    margin-top: 0;
+}
+
+.widget-chart .widget-subheading {
+    margin: -0.5rem 0 0;
+    display: block;
+    opacity: .6;
+}
+
+.widget-chart.text-left .widget-chart-content .widget-description {
+    -ms-flex-item-align: start;
+    align-self: flex-start;
+}
+
+.widget-chart .widget-numbers + .widget-chart-flex, .widget-chart .widget-numbers + .widget-description, .widget-chart .widget-numbers + .widget-subheading {
+    margin-top: -0.5rem;
+}
+
+.widget-chart .widget-description {
+    margin: 1rem 0 0;
+}
+
+.text-focus {
+    color: #444054 !important;
+}
+
+.widget-chart.text-left .widget-chart-content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    position: relative;
+}
+
+.widget-chart .widget-chart-content {
+    position: relative;
+    z-index: 5;
+}
+.widget-chart.text-left .icon-wrapper {
+    min-width: 54px;
+    height: 54px;
+    margin: 0 1rem 0 0;
+}
+icon-wrapper {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+.icon-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.rounded-circle {
+    border-radius: 50% !important;
+}
+.icon-wrapper .icon-wrapper-bg {
+    position: absolute;
+    height: 60px;
+    width: 60px;
+    z-index: 3;
+    opacity: .2;
+}
+
+.opacity-9 {
+    opacity: .9 !important;
+}
+.bg-success {
+    background-color: #3ac47d !important;
+}
+.icon-wrapper i {
+    margin: 0 auto;
+    font-size: 1.7rem;
+    position: relative;
+    z-index: 5;
+}
+[class^="lnr-"], [class*=" lnr-"] {
+    font-family: 'Linearicons-Free';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.widget-chart.text-left {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.widget-chart {
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+}
+.card {
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+    border-width: 0;
+    -webkit-transition: all .2s;
+    transition: all .2s;
+}
+.bg-transparent {
+    background: transparent !important;
+}
+.no-shadow {
+    box-shadow: 0 0 0 transparent !important;
+}
+.rm-border {
+    border-width: 0 !important;
+}
+
+.modal-backdrop {
+  z-index: -1;
+}
+
+#myModal {
+  top: 100px;
+}
+
+#myModal .modal-dialog {
+    max-width: 800px;
+}
+
+</style>
+<style>
+
+  	@-webkit-keyframes placeHolderShimmer {
+	  0% {
+	    background-position: -468px 0
+	  }
+	  100% {
+	    background-position: 468px 0
+	  }
+	}
+
+	@keyframes placeHolderShimmer {
+	  0% {
+	    background-position: -468px 0
+	  }
+	  100% {
+	    background-position: 468px 0
+	  }
+	}
+
+	.timeline-item {
+	  margin: 0 auto;
+	  background: #fff;
+	  border: 1px solid;
+	  border-color: #e5e6e9 #dfe0e4 #d0d1d5;
+	  border-radius: 3px;
+	  padding: 12px;
+	  max-width: 800px;
+	  min-height: 200px;
+	}
+
+	.animated-background {
+	  -webkit-animation-duration: 1s;
+	  animation-duration: 1s;
+	  -webkit-animation-fill-mode: forwards;
+	  animation-fill-mode: forwards;
+	  -webkit-animation-iteration-count: infinite;
+	  animation-iteration-count: infinite;
+	  -webkit-animation-name: placeHolderShimmer;
+	  animation-name: placeHolderShimmer;
+	  -webkit-animation-timing-function: linear;
+	  animation-timing-function: linear;
+	  background: #f6f7f8;
+	  background: #eeeeee;
+	  background: -webkit-gradient(linear, left top, right top, color-stop(8%, #eeeeee), color-stop(18%, #dddddd), color-stop(33%, #eeeeee));
+	  background: -webkit-linear-gradient(left, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+	  background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+	  -webkit-background-size: 800px 104px;
+	  background-size: 800px 104px;
+	  height: 96px;
+	  position: relative;
+	}
+
+	.background-masker {
+	  background: #fff;
+	  position: absolute;
+	  -webkit-box-sizing: border-box;
+	  -moz-box-sizing: border-box;
+	  box-sizing: border-box;
+	}
+
+	.outlined .background-masker {
+	  border: 1px solid #ddd;
+	}
+
+	.outlined:hover .background-masker {
+	  border: none;
+	}
+
+	.outlined:hover .background-masker:hover {
+	  border: 1px solid #ccc;
+	  z-index: 1;
+	}
+
+	.background-masker.header-top,
+	.background-masker.header-bottom,
+	.background-masker.subheader-bottom {
+	  top: 0;
+	  left: 40px;
+	  right: 0;
+	  height: 10px;
+	}
+
+	.background-masker.header-left,
+	.background-masker.subheader-left,
+	.background-masker.header-right,
+	.background-masker.subheader-right {
+	  top: 10px;
+	  left: 40px;
+	  height: 8px;
+	  width: 10px;
+	}
+
+	.background-masker.header-bottom {
+	  top: 18px;
+	  height: 6px;
+	}
+
+	.background-masker.subheader-left,
+	.background-masker.subheader-right {
+	  top: 24px;
+	  height: 6px;
+	}
+
+	.background-masker.header-right,
+	.background-masker.subheader-right {
+	  width: auto;
+	  left: 300px;
+	  right: 0;
+	}
+
+	.background-masker.subheader-right {
+	  left: 230px;
+	}
+
+	.background-masker.subheader-bottom {
+	  top: 30px;
+	  height: 10px;
+	}
+
+	.background-masker.content-top,
+	.background-masker.content-second-line,
+	.background-masker.content-third-line,
+	.background-masker.content-second-end,
+	.background-masker.content-third-end,
+	.background-masker.content-first-end {
+	  top: 40px;
+	  left: 0;
+	  right: 0;
+	  height: 6px;
+	}
+
+	.background-masker.content-top {
+	  height: 20px;
+	}
+
+	.background-masker.content-first-end,
+	.background-masker.content-second-end,
+	.background-masker.content-third-end {
+	  width: auto;
+	  left: 380px;
+	  right: 0;
+	  top: 60px;
+	  height: 8px;
+	}
+
+	.background-masker.content-second-line {
+	  top: 68px;
+	}
+
+	.background-masker.content-second-end {
+	  left: 420px;
+	  top: 74px;
+	}
+
+	.background-masker.content-third-line {
+	  top: 82px;
+	}
+
+	.background-masker.content-third-end {
+	  left: 300px;
+	  top: 88px;
+	}
+#hpm .widget-content .widget-numbers {
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+#hpm .card-body {
+
+  padding: 0px !important;
+}
+.widget-chart .widget-chart-actions {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    z-index: 12;
+}
+.widget-chart .widget-chart-actions .btn-link {
+    font-size: 1.1rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: .7;
+}
+
+</style>
+
+<style>
 
 .fixed-sidebar .app-main .app-main__outer {
     padding-left: 0px;
@@ -128,26 +893,239 @@
     transition: all .2s;
     background-image: linear-gradient(to bottom right, #3f6ad8 0%, #4facfe 100%) !important
 }
+.col-box {
+  width: 300px;
+  cursor: pointer;
+}
+.v-separator {
+  border: 1px solid #3f6ad8;float: left;height: 125px;margin: auto 0;
+}
+.col-box .widget-numbers {
+    font-size: 25px;
+    font-weight: normal;
+    text-transform: uppercase;
+}
+.col-box .icon-wrapper {
+  width: 65px;
+  height: 65px;
+}
+.col-box .icon-wrapper i {
+    font-size: 35px;
+}
+.col-box:hover {
+    background-color: #3f6ad8;
+    opacity: .9;
+
+}
+.col-box:hover .icon-wrapper-bg {
+    background-color: white !important;
+}
+.col-box:hover .widget-numbers {
+    color: white !important;
+}
+.col-box:hover .icon-wrapper i {
+    color: white !important;
+}
+.btn-icon-vertical {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    min-width: 100px;
+}
+.btn-lg.btn-wide, .btn-group-lg > .btn-wide.btn {
+    padding: 0.5rem 2rem;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    border-radius: 0.3rem;
+}
+
+.btn-icon-vertical .btn-icon-wrapper {
+    display: block;
+    font-size: 200%;
+    margin: 5px 0;
+    opacity: .6;
+}
+
+.card-line {
+  border-radius: 25px; border: 1px solid #3f6ad8; width: 1200px;
+  padding-left: 15px;
+}
 
 </style>
 
 <div class="app-main__inner">
 
+<div class="row" style="padding: 30px;">
+    <div class="" style="margin: 0 auto;">
+        <div class="main-card card card-line">
+            <div class="row">
+              <a href="{% url 'activityinfo:index' %}">
+              <div class="col-box" style="border-radius: 25px 0 0 25px;">
+                <div class="widget-chart">
+                  <div class="icon-wrapper rounded-circle">
+                    <div class="icon-wrapper-bg bg-primary"></div>
+                    <i class="pe-7s-menu text-primary"></i>
+                  </div>
+                  <div class="widget-numbers text-primary">ActivityInfo</div>
+                  <div class="widget-subheading">&nbsp;</div>
+                  <div class="widget-description">
 
-<div class="mat-tab-body-wrapper" style="padding: 50px;" id="blocks" title="Current Achievement">
-  <div class="row mx-auto ng-star-inserted">
-      <div id="slide5" title="ActivityInfo: Partner monthly reporting dashboard" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">ActivityInfo</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
-      <div id="slide6" title="eTools: Partnerships, HACT and Audits" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Partnerships</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
-      <div id="slide7" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Donor Mapping</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
-      <div id="slide8" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Populations</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
-      <div id="slide9" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Real time monitoring</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
-      <div id="slide10" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Maps</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
-      <div id="slide11" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">COVID-19</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
-      <div id="slide12" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Economic</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
-      <div id="slide13" title="" class="col-md-4"><div class="card mb-3 bg-primary widget-chart text-white card-border"><div class="icon-wrapper rounded-circle"><div class="icon-wrapper-bg bg-white opacity-1"></div><i class="pe-7s-box2 text-white"></i></div><div class="widget-numbers">Research Tracker</div><div class="widget-subheading"></div><div class="widget-description text-success"><span class="pl-1"></span></div></div></div>
-  </div>
+        <!--<div class="btn-group-sm btn-group" role="group">-->
+          <!--<button class="mb-2 mr-2 btn-transition btn btn-primary" type="button">Hire</button>-->
+          <!--<button class="mb-2 mr-2 btn-transition btn btn-primary" type="button">Fire</button>-->
+          <!--<button class="mb-2 mr-2 btn-transition btn btn-primary" type="button">Fire</button>-->
+        <!--</div>-->
+
+                  </div>
+                </div>
+              </div>
+              </a>
+
+              <div class="v-separator"></div>
+
+              <a href="{% url 'activityinfo:report_crisis' %}?ai_id=202020">
+              <div class="col-box">
+                <div class="widget-chart">
+                  <div class="icon-wrapper rounded-circle">
+                    <div class="icon-wrapper-bg bg-primary"></div>
+                    <i class="pe-7s-settings text-primary"></i>
+                  </div>
+                  <div class="widget-numbers text-primary">COVID-19</div>
+                  <div class="widget-subheading">&nbsp;</div>
+                  <div class="widget-description text-success">
+                  </div>
+                </div>
+              </div>
+              </a>
+
+              <div class="v-separator"></div>
+
+              <a href="{% url 'etools:partnership' %}">
+              <div class="col-box">
+                <div class="widget-chart">
+                  <div class="icon-wrapper rounded-circle">
+                    <div class="icon-wrapper-bg bg-primary"></div>
+                    <i class="pe-7s-user text-primary"></i>
+                  </div>
+                  <div class="widget-numbers text-primary">Partnerships</div>
+                  <div class="widget-subheading">&nbsp;</div>
+                  <div class="widget-description text-success">
+                  </div>
+                </div>
+              </div>
+              </a>
+
+              <div class="v-separator"></div>
+
+              <a href="{% url 'survey:population_figures' %}">
+              <div class="col-box" style="border-radius: 0 25px 25px 0;">
+                <div class="widget-chart">
+                  <div class="icon-wrapper rounded-circle">
+                    <div class="icon-wrapper-bg bg-primary"></div>
+                    <i class="pe-7s-users text-primary"></i>
+                  </div>
+                  <div class="widget-numbers text-primary">Population</div>
+                  <div class="widget-subheading">&nbsp;</div>
+                  <div class="widget-description text-success">
+                  </div>
+                </div>
+              </div>
+              </a>
+
+            </div>
+        </div>
+    </div>
 </div>
 
+<div class="row" style="padding: 30px; padding-top: 20px;">
+    <div class="" style="margin: 0 auto;">
+        <div class="main-card card card-line">
+            <div class=" row">
+
+              <a href="{% url 'survey:child_protection' %}">
+              <div class="col-box" style="border-radius: 25px 0 0 25px;">
+                <div class="widget-chart">
+                  <div class="icon-wrapper rounded-circle">
+                    <div class="icon-wrapper-bg bg-primary"></div>
+                    <i class="pe-7s-leaf text-primary"></i>
+                  </div>
+                  <div class="widget-numbers text-primary">CPWG RT.</div>
+                  <div class="widget-subheading">&nbsp;</div>
+                  <div class="widget-description">
+                  </div>
+                </div>
+              </div>
+              </a>
+
+              <div class="v-separator"></div>
+
+              <a href="https://interagency.herokuapp.com/Dashboard/Researches/" target="_blank">
+              <div class="col-box">
+                <div class="widget-chart">
+                  <div class="icon-wrapper rounded-circle">
+                    <div class="icon-wrapper-bg bg-primary"></div>
+                    <i class="pe-7s-repeat text-primary"></i>
+                  </div>
+                  <div class="widget-numbers text-primary">Researches</div>
+                  <div class="widget-subheading">&nbsp;</div>
+                  <div class="widget-description text-success">
+                  </div>
+                </div>
+              </div>
+              </a>
+
+              <div class="v-separator"></div>
+
+
+              <div class="col-box">
+                <div class="widget-chart">
+                  <div class="icon-wrapper rounded-circle">
+                    <div class="icon-wrapper-bg bg-primary"></div>
+                    <i class="pe-7s-map-2 text-primary"></i>
+                  </div>
+                  <div class="widget-numbers text-primary">Maps</div>
+                  <div class="widget-subheading">&nbsp;</div>
+                  <div class="widget-description text-success">
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="v-separator"></div>
+
+              <a href="{% url 'survey:economic_dashboard' %}" class="">
+              <div class="col-box" style="border-radius: 0 25px 25px 0;">
+                <div class="widget-chart">
+                  <div class="icon-wrapper rounded-circle">
+                    <div class="icon-wrapper-bg bg-primary"></div>
+                    <i class="pe-7s-cash text-primary"></i>
+                  </div>
+                  <div class="widget-numbers text-primary">Economic</div>
+                  <div class="widget-subheading">&nbsp;</div>
+                  <div class="widget-description text-success">
+                  </div>
+                </div>
+              </div>
+              </a>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="padding: 30px; padding-top: 20px;">
+    <div class="" style="margin: 0 auto; border: 2px solid #16aaff; width: 60%;">
+    </div>
+</div>
+
+<div class="row" style="padding-top: 20px;">
+    <div class="" style="margin: 0 auto;">
+      <a class="btn-wide mb-2 mr-2 btn-icon-vertical btn btn-outline-warning btn-lg" href="javascript:void(0);"
+                         onclick="startIntro();" style="width: 130px;"><i class="pe-7s-magic-wand btn-icon-wrapper"></i>Tips</a>
+      <a href="{% url 'dashboard' %}" class="btn-wide mb-2 mr-2 btn-icon-vertical btn btn-outline-primary btn-lg" style="margin-left: 100px;"><i class="pe-7s-graph2 btn-icon-wrapper"></i>Dashboard</a>
+      <button id="feedback-btn" class="btn-wide mb-2 mr-2 btn-icon-vertical btn btn-outline-success btn-lg" style="width: 130px; margin-left: 100px;"><i class="pe-7s-comment btn-icon-wrapper"></i>Feedback</button>
+
+    </div>
+</div>
 
 
 <div id="slide1" style="display: none;">
@@ -173,7 +1151,7 @@
     <div class="col-md-6 col-lg-4">
       <div class="main-card mb-3 card" style="width: 800px; height: 600px;">
         <div class="card-header bg-primary text-white">
-          <i class="header-icon pe-7s-light text-white" style="font-size: 25px;"></i> TABLE OF CONTENT
+          <i class="header-icon pe-7s-light text-white" style="font-size: 25px;"></i> Neuro-DB Overview
           <div class="btn-actions-pane-right actions-icon-btn">
           </div>
         </div>
@@ -302,11 +1280,14 @@
           </div>
         </div>
         <div class="card-body">
-          <h5 class="card-title">Neuro-DB is a data warehouse/centralized online database tool to gather, organize,
-            manage, map and analyze data from different sources of UNICEF programmes.
-            The objective is to create sort of an inter-relation between these data that allow staff to access
-            information in an easy and secured way and to generate customized reports based on data from different
-            programmes/sources that can help UNICEF staff to make a better decision based on evidence base data/indicators.</h5>
+          <h5 class="card-title">
+            Neuro-DB is a data warehouse/centralized online database tool to gather, organize, manage,
+            map and analyze data from different sources of UNICEF platforms, databases, Information Management Systems and programmes.
+            The objective is to create a one-stop shop center that brings together inter-relation among these databases and platforms
+            in order to allow staff to access information in an seamless, user friendly and secured manner.
+            <br/>
+            Neuro-DB also generates customized reports based on data from different sources that can help UNICEF staff
+            to make better decisions based on evidence based real-time data/indicators.</h5>
           <img src="/static/images/central_data.png" width="400px" height="400px"/>
         </div>
       </div>
@@ -357,7 +1338,7 @@
 <div id="slide3b" style="display: none;">
 
     <div class="col-md-6 col-lg-4">
-      <div class="main-card mb-3 card" style="width: 800px; height: 600px;">
+      <div class="main-card mb-3 card" style="width: 1200px; height: 800px;">
         <div class="card-header bg-primary text-white">
           <i class="header-icon pe-7s-light text-white" style="font-size: 25px;"></i> A CONCRETE EXAMPLE ON UNICEF DATA
           <div class="btn-actions-pane-right actions-icon-btn">
@@ -365,7 +1346,7 @@
         </div>
         <div class="card-body">
           <h5 class="card-title">The same concept could be applied on bigger scale</h5>
-          <img src="/static/images/case_study_big.png" width="800px" height="600px"/>
+          <img src="/static/images/case_study_big.png" width="1200px" height="800px"/>
         </div>
         </div>
       </div>
@@ -477,6 +1458,214 @@
                       <div class="widget-content-left">
                         <div class="widget-heading">
                             Make it as a hub for knowledge and data sharing
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+            </ul>
+      </div>
+      </div>
+    </div>
+
+</div>
+
+<div id="slide3d" style="display: none;">
+
+    <div class="col-md-6 col-lg-4">
+      <div class="main-card mb-3 card" style="width: 800px; height: 600px;">
+        <div class="card-header bg-primary text-white">
+          <i class="header-icon pe-7s-light text-white" style="font-size: 25px;"></i> Current Achievement
+          <div class="btn-actions-pane-right actions-icon-btn">
+          </div>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-like2 text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            ActivityInfo reporting automated dashboard with indicators disaggregations
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-like2 text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            Automated HPM table
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-like2 text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            COVID-19 response dashboard and infographic
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-like2 text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            Partner profile dashboard
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-like2 text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            Populations figures dashboard
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-like2 text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            Donor Mapping: linking between ActivityInfo, eTools and Donor funding
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-like2 text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            Child Protection Working Group Real time monitoring 2020
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-like2 text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            Overview dashboard
+                        </div>
+                      </div>
+                      <div class="widget-content-right">
+                          <div class="widget-numbers text-primary">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="list-group-item">
+                <div class="widget-content p-0">
+                  <div class="widget-content-outer">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left mr-3">
+                        <i class="pe-7s-like2 text-primary" style="font-size: 25px;"></i>
+                      </div>
+                      <div class="widget-content-left">
+                        <div class="widget-heading">
+                            External links to useful data such as Researches and maps
                         </div>
                       </div>
                       <div class="widget-content-right">
