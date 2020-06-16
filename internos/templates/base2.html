@@ -333,6 +333,33 @@
                                     <!--Programmatic Visits  </a>-->
                             <!--</li>-->
                           <li class="app-sidebar__heading">Other Resources</li>
+                          <li>
+                              <a href="">
+                                  <i class="metismenu-icon pe-7s-map-2"></i>
+                                  Maps
+                                  <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                              </a>
+                              <ul id="maps_list">
+                                   <li>
+                                      <a href="https://interagency.herokuapp.com/Dashboard/Maps/" target="_blank">
+                                          UNICEF Maps
+                                          <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
+                                      </a>
+                                    </li>
+                                    <li>
+                                      <a href="{% url 'etools:donor_mapping' %}">
+                                          Donor Mapping
+                                          <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">new</div>
+                                      </a>
+                                    </li>
+                                    <li>
+                                      <a href="" target="_blank">
+                                           Vulnerability Maps
+                                          <div class="ml-auto badge badge-info" style="padding: 2px;font-size: 10px;">soon</div>
+                                      </a>
+                                    </li>
+                              </ul>
+                          </li>
                            <li>
                               <a href="{% url 'survey:population_figures' %}">
                                   <i class="metismenu-icon pe-7s-users" aria-hidden="true"></i>
@@ -367,33 +394,6 @@
                                     IM Dropbox
                                     <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
                                 </a>
-                              </li>
-                              <li>
-                                  <a href="">
-                                      <i class="metismenu-icon pe-7s-map-2"></i>
-                                      Maps
-                                      <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
-                                  </a>
-                                  <ul id="maps_list">
-                                       <li>
-                                          <a href="https://interagency.herokuapp.com/Dashboard/Maps/" target="_blank">
-                                              UNICEF Maps
-                                              <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
-                                          </a>
-                                        </li>
-                                        <li>
-                                          <a href="{% url 'etools:donor_mapping' %}">
-                                              Donor Mapping
-                                              <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">new</div>
-                                          </a>
-                                        </li>
-                                        <li>
-                                          <a href="" target="_blank">
-                                               Vulnerability Maps
-                                              <div class="ml-auto badge badge-info" style="padding: 2px;font-size: 10px;">soon</div>
-                                          </a>
-                                        </li>
-                                  </ul>
                               </li>
 
                           <!--<li class="app-sidebar__heading">Maps</li>-->
