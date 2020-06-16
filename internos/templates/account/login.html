@@ -24,8 +24,7 @@
       <h5 class="card-title">
          {% if socialaccount_providers %}
         {% blocktrans with site.name as site_name %}Please sign in with one
-          of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a>
-          for a {{ site_name }} account and sign in below:{% endblocktrans %}
+          of your existing third party accounts.{% endblocktrans %}
       </h5>
       <div class="socialaccount_ballot">
 
@@ -38,10 +37,7 @@
     {% include "socialaccount/snippets/login_extra.html" %}
 
     {% else %}
-    <p>{% blocktrans %}If you have not created an account yet, then please
-      <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
-    {% endif %}
-
+{% endif %}
     <form class="login" method="POST" action="{% url 'account_login' %}">
       {% csrf_token %}
       {{ form|crispy }}
