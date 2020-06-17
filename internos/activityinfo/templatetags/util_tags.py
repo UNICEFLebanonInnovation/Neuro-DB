@@ -1247,7 +1247,7 @@ def get_display_db(dict_indicators, db_id):
 
 
 @register.assignment_tag
-def get_hpm_indicator_data_new(indicator_id, month=None):
+def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
     data = {
         'id': 0,
         'name': 0,
@@ -1285,7 +1285,7 @@ def get_hpm_indicator_data_new(indicator_id, month=None):
         except Exception as ex:
             return data
 
-        if indicator.is_cumulative == False:
+        if not indicator.is_cumulative:
             all_values = indicator.values
             if all_values:
                 max_value = all_values['1']
@@ -1306,19 +1306,22 @@ def get_hpm_indicator_data_new(indicator_id, month=None):
 
         if int(month) == current_month:
             if indicator.cumulative_values:
-                     if 'months' in indicator.cumulative_values:
-                       if indicator.cumulative_values['months']:
-                        value = indicator.cumulative_values['months']
+                 if 'months' in indicator.cumulative_values:
+                   if indicator.cumulative_values['months']:
+                    value = indicator.cumulative_values['months']
             if indicator.cumulative_values_sector:
-                    if 'months' in indicator.cumulative_values_sector:
-                        if indicator.cumulative_values_sector['months']:
-                         sector_value = indicator.cumulative_values_sector['months']
+                if 'months' in indicator.cumulative_values_sector:
+                    if indicator.cumulative_values_sector['months']:
+                     sector_value = indicator.cumulative_values_sector['months']
 
         else:
             for m in range(1, month + 1):
                 if indicator.values:
-                    if str(m) in indicator.values:
-                        value += float(indicator.values[str(m)])
+                    if str(m) in indicator.values_hpm:
+                        value += float(indicator.values_hpm[str(m)])
+                    else:
+                        if str(m) in indicator.values:
+                            value += float(indicator.values[str(m)])
 
                 if indicator.values_sector:
                     if str(m) in indicator.values_sector:
@@ -1331,10 +1334,26 @@ def get_hpm_indicator_data_new(indicator_id, month=None):
                     previous_sector_values += indicator.values_sector[str(m)]
 
         previous_values = 0
-        for m in range(1, month):
-            if indicator.values:
-                if str(m) in indicator.values:
-                    previous_values += indicator.values[str(m)]
+        if type == 'periodic':
+            if indicator.cumulative_values_hpm:
+                if str(m) in indicator.cumulative_values_hpm:
+                    if m == 3 :
+                        previous_values = 0
+                    else:
+                        if (m-3) in indicator.cumulative_values_hpm:
+                            previous_values = indicator.cumulative_values_hpm[str(m-3)]
+                        else:
+                            previous_values = 0
+
+        else:
+            for m in range(1, month):
+                if indicator.values_hpm:
+                    if str(m) in indicator.values_hpm:
+                        previous_values += indicator.values_hpm[str(m)]
+                else:
+                    if indicator.values:
+                        if str(m) in indicator.values:
+                            previous_values += indicator.values[str(m)]
 
         value = value + additional_cumulative
         previous_values = previous_values+additional_cumulative
@@ -1562,7 +1581,9 @@ def get_sub_indicators_data(ai_id, is_sector=False, ai_db=None):
             'values_crisis_gov_live',
             'values_crisis_partners_live',
             'values_crisis_partners_gov_live',
-            'values_crisis_cumulative_live'
+            'values_crisis_cumulative_live',
+            'highest_values',
+            'highest_values_live'
 
         ).order_by('id').distinct('id')
 
@@ -2171,19 +2192,195 @@ def get_indicator_live_value(indicator, month=None, partner=None, gov=None):
 
 
 @register.assignment_tag
-def get_indicator_highest_value(indicator):
-    value = 0
+def get_indicator_highest_value(indicator,months=None,partners=None,govs=None):
     try:
+        max_value = 0
         if indicator:
+            highest_values = indicator['highest_values']
+
+            if partners and govs and months:
+                values = indicator['values_partners_gov']
+                for month in months:
+                    cum_value=0
+                    for partner in partners:
+                        for gov in govs:
+                            key = '{}-{}-{}'.format(month,gov, partner)
+                            if key in values:
+                                cum_value += values[key]
+                    if cum_value > max_value:
+                        max_value = cum_value
+                return get_indicator_unit(indicator, max_value)
+            if partners and govs:
+                highest_values = highest_values['partners_govs']
+                # key = '{}-{}'.format(govs[0], partners[0])
+                # if key in highest_values:
+                #     max_value = highest_values[key]
+                for partner in partners:
+                    cum_value=0
+                    for gov in govs:
+                        key = '{}-{}'.format(gov, partner)
+                        if key in highest_values:
+                            cum_value += highest_values[key]
+                    if cum_value > max_value:
+                            max_value = cum_value
+                return get_indicator_unit(indicator, max_value)
+            if govs and months:
+                values = indicator['values_govs']
+                key = '{}-{}'.format(months[0], govs[0])
+                if key in values:
+                    max_value = values[key]
+                for gov in govs:
+                    for month in months:
+                        key = '{}-{}'.format(month,gov)
+                        if key in values:
+                            if values[key] > max_value:
+                                max_value = values[key]
+                    return get_indicator_unit(indicator, max_value)
+
+            if partners and months:
+                values = indicator['values_partners']
+                key = '{}-{}'.format(months[0], partners[0])
+                if key in values:
+                    max_value = values[key]
+                for partner in partners:
+                    for month in months:
+                        key = '{}-{}'.format(month,partner)
+                        if key in values:
+                            if values[key] > max_value:
+                                max_value = values[key]
+                return get_indicator_unit(indicator, max_value)
+            if govs:
+                highest_values = highest_values['govs']
+                if govs[0] in highest_values:
+                    max_value = highest_values[govs[0]]
+                for gov in govs:
+                    if gov in highest_values:
+                        if highest_values[gov] > max_value:
+                            max_value = highest_values[gov]
+                    return get_indicator_unit(indicator, max_value)
+
+            if partners:
+                highest_values = highest_values['partners']
+                if partners[0] in highest_values:
+                    max_value = highest_values[partners[0]]
+                for partner in partners:
+                    if partner in highest_values:
+                        if highest_values[partner] > max_value:
+                            max_value = highest_values[partner]
+                return get_indicator_unit(indicator, max_value)
+
+            if months:
+                values = indicator['values']
+                if months[0] in values:
+                    max_value = values[months[0]]
+                for month in months:
+                    if month in values:
+                        if values[month] > max_value:
+                            max_value = values[month]
+                return get_indicator_unit(indicator, max_value)
+
             all_values = indicator['values'].values()
             if all_values:
                 max_value = max(all_values)
                 return get_indicator_unit(indicator, max_value)
-        return value
+        return max_value
     except Exception as ex:
         logger.error('get_indicator_highest_value error' + ex.message)
-        return value
+        return max_value
 
+
+@register.assignment_tag
+def get_indicator_highest_value_live(indicator,partners=None,govs=None,months=None):
+    value = 0
+    # try:
+    if indicator:
+        highest_values = indicator['highest_values_live']
+
+        if partners and govs and months:
+            values = indicator['values_partners_govs_live']
+            key = '{}-{}-{}'.format(months[0], govs[0], partners[0])
+            if key in values:
+                max_value = values[key]
+            for partner in partners:
+                for gov in govs:
+                    for month in months:
+                        key = '{}-{}-{}'.format(month,gov, partner)
+                        if key in values:
+                            if values[key] > max_value:
+                                max_value = values[key]
+            return get_indicator_unit(indicator, max_value)
+        if partners and govs:
+            highest_values = highest_values['partners_govs_live']
+            key = '{}-{}'.format(govs[0], partners[0])
+            if key in highest_values:
+                max_value = highest_values[key]
+            for partner in partners:
+                for gov in govs:
+                    key = '{}-{}'.format(gov, partner)
+                    if key in highest_values:
+                        if highest_values[key] > max_value:
+                            max_value = highest_values[key]
+            return get_indicator_unit(indicator, max_value)
+        if govs and months:
+            values = indicator['values_govs_live']
+            key = '{}-{}'.format(months[0], govs[0])
+            if key in values:
+                max_value = values[key]
+            for gov in govs:
+                for month in months:
+                    key = '{}-{}'.format(month,gov)
+                    if key in values:
+                        if values[key] > max_value:
+                            max_value = values[key]
+                return get_indicator_unit(indicator, max_value)
+
+        if partners and months:
+            values = indicator['values_partners_live']
+            key = '{}-{}'.format(months[0], partners[0])
+            if key in values:
+                max_value = values[key]
+            for partner in partners:
+                for month in months:
+                    key = '{}-{}'.format(month,partner)
+                    if key in values:
+                        if values[key] > max_value:
+                            max_value = values[key]
+            return get_indicator_unit(indicator, max_value)
+        if govs:
+            highest_values = highest_values['govs']
+            max_value = highest_values[0]
+            for gov in govs:
+                if gov in highest_values:
+                    if highest_values[gov] > max_value:
+                        max_value = highest_values[gov]
+                return get_indicator_unit(indicator, max_value)
+
+        if partners:
+            highest_values = highest_values['partners']
+            max_value = highest_values[0]
+            for partner in partners:
+                if partner in highest_values:
+                    if highest_values[partner] > max_value:
+                        max_value = highest_values[partner]
+            return get_indicator_unit(indicator, max_value)
+
+        if months:
+            values = indicator['values_live']
+            max_value = values[0]
+            for month in months:
+                if month in values:
+                    if values[month] > max_value:
+                        max_value = values[month]
+            return get_indicator_unit(indicator, max_value)
+
+        all_values = indicator['values_live'].values()
+        if all_values:
+            max_value = max(all_values)
+            return get_indicator_unit(indicator, max_value)
+    return value
+    # except Exception as ex:
+    #     logger.error('get_indicator_highest_value error' + ex.message)
+    #     return value
 
 @register.assignment_tag
 def get_array_value(data, key1=None, key2=None, key3=None):

@@ -171,7 +171,8 @@ class ReportView(TemplateView):
             'values_partners_gov_live',
             'cumulative_values_live',
             'is_cumulative',
-            'support_COVID'
+            'support_COVID',
+            'highest_values'
         ).distinct()
 
         none_ai_indicators = none_ai_indicators.values(
@@ -2234,7 +2235,6 @@ class LiveReportView(TemplateView):
         #                              'location_adminlevel_governorate').order_by('location_adminlevel_governorate_code').\
         #     distinct('location_adminlevel_governorate_code')
 
-
         master_indicators = Indicator.objects.filter(activity__database=database).exclude(is_sector=True).order_by(
             'sequence')
         if database.mapped_db:
@@ -2265,7 +2265,8 @@ class LiveReportView(TemplateView):
             'values_partners_live',
             'values_gov_live',
             'values_live',
-            'is_cumulative'
+            'is_cumulative',
+            'highest_values_live'
         ).distinct()
 
         return {
@@ -2299,6 +2300,7 @@ class HPMView(TemplateView):
         title = ""
         table_title=""
         month = int(self.request.GET.get('month', 0))
+        type = self.request.GET.get('type', "")
         today = datetime.date.today()
         day_number = int(today.strftime("%d"))
 
@@ -2310,6 +2312,11 @@ class HPMView(TemplateView):
 
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
+
+        if type == 'periodic':
+            selected_month_name='Quarter:' + calendar.month_name[month]
+        else:
+            selected_month_name = calendar.month_name[month]
 
         month_name = calendar.month_name[month]
 
@@ -2343,6 +2350,12 @@ class HPMView(TemplateView):
                     for i in range(1, current_month-1):
                         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
+        periodic_months=[3,6,9,12]
+        periodic_list=[]
+        for m in periodic_months:
+            if m < current_month:
+                periodic_list.append((m,'Quarter: '+ datetime.date(2008, m, 1).strftime('%B')))
+
         return {
             'ai_databases': databases,
             'month_name': month_name,
@@ -2352,7 +2365,10 @@ class HPMView(TemplateView):
             'is_current_year': is_current_year,
             'title': title,
             'SGBV_db': SGBV_db_id,
-            'table_title':table_title
+            'table_title':table_title,
+            'selected_month':selected_month_name,
+            'periodic_months':periodic_list,
+            'type':type
         }
 
     def post(self, request, *args, **kwargs):
@@ -2380,6 +2396,7 @@ class HPMExportViewSet(ListView):
         from .utils import update_hpm_table_docx
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
+        type = self.request.GET.get('type', "")
         if reporting_year is None:
             reporting_year = year
         today = datetime.date.today()
@@ -2398,7 +2415,7 @@ class HPMExportViewSet(ListView):
             months.append((datetime.date(2008, i, 1).strftime('%B')))
 
         filename = "HPM Table {} {}.docx".format(months[month-1], reporting_year)
-        new_file = update_hpm_table_docx(self.queryset, month, months[month-1], filename,reporting_year)
+        new_file = update_hpm_table_docx(self.queryset, month, months[month-1], filename,reporting_year,type)
 
         with open(new_file, 'rb') as fh:
             response = HttpResponse(
