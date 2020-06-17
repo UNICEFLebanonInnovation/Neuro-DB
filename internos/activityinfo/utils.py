@@ -651,6 +651,8 @@ def calculate_indicators_values(ai_db, report_type=None):
     calculate_indicators_values_percentage_1(ai_db, report_type)  # DONE
     print('calculate_indicators_cumulative_results_1')
     calculate_indicators_cumulative_results_1(ai_db, report_type)
+    print('calculate_indicators_highest_results_1')
+    calculate_indicators_highest_results(ai_db ,report_type)
     print('calculate_indicators_status')
     calculate_indicators_status(ai_db)
 
@@ -931,13 +933,14 @@ def calculate_indicators_cumulative_results(ai_db, report_type=None):
 
 def reset_hpm_indicators_values():
     from internos.activityinfo.models import Indicator
+    current_year = datetime.datetime.now().year
 
-    indicators = Indicator.objects.filter(hpm_indicator=True)
-    # for indicator in indicators:
-        # indicator.values_hpm = {}
+    indicators = Indicator.objects.filter(activity__database__reporting_year__year=current_year ,hpm_indicator=True)
+    for indicator in indicators:
+        indicator.values_hpm = {}
         # indicator.values_tags = {}
-        # indicator.cumulative_values_hpm = {}
-        # indicator.save()
+        indicator.cumulative_values_hpm = {}
+        indicator.save()
 
     return indicators.count()
 
@@ -4109,29 +4112,49 @@ def update_hpm_report():
 def update_indicators_hpm_data():
     from internos.activityinfo.models import Indicator
 
-    month = datetime.datetime.now().strftime("%m")
-    previous_month = str(int(month) - 1)
-    previous_month = 12
+    current_month = datetime.datetime.now().month
+    current_year = datetime.datetime.now().year
 
-    indicators = Indicator.objects.filter(hpm_indicator=True).only(
+    indicators = Indicator.objects.filter(activity__database__reporting_year__year=current_year ,hpm_indicator=True).only(
         'values',
         'values_hpm',
         'cumulative_values',
         'cumulative_values_hpm',
     )
+    months =[]
+    for m in range(1,current_month):
+        months.append(m)
 
     for indicator in indicators.iterator():
         value = 0
-        if 'months' in indicator.cumulative_values:
-            value = indicator.cumulative_values['months']
+        for m in months:
+            if str(m) in indicator.values:
+                value = indicator.values[str(m)]
+                indicator.values_hpm[str(m)] = value
+        indicator.save()
+        cum_value = 0
+        cum_value2 = 0
+        cum_value3 = 0
+        cum_value4 = 0
+        for m in months:
+            if str(m) in indicator.values:
+                if 0 < m < 4:
+                    cum_value += indicator.values[str(m)]
+                if 3 < m < 7:
+                    cum_value2 += indicator.values[str(m)]
+                if 6 < m < 10:
+                    cum_value3 += indicator.values[str(m)]
+                if 9 < m < 13:
+                    cum_value4 += indicator.values[str(m)]
 
-        if previous_month not in indicator.cumulative_values_hpm or not indicator.cumulative_values_hpm[previous_month]:
-            indicator.cumulative_values_hpm[previous_month] = value
-
+        indicator.cumulative_values_hpm['3'] = cum_value
+        indicator.cumulative_values_hpm['6'] = cum_value2
+        indicator.cumulative_values_hpm['9'] = cum_value3
+        indicator.cumulative_values_hpm['12'] = cum_value4
         indicator.save()
 
 
-def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year):
+def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year,type=None):
 
     from docx import Document
     from internos.activityinfo.templatetags.util_tags import get_hpm_indicator_data_new , get_hpm_sub_indicators
@@ -4184,7 +4207,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     # Education 1
     row_num = 2
     for id in education_ids:
-        indicator1 = get_hpm_indicator_data_new(id, month)
+        indicator1 = get_hpm_indicator_data_new(id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(indicator1['hpm_label'])
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(indicator1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(indicator1['target'])
@@ -4198,7 +4221,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     row_num = row_num + 1
     # #child_protection_ids = [6972, 6990, 6946]
     for indicator in Child_indicators:
-        Child_1 = get_hpm_indicator_data_new(indicator.id, month)
+        Child_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(Child_1['hpm_label'])
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(Child_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(Child_1['target'])
@@ -4208,7 +4231,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
 
     SVBG_indicators = Indicator.objects.filter(activity__database=databases[8], hpm_indicator=True, master_indicator=True).order_by('sequence')
     for indicator in SVBG_indicators:
-        Child_3 = get_hpm_indicator_data_new(indicator.id, month)
+        Child_3 = get_hpm_indicator_data_new(indicator.id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(Child_3['hpm_label'])
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(Child_3['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(Child_3['target'])
@@ -4224,7 +4247,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     row_num = row_num + 1
     # wash_ids = [6995, 6996, 6999,6997]
     for indicator in Wash_indicators:
-        wash_1 = get_hpm_indicator_data_new(indicator.id, month)
+        wash_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(wash_1['hpm_label'])
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(wash_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(wash_1['target'])
@@ -4238,7 +4261,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     row_num = row_num + 1
     # health_ids = [6941,6942,6940]
     for indicator in health_indicators:
-        health_1 = get_hpm_indicator_data_new(indicator.id, month)
+        health_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(health_1['hpm_label'])
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(health_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(health_1['target'])
@@ -4252,7 +4275,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                                                 master_indicator=True).order_by('sequence')
     row_num = row_num + 1
     for indicator in youth_indicators:
-        youth_1 = get_hpm_indicator_data_new(indicator.id, month)
+        youth_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(youth_1['hpm_label'])
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(youth_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(youth_1['target'])
@@ -4266,7 +4289,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                                                 master_indicator=True).order_by('sequence')
     row_num = row_num + 1
     for indicator in sp_indicators:
-        sp_1 = get_hpm_indicator_data_new(indicator.id, month)
+        sp_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(sp_1['hpm_label'])
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(sp_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(sp_1['target'])
@@ -4284,7 +4307,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                                              master_indicator=True).order_by('sequence')
     row_num = row_num + 1
     for indicator in C4D_indicators:
-        C4D_1 = get_hpm_indicator_data_new(indicator.id, month)
+        C4D_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(C4D_1['hpm_label'])
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(C4D_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(C4D_1['target'])
@@ -4299,7 +4322,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                                               master_indicator=True).order_by('sequence')
     row_num = row_num + 1
     for indicator in PPL_indicators:
-        PPL_1 = get_hpm_indicator_data_new(indicator.id, month)
+        PPL_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(PPL_1['hpm_label'])
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(PPL_1['target_sector'])
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(PPL_1['target'])
@@ -4316,7 +4339,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
    ### Education
     for id in education_ids:
         row_num = row_num + 1
-        indicator_1 = get_hpm_indicator_data_new(id, month)
+        indicator_1 = get_hpm_indicator_data_new(id, month,type)
         if indicator_1['cumulative'] != "0":
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}%, {}: {}%. '.format(
                 'Boys', indicator_1['male'],'Girls', indicator_1['female']), indicator_1['comment']
@@ -4326,7 +4349,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     ### cp
     for indicator in Child_indicators:
         row_num = row_num + 1
-        Child_1 = get_hpm_indicator_data_new(indicator.id, month)
+        Child_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if Child_1['cumulative'] != "0":
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
                 'Boys', Child_1['male'],'Girls', Child_1['female']), Child_1['comment']
@@ -4338,7 +4361,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                                                master_indicator=True).order_by('sequence')
     for indicator in SVBG_indicators:
         row_num = row_num + 1
-        Child_3 = get_hpm_indicator_data_new(indicator.id, month)
+        Child_3 = get_hpm_indicator_data_new(indicator.id, month,type)
         if Child_3['cumulative'] != "0":
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}%, {}: {}%. '.format(
                 'Boys', Child_3['male'],'Girls', Child_3['female']), Child_3['comment']
@@ -4348,7 +4371,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     #  # #  WASH
     for indicator in Wash_indicators:
         row_num = row_num + 1
-        wash_1 = get_hpm_indicator_data_new(indicator.id, month)
+        wash_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if wash_1['cumulative'] != "0":
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[
                 0].text = '{}: {}%, {}: {}%, {}: {}%, {}: {}%. '.format('Boys', wash_1['boys'], 'Girls',
@@ -4361,7 +4384,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     #  # Health
     for indicator in health_indicators:
         row_num = row_num + 1
-        health_1 = get_hpm_indicator_data_new(indicator.id, month)
+        health_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if health_1['cumulative'] != "0":
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
                 'Male', health_1['male'],'Female', health_1['female']), health_1['comment']
@@ -4371,7 +4394,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     #  # #  Y&A
     for indicator in youth_indicators:
         row_num = row_num + 1
-        youth_1 = get_hpm_indicator_data_new(indicator.id, month)
+        youth_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if youth_1['cumulative'] != "0":
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
                 'Male', youth_1['male'],'Female', youth_1['female']), youth_1['comment']
@@ -4382,7 +4405,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
 
     for indicator in sp_indicators:
         row_num = row_num + 1
-        sp_1 = get_hpm_indicator_data_new(indicator.id, month)
+        sp_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if sp_1['cumulative'] != "0":
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
                 'Boys', sp_1['male'], 'Girls', sp_1['female']), sp_1['comment']
@@ -4392,7 +4415,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     ## C4D
     for indicator in C4D_indicators:
         row_num = row_num + 1
-        C4D_1 = get_hpm_indicator_data_new(indicator.id, month)
+        C4D_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if C4D_1['cumulative'] != "0":
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
                 'Boys', C4D_1['male'], 'Girls', C4D_1['female']), C4D_1['comment']
@@ -4402,7 +4425,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     #  # #  PPL
     for indicator in PPL_indicators:
         row_num = row_num + 1
-        PPL_1 = get_hpm_indicator_data_new(indicator.id, month)
+        PPL_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if PPL_1['cumulative'] != "0":
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
                 'Boys', PPL_1['male'], 'Girls', PPL_1['female']), PPL_1['comment']
@@ -4821,3 +4844,119 @@ def get_reporting_sections_list(ai_db, report_type=None):
         }
 
     return result.values()
+
+
+def calculate_indicators_highest_results(ai_db, report_type=None):
+    from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
+    from django.db import connection
+
+    master_indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,is_cumulative=False)
+    if master_indicators:
+        linked_indicators = []
+        for master_ind in master_indicators:
+            indicators = Indicator.objects.filter(sub_indicators=master_ind.id).only(
+                'id',
+                'values',
+                'values_gov',
+                'values_partners',
+                'values_partners_gov',
+                'values_live',
+                'values_gov_live',
+                'values_partners_live',
+                'values_partners_gov_live',
+                'cumulative_values',
+                'cumulative_values_live'
+            )
+            for ind in indicators:
+                linked_indicators.append(ind)
+
+        for ind in master_indicators:
+            linked_indicators.append(ind)
+        indicators_ids = []
+
+        for ind in linked_indicators:
+            value = ind.id
+            indicators_ids.append(value)
+
+        ids_condition = ','.join(("'{}'".format(str(n)) for n in indicators_ids))
+
+        rows_data = {}
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT distinct ai.id, ai.ai_indicator, aa.id, aa.name, ai.values, ai.values_live, "
+            "ai.values_gov, ai.values_gov_live, ai.values_partners, ai.values_partners_live, "
+            "ai.values_partners_gov, ai.values_partners_gov_live "
+            "FROM public.activityinfo_indicator ai, public.activityinfo_activity aa "
+            "WHERE ai.activity_id = aa.id AND aa.database_id = %s and ai.id in(" + ids_condition +")",
+            [ai_db.id])
+
+        rows = cursor.fetchall()
+        for row in rows:
+            rows_data[row[0]] = row
+
+        for indicator in linked_indicators:
+            highest_month = {}
+            highest_partner = {}
+            highest_gov = {}
+            highest_partner_gov = {}
+
+            if indicator.id in rows_data:
+                indicator_values = rows_data[indicator.id]
+
+                if report_type == 'live':
+                    values = indicator_values[5]  # values_live
+                    values1 = indicator_values[7]  # values_gov_live
+                    values2 = indicator_values[9]  # values_partners_live
+                    values3 = indicator_values[11]  # values_partners_gov_live
+                else:
+                    values = indicator_values[4]  # values
+                    values1 = indicator_values[6]  # values_gov
+                    values2 = indicator_values[8]  # values_partners
+                    values3 = indicator_values[10]  # values_partners_gov
+
+                highest_month = max(values.values())
+
+                for key, value in values1.items():
+                    keys = key.split('-')
+                    gov = keys[1]
+                    if gov in highest_gov:
+                        if value > highest_gov[gov]:
+                             highest_gov[gov] = value
+                    else:
+                        highest_gov[gov] = value
+
+                for key, value in values2.items():
+                    keys = key.split('-')
+                    partner = keys[1]
+                    if partner in highest_partner:
+                       if value > highest_partner[partner]:
+                           highest_partner[partner] = value
+                    else:
+                        highest_partner[partner] = value
+
+                for key, value in values3.items():
+                    keys = key.split('-')
+                    gov_partner = '{}-{}'.format(keys[1], keys[2])
+                    if gov_partner in highest_partner_gov:
+                        if value > highest_partner_gov[gov_partner]:
+                            highest_partner_gov[gov_partner] =  value
+                    else:
+                        highest_partner_gov[gov_partner] = value
+
+                if report_type == 'live':
+                    indicator.highest_values_live = {
+                        'months': highest_month,
+                        'partners': highest_partner,
+                        'govs': highest_gov,
+                        'partners_govs': highest_partner_gov
+                    }
+                else:
+                    indicator.highest_values = {
+                         'months': highest_month,
+                         'partners': highest_partner,
+                         'govs': highest_gov,
+                         'partners_govs': highest_partner_gov
+                    }
+                indicator.save()
+        return indicators.count()
+
