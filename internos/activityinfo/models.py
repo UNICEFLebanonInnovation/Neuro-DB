@@ -493,6 +493,8 @@ class Indicator(models.Model):
     values_crisis_cumulative_live = JSONField(blank=True, null=True, default={})
     is_imported = models.BooleanField(default=False)
     is_imported_by_calculation = models.BooleanField(default=False)
+    highest_values = JSONField(blank=True, null=True, default={})
+    highest_values_live = JSONField(blank=True, null=True, default={})
 
     project_code = models.CharField(max_length=500, blank=True, null=True)
     project_name = models.CharField(max_length=1500, blank=True, null=True)

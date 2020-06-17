@@ -4,6 +4,11 @@
 {% load static %}
 
 {% block content %}
+<style>
+  sup{
+  position :unset;
+  }
+</style>
 <div class="app-main__inner">
   <div class="app-page-title">
     <div class="page-title-wrapper">
@@ -15,25 +20,35 @@
         <div style="font-weight:bold ; padding-top:5px">
               {{ title }}
             {% if is_current_year %}
-          <ul class="nav navbar-left d-inline-block" data-step="6"
-              data-intro="Download Dashboard report and raw data">
-            <li class="dropdown">
-              <a id="drop" class="dropdown-toggle" title="Download report"
-                 data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-                <i class="fa fa-download faa-bounce animated-hover"></i>
-                <span class="caret"></span>
+
+          <div class="dropdown d-inline-block" data-intro="Download monthly report and periodic report">
+              <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
+                      data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">
+                <i class="pe-7s-download"></i>
+              </button>
+
+              <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu">
+                <h6 class="dropdown-header">Monthly Report</h6>
+                     <div tabindex="-1" class="dropdown-divider"></div>
+               {% for month, month_name in months %}
+                <a type="button" href="{% url 'activityinfo:hpm_report' %}?month={{ month }}&?rep_year={{ reporting_year }}" tabindex="0" class="dropdown-item">
+                {{ month_name }}
               </a>
-              <ul id="menu2" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop5">
-                {% for month, month_name in months %}
-                <li role="presentation">
-                  <a role="menuitem" class="dropdown-item" tabindex="-1"
-                     href="{% url 'activityinfo:hpm_report' %}?month={{ month }}&?rep_year={{ reporting_year }}">
+                {% endfor %}
+                <div tabindex="-1" class="dropdown-divider"></div>
+                <h6 class="dropdown-header">Periodic Report</h6>
+                <div tabindex="-1" class="dropdown-divider"></div>
+                {% for month, month_name in periodic_months %}
+                  <a type="button" href="{% url 'activityinfo:hpm_report' %}?month={{ month }}&?rep_year={{ reporting_year }}&?type=periodic" tabindex="0" class="dropdown-item">
                     {{ month_name }}
                   </a>
-                  {% endfor %}
-              </ul>
-            </li>
-          </ul>
+                {% endfor %}
+
+                <div tabindex="-1" class="dropdown-divider"></div>
+              </div>
+             </div>
+
+
           {% endif %}
         </div>
         <div>
@@ -44,22 +59,45 @@
         <form action="{% url 'activityinfo:hpm' %}" method="get" id="month_form">
           <input type="hidden" name="month" value="" id="monthinput"/>
           <input type="hidden" name="rep_year" value="{{ reporting_year }}">
+          <input type="hidden" name="type" value="" id="typeinput">
+
           <div class="dropdown d-inline-block mr-4 mt-1">
             <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" name="months"
                     id="filter_month" style="min-width:150px;"
-                    class="dropdown-toggle btn btn-outline-primary"> Select month
+                    class="dropdown-toggle btn btn-outline-primary"> {{selected_month}}
             </button>
             <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu months-drp">
-              <a class="dropdown-item" data-value="0" href=""> Select month</a>
-              {% for month,month_name in months %}
-              <a value="{{ month }}" onclick="selectmonth('{{month}}')" {% if month == selected_month %}
-                 class="dropdown-item active" {% else %}class="dropdown-item" {% endif %}>
-                {{ month_name }}</a>
+                <h6 class="dropdown-header">Monthly Report</h6>
+                <div tabindex="-1" class="dropdown-divider"></div>
+              {% for m,month_name in months %}
+              {% if type == 'periodic' %}
+              <a value="{{ m }}" onclick="selectmonth('{{m}}')" class="dropdown-item">
+                {{ month_name }}
+              </a>
+              {% else %}
+                 <a value="{{ m }}" onclick="selectmonth('{{m}}')" {% if m == month %}
+                 class="dropdown-item active" {% else %} class="dropdown-item" {% endif %}>
+                {{ month_name }}
+              </a>
+              {% endif %}
               {% endfor %}
+              <div tabindex="-1" class="dropdown-divider"></div>
+               <h6 class="dropdown-header">Periodic Report</h6>
+                <div tabindex="-1" class="dropdown-divider"></div>
+                {% for m, month_name in periodic_months %}
+                {% if type == 'periodic' %}
+                  <a value="{{ m }}" onclick="select_periodic_month('{{m}}')" {% if m == month %}
+                     class="dropdown-item active" {% else %} class="dropdown-item" {% endif %}>
+                    {{ month_name }}
+                  </a>
+              {% else %}
+              <a value="{{ m }}" onclick="select_periodic_month('{{m}}')" class="dropdown-item">  {{ month_name }}</a>
+                 {% endif %}
+                {% endfor %}
+                <div tabindex="-1" class="dropdown-divider"></div>
             </div>
           </div>
         </form>
-
         {% endif %}
       </div>
     </div>
@@ -100,9 +138,9 @@
             {% for indicator in value %}
             {% if indicator %}
             {% if db.label == 'Education' %}
-            {% get_hpm_indicator_data_new indicator.0.id month as main_data %}
+            {% get_hpm_indicator_data_new indicator.0.id month type as main_data %}
             {% get_hpm_sub_indicators indicator.0.id as sub_list1 %}
-            {% get_hpm_indicator_data_new sub_list1.0.id month as first_data %}
+            {% get_hpm_indicator_data_new sub_list1.0.id month type as first_data %}
             <!--  Education First indicator and its sub indicators  -->
             {% with num=0 %}
             <tr>
@@ -122,7 +160,7 @@
               </td>
               <td>{{ first_data.report_change }}</td>
             </tr>
-            {% get_hpm_indicator_data_new sub_list1.1.id month as Second_data %}
+            {% get_hpm_indicator_data_new sub_list1.1.id month type as Second_data %}
             <tr>
               <td style="text-align:left">{{ Second_data.hpm_label }}</td>
               <td>{{ Second_data.target_sector }}</td>
@@ -153,9 +191,9 @@
             </tr>
             <!--  Education Second indicator and its sub indicators  -->
 
-            {% get_hpm_indicator_data_new indicator.1.id month as main_2_data %}
+            {% get_hpm_indicator_data_new indicator.1.id month type as main_2_data %}
             {% get_hpm_sub_indicators indicator.1.id as sub_list2 %}
-            {% get_hpm_indicator_data_new sub_list2.0.id month as ALP_data %}
+            {% get_hpm_indicator_data_new sub_list2.0.id month type as ALP_data %}
             <tr>
               <td rowspan="5">
                 {{ main_2_data.hpm_label }}
@@ -173,7 +211,7 @@
               </td>
               <td>{{ ALP_data.report_change }}</td>
             </tr>
-            {% get_hpm_indicator_data_new sub_list2.1.id month as CBECE_data %}
+            {% get_hpm_indicator_data_new sub_list2.1.id month type as CBECE_data %}
             <tr>
               <td style="text-align:left">{{ CBECE_data.hpm_label }}</td>
               <td>{{ CBECE_data.target_sector }}</td>
@@ -187,7 +225,7 @@
               </td>
               <td>{{ CBECE_data.report_change }}</td>
             </tr>
-            {% get_hpm_indicator_data_new sub_list2.2.id month as BLN_data %}
+            {% get_hpm_indicator_data_new sub_list2.2.id month type as BLN_data %}
             <tr>
               <td style="text-align:left">{{ BLN_data.hpm_label }}</td>
               <td>{{ BLN_data.target_sector }}</td>
@@ -201,7 +239,7 @@
               </td>
               <td>{{ BLN_data.report_change }}</td>
             </tr>
-            {% get_hpm_indicator_data_new sub_list2.3.id month as ABLN_data %}
+            {% get_hpm_indicator_data_new sub_list2.3.id month type as ABLN_data %}
             <tr>
               <td style="text-align:left">{{ ABLN_data.hpm_label }}</td>
               <td>{{ ABLN_data.target_sector }}</td>
@@ -231,7 +269,7 @@
             {% endwith %}
             {% elif db.label == 'Child Protection' %}
             {% for i in indicator %}
-            {% get_hpm_indicator_data_new i.id month as data %}
+            {% get_hpm_indicator_data_new i.id month type as data %}
             <tr>
               <td colspan="2">{{ data.hpm_label }}</td>
               <td>{{ data.target_sector }}</td>
@@ -253,7 +291,7 @@
             {% for indicators in value %}
             {% if indicators %}
             {% for i in indicators %}
-            {% get_hpm_indicator_data_new i.id month as data %}
+            {% get_hpm_indicator_data_new i.id month type as data %}
             <tr>
               <td colspan="2">{{ data.hpm_label }}</td>
               <td>{{ data.target_sector }}</td>
@@ -274,7 +312,7 @@
             {% endfor %}
             {% else %}
             {% for i in indicator %}
-            {% get_hpm_indicator_data_new i.id month as data %}
+            {% get_hpm_indicator_data_new i.id month type as data %}
             <tr>
               <td colspan="2">{{ data.hpm_label }}</td>
               <td>{{ data.target_sector }}</td>
@@ -330,9 +368,9 @@
 
             {% if db.label == 'Education' %}
 
-            {% get_hpm_indicator_data_new indicators.0.id month as main_data %}
+            {% get_hpm_indicator_data_new indicators.0.id month type as main_data %}
             {% get_hpm_sub_indicators indicators.0.id as sub_list1 %}
-            {% get_hpm_indicator_data_new sub_list1.0.id month as first_data %}
+            {% get_hpm_indicator_data_new sub_list1.0.id month type as first_data %}
 
             {% with num=0 %}
             {% if first_data.has_hpm_note %}
@@ -358,7 +396,7 @@
               </td>
             </tr>
             {% endif %}
-            {% get_hpm_indicator_data_new sub_list1.1.id month as second_data %}
+            {% get_hpm_indicator_data_new sub_list1.1.id month type as second_data %}
             {% if second_data.has_hpm_note %}
             {% increment num as num %}
             <tr>
@@ -408,9 +446,9 @@
             </tr>
             {% endif %}
 
-            {% get_hpm_indicator_data_new indicators.1.id month as main_2_data %}
+            {% get_hpm_indicator_data_new indicators.1.id month type as main_2_data %}
             {% get_hpm_sub_indicators indicators.1.id as sub_list2 %}
-            {% get_hpm_indicator_data_new sub_list2.0.id month as first_1_data %}
+            {% get_hpm_indicator_data_new sub_list2.0.id month type as first_1_data %}
             {% if first_1_data.has_hpm_note %}
             {% increment num as num %}
             <tr>
@@ -436,7 +474,7 @@
             </tr>
             {% endif %}
 
-            {% get_hpm_indicator_data_new sub_list2.1.id month as second_1_data %}
+            {% get_hpm_indicator_data_new sub_list2.1.id month type as second_1_data %}
             {% if second_1_data.has_hpm_note %}
             {% increment num as num %}
             <tr>
@@ -461,7 +499,7 @@
               </td>
             </tr>
             {% endif %}
-            {% get_hpm_indicator_data_new sub_list2.2.id month as Third_1_data %}
+            {% get_hpm_indicator_data_new sub_list2.2.id month type as Third_1_data %}
             {% if Third_1_data.has_hpm_note %}
             {% increment num as num %}
             <tr>
@@ -513,7 +551,7 @@
             {% elif db.label == 'Child Protection' %}
 
             {% for i in indicators %}
-            {% get_hpm_indicator_data_new i.id month as item %}
+            {% get_hpm_indicator_data_new i.id month type as item %}
             {% if i.has_hpm_note %}
             <tr>
               <td colspan="1">
@@ -542,7 +580,7 @@
             {% for indicators in value %}
             {% if indicators %}
             {% for i in indicators %}
-            {% get_hpm_indicator_data_new i.id month as item %}
+            {% get_hpm_indicator_data_new i.id month type as item %}
             {% if i.has_hpm_note %}
             <tr>
               <td colspan="1">
@@ -574,7 +612,7 @@
 
             {% else %}
             {% for i in indicators %}
-            {% get_hpm_indicator_data_new i.id month as item %}
+            {% get_hpm_indicator_data_new i.id month type as item %}
             {% if i.has_hpm_note %}
             <tr>
               <td colspan="1">
@@ -653,6 +691,11 @@
 
     function selectmonth(month){
     $("#month_form #monthinput").val(month);
+    $("#month_form").submit();
+    }
+     function select_periodic_month(month){
+    $("#month_form #monthinput").val(month);
+    $("#month_form #typeinput").val('periodic');
     $("#month_form").submit();
     }
 
