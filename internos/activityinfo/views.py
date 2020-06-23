@@ -496,8 +496,8 @@ class TestView(TemplateView):
                                     continue
                                 else:
                                     filtered_list.append(sub_sub_ind)
-            else:
-                filtered_list= master_indicators
+        else:
+            filtered_list= master_indicators
         covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_imported=True).values(
             'id',
             'ai_id',
