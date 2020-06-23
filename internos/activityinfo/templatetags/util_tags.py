@@ -1597,6 +1597,73 @@ def get_sub_indicators_data(ai_id, is_sector=False, ai_db=None):
 
 
 @register.assignment_tag
+def get_sub_indicators_data_new(ai_id,indicators_list):
+
+    # try:
+    indicators = indicators_list.filter(sub_indicators=ai_id)
+    indicators = indicators.values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'explication',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target',
+            'target_sector',
+            'status_color',
+            'status_color_sector',
+            'status',
+            'status_sector',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+            'values_tags',
+            'values_tags_weekly',
+            'cumulative_values_sector',
+            'values_partners_sites_sector',
+            'values_partners_sector',
+            'values_sites_sector',
+            'values_sector',
+            'is_cumulative',
+            'category',
+            'values_sections',
+            'values_sections_partners',
+            'values_sections_gov',
+            'values_sections_partners_gov',
+            'values_weekly',
+            'values_gov_weekly',
+            'values_partners_weekly',
+            'values_partners_gov_weekly',
+            'values_cumulative_weekly',
+            'activity',
+            'values_crisis_live',
+            'values_crisis_gov_live',
+            'values_crisis_partners_live',
+            'values_crisis_partners_gov_live',
+            'values_crisis_cumulative_live',
+            'highest_values',
+            'highest_values_live'
+
+        ).order_by('id').distinct('id')
+    return indicators
+    # except Exception as ex:
+    #     print(ex.message)
+    #     logger.error('get_sub_indicators_data error' + ex.message)
+    #     return indicators
+
+@register.assignment_tag
 def get_sub_master_indicators_data(ai_id, is_sector=False):
     from internos.activityinfo.models import Indicator
     indicators = {}

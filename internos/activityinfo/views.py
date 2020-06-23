@@ -12,7 +12,8 @@ from .models import ActivityReport, LiveActivityReport, Database, Indicator, Par
 from django.shortcuts import render
 from datetime import date
 from django.http import HttpResponseRedirect
-from .templatetags.util_tags import get_sub_indicators_data
+from .templatetags.util_tags import get_sub_indicators_data, get_sub_indicators_data_new, \
+    get_indicator_cumulative_months_sections
 from .utils import get_partners_list, get_governorates_list, get_reporting_sections_list, get_cadastrals_list
 from .utils import calculate_internal_indicators_values, calculate_internal_cumulative_results
 
@@ -378,6 +379,182 @@ class ReportCrisisView(TemplateView):
             'selected_partner_name': selected_partner_name,
             'selected_governorates': selected_governorates,
             'selected_governorate_name': selected_governorate_name,
+            'selected_months': selected_months,
+            'sections': sections,
+            'selected_sections': selected_sections,
+            'selected_type': selected_type,
+            'start_month':start_month
+        }
+
+
+class TestView(TemplateView):
+    template_name = 'activityinfo/test.html'
+
+    def get_context_data(self, **kwargs):
+
+        ai_id = int(self.request.GET.get('ai_id', 0))
+        database = Database.objects.get(ai_id=ai_id)
+        selected_partners = self.request.GET.getlist('partners', [])
+        selected_months = self.request.GET.getlist('months', [])
+        selected_governorates = self.request.GET.getlist('governorates', [])
+        selected_sections = self.request.GET.getlist('sections',[])
+        selected_type = self.request.GET.get('filter_type', '')
+
+        current_month = date.today().month
+        selected_filter = False
+        reporting_year = database.reporting_year.year
+
+        if selected_partners or selected_governorates or selected_months or selected_sections:
+            selected_filter = True
+
+        partners = get_partners_list(database)
+        governorates = get_governorates_list(database)
+        sections = get_reporting_sections_list(database)
+
+        all_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality')\
+            .order_by('sequence')
+
+        master_indicators = all_indicators.filter(Q(master_indicator=True) |Q(sub_indicators__isnull=True,
+                                                                                 individual_indicator=True))\
+            .values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'individual_indicator',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'activity',
+            'tag_focus',
+            'tag_focus__label',
+            'hpm_global_indicator',
+            'category',
+            'values_sections',
+            'values_sections_partners',
+            'values_sections_gov',
+            'values_sections_partners_gov',
+            'values_weekly',
+            'values_gov_weekly',
+            'values_partners_weekly',
+            'values_partners_gov_weekly',
+            'values_cumulative_weekly',
+            'sub_indicators'
+        ).order_by('id').distinct('id')
+
+        if len(selected_type) > 0:
+            master_indicators = master_indicators.filter(tag_focus__label=selected_type)
+
+
+        for item in master_indicators:
+             item['cumulative'] = get_indicator_cumulative_months_sections(item, selected_months,
+                                 selected_partners, selected_governorates ,selected_sections)
+        for master_ind in master_indicators:
+            sub_indicators = get_sub_indicators_data_new(master_ind['id'],all_indicators)
+            master_ind['sub_indicators'] = sub_indicators
+            for ind in sub_indicators:
+                ind['cumulative'] = get_indicator_cumulative_months_sections(ind, selected_months,
+                                     selected_partners, selected_governorates, selected_sections)
+
+                sub_sub_indicators = get_sub_indicators_data_new(ind['id'],all_indicators)
+                ind['sub_indicators'] = sub_sub_indicators
+                for ind in sub_sub_indicators:
+                    ind['cumulative'] = get_indicator_cumulative_months_sections(ind, selected_months,
+                                                                                 selected_partners,
+                                                                                 selected_governorates,
+                                                                                 selected_sections)
+                    indicators = get_sub_indicators_data_new(ind['id'],all_indicators)
+                    ind['sub_indicators'] = indicators
+        filtered_list=[]
+        if selected_filter:
+            for master_ind in master_indicators:
+                if not (master_ind['cumulative'] == '0' or master_ind['cumulative'] == 0):
+                    filtered_list.append(master_ind)
+                    master_ind['sub_list'] =[]
+                    for sub_indicator in master_ind['sub_indicators']:
+                        sub_indicator['sub_list'] = []
+                        if not (sub_indicator['cumulative'] == '0' or sub_indicator['cumulative'] == 0):
+                            master_ind['sub_list'].append(sub_indicator)
+                        for sub_sub_ind in sub_indicator['sub_indicators']:
+                            if sub_sub_ind['cumulative'] == '0' or sub_sub_ind['cumulative'] == 0 :
+                                continue
+                            else:
+                                sub_indicator['sub_list'].append(sub_sub_ind)
+                else:
+                    for sub_indicator in master_ind['sub_indicators']:
+                        if not (sub_indicator['cumulative'] == '0' or sub_indicator['cumulative'] == 0):
+                            filtered_list.append(sub_indicator)
+                            sub_indicator['sub_list']=[]
+                            for sub_sub_ind in sub_indicator['sub_indicators']:
+                                if sub_sub_ind['cumulative'] == '0' or sub_sub_ind['cumulative'] == 0 :
+                                    continue
+                                else:
+                                    sub_indicator['sub_list'].append(sub_sub_ind)
+                        else:
+                            for sub_sub_ind in sub_indicator['sub_indicators']:
+                                if sub_sub_ind['cumulative'] == '0' or sub_sub_ind['cumulative'] == 0:
+                                    continue
+                                else:
+                                    filtered_list.append(sub_sub_ind)
+
+        covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_imported=True).values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'master_indicator_sub_sub',
+            'individual_indicator',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'target',
+            'status_color',
+            'status',
+            'cumulative_values',
+            'values_partners_gov',
+            'values_partners',
+            'values_gov',
+            'values',
+            'values_live',
+            'values_gov_live',
+            'values_partners_live',
+            'values_partners_gov_live',
+            'cumulative_values_live',
+            'is_cumulative',
+            'activity',
+            'tag_focus',
+            'tag_focus__label',
+            'hpm_global_indicator',
+        ).distinct()
+
+        start_month = 4   # used to get cumulative values starting this month for covid reporting
+
+        months = []
+        if selected_months is not None and len(selected_months) > 0:
+            for mon in selected_months:
+                months.append((mon, calendar.month_abbr[int(mon)]))
+        else:
+            for i in range(1, current_month+1):
+                months.append((i, calendar.month_abbr[i]))
+
+        sliced_months = months[3:]
+
+        return {
+            # 'reports': report.order_by('id'),
+            'database': database,
+            'reporting_year': str(reporting_year),
+            'current_month_name':  datetime.datetime.now().strftime("%B"),
+            'months': months,
+            'sliced_months': sliced_months,
+            'partners': partners,
+            'governorates': governorates,
+            'indicators': filtered_list,
+            'covid_indicators': covid_indicators,
+            'selected_filter': selected_filter,
+            'selected_partners': selected_partners,
+            'selected_governorates': selected_governorates,
             'selected_months': selected_months,
             'sections': sections,
             'selected_sections': selected_sections,

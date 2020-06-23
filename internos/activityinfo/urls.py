@@ -141,5 +141,9 @@ urlpatterns = [
         view=views.load_partners,
         name='ajax_load_partners'
     ),
-
+    url(
+        regex=r'^test/$',
+        view=views.TestView.as_view(),
+        name='test'
+    ),
 ]
