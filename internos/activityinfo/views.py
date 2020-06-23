@@ -446,7 +446,6 @@ class TestView(TemplateView):
         if len(selected_type) > 0:
             master_indicators = master_indicators.filter(tag_focus__label=selected_type)
 
-
         for item in master_indicators:
              item['cumulative'] = get_indicator_cumulative_months_sections(item, selected_months,
                                  selected_partners, selected_governorates ,selected_sections)
@@ -497,7 +496,8 @@ class TestView(TemplateView):
                                     continue
                                 else:
                                     filtered_list.append(sub_sub_ind)
-
+            else:
+                filtered_list= master_indicators
         covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_imported=True).values(
             'id',
             'ai_id',
