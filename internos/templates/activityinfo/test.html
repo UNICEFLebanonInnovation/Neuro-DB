@@ -193,7 +193,6 @@
                   </thead>
                   <tbody>
                     {% for item in indicators %}
-                    {% to_display_indicator selected_filter cumulative_value as display_indicator %}
                       <tr itemid="{{ item.id }}"
                                 {% if item.master_indicator %}class="level1 master_indicator"
                                 {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
@@ -219,7 +218,7 @@
                               </td>
                               {% endfor %}
                             </tr>
-                      {% for item1 in item.sub_list %}
+                      {% for item1 in item.sub_list_filtered %}
                       <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
                                 {% if item1.master_indicator %}style="background-color:rgba(252, 255, 174, 0.38); border-bottom:2px solid #fff"
                                 {% elif item1.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"
@@ -260,7 +259,7 @@
                               </td>
                               {% endfor %}
                             </tr>
-                      {% for item2 in item1.sub_list %}
+                      {% for item2 in item1.sub_list_filtered %}
                       {% if item2.master_indicator == 0   %}
                         <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
                       {% if item2.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"{% endif %}
@@ -286,7 +285,7 @@
                   </tr>
                     {% endif %}
                    {% if item2.master_indicator == 0  %}
-                     {% for item3 in item2.sub_list %}
+                     {% for item3 in item2.sub_list_filtered %}
                     {% if item3.master_indicator == 0 and item3.master_indicator_sub == 0 %}
                   <tr class="level4 level4-{{ item.id }} level4-{{ item.id }}-{{ item1.id }}-{{ item2.id }}"
                         {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}

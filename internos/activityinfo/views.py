@@ -414,6 +414,10 @@ class TestView(TemplateView):
         all_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality')\
             .order_by('sequence')
 
+        imported_indicators =Indicator.objects.filter(activity__database__support_covid=True).exclude(type='quality')
+
+        mixed_indicators = all_indicators | imported_indicators
+
         master_indicators = all_indicators.filter(Q(master_indicator=True) |Q(sub_indicators__isnull=True,
                                                                                  individual_indicator=True))\
             .values(
@@ -450,55 +454,58 @@ class TestView(TemplateView):
              item['cumulative'] = get_indicator_cumulative_months_sections(item, selected_months,
                                  selected_partners, selected_governorates ,selected_sections)
         for master_ind in master_indicators:
-            sub_indicators = get_sub_indicators_data_new(master_ind['id'],all_indicators)
-            master_ind['sub_indicators'] = sub_indicators
+            sub_indicators = get_sub_indicators_data_new(master_ind['id'],mixed_indicators)
+            master_ind['sub_list'] = sub_indicators
+            master_ind['sub_list_filtered'] = sub_indicators
             for ind in sub_indicators:
                 ind['cumulative'] = get_indicator_cumulative_months_sections(ind, selected_months,
                                      selected_partners, selected_governorates, selected_sections)
-
-                sub_sub_indicators = get_sub_indicators_data_new(ind['id'],all_indicators)
-                ind['sub_indicators'] = sub_sub_indicators
+                sub_sub_indicators = get_sub_indicators_data_new(ind['id'],mixed_indicators)
+                ind['sub_list'] = sub_sub_indicators
+                ind['sub_list_filtered'] = sub_sub_indicators
                 for ind in sub_sub_indicators:
                     ind['cumulative'] = get_indicator_cumulative_months_sections(ind, selected_months,
                                                                                  selected_partners,
                                                                                  selected_governorates,
                                                                                  selected_sections)
-                    indicators = get_sub_indicators_data_new(ind['id'],all_indicators)
-                    ind['sub_indicators'] = indicators
+                    indicators = get_sub_indicators_data_new(ind['id'],mixed_indicators)
+                    ind['sub_list'] = indicators
+                    ind['sub_list_filtered'] = indicators
         filtered_list=[]
         if selected_filter:
             for master_ind in master_indicators:
                 if not (master_ind['cumulative'] == '0' or master_ind['cumulative'] == 0):
                     filtered_list.append(master_ind)
-                    master_ind['sub_list'] =[]
-                    for sub_indicator in master_ind['sub_indicators']:
-                        sub_indicator['sub_list'] = []
+                    master_ind['sub_list_filtered'] =[]
+                    for sub_indicator in master_ind['sub_list']:
+                        sub_indicator['sub_list_filtered'] = []
                         if not (sub_indicator['cumulative'] == '0' or sub_indicator['cumulative'] == 0):
-                            master_ind['sub_list'].append(sub_indicator)
-                        for sub_sub_ind in sub_indicator['sub_indicators']:
+                            master_ind['sub_list_filtered'].append(sub_indicator)
+                        for sub_sub_ind in sub_indicator['sub_list']:
                             if sub_sub_ind['cumulative'] == '0' or sub_sub_ind['cumulative'] == 0 :
                                 continue
                             else:
-                                sub_indicator['sub_list'].append(sub_sub_ind)
+                                sub_indicator['sub_list_filtered'].append(sub_sub_ind)
                 else:
-                    for sub_indicator in master_ind['sub_indicators']:
+                    for sub_indicator in master_ind['sub_list']:
                         if not (sub_indicator['cumulative'] == '0' or sub_indicator['cumulative'] == 0):
                             filtered_list.append(sub_indicator)
-                            sub_indicator['sub_list']=[]
-                            for sub_sub_ind in sub_indicator['sub_indicators']:
+                            sub_indicator['sub_list_filtered']=[]
+                            for sub_sub_ind in sub_indicator['sub_list']:
                                 if sub_sub_ind['cumulative'] == '0' or sub_sub_ind['cumulative'] == 0 :
                                     continue
                                 else:
-                                    sub_indicator['sub_list'].append(sub_sub_ind)
+                                    sub_indicator['sub_list_filtered'].append(sub_sub_ind)
                         else:
-                            for sub_sub_ind in sub_indicator['sub_indicators']:
+                            for sub_sub_ind in sub_indicator['sub_list']:
                                 if sub_sub_ind['cumulative'] == '0' or sub_sub_ind['cumulative'] == 0:
                                     continue
                                 else:
                                     filtered_list.append(sub_sub_ind)
         else:
             filtered_list= master_indicators
-        covid_indicators = Indicator.objects.filter(support_COVID=True).exclude(is_imported=True).values(
+
+        covid_indicators = imported_indicators.filter(support_COVID=True).exclude(is_imported=True).values(
             'id',
             'ai_id',
             'name',
