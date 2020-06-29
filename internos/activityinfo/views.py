@@ -13,7 +13,7 @@ from django.shortcuts import render
 from datetime import date
 from django.http import HttpResponseRedirect
 from .templatetags.util_tags import get_sub_indicators_data, get_sub_indicators_data_new, \
-    get_indicator_cumulative_months_sections
+    get_indicator_cumulative_months_sections, get_indicator_cumulative_months
 from .utils import get_partners_list, get_governorates_list, get_reporting_sections_list, get_cadastrals_list
 from .utils import calculate_internal_indicators_values, calculate_internal_cumulative_results
 
@@ -415,7 +415,6 @@ class TestView(TemplateView):
             .order_by('sequence')
 
         imported_indicators =Indicator.objects.filter(activity__database__support_covid=True).exclude(type='quality')
-
         mixed_indicators = all_indicators | imported_indicators
 
         master_indicators = all_indicators.filter(Q(master_indicator=True) |Q(sub_indicators__isnull=True,
@@ -450,27 +449,70 @@ class TestView(TemplateView):
         if len(selected_type) > 0:
             master_indicators = master_indicators.filter(tag_focus__label=selected_type)
 
-        for item in master_indicators:
-             item['cumulative'] = get_indicator_cumulative_months_sections(item, selected_months,
-                                 selected_partners, selected_governorates ,selected_sections)
         for master_ind in master_indicators:
+            master_ind['cumulative'] = get_indicator_cumulative_months_sections(master_ind, selected_months,
+                                                                          selected_partners, selected_governorates,
+                                                                          selected_sections)
             sub_indicators = get_sub_indicators_data_new(master_ind['id'],mixed_indicators)
             master_ind['sub_list'] = sub_indicators
             master_ind['sub_list_filtered'] = sub_indicators
             for ind in sub_indicators:
-                ind['cumulative'] = get_indicator_cumulative_months_sections(ind, selected_months,
-                                     selected_partners, selected_governorates, selected_sections)
-                sub_sub_indicators = get_sub_indicators_data_new(ind['id'],mixed_indicators)
-                ind['sub_list'] = sub_sub_indicators
-                ind['sub_list_filtered'] = sub_sub_indicators
-                for ind in sub_sub_indicators:
+                ind['cumulative'] = 0
+                if ind['master_indicator'] and not ind['is_imported']:
+                    continue
+                if ind['is_imported']:
+                    if len(selected_sections) > 0:
+                        for section in selected_sections:
+                            if '/' in section:
+                                var1 = section.split('/')[0]
+                                var2 = section.split('/')[1]
+                                if var1 in ind['activity__database__label'] or var2 in ind[
+                                    'activity__database__label']:
+                                    ind['cumulative'] = get_indicator_cumulative_months_sections(ind, selected_months,
+                                                                                             selected_partners,
+                                                                                             selected_governorates)
+                            else:
+                                if ind['activity__database__label'] == section:
+                                    ind['cumulative'] = get_indicator_cumulative_months_sections(ind, selected_months,
+                                         selected_partners, selected_governorates)
+                else:
                     ind['cumulative'] = get_indicator_cumulative_months_sections(ind, selected_months,
                                                                                  selected_partners,
                                                                                  selected_governorates,
                                                                                  selected_sections)
-                    indicators = get_sub_indicators_data_new(ind['id'],mixed_indicators)
-                    ind['sub_list'] = indicators
-                    ind['sub_list_filtered'] = indicators
+                sub_sub_indicators = get_sub_indicators_data_new(ind['id'],mixed_indicators)
+                ind['sub_list'] = sub_sub_indicators
+                ind['sub_list_filtered'] = sub_sub_indicators
+                for ind_sub in sub_sub_indicators:
+                    ind_sub['cumulative'] = 0
+                    if ind_sub['master_indicator']:
+                        continue
+                    if ind['is_imported']:
+                        if len(selected_sections) > 0:
+                            for section in selected_sections:
+                                if '/' in section:
+                                    var1 = section.split('/')[0]
+                                    var2 = section.split('/')[1]
+                                    if var1 in ind_sub['activity__database__label']  or var2 in ind_sub[
+                                        'activity__database__label']:
+                                        ind_sub['cumulative'] = get_indicator_cumulative_months_sections(ind_sub,
+                                                                                                     selected_months,
+                                                                                                     selected_partners,
+                                                                                                     selected_governorates)
+                                else:
+                                    if ind_sub['activity__database__label'] == section:
+                                        ind_sub['cumulative'] = get_indicator_cumulative_months_sections(ind_sub,
+                                                                                                     selected_months,
+                                                                                                     selected_partners,
+                                                                                                     selected_governorates)
+                    else:
+                        ind_sub['cumulative'] = get_indicator_cumulative_months_sections(ind_sub, selected_months,
+                                                                                     selected_partners,
+                                                                                     selected_governorates,
+                                                                                     selected_sections)
+                    indicators = get_sub_indicators_data_new(ind_sub['id'],mixed_indicators)
+                    ind_sub['sub_list'] = indicators
+                    ind_sub['sub_list_filtered'] = indicators
         filtered_list=[]
         if selected_filter:
             for master_ind in master_indicators:
@@ -503,9 +545,9 @@ class TestView(TemplateView):
                                 else:
                                     filtered_list.append(sub_sub_ind)
         else:
-            filtered_list= master_indicators
+            filtered_list = master_indicators
 
-        covid_indicators = imported_indicators.filter(support_COVID=True).exclude(is_imported=True).values(
+        covid_indicators = imported_indicators.filter(support_COVID=True).filter(master_indicator=True).exclude(is_imported=True).values(
             'id',
             'ai_id',
             'name',
@@ -516,27 +558,57 @@ class TestView(TemplateView):
             'awp_code',
             'measurement_type',
             'units',
-            'target',
-            'status_color',
-            'status',
+            'category',
             'cumulative_values',
             'values_partners_gov',
             'values_partners',
             'values_gov',
             'values',
-            'values_live',
-            'values_gov_live',
-            'values_partners_live',
-            'values_partners_gov_live',
-            'cumulative_values_live',
-            'is_cumulative',
             'activity',
-            'tag_focus',
-            'tag_focus__label',
-            'hpm_global_indicator',
+
         ).distinct()
 
-        start_month = 4   # used to get cumulative values starting this month for covid reporting
+        start_month = 4  # used to get cumulative values starting this month for covid reporting
+        filtered_covid_indicators =[]
+        if len(selected_sections) > 0:
+            for section in selected_sections:
+                if '/' in section:
+                    section = section.split('/')
+                    filtered =list(covid_indicators.filter(Q(activity__database__label__contains=section[0]) | Q(activity__database__label__contains=section[1])))
+                    for item in filtered:
+                        filtered_covid_indicators.append(item)
+                else:
+                    filtered= list(covid_indicators.filter(activity__database__label__contains=section))
+                    for item in filtered:
+                        filtered_covid_indicators.append(item)
+        else:
+            filtered_covid_indicators = covid_indicators
+
+        for master_ind in filtered_covid_indicators:
+            master_ind['cumulative'] = get_indicator_cumulative_months(master_ind, selected_months,
+                                                                            selected_partners,
+                                                                            selected_governorates,
+                                                                            start_month)
+            sub_indicators = get_sub_indicators_data_new(master_ind['id'], imported_indicators)
+            master_ind['sub_list'] = sub_indicators
+            master_ind['sub_list_filtered'] = sub_indicators
+            for ind in sub_indicators:
+                ind['cumulative'] = get_indicator_cumulative_months(ind, selected_months,
+                                                                             selected_partners,
+                                                                            selected_governorates,
+                                                                            start_month
+                                                                             )
+                sub_sub_indicators = get_sub_indicators_data_new(ind['id'], imported_indicators)
+                ind['sub_list'] = sub_sub_indicators
+                ind['sub_list_filtered'] = sub_sub_indicators
+                for sub_ind in sub_sub_indicators:
+                    sub_ind['cumulative'] = get_indicator_cumulative_months(ind, selected_months,
+                                                                                 selected_partners,
+                                                                                 selected_governorates,
+                                                                                 start_month)
+                    indicators = get_sub_indicators_data_new(ind['id'],imported_indicators)
+                    sub_ind['sub_list'] = indicators
+                    sub_ind['sub_list_filtered'] = indicators
 
         months = []
         if selected_months is not None and len(selected_months) > 0:
@@ -559,7 +631,7 @@ class TestView(TemplateView):
             'governorates': governorates,
             'indicators': filtered_list,
             'covid_indicators': covid_indicators,
-            'selected_filter': selected_filter,
+            'selected_filter': filtered_covid_indicators,
             'selected_partners': selected_partners,
             'selected_governorates': selected_governorates,
             'selected_months': selected_months,
