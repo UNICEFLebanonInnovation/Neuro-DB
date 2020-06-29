@@ -247,6 +247,13 @@ font-weight: bold;
 font-size: 13px;
 border-bottom:2px solid #fff;
 }
+table tbody tr.imported_indicator{
+background-color:rgba(252, 255, 174, 0.38) !important;
+border-bottom:2px solid #fff ;
+font-weight: bold;
+font-size: 13px;
+border-bottom:2px solid #fff;
+}
 table tbody tr.individual_indicator{
 background-color:#dadada !important;
 font-weight: bold;
