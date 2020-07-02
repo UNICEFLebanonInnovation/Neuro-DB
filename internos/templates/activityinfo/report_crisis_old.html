@@ -10,17 +10,11 @@
 
 {% endblock filter %}
 {% block content %}
-<style>
-  .level2.collapsed ,.level3.collapsed , .level4.collapsed{
-  display:none;
-  }
-
-</style>
 
 <div class="app-main__inner">
   <div class="app-page-title">
 
-    <form action="{% url 'activityinfo:test' %}" method="get" id="filterForm"
+    <form action="{% url 'activityinfo:report_crisis' %}" method="get" id="filterForm"
           data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"
           data-sections-url="{% url 'activityinfo:ajax_load_sections' %}"
           data-govs-url="{% url 'activityinfo:ajax_load_govs' %}"
@@ -198,19 +192,15 @@
                   </tr>
                   </thead>
                   <tbody>
-                    {% for item in indicators %}
+                  {% for item in indicators %}
+
+                    {% get_indicator_cumulative_months_sections item selected_months selected_partners selected_governorates selected_sections as cumulative_value %}
+                    {% to_display_indicator selected_filter cumulative_value as display_indicator %}
+                    {% if display_indicator  %}
                       <tr itemid="{{ item.id }}"
-                                {% if item.master_indicator and item.is_imported %}class="level1 imported_indicator collapsed"
-                                {% elif item.individual_indicator %}class="level1 individual_indicator collapsed"
-                                {% elif item.master_indicator %}class="level1 master_indicator collapsed"
-                                {% endif %}>
+                                {% if item.master_indicator %}class="level1 master_indicator"
+                                {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
                               <td class="w-150">{{ item.name }}
-                                {% if item.is_imported %}
-                                 {% get_database_by_activity item.activity as db_name %}
-                                 <a  data-toggle="tooltip" data-placement="right" title="{{db_name.label}}" style="cursor:pointer">
-                                 <img alt="" src="{% static db_name.section.logo %}"  style="height: 30px; width: 30px; display: inline-block;" />
-                                 </a>
-                                {% endif %}
                                 {% if item.hpm_global_indicator %}
                                 <a data-toggle="tooltip" data-placement="right" title="HPM" style="cursor:pointer">
                                   <i class="pe-7s-global text-primary"> </i>
@@ -224,26 +214,25 @@
                               <td class="w-5">
                                 {{ item.units }}
                               </td>
-                              <td class="w-5">{{ item.cumulative }}</td>
+                              <td class="w-5">{{ cumulative_value }}</td>
+
                               {% for month, month_name in months %}
                               <td class="w-5">
-                                {% if item.is_imported %}
-                                {% get_indicator_value_section item month selected_partners selected_governorates  as value %}
-                                {% else %}
-                                 {% get_indicator_value_section item month selected_partners selected_governorates selected_sections as value %}
-                                {% endif %}
+                                {% get_indicator_value_section item month selected_partners selected_governorates selected_sections as value %}
                                 {{ value }}
                               </td>
                               {% endfor %}
                             </tr>
-                      {% for item1 in item.sub_list_filtered %}
-                      <tr class="level2 level2-{{ item.id }} collapsed" itemid="{{ item.id }}-{{ item1.id }}"
-                                {% if item1.is_imported %}style="background-color:rgba(252, 255, 174, 0.38); border-bottom:2px solid #fff"
+                      {% get_sub_indicators_data item.id as sub_indicators %}
+                      {% for item1 in sub_indicators %}
+
+                      <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
+                                {% if item1.master_indicator %}style="background-color:rgba(252, 255, 174, 0.38); border-bottom:2px solid #fff"
                                 {% elif item1.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"
                                 {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
                               <td class="w-150">
                                 {{ item1.name }}
-                                 {% if item1.is_imported %}
+                                 {% if item1.master_indicator %}
                                  {% get_database_by_activity item1.activity as db_name %}
                                  <a  data-toggle="tooltip" data-placement="right" title="{{db_name.label}}" style="cursor:pointer">
                                  <img alt="" src="{% static db_name.section.logo %}"  style="height: 30px; width: 30px; display: inline-block;" />
@@ -268,22 +257,20 @@
 
                               </td>
                               <td class="w-5">
-                                 {{ item1.cumulative }}
+                                {% get_indicator_cumulative_months_sections item1 selected_months selected_partners selected_governorates selected_sections as cumulative_value1 %}
+                                {{ cumulative_value1 }}
                               </td>
                               {% for month, month_name in months %}
                               <td class="w-5">
-                               {% if item.is_imported %}
-                                {% get_indicator_value_section item1 month selected_partners selected_governorates  as value %}
-                                {% else %}
-                                 {% get_indicator_value_section item1 month selected_partners selected_governorates selected_sections as value %}
-                                {% endif %}
+                                {% get_indicator_value_section item1 month selected_partners selected_governorates selected_sections as value %}
                                 {{ value }}
                               </td>
                               {% endfor %}
                             </tr>
-                      {% for item2 in item1.sub_list_filtered %}
-                      {% if item2.master_indicator == 0   %}
-                        <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }} collapsed"
+                        {% get_sub_indicators_data item1.id as sub_indicators1 %}
+                        {% for item2 in sub_indicators1 %}
+                          {% if item2.master_indicator == 0   %}
+                        <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
                       {% if item2.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"{% endif %}
                       {% if item2.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                       itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
@@ -291,29 +278,28 @@
                     <td class="w-5"></td>
                     <td class="w-5"></td>
                     <td class="w-5">
+
                      {% if item2.master_indicator_sub %}
                       {{ item2.units }}
                       {% endif %}
                     </td>
                     <td class="w-5">
-                        {{ item2.cumulative }}
+                      {% get_indicator_cumulative_months_sections item2 selected_months selected_partners selected_governorates selected_sections as cumulative_value2 %}
+                      {{ cumulative_value2 }}
                     </td>
                     {% for month, month_name in months %}
                     <td class="w-5">
-                      {% if item.is_imported %}
-                      {% get_indicator_value_section item2 month selected_partners selected_governorates  as value %}
-                      {% else %}
                       {% get_indicator_value_section item2 month selected_partners selected_governorates selected_sections as value %}
-                      {% endif %}
                       {{ value }}
                     </td>
                     {% endfor %}
                   </tr>
-                    {% endif %}
-                   {% if item2.master_indicator == 0  %}
-                     {% for item3 in item2.sub_list_filtered %}
+                     {% endif %}
+                  {% if item2.master_indicator == 0  %}
+                  {% get_sub_indicators_data item2.id as sub_indicators2 %}
+                     {% for item3 in sub_indicators2 %}
                     {% if item3.master_indicator == 0 and item3.master_indicator_sub == 0 %}
-                  <tr class="level4 level4-{{ item.id }} level4-{{ item.id }}-{{ item1.id }}-{{ item2.id }} collapsed"
+                  <tr class="level4 level4-{{ item.id }} level4-{{ item.id }}-{{ item1.id }}-{{ item2.id }}"
                         {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                         itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}-{{ item3.id }}">
                       <td class="w-150">{{ item3.name}}</td>
@@ -322,7 +308,8 @@
                       <td class="w-5">
                       </td>
                       <td class="w-5">
-                          {{ item3.cumulative }}
+                        {% get_indicator_cumulative_months_sections item3 selected_months selected_partners selected_governorates selected_sections as cumulative_value3 %}
+                        {{ cumulative_value3 }}
                       </td>
                       {% for month, month_name in months %}
                       <td class="w-5">
@@ -334,14 +321,17 @@
                   {% endif %}
                   {% endfor %}
                   {% endif %}
-
+                  {% endfor %}
                    {% endfor %}
-                   {% endfor %}
+                  {% endif %}
               {% endfor %}
               {% for item in covid_indicators %}
+              {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates start_month as cumulative_value %}
+              {% to_display_indicator selected_filter cumulative_value as display_indicator %}
               {% get_database_by_activity item.activity as db_name %}
+              {% if display_indicator %}
               <tr itemid="{{ item.id }}"
-                  {% if item.master_indicator %}class="level1 master_indicator collapsed"
+                  {% if item.master_indicator %}class="level1 master_indicator"
                   {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
                 <td class="w-150">{{ item.name }}
                   <a  data-toggle="tooltip" data-placement="right" title="{{db_name.label}}" style="cursor:pointer">
@@ -353,11 +343,12 @@
                   </a>
                   {% endif %}
                 </td>
-               <td class="w-5">{{ item.category}}</td>
+                <td class="w-5"></td>
                 <td class="w-5">
                   </td>
                 <td class="w-5">{{ item.units }}</td>
-                <td class="w-5">{{ item.cumulative }}</td>
+                <td class="w-5">{{ cumulative_value }}</td>
+
                 <td class="w-5">0</td>
                 <td class="w-5">0</td>
                 <td class="w-5">0</td>
@@ -368,15 +359,15 @@
                 </td>
                 {% endfor %}
               </tr>
-
-              {% for item1 in item.sub_list_filtered %}
-              <tr class="level2 level2-{{ item.id }} collapsed" itemid="{{ item.id }}-{{ item1.id }}"
+              {% get_sub_indicators_data item.id as sub_indicators %}
+              {% for item1 in sub_indicators %}
+              <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
                   {% if item1.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"
                   {% elif item.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff" {% endif %}>
                  <td class="w-150">
                   {{ item1.name }}
                 </td>
-                 <td class="w-5">{{ item1.category}}</td>
+                <td class="w-5"></td>
                 <td class="w-5"></td>
                  <td class="w-5">
                     {% if item1.master_indicator_sub %}
@@ -384,7 +375,8 @@
                    {% endif %}
                  </td>
                 <td class="w-5">
-                  {{ item1.cumulative }}
+                    {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates start_month as cumulative_value %}
+                  {{ cumulative_value }}
                 </td>
 
                 <td class="w-5">0</td>
@@ -398,9 +390,10 @@
                 {% endfor %}
               </tr>
                {% endfor %}
-              {% for item2 in item1.sub_list_filtered %}
+              {% get_sub_indicators_data item1.id as sub_indicators1 %}
+              {% for item2 in sub_indicators1 %}
                 {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
-                <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }} collapsed"
+                <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
                     {% if item.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                     itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                   <td class="w-150">{{ item2.name }}</td>
@@ -421,7 +414,9 @@
                 </tr>
                 {% endif %}
               {% endfor %}
+              {% endif %}
               {% endfor %}
+
                   </tbody>
                 </table>
               </div>
@@ -562,6 +557,18 @@
   });
 
 
+
+});
+
+  $('.level1').addClass('collapsed');
+  $('.level2').addClass('collapsed');
+  $('.level3').addClass('collapsed');
+  $('.level4').addClass('collapsed');
+
+  $('.level2').hide();
+  $('.level3').hide();
+  $('.level4').hide();
+
   $('.expanded-all').click(function () {
     $('.expanded-all').addClass('active');
     $('.collapse-all').removeClass('active');
@@ -612,7 +619,6 @@
   });
 
   $('.level2').dblclick(function () {
-
     var itemid = $(this).attr('itemid');
     var sub_items = 'tr.level3-' + itemid;
     var sub_sub_sub_items = 'tr.level4-' + itemid;
@@ -640,7 +646,6 @@
 
       $(this).addClass('collapsed');
     }
-    });
   });
 function download_csv(csv, filename) {
     var csvFile;
