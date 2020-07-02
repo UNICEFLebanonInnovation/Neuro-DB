@@ -560,6 +560,7 @@ def get_indicator_cumulative_months_sections(indicator, month=None, partner=None
         logger.error('get_indicator_cumulative_months_sections ' + ex.message)
         return get_indicator_unit(indicator, 0)
 
+
 @register.assignment_tag
 def get_indicator_partner_cumulative(indicator, partner=None, gov=None,section=None,report_type=None):
  try:
@@ -792,6 +793,7 @@ def get_indicator_live_cumulative(indicator, month=None, partner=None, gov=None,
     except Exception as ex:
         logger.error('get_indicator_live_cumulative error'  + ex.message)
         return get_indicator_unit(indicator, 0)
+
 
 @register.assignment_tag
 def get_indicator_live_cumulative_section(indicator, month=None, partner=None, gov=None,section=None):
@@ -1599,43 +1601,135 @@ def get_sub_indicators_data(ai_id, is_sector=False, ai_db=None):
 @register.assignment_tag
 def get_sub_indicators_data_new(ai_id,indicators_list):
 
-    # try:
-    indicators = indicators_list.filter(sub_indicators=ai_id)
-    indicators = indicators.values(
-            'id',
-            'ai_id',
-            'name',
-            'master_indicator',
-            'master_indicator_sub',
-            'individual_indicator',
-            'awp_code',
-            'measurement_type',
-            'units',
-            'is_cumulative',
-            'category',
-            'values_sections',
-            'values_sections_partners',
-            'values_sections_gov',
-            'values_sections_partners_gov',
-            'values_weekly',
-            'values_gov_weekly',
-            'values_partners_weekly',
-            'values_partners_gov_weekly',
-            'values_cumulative_weekly',
-            'activity',
-            'activity__database__label',
-            'cumulative_values',
-            'values_partners_gov',
-            'values_partners',
-            'values_gov',
-            'values',
-            'is_imported'
-        ).order_by('id').distinct('id')
-    return indicators
-    # except Exception as ex:
-    #     print(ex.message)
-    #     logger.error('get_sub_indicators_data error' + ex.message)
-    #     return indicators
+    try:
+        indicators = indicators_list.filter(sub_indicators=ai_id)
+        indicators = indicators.values(
+                'id',
+                'ai_id',
+                'name',
+                'master_indicator',
+                'master_indicator_sub',
+                'individual_indicator',
+                'awp_code',
+                'measurement_type',
+                'units',
+                'is_cumulative',
+                'category',
+                'activity',
+                'activity__database__label',
+                'cumulative_values',
+                'values_partners_gov',
+                'values_partners',
+                'values_gov',
+                'values',
+                'is_imported'
+            ).order_by('id').distinct('id')
+        return indicators
+    except Exception as ex:
+        print(ex.message)
+        logger.error('get_sub_indicators_data error' + ex.message)
+        return indicators
+
+
+@register.assignment_tag
+def get_sub_indicators_crisis_data(ai_id,indicators_list):
+
+    try:
+        indicators = indicators_list.filter(sub_indicators=ai_id)
+        indicators = indicators.values(
+                'id',
+                'ai_id',
+                'name',
+                'master_indicator',
+                'master_indicator_sub',
+                'individual_indicator',
+                'awp_code',
+                'measurement_type',
+                'units',
+                'is_cumulative',
+                'category',
+                'values_sections',
+                'values_sections_partners',
+                'values_sections_gov',
+                'values_sections_partners_gov',
+                'values_weekly',
+                'values_gov_weekly',
+                'values_partners_weekly',
+                'values_partners_gov_weekly',
+                'values_cumulative_weekly',
+                'activity',
+                'activity__database__label',
+                'is_imported'
+            ).order_by('id').distinct('id')
+        return indicators
+    except Exception as ex:
+        print(ex.message)
+        logger.error('get_sub_indicators_data error' + ex.message)
+        return indicators
+
+
+@register.assignment_tag
+def get_sub_indicators_live_data(ai_id,indicators_list):
+    try:
+        indicators = indicators_list.filter(sub_indicators=ai_id)
+        indicators = indicators.values(
+                'id',
+                'ai_id',
+                'name',
+                'master_indicator',
+                'master_indicator_sub',
+                'individual_indicator',
+                'awp_code',
+                'measurement_type',
+                'units',
+                'is_cumulative',
+                'category',
+                'activity',
+                'activity__database__label',
+                'is_imported',
+                'values_live',
+                'values_gov_live',
+                'values_partners_live',
+                'values_partners_gov_live',
+                'cumulative_values_live'
+            ).order_by('id').distinct('id')
+        return indicators
+    except Exception as ex:
+        print(ex.message)
+        logger.error('get_sub_indicators_data error' + ex.message)
+        return indicators
+
+
+@register.assignment_tag
+def get_sub_indicators_live_crisis_data(ai_id,indicators_list):
+    try:
+        indicators = indicators_list.filter(sub_indicators=ai_id)
+        indicators = indicators.values(
+                'id',
+                'ai_id',
+                'name',
+                'master_indicator',
+                'master_indicator_sub',
+                'individual_indicator',
+                'awp_code',
+                'measurement_type',
+                'units',
+                'is_cumulative',
+                'category',
+                'activity',
+                'activity__database__label',
+                'is_imported',
+                'values_crisis_live',
+                'values_crisis_gov_live',
+                'values_crisis_partners_live',
+                'values_crisis_partners_gov_live',
+                'values_crisis_cumulative_live',
+            ).order_by('id').distinct('id')
+        return indicators
+    except Exception as ex:
+        print(ex.message)
+        logger.error('get_sub_indicators_data error' + ex.message)
+        return indicators
 
 @register.assignment_tag
 def get_sub_master_indicators_data(ai_id, is_sector=False):
@@ -2333,95 +2427,96 @@ def get_indicator_highest_value(indicator,months=None,partners=None,govs=None):
 @register.assignment_tag
 def get_indicator_highest_value_live(indicator,partners=None,govs=None,months=None):
     value = 0
-    # try:
-    if indicator:
-        highest_values = indicator['highest_values_live']
+    try:
+        if indicator:
+            highest_values = indicator['highest_values_live']
 
-        if partners and govs and months:
-            values = indicator['values_partners_govs_live']
-            key = '{}-{}-{}'.format(months[0], govs[0], partners[0])
-            if key in values:
-                max_value = values[key]
-            for partner in partners:
+            if partners and govs and months:
+                values = indicator['values_partners_govs_live']
+                key = '{}-{}-{}'.format(months[0], govs[0], partners[0])
+                if key in values:
+                    max_value = values[key]
+                for partner in partners:
+                    for gov in govs:
+                        for month in months:
+                            key = '{}-{}-{}'.format(month,gov, partner)
+                            if key in values:
+                                if values[key] > max_value:
+                                    max_value = values[key]
+                return get_indicator_unit(indicator, max_value)
+            if partners and govs:
+                highest_values = highest_values['partners_govs_live']
+                key = '{}-{}'.format(govs[0], partners[0])
+                if key in highest_values:
+                    max_value = highest_values[key]
+                for partner in partners:
+                    for gov in govs:
+                        key = '{}-{}'.format(gov, partner)
+                        if key in highest_values:
+                            if highest_values[key] > max_value:
+                                max_value = highest_values[key]
+                return get_indicator_unit(indicator, max_value)
+            if govs and months:
+                values = indicator['values_govs_live']
+                key = '{}-{}'.format(months[0], govs[0])
+                if key in values:
+                    max_value = values[key]
                 for gov in govs:
                     for month in months:
-                        key = '{}-{}-{}'.format(month,gov, partner)
+                        key = '{}-{}'.format(month,gov)
                         if key in values:
                             if values[key] > max_value:
                                 max_value = values[key]
-            return get_indicator_unit(indicator, max_value)
-        if partners and govs:
-            highest_values = highest_values['partners_govs_live']
-            key = '{}-{}'.format(govs[0], partners[0])
-            if key in highest_values:
-                max_value = highest_values[key]
-            for partner in partners:
+                    return get_indicator_unit(indicator, max_value)
+
+            if partners and months:
+                values = indicator['values_partners_live']
+                key = '{}-{}'.format(months[0], partners[0])
+                if key in values:
+                    max_value = values[key]
+                for partner in partners:
+                    for month in months:
+                        key = '{}-{}'.format(month,partner)
+                        if key in values:
+                            if values[key] > max_value:
+                                max_value = values[key]
+                return get_indicator_unit(indicator, max_value)
+            if govs:
+                highest_values = highest_values['govs']
+                max_value = highest_values[0]
                 for gov in govs:
-                    key = '{}-{}'.format(gov, partner)
-                    if key in highest_values:
-                        if highest_values[key] > max_value:
-                            max_value = highest_values[key]
-            return get_indicator_unit(indicator, max_value)
-        if govs and months:
-            values = indicator['values_govs_live']
-            key = '{}-{}'.format(months[0], govs[0])
-            if key in values:
-                max_value = values[key]
-            for gov in govs:
-                for month in months:
-                    key = '{}-{}'.format(month,gov)
-                    if key in values:
-                        if values[key] > max_value:
-                            max_value = values[key]
+                    if gov in highest_values:
+                        if highest_values[gov] > max_value:
+                            max_value = highest_values[gov]
+                    return get_indicator_unit(indicator, max_value)
+
+            if partners:
+                highest_values = highest_values['partners']
+                max_value = highest_values[0]
+                for partner in partners:
+                    if partner in highest_values:
+                        if highest_values[partner] > max_value:
+                            max_value = highest_values[partner]
                 return get_indicator_unit(indicator, max_value)
 
-        if partners and months:
-            values = indicator['values_partners_live']
-            key = '{}-{}'.format(months[0], partners[0])
-            if key in values:
-                max_value = values[key]
-            for partner in partners:
+            if months:
+                values = indicator['values_live']
+                max_value = values[0]
                 for month in months:
-                    key = '{}-{}'.format(month,partner)
-                    if key in values:
-                        if values[key] > max_value:
-                            max_value = values[key]
-            return get_indicator_unit(indicator, max_value)
-        if govs:
-            highest_values = highest_values['govs']
-            max_value = highest_values[0]
-            for gov in govs:
-                if gov in highest_values:
-                    if highest_values[gov] > max_value:
-                        max_value = highest_values[gov]
+                    if month in values:
+                        if values[month] > max_value:
+                            max_value = values[month]
                 return get_indicator_unit(indicator, max_value)
 
-        if partners:
-            highest_values = highest_values['partners']
-            max_value = highest_values[0]
-            for partner in partners:
-                if partner in highest_values:
-                    if highest_values[partner] > max_value:
-                        max_value = highest_values[partner]
-            return get_indicator_unit(indicator, max_value)
+            all_values = indicator['values_live'].values()
+            if all_values:
+                max_value = max(all_values)
+                return get_indicator_unit(indicator, max_value)
+        return value
+    except Exception as ex:
+        logger.error('get_indicator_highest_value error' + ex.message)
+        return value
 
-        if months:
-            values = indicator['values_live']
-            max_value = values[0]
-            for month in months:
-                if month in values:
-                    if values[month] > max_value:
-                        max_value = values[month]
-            return get_indicator_unit(indicator, max_value)
-
-        all_values = indicator['values_live'].values()
-        if all_values:
-            max_value = max(all_values)
-            return get_indicator_unit(indicator, max_value)
-    return value
-    # except Exception as ex:
-    #     logger.error('get_indicator_highest_value error' + ex.message)
-    #     return value
 
 @register.assignment_tag
 def get_array_value(data, key1=None, key2=None, key3=None):
