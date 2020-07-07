@@ -248,7 +248,7 @@ font-size: 13px;
 border-bottom:2px solid #fff;
 }
 table tbody tr.imported_indicator{
-background-color:rgba(252, 255, 174, 0.38) !important;
+background-color:rgba(252, 255, 200, 1) !important;
 border-bottom:2px solid #fff ;
 font-weight: bold;
 font-size: 13px;
@@ -380,7 +380,9 @@ a:hover{ text-decoration:none !important;}
 .card-title #export1{
 
 }
-
+.level2.collapsed ,.level3.collapsed , .level4.collapsed{
+   display:none;
+  }
 #exporttable2 th , #exporttable1 th{
 
  	 background: white;
@@ -481,7 +483,7 @@ font-size:20px !important;
   left: 0;
   z-index: 2;
 }
-.table-scroll  thead tr th:first-child
+.table-scroll table thead tr th:first-child
  {
   z-index: 4;
  }
@@ -490,10 +492,16 @@ font-size:20px !important;
     background-color: #e0f3ff !important;
     border-bottom:1px solid #fff;
 }
-.table-scroll table tbody tr.level2 th ,.table-scroll table tbody tr.level2 td {
+.table-scroll table tbody tr.level2.sub_master_indicator th ,.table-scroll table tbody tr.level2.sub_master_indicator td {
     background-color: #FFD1D1 !important;
     border-bottom:1px solid #fff;
 }
+
+.table-scroll table tbody tr.imported_indicator th ,.table-scroll table tbody tr.imported_indicator td {
+    background-color: rgba(252, 255, 200, 1) !important;
+    border-bottom:1px solid #fff;
+}
+
 
 .logo-src{
 background: none !important;

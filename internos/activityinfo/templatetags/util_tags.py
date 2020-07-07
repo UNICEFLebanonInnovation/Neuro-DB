@@ -377,7 +377,7 @@ def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=Non
                 if indicator['values']:
                     if str(i) in indicator['values']:
                         value = value + float(indicator['values'][str(i)])
-                        return get_indicator_unit(indicator, value)
+            return get_indicator_unit(indicator, value)
         else:
             if cumulative_values and 'months' in cumulative_values:
                 return get_indicator_unit(indicator, cumulative_values.get('months'))
@@ -391,7 +391,7 @@ def get_indicator_cumulative_months(indicator, month=None, partner=None, gov=Non
 
 @register.assignment_tag
 def get_indicator_cumulative_months_sections(indicator, month=None, partner=None, gov=None,section=None):
-    try:
+     try:
         value = 0
         cumulative_values = indicator['values_cumulative_weekly']
 
@@ -556,7 +556,7 @@ def get_indicator_cumulative_months_sections(indicator, month=None, partner=None
 
         return get_indicator_unit(indicator, 0)
 
-    except Exception as ex:
+     except Exception as ex:
         logger.error('get_indicator_cumulative_months_sections ' + ex.message)
         return get_indicator_unit(indicator, 0)
 
@@ -1614,15 +1614,13 @@ def get_sub_indicators_data_new(ai_id,indicators_list):
                 'measurement_type',
                 'units',
                 'is_cumulative',
-                'category',
-                'activity',
-                'activity__database__label',
+                'target',
                 'cumulative_values',
                 'values_partners_gov',
                 'values_partners',
                 'values_gov',
                 'values',
-                'is_imported'
+                'highest_values'
             ).order_by('id').distinct('id')
         return indicators
     except Exception as ex:
@@ -1682,11 +1680,8 @@ def get_sub_indicators_live_data(ai_id,indicators_list):
                 'awp_code',
                 'measurement_type',
                 'units',
+                'target',
                 'is_cumulative',
-                'category',
-                'activity',
-                'activity__database__label',
-                'is_imported',
                 'values_live',
                 'values_gov_live',
                 'values_partners_live',
@@ -1731,50 +1726,101 @@ def get_sub_indicators_live_crisis_data(ai_id,indicators_list):
         logger.error('get_sub_indicators_data error' + ex.message)
         return indicators
 
+
 @register.assignment_tag
-def get_sub_master_indicators_data(ai_id, is_sector=False):
+def get_sub_master_indicators_data(ai_id,indicators_list,is_sector=False):
     from internos.activityinfo.models import Indicator
     indicators = {}
     try:
-        indicators = Indicator.objects.filter(sub_indicators=ai_id, master_indicator_sub=True).values(
+        indicators = indicators_list.filter(sub_indicators=ai_id, master_indicator_sub=True).values(
             'id',
             'ai_id',
             'name',
             'master_indicator',
             'master_indicator_sub',
-            'master_indicator_sub_sub',
             'individual_indicator',
-            'explication',
             'awp_code',
             'measurement_type',
             'units',
             'target',
-            'target_sector',
             'status_color',
-            'status_color_sector',
             'status',
-            'status_sector',
             'cumulative_values',
             'values_partners_gov',
             'values_partners',
             'values_gov',
             'values',
-            'values_live',
-            'values_gov_live',
-            'values_partners_live',
-            'values_partners_gov_live',
-            'cumulative_values_live',
             'values_tags',
-            'cumulative_values_sector',
-            'values_partners_sites_sector',
-            'values_partners_sector',
-            'values_sites_sector',
-            'values_sector',
+            'highest_values',
+            'activity__database__label',
         ).distinct()
 
         if is_sector:
             indicators = indicators.exclude(calculated_indicator=True)
         return indicators
+    except Exception as ex:
+        logger.error('get_sub_master_indicators_data error' + ex.message)
+        return indicators
+
+
+@register.assignment_tag
+def get_sub_master_indicators_crisis_data(ai_id,indicators_list, is_sector=False):
+    result_list ={}
+    try:
+        indicators = indicators_list.filter(sub_indicators=ai_id, master_indicator_sub=True).values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'individual_indicator',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'values_sections',
+            'values_sections_partners',
+            'values_sections_gov',
+            'values_sections_partners_gov',
+            'values_weekly',
+            'values_gov_weekly',
+            'values_partners_weekly',
+            'values_partners_gov_weekly',
+            'values_cumulative_weekly',
+            'values_tags_weekly',
+            'is_imported',
+            'activity',
+            'activity__database__label'
+        ).distinct()
+        imported_indicators = indicators_list.filter(sub_indicators=ai_id, is_imported=True).values(
+            'id',
+            'ai_id',
+            'name',
+            'master_indicator',
+            'master_indicator_sub',
+            'individual_indicator',
+            'awp_code',
+            'measurement_type',
+            'units',
+            'values_sections',
+            'values_sections_partners',
+            'values_sections_gov',
+            'values_sections_partners_gov',
+            'values_weekly',
+            'values_gov_weekly',
+            'values_partners_weekly',
+            'values_partners_gov_weekly',
+            'values_cumulative_weekly',
+            'values_tags_weekly',
+            'is_imported',
+            'activity',
+            'activity__database__label'
+        ).distinct()
+
+        result_list = indicators | imported_indicators
+
+        if is_sector:
+            result_list = indicators.exclude(calculated_indicator=True)
+        return result_list
     except Exception as ex:
         logger.error('get_sub_master_indicators_data error' + ex.message)
         return indicators
@@ -2033,7 +2079,7 @@ def get_indicator_tag_value(indicator, tag,type=None ,month=None, partners=None,
                                 else:
                                     continue
                             else:
-                                key = '{}--{}--{}--{}'.format(m, gov, par, tag)
+                                key = '{}--{}--{}--{}'.format(m, par, gov, tag)
                                 if 'partners_govs_' + tag in values_tags:
                                     if key in values_tags['partners_govs_' + tag]:
                                         value += values_tags['partners_govs_' + tag][key]

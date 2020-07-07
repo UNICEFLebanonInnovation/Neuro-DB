@@ -102,6 +102,11 @@ urlpatterns = [
         name='report_disability'
     ),
     url(
+        regex=r'^report-crisis-disability/$',
+        view=views.ReportDisabilityCrisisView.as_view(),
+        name='report_crisis_disability'
+    ),
+    url(
         regex=r'^report-sector/$',
         view=views.ReportSectorView.as_view(),
         name='report_sector'

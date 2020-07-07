@@ -14,6 +14,8 @@
 
 {% block content %}
 
+
+
 <div class="app-main__inner">
   <div class="app-page-title">
     <form id="filterForm" action="{% url 'activityinfo:report' %}" method="get"  data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"
@@ -177,14 +179,9 @@
               </thead>
               <tbody>
               {% for item in master_indicators %}
-
-              {% get_indicator_cumulative_months item selected_months selected_partners selected_governorates as cumulative_value %}
-
-              {% to_display_indicator selected_filter cumulative_value as display_indicator %}
-              {% if display_indicator %}
               <tr itemid="{{ item.id }}"
-                  {% if item.master_indicator or not database.mapped_db %}class="level1 master_indicator"
-                  {% elif item.individual_indicator %}class="level1 individual_indicator" {% endif %}>
+                  {% if item.master_indicator or not database.mapped_db %}class="level1 master_indicator collapsed"
+                  {% elif item.individual_indicator %}class="level1 individual_indicator collapsed" {% endif %}>
 
                 <td class="w-150">
                   {{ item.name }}
@@ -204,20 +201,10 @@
                   {% endif %}
                 </td>
                 <td class="w-10">
-                  {% if item.is_cumulative %}
-                  {{ cumulative_value }}
-                  {% else %}
-                  {% get_indicator_highest_value item selected_months selected_partners selected_governorates as highest_value %}
-                  {{ highest_value }}
-                  {% endif %}
+                  {{ item.cumulative }}
                 </td>
                 <td class="w-10">
-                  {% if item.is_cumulative %}
-                  {% calculate_achievement_new item.target cumulative_value  as achieved %}
-                   {% else %}
-                   {% calculate_achievement_new item.target highest_value  as achieved %}
-                  {% endif %}
-                  {{ achieved }}%
+                  {{ item.achieved }}
                 </td>
                 <td class="w-10">
                   <div class='badge {{ item.status_color }}'>{{ item.status }}</div>
@@ -230,9 +217,8 @@
                 </td>
                 {% endfor %}
               </tr>
-              {% get_sub_indicators_data item.id False database as sub_indicators %}
-              {% for item1 in sub_indicators %}
-              <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}"
+              {% for item1 in item.sub_list_filtered %}
+              <tr class="level2 level2-{{ item.id }} collapsed" itemid="{{ item.id }}-{{ item1.id }}"
                   {% if item1.master_indicator_sub %}style="background-color:hsla(0, 100%, 70%, 0.3);border-bottom:2px solid #fff;"
                   {% elif item1.individual_indicator %}style="background-color:#2d2d2d; border-bottom:2px solid #fff;" {% endif %}>
                 <td class="w-150">
@@ -253,24 +239,11 @@
                 {% endif %}
 
                 <td class="w-10">
-                  {% if item.is_cumulative %}
-                    {% get_indicator_cumulative_months item1 selected_months selected_partners selected_governorates as cumulative_value %}
-                  {{ cumulative_value }}
-                  {% else %}
-                  {% get_indicator_highest_value item1  selected_months selected_partners selected_governorates as highest_value %}
-                  {{ highest_value }}
-                  {% endif %}
+
+                  {{ item1.cumulative }}
                 </td>
                 <td class="w-10">
-                  {% if item1.master_indicator_sub %}
-                  {% if item.is_cumulative %}
-                  {% calculate_achievement_new item1.target cumulative_value  as achieved %}
-                  {{ achieved }}%
-                  {% else %}
-                  {% calculate_achievement_new item1.target highest_value  as achieved %}
-                  {{ achieved }}
-                  {% endif %}
-                  {% endif %}
+                  {{ item1.achieved }}
                 </td>
                   {% if item1.master_indicator_sub %}
                 <td class="w-10">
@@ -287,10 +260,9 @@
                 </td>
                 {% endfor %}
               </tr>
-              {% get_sub_indicators_data item1.id False database as sub_indicators1 %}
-              {% for item2 in sub_indicators1 %}
+              {% for item2 in item1.sub_list_filtered %}
               {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
-              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }}"
+              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }} collapsed"
                   {% if item2.individual_indicator %} class="individual" style="background-color: #dedede;" {% endif %}
                   itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
                 <td class="w-150">{{ item2.name }}</td>
@@ -301,13 +273,7 @@
                 </td>
                 <td class="w-10"></td>
                 <td class="w-10">
-                  {% if item.is_cumulative %}
-                  {% get_indicator_cumulative_months item2 selected_months selected_partners selected_governorates as cumulative_value %}
-                  {{ cumulative_value }}
-                  {% else %}
-                  {% get_indicator_highest_value item2 selected_months selected_partners selected_governorates  as highest_value %}
-                  {{ highest_value }}
-                  {% endif %}
+                  {{ item2.cumulative }}
                 </td>
                 <td class="w-10">
 
@@ -325,7 +291,7 @@
               {% endif %}
               {% endfor %}
               {% endfor %}
-              {% endif %}
+
 
               {% endfor %}
               </tbody>
