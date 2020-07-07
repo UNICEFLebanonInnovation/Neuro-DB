@@ -10,12 +10,7 @@
 
 {% endblock filter %}
 {% block content %}
-<style>
-  .level2.collapsed ,.level3.collapsed , .level4.collapsed{
-  display:none;
-  }
 
-</style>
 
 <div class="app-main__inner">
   <div class="app-page-title">
@@ -141,7 +136,7 @@
                    data-placement="top" title="Indicators Data Disaggregated" class="text-success">
                   <i class="pe-7s-ticket"></i>
                 </a>
-                <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
+                <a href="{% url 'activityinfo:report_crisis_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
                    data-placement="top" title="Disability Report" class="text-warning"
                    data-step="16" data-intro="Disability report">
                   <i class="pe-7s-delete-user"></i>
