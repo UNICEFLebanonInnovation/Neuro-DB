@@ -219,7 +219,7 @@
               {% endfor %}
             </tr>
               {% for item1 in item.sub_list_filtered %}
-              <tr class="level2 level2-{{ item.id }}" itemid="{{ item.id }}-{{ item1.id }}">
+              <tr class="level2 level2-{{ item.id }} sub_master_indicator" itemid="{{ item.id }}-{{ item1.id }}">
                 <th class="w-150">
                   {{ item1.name }}
                 </th>
