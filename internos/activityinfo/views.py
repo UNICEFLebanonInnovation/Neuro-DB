@@ -3205,7 +3205,7 @@ class HPMView(TemplateView):
             if current_month == 1:
                 months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
             if current_month > 2:
-                if day_number > 15:
+                if day_number >= 15:
                     for i in range(1, current_month):
                         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
                 else:
