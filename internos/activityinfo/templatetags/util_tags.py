@@ -1338,12 +1338,13 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
         previous_values = 0
         if type == 'periodic':
             if indicator.cumulative_values_hpm:
-                if str(m) in indicator.cumulative_values_hpm:
-                    if m == 3 :
+                if str(month) in indicator.cumulative_values_hpm:
+                    if month == 3:
                         previous_values = 0
                     else:
-                        if (m-3) in indicator.cumulative_values_hpm:
-                            previous_values = indicator.cumulative_values_hpm[str(m-3)]
+                        period_mon = month - 3
+                        if str(period_mon) in indicator.cumulative_values_hpm:
+                            previous_values = indicator.cumulative_values_hpm[str(period_mon)]
                         else:
                             previous_values = 0
 
