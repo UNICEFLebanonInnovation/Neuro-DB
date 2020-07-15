@@ -1305,6 +1305,7 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
 
         additional_cumulative = indicator.hpm_additional_cumulative
         # get additional cumulative for indicators of PPL that starts last year at month 8 to be added to current year
+        print (additional_cumulative)
 
         if int(month) == current_month:
             if indicator.cumulative_values:
@@ -1357,9 +1358,9 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
                     if indicator.values:
                         if str(m) in indicator.values:
                             previous_values += indicator.values[str(m)]
-
+        original_value = value
         value = value + additional_cumulative
-        previous_values = previous_values+additional_cumulative
+        previous_values = previous_values + additional_cumulative
 
         if int(month) == 1:
             report_change = 0
@@ -1407,8 +1408,8 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
                     if key in indicator.values_tags['months_boys']:
                         boys += round(indicator.values_tags['months_boys'][key])
                 try:
-                    boys_per = str(round(boys *100 /value)).replace('.0', '')
-                except  :
+                    boys_per = str(round(boys *100 /original_value)).replace('.0', '')
+                except:
                     boys_per=0
             else:
                 boys_per = str(round(indicator.values_tags['boys_per'])).replace('.0', '')
@@ -1422,7 +1423,7 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
                     if key in indicator.values_tags['months_girls']:
                         girls += round(indicator.values_tags['months_girls'][key])
                 try:
-                    girls_per =  str(round(girls * 100 /value)).replace('.0', '')
+                    girls_per =  str(round(girls * 100 /original_value)).replace('.0', '')
                 except:
                     girls_per =0
             else:
@@ -1441,7 +1442,7 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
                     if key in indicator.values_tags['months_Male']:
                         male += round(indicator.values_tags['months_Male'][key])
                 try:
-                     male_per = str(round( male * 100 / value)).replace('.0', '')
+                     male_per = str(round( male * 100 / original_value)).replace('.0', '')
                 except:
                     male_per=0
             else:
@@ -1456,7 +1457,7 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
                     if key in indicator.values_tags['months_Female']:
                         female += round(indicator.values_tags['months_Female'][key])
                 try :
-                    female_per = str(round(female *100 /value)).replace('.0', '')
+                    female_per = str(round(female *100 /original_value)).replace('.0', '')
                 except:
                     female_per = 0
             else:
