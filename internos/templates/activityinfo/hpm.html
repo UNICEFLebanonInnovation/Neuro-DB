@@ -35,16 +35,16 @@
                 {{ month_name }}
               </a>
                 {% endfor %}
-                <div tabindex="-1" class="dropdown-divider"></div>
-                <h6 class="dropdown-header">Periodic Report</h6>
-                <div tabindex="-1" class="dropdown-divider"></div>
-                {% for month, month_name in periodic_months %}
-                  <a type="button" href="{% url 'activityinfo:hpm_report' %}?month={{ month }}&?rep_year={{ reporting_year }}&?type=periodic" tabindex="0" class="dropdown-item">
-                    {{ month_name }}
-                  </a>
-                {% endfor %}
+<!--                <div tabindex="-1" class="dropdown-divider"></div>-->
+<!--                <h6 class="dropdown-header">Periodic Report</h6>-->
+<!--                <div tabindex="-1" class="dropdown-divider"></div>-->
+<!--                {% for month, month_name in periodic_months %}-->
+<!--                  <a type="button" href="{% url 'activityinfo:hpm_report' %}?month={{ month }}&?rep_year={{ reporting_year }}&?type=periodic" tabindex="0" class="dropdown-item">-->
+<!--                    {{ month_name }}-->
+<!--                  </a>-->
+<!--                {% endfor %}-->
 
-                <div tabindex="-1" class="dropdown-divider"></div>
+<!--                <div tabindex="-1" class="dropdown-divider"></div>-->
               </div>
              </div>
 
@@ -81,20 +81,20 @@
               </a>
               {% endif %}
               {% endfor %}
-              <div tabindex="-1" class="dropdown-divider"></div>
-               <h6 class="dropdown-header">Periodic Report</h6>
-                <div tabindex="-1" class="dropdown-divider"></div>
-                {% for m, month_name in periodic_months %}
-                {% if type == 'periodic' %}
-                  <a value="{{ m }}" onclick="select_periodic_month('{{m}}')" {% if m == month %}
-                     class="dropdown-item active" {% else %} class="dropdown-item" {% endif %}>
-                    {{ month_name }}
-                  </a>
-              {% else %}
-              <a value="{{ m }}" onclick="select_periodic_month('{{m}}')" class="dropdown-item">  {{ month_name }}</a>
-                 {% endif %}
-                {% endfor %}
-                <div tabindex="-1" class="dropdown-divider"></div>
+<!--              <div tabindex="-1" class="dropdown-divider"></div>-->
+<!--               <h6 class="dropdown-header">Periodic Report</h6>-->
+<!--                <div tabindex="-1" class="dropdown-divider"></div>-->
+<!--                {% for m, month_name in periodic_months %}-->
+<!--                {% if type == 'periodic' %}-->
+<!--                  <a value="{{ m }}" onclick="select_periodic_month('{{m}}')" {% if m == month %}-->
+<!--                     class="dropdown-item active" {% else %} class="dropdown-item" {% endif %}>-->
+<!--                    {{ month_name }}-->
+<!--                  </a>-->
+<!--              {% else %}-->
+<!--              <a value="{{ m }}" onclick="select_periodic_month('{{m}}')" class="dropdown-item">  {{ month_name }}</a>-->
+<!--                 {% endif %}-->
+<!--                {% endfor %}-->
+<!--                <div tabindex="-1" class="dropdown-divider"></div>-->
             </div>
           </div>
         </form>
