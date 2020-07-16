@@ -989,8 +989,9 @@ def calculate_indicators_cumulative_results(ai_db, report_type=None):
 
 def calculate_indicators_all_tags_weekly(ai_db):
 
-    calculate_indicators_tags_weekly(ai_db,True)
     calculate_indicators_tags_weekly(ai_db, False)
+    calculate_indicators_tags_weekly(ai_db,True)
+
 
 
 def calculate_indicators_tags_weekly(ai_db,sub_master=False):
@@ -1003,14 +1004,18 @@ def calculate_indicators_tags_weekly(ai_db,sub_master=False):
         indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).filter(
             Q(master_indicator=True) | Q(hpm_indicator=True))
 
-    report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
+    # report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
+    #
+    # if ai_db.is_funded_by_unicef:
+    #     report = report.filter(funded_by__contains='UNICEF')
 
-    if ai_db.is_funded_by_unicef:
-        report = report.filter(funded_by__contains='UNICEF')
+    # partners = report.values('partner_id').order_by('partner_id').distinct('partner_id')
+    # governorates = report.values('location_adminlevel_governorate_code').distinct()
+    # sections = report.values('reporting_section').distinct()
 
-    partners = report.values('partner_id').order_by('partner_id').distinct('partner_id')
-    governorates = report.values('location_adminlevel_governorate_code').distinct()
-    sections = report.values('reporting_section').distinct()
+    partners = get_partners_list(ai_db)
+    governorates = get_governorates_list(ai_db)
+    sections= get_reporting_sections_list(ai_db)
 
     tags_gender = IndicatorTag.objects.filter(type='gender').only('id', 'name')
     tags_age = IndicatorTag.objects.filter(type='age').only('id', 'name')
@@ -1032,20 +1037,15 @@ def calculate_indicators_tags_weekly(ai_db,sub_master=False):
                 sub_indicators= sub_indicators | sub_sub_indicator.summation_sub_indicators.all()
 
         sub_indicators = sub_indicators.only(
-            'values',
-            'values_partners',
-            'values_partners_gov',
-            'values_gov',
             'values_sections',
             'values_sections_partners',
             'values_sections_gov',
-            'values_tags',
             'values_tags_weekly',
-            'cumulative_values',
             'values_weekly',
             'values_gov_weekly',
             'values_partners_weekly',
             'values_partners_gov_weekly',
+            'values_cumulative_weekly'
         ).distinct()
 
 
@@ -3635,3 +3635,175 @@ def calculate_master_imported_indicators(ai_db,report_type):
                     indicator.values_partners_gov_weekly = values_partners_gov
 
                 indicator.save()
+
+
+def get_partners_list(ai_db, sections=None, govs=None, months=None, report_type=None):
+    from django.db import connection
+
+    result = {}
+    cursor = connection.cursor()
+    where_condition = ""
+    funded_condition = ""
+
+    if ai_db.is_funded_by_unicef:
+        funded_condition = " AND funded_by = 'UNICEF' "
+    if govs:
+        where_condition = " and location_adminlevel_governorate_code in (" + govs + ")"
+
+    if sections:
+        section_list = ", ".join("'" + str(n) + "'" for n in sections)
+        where_condition += " AND reporting_section in (" + section_list + ")"
+
+    if months:
+        where_condition += " AND date_part('month', start_date) in (" + months + ")"
+
+    query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
+
+    if report_type == 'live':
+        cursor.execute(
+                "SELECT DISTINCT partner_id, partner_label "
+                "FROM activityinfo_liveactivityreport "
+                 + query_condition)
+    else:
+        cursor.execute(
+                "SELECT DISTINCT partner_id, partner_label "
+                "FROM activityinfo_activityreport "
+                + query_condition )
+
+    rows = cursor.fetchall()
+
+    for row in rows:
+        result[row[0]] = {
+            'partner_id': row[0],
+            'partner_label': row[1]
+        }
+
+    return result.values()
+
+
+def get_governorates_list(ai_db, sections=None, partners=None, months=None, report_type=None):
+    from django.db import connection
+
+    result = {}
+    cursor = connection.cursor()
+    where_condition = ""
+    funded_condition=""
+
+    if ai_db.is_funded_by_unicef:
+        funded_condition = " AND funded_by = 'UNICEF' "
+
+    if sections:
+        section_list = ", ".join("'" + str(n) + "'" for n in sections)
+        where_condition += " AND reporting_section in (" + section_list + ")"
+    if partners:
+        partners_list = ", ".join("'" + str(n)+ "'" for n in partners)
+        where_condition += " AND partner_id in (" + partners_list + ")"
+    if months:
+        where_condition += " AND date_part('month', start_date) in (" + months +")"
+
+    query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
+
+    if report_type == 'live':
+        cursor.execute(
+                "SELECT DISTINCT location_adminlevel_governorate_code, location_adminlevel_governorate "
+                "FROM activityinfo_liveactivityreport "
+                 + query_condition)
+    else :
+        cursor.execute(
+                "SELECT DISTINCT location_adminlevel_governorate_code, location_adminlevel_governorate "
+                "FROM activityinfo_activityreport "
+                 + query_condition)
+
+    rows = cursor.fetchall()
+
+    for row in rows:
+        result[row[0]] = {
+            'location_adminlevel_governorate_code': row[0],
+            'location_adminlevel_governorate': row[1]
+        }
+
+    return result.values()
+
+
+def get_cadastrals_list(ai_db, report_type=None):
+    from django.db import connection
+
+    result = {}
+    cursor = connection.cursor()
+
+    if report_type == 'live':
+
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_cadastral_area_code, location_adminlevel_cadastral_area "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE database_id = %s AND funded_by = %s ",
+                [str(ai_db.ai_id), 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_cadastral_area_code, location_adminlevel_cadastral_area "
+                "FROM activityinfo_liveactivityreport "
+                "WHERE database_id = %s ",
+                [str(ai_db.ai_id)])
+    else :
+        if ai_db.is_funded_by_unicef:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_cadastral_area_code, location_adminlevel_cadastral_area "
+                "FROM activityinfo_activityreport "
+                "WHERE database_id = %s AND funded_by = %s ",
+                [str(ai_db.ai_id), 'UNICEF'])
+        else:
+            cursor.execute(
+                "SELECT DISTINCT location_adminlevel_cadastral_area_code, location_adminlevel_cadastral_area "
+                "FROM activityinfo_activityreport "
+                "WHERE database_id = %s ",
+                [str(ai_db.ai_id)])
+
+    rows = cursor.fetchall()
+
+    for row in rows:
+        result[row[0]] = {
+            'location_adminlevel_cadastral_area_code': row[0],
+            'location_adminlevel_cadastral_area': row[1]
+        }
+
+    return result.values()
+
+
+def get_reporting_sections_list(ai_db,partners=None, govs=None,months=None, report_type=None):
+    from django.db import connection
+
+    result = {}
+    cursor = connection.cursor()
+    where_condition = ""
+    funded_condition = ""
+
+    if ai_db.is_funded_by_unicef:
+        funded_condition = " AND funded_by = 'UNICEF' "
+
+    if partners:
+        partners_list = ", ".join("'" + str(n) + "'" for n in partners)
+        where_condition += " AND partner_id in (" + partners_list + ")"
+    if govs:
+        where_condition = " and location_adminlevel_governorate_code in (" + govs + ")"
+    if months:
+        where_condition += " AND date_part('month', start_date) in (" + months + ")"
+
+    query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
+    if report_type == 'live':
+        cursor.execute(
+                "SELECT DISTINCT reporting_section "
+                "FROM activityinfo_liveactivityreport " + query_condition)
+    else:
+        cursor.execute(
+                "SELECT DISTINCT reporting_section "
+                "FROM activityinfo_activityreport "+query_condition
+              )
+    rows = cursor.fetchall()
+
+    for row in rows:
+        result[row[0]] = {
+            'reporting_section': row[0],
+        }
+
+    return result.values()
