@@ -1305,7 +1305,6 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
 
         additional_cumulative = indicator.hpm_additional_cumulative
         # get additional cumulative for indicators of PPL that starts last year at month 8 to be added to current year
-        print (additional_cumulative)
 
         if int(month) == current_month:
             if indicator.cumulative_values:

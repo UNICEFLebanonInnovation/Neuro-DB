@@ -3724,11 +3724,11 @@ def update_indicators_hpm_data():
         value = 0
         for m in months:
             if str(m) in indicator.values:
-                if str(m) in indicator.values_hpm:
-                   continue
-                else:
-                    value = indicator.values[str(m)]
-                    indicator.values_hpm[str(m)] = value
+                # if str(m) in indicator.values_hpm:
+                #    continue
+                # else:
+                value = indicator.values[str(m)]
+                indicator.values_hpm[str(m)] = value
         indicator.save()
         cum_value = 0
         cum_value2 = 0
