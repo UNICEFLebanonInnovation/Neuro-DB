@@ -353,13 +353,17 @@
                   </td>
                 <td class="w-5">{{ item.units }}</td>
                 <td class="w-5">{{ item.cumulative }}</td>
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                {% for month, month_name in sliced_months %}
+<!--                <td class="w-5">0</td>-->
+<!--                <td class="w-5">0</td>-->
+<!--                <td class="w-5">0</td>-->
+                {% for month, month_name in months %}
                 <td class="w-5">
+                    {% if month == 1 or month == 2 or month == 3 %}
+                    0
+                    {% else %}
                   {% get_indicator_value item month selected_partners selected_governorates as value %}
                   {{ value }}
+                  {% endif %}
                 </td>
                 {% endfor %}
               </tr>
@@ -381,14 +385,19 @@
                 <td class="w-5">
                   {{ item1.cumulative }}
                 </td>
-
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                <td class="w-5">0</td>
-                {% for month, month_name in sliced_months %}
+                {% if selected_filter %}
+                {% endif %}
+<!--                <td class="w-5">0</td>-->
+<!--                <td class="w-5">0</td>-->
+<!--                <td class="w-5">0</td>-->
+                {% for month, month_name in months %}
                 <td class="w-5">
+                  {% if month == 1 or month == 2 or month == 3 %}
+                    0
+                    {% else %}
                   {% get_indicator_value item1 month selected_partners selected_governorates as value %}
                   {{ value }}
+                  {% endif %}
                 </td>
                 {% endfor %}
               </tr>
@@ -404,13 +413,17 @@
                   <td class="w-5"></td>
                   <td class="w-5"></td>
 
-                  <td class="w-5">0</td>
-                  <td class="w-5">0</td>
-                  <td class="w-5">0</td>
-                  {% for month, month_name in sliced_months %}
+<!--                  <td class="w-5">0</td>-->
+<!--                  <td class="w-5">0</td>-->
+<!--                  <td class="w-5">0</td>-->
+                  {% for month, month_name in months %}
                   <td class="w-5">
+                    {% if month == 1 or month == 2 or month == 3 %}
+                    0
+                    {% else %}
                     {% get_indicator_value item2 month selected_partners selected_governorates as value %}
                     {{ value }}
+                    {% endif %}
                   </td>
                   {% endfor %}
                 </tr>
@@ -461,6 +474,7 @@
                     <th content="Result" title="Result">Results
                     </th>
                     {% for month, month_name in months %}
+
                     <th content="{{ month_name }}">{{ month_name }}</th>
                     {% endfor %}
                   </tr>
@@ -697,8 +711,23 @@ function download_csv(csv, filename) {
       var gov_url = $("#filterForm").attr("data-govs-url");
       var sec_url = $("#filterForm").attr("data-sections-url");
 
-      if (partnerId == null){
+      if ( month_Id == null ){
 
+        $.ajax({
+            url: month_url,
+            data: {
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'section_id':section_Id,
+            'gov_id':gov_Id
+             },
+            success: function (data) {
+              $("#filter_month").html(data);
+              $("#filter_month").multiselect('rebuild');
+            }
+        });
+      }
+      if (partnerId == null){
          $.ajax({
             url: partner_url,
             data: {
@@ -760,7 +789,23 @@ function download_csv(csv, filename) {
       var partner_url = $("#filterForm").attr("data-partner-url");
       var month_url = $("#filterForm").attr("data-month-url");
       var sec_url = $("#filterForm").attr("data-sections-url");
+        var gov_url = $("#filterForm").attr("data-govs-url");
 
+      if(gov_Id == null){
+      $.ajax({
+          url: gov_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'month_id':month_Id,
+          'section_id':section_Id
+           },
+          success: function (data) {
+            $("#filter_governorates").html(data);
+            $("#filter_governorates").multiselect('rebuild');
+          }
+      });
+    }
       if ( partnerId == null ){
          $.ajax({
             url: partner_url,
@@ -822,8 +867,26 @@ function download_csv(csv, filename) {
       var partner_url = $("#filterForm").attr("data-partner-url");
       var gov_url = $("#filterForm").attr("data-govs-url");
       var month_url = $("#filterForm").attr("data-month-url");
+       var sec_url = $("#filterForm").attr("data-sections-url");
       var ai_id = $('#ai_id').val();
 
+
+       if ( section_Id == null ){
+
+              $.ajax({
+                  url: sec_url,
+                  data: {
+                  'partner_id':partnerId,
+                  'ai_id':ai_id,
+                  'gov_id':gov_Id,
+                   'month_id':month_Id
+                   },
+                  success: function (data) {
+                    $("#filter_section").html(data);
+                    $("#filter_section").multiselect('rebuild');
+                  }
+              });
+            }
        if ( partnerId == null ){
          $.ajax({
             url: partner_url,
@@ -885,6 +948,24 @@ function download_csv(csv, filename) {
     var url = $("#filterForm").attr("data-sections-url");
     var gov_url = $("#filterForm").attr("data-govs-url");
     var month_url = $("#filterForm").attr("data-month-url");
+    var partner_url = $("#filterForm").attr("data-partner-url");
+
+    if ( partnerId == null ){
+     $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'section_id':section_Id,
+            'month_id':month_Id
+          },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+      });
+
+    }
 
     if(section_Id == null){
       $.ajax({

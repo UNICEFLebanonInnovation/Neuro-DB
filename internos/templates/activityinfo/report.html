@@ -61,7 +61,7 @@
 
               <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
                  {% for month, month_name in months %}
-                <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
+                <option class="dropdown-item" value="{{ month }}" {% if month in selected_months %} selected {% endif %}>
                   {{ month_name }}
                 </option>
                 {% endfor %}
@@ -691,7 +691,6 @@ function search() {
  <script>
 
     $("#filter_partners").change(function () {
-
     var partnerId = $(this).val();
     var ai_id = $('#ai_id').val();
     var month_Id = $('#filter_month').val();
@@ -699,6 +698,23 @@ function search() {
 
     var gov_url = $("#filterForm").attr("data-govs-url");
     var month_url = $("#filterForm").attr("data-month-url");
+    var partner_url = $("#filterForm").attr("data-partner-url");
+
+    if (partnerId == null){
+
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'month_id':month_Id,
+            'gov_id':gov_Id,
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+         });
+      }
 
     if(gov_Id == null){
       $.ajax({
@@ -714,7 +730,8 @@ function search() {
           }
       });
     }
-    if( month_Id ==  null){
+    if( month_Id == null){
+
       $.ajax({
           url: month_url,
           data: {
@@ -738,6 +755,7 @@ function search() {
 
       var partner_url = $("#filterForm").attr("data-partner-url");
       var gov_url = $("#filterForm").attr("data-govs-url");
+       var month_url = $("#filterForm").attr("data-month-url");
       if (partnerId == null){
 
          $.ajax({
@@ -769,7 +787,20 @@ function search() {
               }
            });
       }
-
+    if( month_Id ==  null){
+      $.ajax({
+          url: month_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'gov_id':gov_Id
+           },
+          success: function (data) {
+            $("#filter_month").html(data);
+            $("#filter_month").multiselect('rebuild');
+          }
+      });
+    }
     });
 
     $('#filter_governorates').change(function () {
@@ -781,7 +812,24 @@ function search() {
 
       var partner_url = $("#filterForm").attr("data-partner-url");
       var month_url = $("#filterForm").attr("data-month-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
 
+      if (gov_Id == null){
+
+           $.ajax({
+              url: gov_url,
+              data: {
+              'ai_id':ai_id,
+              'month_id':month_Id,
+              'partner_id':partnerId,
+               },
+              success: function (data) {
+
+                $("#filter_governorates").html(data);
+                $("#filter_governorates").multiselect('rebuild');
+              }
+           });
+      }
       if ( partnerId == null ){
          $.ajax({
             url: partner_url,

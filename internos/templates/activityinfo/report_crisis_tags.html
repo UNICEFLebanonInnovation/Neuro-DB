@@ -559,6 +559,24 @@ $('input#search-input').quicksearch('table#export_tags tbody tr', {
       var partner_url = $("#filterForm").attr("data-partner-url");
       var gov_url = $("#filterForm").attr("data-govs-url");
       var sec_url = $("#filterForm").attr("data-sections-url");
+      var month_url = $("#filterForm").attr("data-month-url");
+
+      if ( month_Id == null ){
+
+        $.ajax({
+            url: month_url,
+            data: {
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'section_id':section_Id,
+            'gov_id':gov_Id
+             },
+            success: function (data) {
+              $("#filter_month").html(data);
+              $("#filter_month").multiselect('rebuild');
+            }
+        });
+      }
 
       if (partnerId == null){
 
@@ -623,6 +641,7 @@ $('input#search-input').quicksearch('table#export_tags tbody tr', {
       var partner_url = $("#filterForm").attr("data-partner-url");
       var month_url = $("#filterForm").attr("data-month-url");
       var sec_url = $("#filterForm").attr("data-sections-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
 
       if ( partnerId == null ){
          $.ajax({
@@ -671,7 +690,23 @@ $('input#search-input').quicksearch('table#export_tags tbody tr', {
             }
         });
       }
+      if (gov_Id == null){
 
+           $.ajax({
+              url: gov_url,
+              data: {
+              'ai_id':ai_id,
+              'month_id':month_Id,
+              'partner_id':partnerId,
+              'section_id':section_Id,
+               },
+              success: function (data) {
+
+                $("#filter_governorates").html(data);
+                $("#filter_governorates").multiselect('rebuild');
+              }
+           });
+      }
     });
 
     $('#filter_section').change(function () {
@@ -685,6 +720,7 @@ $('input#search-input').quicksearch('table#export_tags tbody tr', {
       var partner_url = $("#filterForm").attr("data-partner-url");
       var gov_url = $("#filterForm").attr("data-govs-url");
       var month_url = $("#filterForm").attr("data-month-url");
+      var sec_url = $("#filterForm").attr("data-sections-url");
       var ai_id = $('#ai_id').val();
 
        if ( partnerId == null ){
@@ -734,13 +770,27 @@ $('input#search-input').quicksearch('table#export_tags tbody tr', {
             }
         });
       }
+      if ( section_Id == null ){
 
+              $.ajax({
+                  url: sec_url,
+                  data: {
+                  'partner_id':partnerId,
+                  'ai_id':ai_id,
+                  'gov_id':gov_Id,
+                   'month_id':month_Id
+                   },
+                  success: function (data) {
+                    $("#filter_section").html(data);
+                    $("#filter_section").multiselect('rebuild');
+                  }
+              });
+            }
     });
     $("#filter_partners").change(function () {
 
     var partnerId = $(this).val();
     var ai_id = $('#ai_id').val();
-
     var month_Id = $('#filter_month').val();
     var gov_Id = $('#filter_governorates').val();
     var section_Id= $('#filter_section').val();
@@ -748,6 +798,23 @@ $('input#search-input').quicksearch('table#export_tags tbody tr', {
     var url = $("#filterForm").attr("data-sections-url");
     var gov_url = $("#filterForm").attr("data-govs-url");
     var month_url = $("#filterForm").attr("data-month-url");
+    var partner_url = $("#filterForm").attr("data-partner-url");
+
+    if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'month_id':month_Id,
+            'section_id':section_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
 
     if(section_Id == null){
       $.ajax({

@@ -622,6 +622,23 @@ function download_csv(csv, filename) {
 
       var partner_url = $("#filterForm").attr("data-partner-url");
       var sec_url = $("#filterForm").attr("data-sections-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+
+      if(gov_Id == null){
+      $.ajax({
+          url: gov_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'section_id':section_Id,
+          'type':'live',
+           },
+          success: function (data) {
+            $("#filter_governorates").html(data);
+            $("#filter_governorates").multiselect('rebuild');
+          }
+      });
+    }
 
       if ( partnerId == null ){
          $.ajax({
@@ -666,7 +683,24 @@ function download_csv(csv, filename) {
 
       var partner_url = $("#filterForm").attr("data-partner-url");
       var gov_url = $("#filterForm").attr("data-govs-url");
+      var sec_url = $("#filterForm").attr("data-sections-url");
       var ai_id = $('#ai_id').val();
+
+        if ( section_Id == null ){
+        $.ajax({
+            url: sec_url,
+            data: {
+            'type':'live',
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+             },
+            success: function (data) {
+              $("#filter_section").html(data);
+              $("#filter_section").multiselect('rebuild');
+            }
+        });
+      }
 
        if ( partnerId == null ){
          $.ajax({
@@ -708,8 +742,26 @@ function download_csv(csv, filename) {
     var gov_Id = $('#filter_governorates').val();
     var section_Id= $('#filter_section').val();
 
+
     var url = $("#filterForm").attr("data-sections-url");
     var gov_url = $("#filterForm").attr("data-govs-url");
+    var partner_url = $("#filterForm").attr("data-partner-url");
+
+   if ( partnerId == null ){
+   $.ajax({
+      url: partner_url,
+      data: {
+      'type':'live',
+      'ai_id':ai_id,
+      'gov_id':gov_Id,
+      'section_id':section_Id
+       },
+      success: function (data) {
+        $("#filter_partners").html(data);
+        $("#filter_partners").multiselect('rebuild');
+      }
+  });
+}
 
     if(section_Id == null){
       $.ajax({
