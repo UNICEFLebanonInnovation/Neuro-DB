@@ -400,7 +400,7 @@ def get_indicator_cumulative_months_sections(indicator, month=None, partner=None
                 for par in partner:
                     for g in gov:
                         for m in month:
-                            key = "{}-{}-{}-{}".format(m, sec,par,g)
+                            key = "{}-{}-{}-{}".format(m, sec,g,par)
                             if key in indicator['values_sections_partners_gov']:
                                 value += indicator['values_sections_partners_gov'][key]
             return get_indicator_unit(indicator, value)
