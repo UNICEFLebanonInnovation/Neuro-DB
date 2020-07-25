@@ -805,7 +805,7 @@ def get_indicator_live_cumulative_section(indicator, month=None, partner=None, g
             for sec in section:
                 for par in partner:
                     for g in gov:
-                        key = "{}-{}-{}".format(sec,par,g)
+                        key = "{}-{}-{}".format(sec,g,par)
                         if key in cumulative_values:
                             value += cumulative_values[key]
             return get_indicator_unit(indicator, value)
