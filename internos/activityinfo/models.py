@@ -33,7 +33,7 @@ class Database(models.Model):
 
     ai_id = models.PositiveIntegerField(
         unique=True,
-        verbose_name='ActivityInfo ID'
+        verbose_name='ID'
     )
     db_id = models.CharField(max_length=254,
                              null=True,
