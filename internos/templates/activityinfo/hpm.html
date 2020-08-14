@@ -20,7 +20,9 @@
         <div style="font-weight:bold ; padding-top:5px">
               {{ title }}
             {% if is_current_year %}
+            {% if type == '1' or type == '2' %}
 
+          {% else %}
           <div class="dropdown d-inline-block" data-intro="Download monthly report and periodic report">
               <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
                       data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">
@@ -47,8 +49,7 @@
 <!--                <div tabindex="-1" class="dropdown-divider"></div>-->
               </div>
              </div>
-
-
+          {% endif %}
           {% endif %}
         </div>
         <div>
@@ -59,7 +60,7 @@
         <form action="{% url 'activityinfo:hpm' %}" method="get" id="month_form">
           <input type="hidden" name="month" value="" id="monthinput"/>
           <input type="hidden" name="rep_year" value="{{ reporting_year }}">
-          <input type="hidden" name="type" value="" id="typeinput">
+
 
           <div class="dropdown d-inline-block mr-4 mt-1">
             <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" name="months"
@@ -69,32 +70,31 @@
             <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu months-drp">
                 <h6 class="dropdown-header">Monthly Report</h6>
                 <div tabindex="-1" class="dropdown-divider"></div>
+
               {% for m,month_name in months %}
-              {% if type == 'periodic' %}
-              <a value="{{ m }}" onclick="selectmonth('{{m}}')" class="dropdown-item">
+               {% if type == '1' or type == '2' %}
+                 <a value="{{ m }}" onclick="selectmonth('{{m}}')" class="dropdown-item">
                 {{ month_name }}
               </a>
               {% else %}
-                 <a value="{{ m }}" onclick="selectmonth('{{m}}')" {% if m == month %}
+              <a value="{{ m }}" onclick="selectmonth('{{m}}')" {% if m == month %}
                  class="dropdown-item active" {% else %} class="dropdown-item" {% endif %}>
                 {{ month_name }}
               </a>
               {% endif %}
               {% endfor %}
-<!--              <div tabindex="-1" class="dropdown-divider"></div>-->
-<!--               <h6 class="dropdown-header">Periodic Report</h6>-->
-<!--                <div tabindex="-1" class="dropdown-divider"></div>-->
-<!--                {% for m, month_name in periodic_months %}-->
-<!--                {% if type == 'periodic' %}-->
-<!--                  <a value="{{ m }}" onclick="select_periodic_month('{{m}}')" {% if m == month %}-->
-<!--                     class="dropdown-item active" {% else %} class="dropdown-item" {% endif %}>-->
-<!--                    {{ month_name }}-->
-<!--                  </a>-->
-<!--              {% else %}-->
-<!--              <a value="{{ m }}" onclick="select_periodic_month('{{m}}')" class="dropdown-item">  {{ month_name }}</a>-->
-<!--                 {% endif %}-->
-<!--                {% endfor %}-->
-<!--                <div tabindex="-1" class="dropdown-divider"></div>-->
+              <div tabindex="-1" class="dropdown-divider"></div>
+               <h6 class="dropdown-header">Periodic Report</h6>
+                <div tabindex="-1" class="dropdown-divider"></div>
+
+                  <a value="" onclick="select_periodic_quarter('1')" class="dropdown-item {% if type == '1'%} active {% endif %}">
+                    Quarter 1
+                  </a>
+                  <a value="" onclick="select_periodic_quarter('2')" class="dropdown-item {% if type == '2'%} active {% endif %}">
+                    Quarter 2
+                  </a>
+
+                <div tabindex="-1" class="dropdown-divider"></div>
             </div>
           </div>
         </form>
@@ -103,7 +103,22 @@
     </div>
   </div>
   {% if is_current_year %}
+
   <div class="row col-md-12">
+
+    {% if type == '1' %}
+    <object data="{% static '/files/HPM Table Quarter 1.pdf' %}"
+          type="application/pdf"  width="100%" style="height:100vh">
+    </object>
+
+    {% elif type == '2' %}
+
+    <object data="{% static '/files/HPM Table Quarter 2.pdf' %}"
+          type="application/pdf"  width="100%" style="height:100vh">
+    </object>
+
+  {% else %}
+
     <div class="main-card mb-3 card">
       <div class="card-body">
         <div class="table-responsive">
@@ -656,6 +671,7 @@
         </div>
       </div>
     </div>
+      {% endif %}
   </div>
   {% else %}
   <div class="col-md-12">
@@ -663,6 +679,7 @@
           type="application/pdf"  width="100%" style="height:100vh">
     </object>
   {% endif %}
+
 </div>
 
   {% endblock content %}
@@ -693,10 +710,27 @@
     $("#month_form #monthinput").val(month);
     $("#month_form").submit();
     }
-     function select_periodic_month(month){
-    $("#month_form #monthinput").val(month);
-    $("#month_form #typeinput").val('periodic');
-    $("#month_form").submit();
+
+
+    function select_periodic_quarter(quarter){
+
+       url = window.location.href;
+       var field = 'quarter';
+       if(url.indexOf('&' + field + '=') != -1){
+        var queryParams = new URLSearchParams(window.location.search);
+        queryParams.set(field, quarter);
+        queryParams.delete('month');
+        history.replaceState(null, null, "?"+queryParams.toString());
+         location.reload();
+        }
+        else{
+        var queryParams = new URLSearchParams(window.location.search);
+        queryParams.delete('month');
+        queryParams.set(field, quarter);
+          history.replaceState(null, null, "?"+queryParams.toString());
+         location.reload();
+        }
+
     }
 
 

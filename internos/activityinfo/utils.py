@@ -657,7 +657,9 @@ def calculate_indicators_values(ai_db, report_type=None):
     calculate_indicators_highest_results(ai_db ,report_type)
     print('calculate_indicators_status')
     calculate_indicators_status(ai_db)
-
+    if report_type != 'live':
+        print('calculate_indicators_all_tags')
+        calculate_indicators_all_tags(ai_db)
     return 0
 
 
@@ -1846,7 +1848,6 @@ def calculate_indicators_monthly_tags(ai_db):
 
     # indicators = Indicator.objects.filter(hpm_indicator=True)
     indicators = Indicator.objects.filter(Q(master_indicator=True) | Q(hpm_indicator=True))
-    # indicators = Indicator.objects.filter(id=3985)
     tags_gender = IndicatorTag.objects.filter(type='gender').only('id', 'name')
     tags_age = IndicatorTag.objects.filter(type='age').only('id', 'name')
     tags_nationality = IndicatorTag.objects.filter(type='nationality').only('id', 'name')
@@ -3732,26 +3733,27 @@ def update_indicators_hpm_data():
                 value = indicator.values[str(m)]
                 indicator.values_hpm[str(m)] = value
         indicator.save()
-        cum_value = 0
-        cum_value2 = 0
-        cum_value3 = 0
-        cum_value4 = 0
-        for m in months:
-            if str(m) in indicator.values:
-                if 0 < m < 4:
-                    cum_value += indicator.values[str(m)]
-                if 3 < m < 7:
-                    cum_value2 += indicator.values[str(m)]
-                if 6 < m < 10:
-                    cum_value3 += indicator.values[str(m)]
-                if 9 < m < 13:
-                    cum_value4 += indicator.values[str(m)]
-
-        indicator.cumulative_values_hpm['3'] = cum_value
-        indicator.cumulative_values_hpm['6'] = cum_value2
-        indicator.cumulative_values_hpm['9'] = cum_value3
-        indicator.cumulative_values_hpm['12'] = cum_value4
-        indicator.save()
+        # code was added to calculate periodic data each 3 months
+        # cum_value = 0
+        # cum_value2 = 0
+        # cum_value3 = 0
+        # cum_value4 = 0
+        # for m in months:
+        #     if str(m) in indicator.values:
+        #         if 0 < m < 4:
+        #             cum_value += indicator.values[str(m)]
+        #         if 3 < m < 7:
+        #             cum_value2 += indicator.values[str(m)]
+        #         if 6 < m < 10:
+        #             cum_value3 += indicator.values[str(m)]
+        #         if 9 < m < 13:
+        #             cum_value4 += indicator.values[str(m)]
+        #
+        # indicator.cumulative_values_hpm['3'] = cum_value
+        # indicator.cumulative_values_hpm['6'] = cum_value2
+        # indicator.cumulative_values_hpm['9'] = cum_value3
+        # indicator.cumulative_values_hpm['12'] = cum_value4
+        # indicator.save()
 
 
 def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year,type=None):
@@ -3787,25 +3789,28 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
 
         document.tables[0].rows[0].cells[1].paragraphs[0].runs[0].text = '{} {} {} {} {}'.format('SUMMARY OF PROGRAMME RESULTS | January to', month_name, '|', reporting_year, 'SITREP - LEBANON')
 
-    databases = Database.objects.filter(reporting_year__name=reporting_year).order_by('hpm_sequence')
+    databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(hpm_sequence=0).order_by('hpm_sequence')
+    # Note that sequence is important here since it affects the code in getting databases.
+    row_num = 2
 
     edu_list=[]
     edu_indicators = Indicator.objects.filter(activity__database=databases[0],hpm_indicator=True,master_indicator=True).order_by('sequence')
-
-    sub_indicators = get_hpm_sub_indicators(edu_indicators[0].id)
-    for item in sub_indicators:
-        edu_list.append(item['id'])
-    edu_list.append(edu_indicators[0].id)
-
-    sub_indicators = get_hpm_sub_indicators(edu_indicators[1].id)
-    for item in sub_indicators:
-        edu_list.append(item['id'])
-    edu_list.append(edu_indicators[1].id)
+    try:
+        sub_indicators = get_hpm_sub_indicators(edu_indicators[0].id)
+        for item in sub_indicators:
+            edu_list.append(item['id'])
+        edu_list.append(edu_indicators[0].id)
+        sub_indicators = get_hpm_sub_indicators(edu_indicators[1].id)
+        for item in sub_indicators:
+            edu_list.append(item['id'])
+        edu_list.append(edu_indicators[1].id)
+    except Exception as ex:
+        logger.error(ex.message)
 
     education_ids = edu_list
     # education_ids = [7019,7020,7021,6959,6958,6955,6960]
     # Education 1
-    row_num = 2
+
     for id in education_ids:
         indicator1 = get_hpm_indicator_data_new(id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(indicator1['hpm_label'])

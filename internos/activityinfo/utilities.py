@@ -104,7 +104,8 @@ def get_list_indicators_v4(ai_db, form_id):
     client = ActivityInfoClient(ai_db.username, ai_db.password)
     form_info = client.get_database_indicators_v4(form_id)
     form_elements = form_info['elements']
-    sub_form_id = list(filter(lambda x: "Monthly Reporting" in x['label'], form_elements))
+    # sub_form_id = list(filter(lambda x: "Monthly Reporting" in x['label'], form_elements))
+    sub_form_id = list(filter(lambda x: "SUB_FORM" in x['type'], form_elements))
     if sub_form_id is not None and len(sub_form_id) > 0:
         indicator_id = sub_form_id[0]['typeParameters']['formId']
         indicator_all_info = client.get_database_indicators_v4(indicator_id)

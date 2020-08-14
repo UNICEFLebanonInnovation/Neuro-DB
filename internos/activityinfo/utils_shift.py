@@ -1031,10 +1031,10 @@ def calculate_indicators_tags_weekly(ai_db,sub_master=False):
 
         sub_indicators = indicator.summation_sub_indicators.all()
         for sub_sub_indicator in sub_indicators:
-            if sub_sub_indicator in indicators:
+            if sub_sub_indicator.master_indicator:
                 continue
             else:
-                sub_indicators= sub_indicators | sub_sub_indicator.summation_sub_indicators.all()
+                sub_indicators = sub_indicators | sub_sub_indicator.summation_sub_indicators.all()
 
         sub_indicators = sub_indicators.only(
             'values_sections',
