@@ -1109,8 +1109,11 @@ def calculate_indicators_tags(ai_db,sub_master=False):
     for indicator in indicators.iterator():
         m_value = 0
         sub_indicators = indicator.summation_sub_indicators.all()
-        for sub_sub_indicator in sub_indicators:
-            sub_indicators = sub_indicators | sub_sub_indicator.summation_sub_indicators.all()
+        for sub_indicator in sub_indicators:
+            if sub_indicator.master_indicator:
+                continue
+            else:
+                sub_indicators = sub_indicators | sub_indicator.summation_sub_indicators.all()
         try:
             m_value = indicator.cumulative_values['months']
 
