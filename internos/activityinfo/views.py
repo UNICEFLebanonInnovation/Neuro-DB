@@ -3211,42 +3211,6 @@ class HPMExportViewSet(ListView):
             )
             response['Content-Disposition'] = 'attachment; filename=' + filename
         return response
-class HPMExportViewSet(ListView):
-    model = Indicator
-    queryset = Indicator.objects.filter(hpm_indicator=True)
-
-    def get(self, request, *args, **kwargs):
-        from .utils import update_hpm_table_docx
-        year = date.today().year
-        reporting_year = self.request.GET.get('rep_year', year)
-        type = self.request.GET.get('type', "")
-        if reporting_year is None:
-            reporting_year = year
-        today = datetime.date.today()
-        first = today.replace(day=1)
-        currnet_month = first - datetime.timedelta(days=1)
-        day_number = int(today.strftime("%d"))
-        month = int(self.request.GET.get('month', currnet_month.strftime("%m")))
-
-        # month = int(self.request.GET.get('month', int(today.strftime("%m")) - 1))
-        # month = 12
-        # if day_number < 15:
-        #     month = month - 1
-
-        months = []
-        for i in range(1, 13):
-            months.append((datetime.date(2008, i, 1).strftime('%B')))
-
-        filename = "HPM Table {} {}.docx".format(months[month-1], reporting_year)
-        new_file = update_hpm_table_docx(self.queryset, month, months[month-1], filename,reporting_year,type)
-
-        with open(new_file, 'rb') as fh:
-            response = HttpResponse(
-                fh.read(),
-                content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            )
-            response['Content-Disposition'] = 'attachment; filename=' + filename
-        return response
 
 
 class ExportViewSet1(ListView):
@@ -3308,6 +3272,31 @@ class ExportViewSet(ListView):
             response = HttpResponse(f.read(), content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename=%s;' % filename
         return response
+
+
+class ReportBlastView(TemplateView):
+    template_name = 'activityinfo/report_blast.html'
+
+    def get_context_data(self, **kwargs):
+
+        ai_id = int(self.request.GET.get('ai_id', 0))
+        database = Database.objects.get(ai_id=ai_id)
+        reporting_year = database.reporting_year.year
+        current_month = date.today().month
+        all_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality') \
+            .order_by('sequence')
+        months = []
+        for i in range(1, current_month + 1):
+            months.append((i, calendar.month_name[i]))
+
+        return {
+            'database': database,
+            'reporting_year': str(reporting_year),
+            'current_month_name':  datetime.datetime.now().strftime("%B"),
+            'months' : months,
+            'indicators': all_indicators
+        }
+
 
 
 def load_sections(request):
@@ -3862,3 +3851,4 @@ class IndicatorsSubListVisualView(TemplateView):
             'filter': 'level4-filter',
             'display_tags': False
         }
+

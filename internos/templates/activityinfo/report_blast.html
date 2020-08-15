@@ -1,0 +1,133 @@
+{% extends "base2.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}{% endblock %}
+
+{% block filter %}
+
+{% include "activityinfo/focalpoints.html" %}
+
+
+{% endblock filter %}
+
+{% block content %}
+
+
+<div class="app-main__inner">
+  <div class="app-page-title">
+
+    <form action="{% url 'activityinfo:report_crisis' %}" method="get" id="filterForm"
+          data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"
+          data-sections-url="{% url 'activityinfo:ajax_load_sections' %}"
+          data-govs-url="{% url 'activityinfo:ajax_load_govs' %}"
+          data-month-url="{% url 'activityinfo:ajax_load_months' %}">
+      <div class="page-title-wrapper">
+        <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
+        <div class="page-title-heading" style="width:100%" data-step="4"
+             data-intro="Filter options by partner or governorate or month">
+          <div class="page-title-icon">
+            <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>
+          </div>
+          <div style="width:100%; margin-top:12px">
+            <div class="row">
+              <div class="col-lg-12 col-sm-12">
+
+                </div>
+              </div>
+            </div>
+            <div class="page-title-subheading">
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+          <div class="main-card mb-3 card">
+            <div class="card-header">
+              <div class="card-title">
+                {{ database.label }}
+                <div class="dropdown d-inline-block" data-intro="Download Dashboard report and Raw Data">
+                              <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
+                                      data-toggle="dropdown" class="mb-2 mr-2 mt-2 dropdown-toggle btn btn-link">
+                                <i class="fa fa-download"></i>
+                              </button>
+                              <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
+                                <button type="button" tabindex="0" id="export1" class="dropdown-item">Current dashboard</button>
+                                <div tabindex="-1" class="dropdown-divider"></div>
+                                <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                   href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
+                                  Raw Data</a>
+                                <div tabindex="-1" class="dropdown-divider"></div>
+                              </div>
+                </div>
+              </div>
+              <div class="btn-actions-pane-right">
+
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="mb-0 table table-striped table-hover" id="exportheader"
+                       content="{{ database.label }}_Dashboard_ {{ current_month_name}}_{{ database.reporting_year.year }}.csv"
+                       data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.year }}">
+                  <thead>
+                  <tr>
+                    <th content="Indicator Name"> Indicator Name</th>
+                    <th>Awp code</th>
+                    <th>
+                      Cumulative
+                    </th>
+                    {% for month, month_name in months %}
+
+                    <th content="{{ month_name }}">{{ month_name }}</th>
+                    {% endfor %}
+                  </tr>
+                  </thead>
+                  <tbody>
+          {% for item in indicators %}
+              <tr itemid="{{ item.id }}"
+                  {% if item.master_indicator %}class="level1 master_indicator collapsed"
+                  {% elif item.individual_indicator %}class="level1 individual_indicator collapsed" {% endif %}>
+
+                <td class="w-150">
+                  {{ item.name }}
+
+                </td>
+
+                <td class="w-10">{{ item.awp_code }}</td>
+
+                <td class="w-10">
+                  {{ item.cumulative }}
+                </td>
+
+                {% for month, month_name in months %}
+                <td class="w-10">
+                  {% get_indicator_value item month selected_partners selected_governorates as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+
+
+
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
+{% endblock %}
