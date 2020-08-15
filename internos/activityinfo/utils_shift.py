@@ -293,8 +293,11 @@ def calculate_indicators_values(ai_db, report_type=None):
     calculate_master_imported_indicators(ai_db,report_type)
     print('calculate_indicators_cumulative_results_1')
     calculate_indicators_cumulative_results_1(ai_db, report_type)
-    print('calculate_indicators_status')
-    calculate_indicators_status(ai_db)
+    # print('calculate_indicators_status')
+    # calculate_indicators_status(ai_db)
+    if report_type == 'weekly':
+        print('calculate_indicators_all_tags_weekly')
+        calculate_indicators_all_tags_weekly(ai_db)
 
     return 0
 
