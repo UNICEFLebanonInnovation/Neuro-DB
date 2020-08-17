@@ -471,6 +471,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'values_partners',
                 'values_partners_gov',
                 'cumulative_values',
+                'highest_values'
             ]
         }),
         ('Calculated Weekly Values', {
@@ -491,6 +492,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'values_partners_live',
                 'values_partners_gov_live',
                 'cumulative_values_live',
+                'highest_values_live'
             ]
         }),
         ('Calculated Values sector', {
