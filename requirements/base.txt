@@ -82,5 +82,6 @@ django-jet==1.0.8
 django-watson==1.5.2
 django-tellme==0.6.5
 django-money==0.15.1
+django-google-tag-manager==0.0.5
 
 # git+https://github.com/UNICEFLebanonInnovation/ActvityInfoPython.git
