@@ -3093,6 +3093,8 @@ class HPMView(TemplateView):
 
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
+        if not reporting_year:
+            reporting_year = year
 
         if type == '1' or type == '2':
             selected_month_name='Quarter ' + type
