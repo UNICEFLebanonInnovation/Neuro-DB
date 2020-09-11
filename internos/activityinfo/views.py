@@ -3080,7 +3080,7 @@ class HPMView(TemplateView):
         is_current_year = True
         title = ""
         table_title=""
-        month = int(self.request.GET.get('month', current_year))
+        month = int(self.request.GET.get('month', 0))
         type = self.request.GET.get('quarter', "")
         today = datetime.date.today()
         day_number = int(today.strftime("%d"))
@@ -3093,6 +3093,8 @@ class HPMView(TemplateView):
 
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
+        if not reporting_year:
+            reporting_year = year
 
         if type == '1' or type == '2':
             selected_month_name='Quarter ' + type
