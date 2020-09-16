@@ -4487,9 +4487,10 @@ def get_months_list(ai_db,partners=None, govs=None,sections=None, report_type=No
     rows = cursor.fetchall()
 
     for row in rows:
-        result[row[0]] = {
-            'start_date': row[0],
-        }
+        if row[0] is not None:
+            result[row[0]] = {
+                'start_date': row[0],
+            }
     sorted_list= sorted(result)
     for record in sorted_list:
         if record is not None:
