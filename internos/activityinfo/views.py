@@ -3261,13 +3261,15 @@ class ExportDataSet(ListView):
         qs = ActivityReport.objects.filter(
             start_date__year='2020')
 
+        path = os.path.dirname(os.path.abspath(__file__))
+
         filename = "AI full raw data.csv"
+        filename = path + '/AIReports/' + filename
         fields = []
         model_fields = ActivityReport._meta.fields
 
         for field in model_fields:
             fields.append(field.name)
-        print(fields)
 
         meta = {
             'file': filename,
@@ -3276,6 +3278,10 @@ class ExportDataSet(ListView):
             'fields': fields,
             'header': fields
         }
+
+        # from internos.backends.djqscsv import render_to_csv_response
+        # return render_to_csv_response(qs, field_header_map=fields, field_order=fields)
+
         from internos.backends.gistfile import get_model_as_csv_file_response
         return get_model_as_csv_file_response(meta, content_type='text/csv', filename=filename)
 
