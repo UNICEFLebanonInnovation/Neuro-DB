@@ -47,6 +47,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <meta name="description" content="This is an example dashboard created using build-in elements and components.">
     <meta name="msapplication-tap-highlight" content="no">
     <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <!--<link href="{% static 'css/main.87c0748b313a1dda75f5.css' %}" rel="stylesheet">-->
     <link href="{% static 'css/editedStyle.css' %}" rel="stylesheet">
 
     <!-- Custom Theme Style -->
@@ -290,6 +291,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                               <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
                             </a>
                             </li>
+                           <li>
+                              <a href="{% url 'activityinfo:blast_dashboard' %}" class="">
+                                  <i class="metismenu-icon pe-7s-target"></i>
+                                  Beirut Blast
+                                <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
+                              </a>
+                            </li>
                             <li class="app-sidebar__heading">ActivityInfo</li>
                             <li>
                                 <a href="/">
@@ -418,6 +426,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                     <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
                                 </a>
                               </li>
+                             <li>
+                                <a href="{% url 'survey:data_sets' %}">
+                                    <i class="metismenu-icon pe-7s-server" aria-hidden="true"></i>
+                                    Data sets
+                                    <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div>
+                                </a>
+                              </li>
 
                           <!--<li class="app-sidebar__heading">Maps</li>-->
                            <!--<li>-->
@@ -491,6 +506,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <script src="{% static 'vendors/jquery/dist/jquery.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <!--<script type="text/javascript" src="{% static 'js/main.87c0748b313a1dda75f5.js' %}"></script>-->
     <!-- Custom Theme Scripts -->
     <!--<script src="{% static 'js/custom.min.js' %}"></script>-->
     <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>

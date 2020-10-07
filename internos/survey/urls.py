@@ -20,5 +20,10 @@ urlpatterns = [
         regex=r'^Child-Protection-Working-Group-Real-time-monitoring/2020/$',
         view=views.ChildProtectionView.as_view(),
         name='child_protection'
-    )
+    ),
+    url(
+        regex=r'^Data-Sets/$',
+        view=views.DataSetsView.as_view(),
+        name='data_sets'
+    ),
 ]

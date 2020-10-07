@@ -3252,6 +3252,34 @@ class ExportViewSet1(ListView):
         return get_model_as_csv_file_response(meta, content_type='text/csv', filename=filename)
 
 
+class ExportDataSet(ListView):
+    model = ActivityReport
+    queryset = ActivityReport.objects.all()
+
+    def get(self, request, *args, **kwargs):
+
+        qs = ActivityReport.objects.filter(
+            start_date__year='2020')
+
+        filename = "AI full raw data.csv"
+        fields = []
+        model_fields = ActivityReport._meta.fields
+
+        for field in model_fields:
+            fields.append(field.name)
+        print(fields)
+
+        meta = {
+            'file': filename,
+            # 'file': '/{}/{}'.format('tmp', filename),
+            'queryset': qs,
+            'fields': fields,
+            'header': fields
+        }
+        from internos.backends.gistfile import get_model_as_csv_file_response
+        return get_model_as_csv_file_response(meta, content_type='text/csv', filename=filename)
+
+
 class ExportViewSet(ListView):
     model = ActivityReport
     queryset = ActivityReport.objects.none()
@@ -3276,6 +3304,15 @@ class ExportViewSet(ListView):
         return response
 
 
+class ReportBBlastView(TemplateView):
+    template_name = 'activityinfo/blast.html'
+
+    def get_context_data(self, **kwargs):
+
+        return {
+        }
+
+
 class ReportBlastView(TemplateView):
     template_name = 'activityinfo/report_blast.html'
 
@@ -3298,7 +3335,6 @@ class ReportBlastView(TemplateView):
             'months' : months,
             'indicators': all_indicators
         }
-
 
 
 def load_sections(request):

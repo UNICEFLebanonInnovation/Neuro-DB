@@ -176,3 +176,13 @@ class ChildProtectionView(TemplateView):
             'data_set3': json.dumps(data_set3.values()),
             'data_set4': json.dumps(data_set4.values()),
         }
+
+
+class DataSetsView(TemplateView):
+    template_name = 'survey/data_sets.html'
+
+    def get_context_data(self, **kwargs):
+
+        return {
+
+        }
