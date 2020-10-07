@@ -52,6 +52,16 @@ urlpatterns = [
         name='report_blast'
     ),
     url(
+        regex=r'^Beirut-Blast/$',
+        view=views.ReportBBlastView.as_view(),
+        name='blast_dashboard'
+    ),
+    url(
+        regex=r'^Export-Data-Set/$',
+        view=views.ExportDataSet.as_view(),
+        name='export_data_set'
+    ),
+    url(
         regex=r'^report-crisis-live/$',
         view=views.ReportLiveCrisis.as_view(),
         name='report_crisis_live'
