@@ -644,8 +644,22 @@ def get_interventions_details(data_set, all_locations=False, json_dumps=True):
                 offices_names.append(Office.objects.get(id=int(office)).name)
             offices_names = separator.join(offices_names)
 
+            name = location.name.replace(location.p_code, '')
+            name = name.replace(location.type.name, '')
+            name = name.replace('-', '')
+            name = name.replace('[', '')
+            name = name.replace(']', '')
+            name = name.replace('* ', '')
+
+            p_code_2 = location.p_code
+            p_code_2 = p_code_2.replace('-', '_')
+            p_code_2s = p_code_2.split('_')
+
             details.append({
-                'name': location.name,
+                'name': name,
+                'location_type': location.type.name,
+                'p_code': location.p_code,
+                'CAS_CODE': p_code_2s[0],
                 'latitude': location.point.y if location.point else 0,
                 'longitude': location.point.x if location.point else 0,
                 'title': intervention.title,

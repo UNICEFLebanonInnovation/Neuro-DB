@@ -1,23 +1,12 @@
 {% load staticfiles i18n %}
 {% load util_tags %}
+{% load gtm_tags %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
-<!-- Google Tag Manager -->
-
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-
-})(window,document,'script','dataLayer','GTM-T8ZLMTW');</script>
-
-<!-- End Google Tag Manager -->
+{% gtm_head "GTM-5ML88K6" %}
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Meta, title, CSS, favicons, etc. -->
@@ -76,13 +65,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <body>
 
-<!-- Google Tag Manager (noscript) -->
-
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T8ZLMTW"
-
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-
-<!-- End Google Tag Manager (noscript) -->
+{% gtm_body "GTM-5ML88K6" %}
 
     <!--<button type="button" id="feedback-btn" class="btn btn-outline-primary vertical-right-aligned">-->
         <!--Feedback <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>-->
