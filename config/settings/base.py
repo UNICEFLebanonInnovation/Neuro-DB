@@ -61,6 +61,7 @@ DJANGO_APPS = [
     # 'jet.dashboard',
     'dal',
     'dal_select2',
+    'gtm',
     'django.contrib.admin',
     'django.contrib.gis',
     'django_json_widget',
@@ -421,3 +422,5 @@ LOGGING = {
 
 CURRENCIES = ('USD', 'LBP')
 CURRENCY_CHOICES = [('USD', 'USD'), ('LBP', 'LBP')]
+
+GOOGLE_TAG_ID = 'GTM-T8ZLMTW'
