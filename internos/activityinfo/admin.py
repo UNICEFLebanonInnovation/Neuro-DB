@@ -190,11 +190,13 @@ class ActivityAdmin(ImportExportModelAdmin):
         'database',
     )
     list_display = (
+        'ai_id',
+        'ai_form_id',
         'name',
         'database',
+        'none_ai_database',
         'category',
-        'location_type',
-        'programme_document'
+        'database_reporting_year',
     )
     # list_editable = (
     #     'programme_document',

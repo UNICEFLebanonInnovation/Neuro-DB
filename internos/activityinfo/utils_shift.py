@@ -139,64 +139,67 @@ def add_rows(ai_db=None, model=None):
 
             support_covid = support_covid1 or support_covid2 or support_covid3
 
-            model.create(
-                month=month,
-                database=row['Folder'],
-                database_id=ai_db.ai_id,
-                # site_id=row['site.id'],
-                report_id=row['FormId'],
-                # indicator_id=clean_string(row['Quantity.Field.ID'], 'i'),
-                indicator_id=row['Quantity.Field.ID'],
-                indicator_name=unicode(row['Quantity.Field'], errors='replace'),
-                # indicator_awp_code=get_awp_code(unicode(row['Quantity.Field'], errors='replace')),
-                month_name=row['month'] if 'month' in row else '',
-                partner_label=partner_label,
-                location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
-                location_adminlevel_caza=unicode(row['caza.name'], errors='replace') if 'caza.name' in row else '',
-                form=unicode(row['Form'], errors='replace') if 'Form' in row else '',
-                location_adminlevel_cadastral_area_code=row[
-                    'cadastral_area.code'] if 'cadastral_area.code' in row else '',
-                location_adminlevel_cadastral_area=unicode(row['cadastral_area.name'],
-                                                           errors='replace') if 'cadastral_area.name' in row else '',
+            try:
+                model.create(
+                    month=month,
+                    database=row['Folder'],
+                    database_id=ai_db.ai_id,
+                    # site_id=row['site.id'],
+                    report_id=row['FormId'],
+                    # indicator_id=clean_string(row['Quantity.Field.ID'], 'i'),
+                    indicator_id=row['Quantity.Field.ID'],
+                    indicator_name=unicode(row['Quantity.Field'], errors='replace'),
+                    # indicator_awp_code=get_awp_code(unicode(row['Quantity.Field'], errors='replace')),
+                    month_name=row['month'] if 'month' in row else '',
+                    partner_label=partner_label,
+                    location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
+                    location_adminlevel_caza=unicode(row['caza.name'], errors='replace') if 'caza.name' in row else '',
+                    form=unicode(row['Form'], errors='replace') if 'Form' in row else '',
+                    location_adminlevel_cadastral_area_code=row[
+                        'cadastral_area.code'] if 'cadastral_area.code' in row else '',
+                    location_adminlevel_cadastral_area=unicode(row['cadastral_area.name'],
+                                                               errors='replace') if 'cadastral_area.name' in row else '',
 
-                governorate=row['governorate'] if 'governorate' in row else '',
+                    governorate=row['governorate'] if 'governorate' in row else '',
 
-                location_adminlevel_governorate_code=gov_code,
+                    location_adminlevel_governorate_code=gov_code,
 
-                location_adminlevel_governorate=gov_name,
+                    location_adminlevel_governorate=gov_name,
 
-                partner_description=unicode(row['partner.partner_full_name'],
-                                            errors='replace') if 'partner.partner_full_name' in row else '',
-                project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row[
-                                                                                                          'projects.start_date'] == 'NA' else None,
-                project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row[
-                                                                                                    'projects.start_date'] == 'NA' else None,
-                project_label=unicode(row['projects.project_code'],
-                                      errors='replace') if 'projects.project_code' in row else '',
-                project_description=unicode(row['projects.project_name'],
-                                            errors='replace') if 'projects.project_name' in row else '',
-                funded_by=funded_by,
-                indicator_value=indicator_value,
-                indicator_units=row['units'] if 'units' in row else '',
-                reporting_section=row['reporting_section'] if 'reporting_section' in row else '',
-                site_type=row['site_type'] if 'site_type' in row else '',
-                location_longitude=row[
-                    'ai_allsites.geographic_location.longitude'] if 'ai_allsites.geographic_location.longitude' in row else '',
-                location_latitude=row[
-                    'ai_allsites.geographic_location.latitude'] if 'ai_allsites.geographic_location.latitude' in row else '',
-                location_alternate_name=row[
-                    'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
+                    partner_description=unicode(row['partner.partner_full_name'],
+                                                errors='replace') if 'partner.partner_full_name' in row else '',
+                    project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row[
+                                                                                                              'projects.start_date'] == 'NA' else None,
+                    project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row[
+                                                                                                        'projects.start_date'] == 'NA' else None,
+                    project_label=unicode(row['projects.project_code'],
+                                          errors='replace') if 'projects.project_code' in row else '',
+                    project_description=unicode(row['projects.project_name'],
+                                                errors='replace') if 'projects.project_name' in row else '',
+                    funded_by=funded_by,
+                    indicator_value=indicator_value,
+                    indicator_units=row['units'] if 'units' in row else '',
+                    reporting_section=row['reporting_section'] if 'reporting_section' in row else '',
+                    site_type=row['site_type'] if 'site_type' in row else '',
+                    location_longitude=row[
+                        'ai_allsites.geographic_location.longitude'] if 'ai_allsites.geographic_location.longitude' in row else '',
+                    location_latitude=row[
+                        'ai_allsites.geographic_location.latitude'] if 'ai_allsites.geographic_location.latitude' in row else '',
+                    location_alternate_name=row[
+                        'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
 
-                location_name=unicode(row['ai_allsites.name'], errors='replace') if 'ai_allsites.name' in row else '',
-                partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
-                support_covid=support_covid,
-                # start_date=datetime.datetime.strptime(row['month'], 'YYYY-MM-DD') if 'month' in row else '',
-                start_date=start_date,
-                # form_category=row['form.category'] if 'form.category' in row else '',
-                # indicator_units=row['indicator.units'] if 'indicator.units' in row else '',
-                # lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
-                # indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
-            )
+                    location_name=unicode(row['ai_allsites.name'], errors='replace') if 'ai_allsites.name' in row else '',
+                    partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
+                    support_covid=support_covid,
+                    # start_date=datetime.datetime.strptime(row['month'], 'YYYY-MM-DD') if 'month' in row else '',
+                    start_date=start_date,
+                    # form_category=row['form.category'] if 'form.category' in row else '',
+                    # indicator_units=row['indicator.units'] if 'indicator.units' in row else '',
+                    # lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
+                    # indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
+                )
+            except Exception as ex:
+                print(ex)
 
     return ctr
 

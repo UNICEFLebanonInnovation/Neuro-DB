@@ -110,8 +110,11 @@ def number_format(value):
 
 @register.assignment_tag
 def get_current_year():
-    from datetime import date
-    return date.today().year
+    # from datetime import date
+    # return date.today().year
+    from internos.activityinfo.models import ReportingYear
+    instance = ReportingYear.objects.get(current=True)
+    return instance.year
 
 
 @register.assignment_tag
