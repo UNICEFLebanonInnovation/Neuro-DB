@@ -38,7 +38,7 @@ class Database(models.Model):
     db_id = models.CharField(max_length=254,
                              null=True,
                              blank=True,
-                             unique=True,
+                             # unique=True,
                              verbose_name='ActivityInfo ID'
                              )
     name = models.CharField(max_length=254)
@@ -326,7 +326,7 @@ class Partner(models.Model):
 class Activity(models.Model):
 
     ai_id = models.PositiveIntegerField(null=True, blank=True)
-    ai_form_id = models.CharField(max_length=254, unique=True, null=True)
+    ai_form_id = models.CharField(max_length=254, null=True)
     database = models.ForeignKey(Database)
     none_ai_database = models.ForeignKey(Database, blank=True, null=True, related_name='+')
     name = models.CharField(max_length=1500)
@@ -342,6 +342,12 @@ class Activity(models.Model):
     @property
     def database_name(self):
         return self.database.name
+
+    @property
+    def database_reporting_year(self):
+        if self.database.reporting_year:
+            return self.database.reporting_year.name
+        return ''
 
     class Meta:
         ordering = ['name']
@@ -377,9 +383,9 @@ class IndicatorCategory(models.Model):
 class Indicator(models.Model):
 
     ai_id = models.PositiveIntegerField(blank=True, null=True)
-    activity = models.ForeignKey(Activity, related_name='+')
-    second_activity = models.ForeignKey(Activity, blank=True, null=True, related_name='+')
-    third_activity = models.ForeignKey(Activity, blank=True, null=True, related_name='+')
+    activity = models.ForeignKey(Activity, related_name='activity_indicators')
+    second_activity = models.ForeignKey(Activity, blank=True, null=True, related_name='second_activity_indicators')
+    third_activity = models.ForeignKey(Activity, blank=True, null=True, related_name='third_activity_indicators')
     name = models.CharField(max_length=5000)
     label = models.CharField(max_length=5000, blank=True, null=True)
     hpm_label = models.CharField(max_length=5000, blank=True, null=True)

@@ -56,29 +56,36 @@ def import_data_v4(ai_db):
         for folder in json_data['Folders']:
             if 'Forms' in folder:
                 for form in folder['Forms']:
-                    try:
-                        ai_activity = Activity.objects.get(ai_form_id=form['id'])
-                    except Activity.DoesNotExist:
-                        ai_activity = Activity(ai_form_id=form['id'])
+                    # try:
+                    #     ai_activity = Activity.objects.get(ai_form_id=form['id'])
+                    # except Activity.DoesNotExist:
+                    #     ai_activity = Activity(ai_form_id=form['id'])
+
+                    ai_activity, created = Activity.objects.get_or_create(ai_form_id=form['id'],
+                                                                          database_id=ai_db.db_id)
                     ai_activity.name = form['label']
-                    ai_activity.database = ai_db
+                    # ai_activity.database = ai_db
                     ai_activity.category = folder['label']
                     ai_activity.ai_category_id = form['parentId']
                     ai_activity.save()
                     """ get indicators list for each form"""
-                    get_list_indicators_v4(ai_db, form['id'])
+                    get_list_indicators_v4(ai_db, form['id'], ai_activity)
 
     if 'Forms' in json_data:
         for form in json_data['Forms']:
-            try:
-                ai_activity = Activity.objects.get(ai_form_id=form['id'])
-            except Activity.DoesNotExist:
-                ai_activity = Activity(ai_form_id=form['id'])
+            # try:
+            #     ai_activity = Activity.objects.get(ai_form_id=form['id'])
+            # except Activity.DoesNotExist:
+            #     ai_activity = Activity(ai_form_id=form['id'])
+
+            ai_activity, created = Activity.objects.get_or_create(ai_form_id=form['id'],
+                                                                  database_id=ai_db.db_id)
+
             ai_activity.name = form['label']
-            ai_activity.database = ai_db
+            # ai_activity.database = ai_db
             ai_activity.save()
             """ get indicators list for each form"""
-            get_list_indicators_v4(ai_db, form['id'])
+            get_list_indicators_v4(ai_db, form['id'], ai_activity)
     return len(new_data)
 
 
@@ -99,7 +106,7 @@ def import_partners(ai_db):
     return len(db_info)
 
 
-def get_list_indicators_v4(ai_db, form_id):
+def get_list_indicators_v4(ai_db, form_id, ai_activity):
     from .utils import get_awp_code
     client = ActivityInfoClient(ai_db.username, ai_db.password)
     form_info = client.get_database_indicators_v4(form_id)
@@ -112,17 +119,23 @@ def get_list_indicators_v4(ai_db, form_id):
         indicator_list = indicator_all_info['elements']
         sub_indicators = [x for x in indicator_list if x['type'] == 'quantity']
         for sub_indicator in sub_indicators:
-            try:
-                ai_sub_indicator = Indicator.objects.get(ai_indicator=sub_indicator['id'])
-            except Indicator.DoesNotExist:
-                ai_sub_indicator = Indicator(ai_indicator=sub_indicator['id'])
-            except Indicator.MultipleObjectsReturned:
-                continue
+
+            # try:
+            #     ai_sub_indicator = Indicator.objects.get(ai_indicator=sub_indicator['id'])
+            # except Indicator.DoesNotExist:
+            #     ai_sub_indicator = Indicator(ai_indicator=sub_indicator['id'])
+            # except Indicator.MultipleObjectsReturned:
+            #     continue
+
+            ai_sub_indicator, created = Indicator.objects.get_or_create(ai_indicator=sub_indicator['id'],
+                                                                        activity_id=ai_activity.id)
+
             ai_sub_indicator.description = sub_indicator['description'] if 'description' in sub_indicator else ''
             ai_sub_indicator.label = sub_indicator['label']
             ai_sub_indicator.name = sub_indicator['label']
             ai_sub_indicator.type = sub_indicator['type'] if 'type' in sub_indicator else ''
-            ai_sub_indicator.activity = Activity.objects.get(ai_form_id=form_id)
+            # ai_sub_indicator.activity = Activity.objects.get(ai_form_id=form_id)
+            # ai_sub_indicator.activity = ai_activity
             ai_sub_indicator.units = sub_indicator['typeParameters']['units']
             ai_sub_indicator.master_indicator = False
             ai_sub_indicator.awp_code = get_awp_code(sub_indicator['label'])

@@ -22,4 +22,9 @@ urlpatterns = [
         view=views.SiteProfileView.as_view(),
         name='site_profile'
     ),
+    url(
+        regex=r'^Export/$',
+        view=views.ExportSetView.as_view(),
+        name='export'
+    ),
 ]
