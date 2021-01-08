@@ -27,8 +27,10 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         year = date.today().year
-        reporting_year = self.request.GET.get('rep_year', year)
-        databases = Database.objects.filter(reporting_year__name=reporting_year,display=True).exclude(ai_id=10240).order_by('label')
+        instance = ReportingYear.objects.get(current=True)
+        reporting_year = self.request.GET.get('rep_year', instance.year)
+        databases = Database.objects.filter(reporting_year__name=reporting_year,
+                                            display=True).exclude(ai_id=10240).order_by('label')
         return {
             'ai_databases': databases,
             'reporting_year': reporting_year
@@ -3091,10 +3093,12 @@ class HPMView(TemplateView):
             else:
                 month = current_month - 2
 
-        year = date.today().year
-        reporting_year = self.request.GET.get('rep_year', year)
-        if not reporting_year:
-            reporting_year = year
+        # year = date.today().year
+        # reporting_year = self.request.GET.get('rep_year', year)
+        instance = ReportingYear.objects.get(current=True)
+        reporting_year = self.request.GET.get('rep_year', instance.year)
+        # if not reporting_year:
+        #     reporting_year = year
 
         if type == '1' or type == '2':
             selected_month_name='Quarter ' + type
@@ -3138,6 +3142,12 @@ class HPMView(TemplateView):
                 else:
                     for i in range(1, current_month-1):
                         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
+        if current_year - 1 == int(reporting_year) and current_month == 1:
+            months = []
+            is_current_year = True
+            for i in range(1, 13):
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         # periodic_months=[3,6,9,12]
         # periodic_list=[]

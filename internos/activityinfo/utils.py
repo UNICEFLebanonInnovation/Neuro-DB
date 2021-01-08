@@ -5,6 +5,7 @@ import datetime
 import subprocess
 import logging
 import calendar
+from datetime import date
 
 from django.db.models import Sum, Q
 from django.conf import settings
@@ -12,6 +13,40 @@ from django.template.defaultfilters import length
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_extraction_month(ai_db):
+
+    current_year = date.today().year
+    current_month = date.today().month
+    reporting_year = ai_db.reporting_year.year
+
+    if current_year - 1 == int(reporting_year) and current_month == 1:
+        return 13
+    else:
+        return current_month
+
+
+def get_current_extraction_month(ai_db):
+    current_year = date.today().year
+    current_month = date.today().month
+    reporting_year = ai_db.reporting_year.year
+
+    if current_year - 1 == int(reporting_year) and current_month == 1:
+        return 12
+    else:
+        return current_month
+
+
+def get_live_extraction_month(ai_db):
+    current_year = date.today().year
+    current_month = date.today().month
+    reporting_year = ai_db.reporting_year.year
+
+    if current_year - 1 == int(reporting_year) and current_month == 1:
+        return 12
+    else:
+        return current_month
 
 
 def r_script_command_line(script_name, ai_db):
@@ -103,7 +138,8 @@ def clean_string(value, string):
 # todo to be merged with the add_rows function
 def add_rows_temp(ai_db=None, model=None):
 
-    month = int(datetime.datetime.now().strftime("%m"))
+    # month = int(datetime.datetime.now().strftime("%m"))
+    month = get_current_extraction_month(ai_db)
     path = os.path.dirname(os.path.abspath(__file__))
     path2file = path+'/AIReports/'+str(ai_db.ai_id)+'_ai_data.csv'
     ctr = 0
@@ -130,6 +166,9 @@ def add_rows_temp(ai_db=None, model=None):
             start_date = None
             if 'month' in row and row['month'] and not row['month'] == 'NA':
                 start_date = '{}-01'.format(row['month'])
+
+            if ai_db.reporting_year.year not in start_date:
+                continue
 
             gov_code = row['reporting_office']
             gov_name = row['reporting_office']
@@ -184,8 +223,10 @@ def add_rows_temp(ai_db=None, model=None):
 
 def add_rows(ai_db=None, model=None):
 
-    month = int(datetime.datetime.now().strftime("%m"))
+    # month = int(datetime.datetime.now().strftime("%m"))
+    month = get_current_extraction_month(ai_db)
     month_name = datetime.datetime.now().strftime("%B")
+    reporting_year = ai_db.reporting_year.year
     path = os.path.dirname(os.path.abspath(__file__))
     path2file = path+'/AIReports/'+str(ai_db.ai_id)+'_ai_data.csv'
     ctr = 0
@@ -219,14 +260,18 @@ def add_rows(ai_db=None, model=None):
                 try:
                     date = datetime.datetime.strptime(date, '%Y-%m-%d')
                     start_date = date
-                except Exception :
+                except Exception:
                      start_date = '{}-01'.format(date)
 
             if 'month.' in row and row['month.'] and not row['month.'] == 'NA':
                 start_date = '{}-01'.format(row['month.'])
             if 'date' in row and row['date'] and not row['date'] == 'NA':
                 start_date = row['date']
-            gov_code =0
+
+            if not start_date or reporting_year not in start_date:
+                continue
+
+            gov_code = 0
             gov_name = ""
             if 'governorate.code' in row:
                 if row['governorate.code'] == 'NA':
@@ -2158,12 +2203,14 @@ def calculate_master_indicators_values(ai_db, report_type=None, sub_indicators=F
         'values_hpm',
     )
 
-    last_month = int(datetime.datetime.now().strftime("%m"))
+    # last_month = int(datetime.datetime.now().strftime("%m"))
+    last_month = get_extraction_month(ai_db)
     # last_month = 13
 
     if report_type == 'live':
         report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
-        last_month = last_month + 1
+        last_month = get_live_extraction_month(ai_db) + 1
+        # last_month = last_month + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
 
@@ -2450,11 +2497,13 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
         'values_sections_partners_gov_live'
 
     )
-    last_month = int(datetime.datetime.now().strftime("%m"))
+    last_month = get_extraction_month(ai_db)
+    # last_month = int(datetime.datetime.now().strftime("%m"))
 
     if report_type == 'live':
         report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
-        last_month = last_month + 1
+        # last_month = last_month + 1
+        last_month = get_live_extraction_month(ai_db) + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
     if ai_db.is_funded_by_unicef:
@@ -2690,10 +2739,12 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
     )
 
     last_month = int(datetime.datetime.now().strftime("%m"))
+    last_month = get_extraction_month(ai_db)
 
     if report_type == 'live':
         report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
-        last_month = last_month + 1
+        # last_month = last_month + 1
+        last_month = get_live_extraction_month(ai_db) + 1
     else:
         report = ActivityReport.objects.filter(database_id=ai_db.ai_id)
     if ai_db.is_funded_by_unicef:
@@ -2884,7 +2935,8 @@ def calculate_individual_indicators_values_11(ai_db):
 
     from internos.activityinfo.models import Indicator, ActivityReport
 
-    last_month = int(datetime.datetime.now().strftime("%m"))
+    # last_month = int(datetime.datetime.now().strftime("%m"))
+    last_month = get_extraction_month(ai_db)
 
     reports = ActivityReport.objects.filter(database_id=ai_db.ai_id)
     if ai_db.is_funded_by_unicef:
@@ -2989,10 +3041,11 @@ def calculate_individual_indicators_values_1(ai_db):
     ai_id = str(ai_db.ai_id)
 
     if ai_db.is_current_extraction:
-
-        last_month = int(datetime.datetime.now().strftime("%m")) + 1
+        last_month = get_current_extraction_month(ai_db) + 1
+        # last_month = int(datetime.datetime.now().strftime("%m")) + 1
     else:
-        last_month = int(datetime.datetime.now().strftime("%m"))
+        last_month = get_extraction_month(ai_db)
+        # last_month = int(datetime.datetime.now().strftime("%m"))
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(master_indicator=True)\
         .exclude(master_indicator_sub=True).only(
@@ -4106,7 +4159,8 @@ def calculate_internal_indicators_values(ai_db,indicator_id):
     from internos.activityinfo.models import Indicator
 
     # last_month = int(datetime.datetime.now().strftime("%m"))
-    last_month = 13
+    # last_month = 13
+    last_month = get_extraction_month(ai_db)
 
     indicators = Indicator.objects.filter(id=indicator_id).only(
         'ai_indicator',

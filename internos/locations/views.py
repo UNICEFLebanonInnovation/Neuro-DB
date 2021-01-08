@@ -88,3 +88,51 @@ class SiteProfileView(TemplateView):
         return {
             'databases': databases,
         }
+
+
+class ExportSetView(ListView):
+
+    model = Location
+    queryset = Location.objects.all()
+
+    def get(self, request, *args, **kwargs):
+
+        locations = self.queryset
+
+        details = []
+
+        for location in locations:
+
+            name = location.name.replace(location.p_code, '')
+            name = name.replace(location.type.name, '')
+            name = name.replace('-', '')
+            name = name.replace('[', '')
+            name = name.replace(']', '')
+            name = name.replace('* ', '')
+
+            p_code_2 = location.p_code
+            p_code_2 = p_code_2.replace('-', '_')
+            p_code_2s = p_code_2.split('_')
+
+            details.append({
+                'name': name,
+                'location_type': location.type.name,
+                'p_code': location.p_code,
+                'CAS_CODE': p_code_2s[0],
+                'latitude': location.point.y if location.point else 0,
+                'longitude': location.point.x if location.point else 0,
+            })
+
+        filename = "extraction.csv"
+
+        fields = details[0].keys()
+        header = details[0].values()
+        meta = {
+            'file': filename,
+            # 'file': '/{}/{}'.format('tmp', filename),
+            'queryset': details,
+            'fields': fields,
+            'header': fields
+        }
+        from internos.backends.gistfile import get_model_as_csv_file_response
+        return get_model_as_csv_file_response(meta, content_type='text/csv', filename=filename)
