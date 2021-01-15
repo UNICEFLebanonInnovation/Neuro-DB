@@ -113,6 +113,16 @@ class Database(models.Model):
         )
     )
 
+    @property
+    def reporting_year_name(self):
+        if self.reporting_year:
+            return self.reporting_year.year
+        return ''
+
+    @property
+    def full_name(self):
+        return '{} - {}'.format(self.name, self.reporting_year_name)
+
     def __unicode__(self):
         return self.name
 

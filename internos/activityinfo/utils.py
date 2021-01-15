@@ -237,7 +237,7 @@ def add_rows(ai_db=None, model=None):
     with open(path2file) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            ctr += 1
+            # ctr += 1
             indicator_value = 0
             if 'Value' in row:
                 indicator_value = row['Value']
@@ -355,6 +355,7 @@ def add_rows(ai_db=None, model=None):
                 # lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
                 # indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
             )
+            ctr += 1
 
     return ctr
 
