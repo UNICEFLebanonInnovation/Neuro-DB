@@ -456,6 +456,7 @@ class ReportCrisisView(TemplateView):
         selected_governorates = self.request.GET.getlist('governorates', [])
         selected_sections = self.request.GET.getlist('sections',[])
         selected_type = self.request.GET.get('filter_type', '')
+        current_year = date.today().year
 
         current_month = date.today().month
         selected_filter = False
@@ -482,6 +483,11 @@ class ReportCrisisView(TemplateView):
             for i in range(1, current_month + 1):
                 months.append((i, calendar.month_name[i]))
             # sliced_months = months[3:]
+
+        if current_year - 1 == int(reporting_year) and current_month == 1 and not selected_filter:
+            months = []
+            for i in range(1, 13):
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         all_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality')\
             .order_by('sequence')

@@ -62,7 +62,7 @@ def import_data_v4(ai_db):
                     #     ai_activity = Activity(ai_form_id=form['id'])
 
                     ai_activity, created = Activity.objects.get_or_create(ai_form_id=form['id'],
-                                                                          database_id=ai_db.db_id)
+                                                                          database_id=ai_db.id)
                     ai_activity.name = form['label']
                     # ai_activity.database = ai_db
                     ai_activity.category = folder['label']
@@ -79,7 +79,7 @@ def import_data_v4(ai_db):
             #     ai_activity = Activity(ai_form_id=form['id'])
 
             ai_activity, created = Activity.objects.get_or_create(ai_form_id=form['id'],
-                                                                  database_id=ai_db.db_id)
+                                                                  database_id=ai_db.id)
 
             ai_activity.name = form['label']
             # ai_activity.database = ai_db

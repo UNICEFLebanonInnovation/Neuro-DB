@@ -1,13 +1,23 @@
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, date
 
 from internos.taskapp.celery import app
 from .client import ActivityInfoClient
 from .utils import r_script_command_line
 
 logger = logging.getLogger(__name__)
+
+
+def get_reporting_year():
+    current_year = date.today().year
+    current_month = date.today().month
+
+    if current_month == 1:
+        return current_year - 1
+    else:
+        return current_year
 
 
 def read_form_data(formid):
@@ -139,7 +149,7 @@ def import_data_and_generate_live_crisis_report(database):
     from internos.activityinfo.models import Database
     from .utils_shift import import_data_via_r_script, link_indicators_data, calculate_indicators_values
 
-    databases = Database.objects.filter(reporting_year__year=datetime.now().year)
+    databases = Database.objects.filter(reporting_year__year=get_reporting_year())
     if database:
         databases = Database.objects.filter(ai_id=database)
 
@@ -158,7 +168,7 @@ def import_data_and_generate_weekly_report(database):
     from internos.activityinfo.models import Database
     from .utils_shift import import_data_via_r_script, link_indicators_data, calculate_indicators_values
 
-    databases = Database.objects.filter(reporting_year__year=datetime.now().year)
+    databases = Database.objects.filter(reporting_year__year=get_reporting_year())
     if database:
         databases = Database.objects.filter(ai_id=database)
 

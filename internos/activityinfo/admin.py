@@ -16,6 +16,35 @@ from .forms import DatabaseForm, IndicatorForm, IndicatorFormSet
 admin.site.site_header = 'Neuro-DB'
 
 
+class DatabaseFilter(admin.SimpleListFilter):
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = 'Database'
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'database_id'
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        return ((l.ai_id, l.full_name) for l in Database.objects.filter(reporting_year__isnull=False))
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        if self.value():
+                return queryset.filter(database_id=self.value())
+        return queryset
+
+
 class PartnerResource(resources.ModelResource):
 
     class Meta:
@@ -357,7 +386,17 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'is_sector',
         'is_section',
         'support_COVID',
-        'is_imported'
+        'is_imported',
+        'values',
+        'values_sections',
+        'values_sections_partners',
+        'values_sections_gov',
+        'values_sections_partners_gov',
+        'values_gov',
+        'values_partners',
+        'values_partners_gov',
+        'cumulative_values',
+        'highest_values'
         # 'support_disability',
         # 'values_tags'
     )
@@ -650,7 +689,8 @@ class ActivityReportAdmin(RelatedFieldAdmin):
     resources = ActivityReportResource
     list_filter = (
         'start_date',
-        'database',
+        # 'database',
+        DatabaseFilter,
         'partner_label',
         'location_adminlevel_governorate',
         'form',
@@ -663,7 +703,8 @@ class ActivityReportAdmin(RelatedFieldAdmin):
     )
     suit_list_filter_horizontal = (
         'start_date',
-        'database',
+        # 'database',
+        DatabaseFilter,
         'partner_label',
         'location_adminlevel_governorate',
         'form',
@@ -931,8 +972,6 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             request,
             "Partners imported successfully"
         )
-
-
 
     def import_basic_data(self, request, queryset):
         objects = 0

@@ -4,6 +4,8 @@ import json
 import datetime
 import subprocess
 import logging
+
+from datetime import date
 from django.db.models import Sum, Q
 from django.conf import settings
 from django.template.defaultfilters import length
@@ -11,6 +13,18 @@ from django.template.defaultfilters import length
 from internos.activityinfo.models import Indicator
 
 logger = logging.getLogger(__name__)
+
+
+def get_extraction_month(ai_db):
+
+    current_year = date.today().year
+    current_month = date.today().month
+    reporting_year = ai_db.reporting_year.year
+
+    if current_year - 1 == int(reporting_year) and current_month == 1:
+        return 12
+    else:
+        return current_month
 
 
 def r_script_command_line(script_name, ai_db):
@@ -59,7 +73,8 @@ def clean_string(value, string):
 
 
 def add_rows(ai_db=None, model=None):
-    month = int(datetime.datetime.now().strftime("%m"))
+    # month = int(datetime.datetime.now().strftime("%m"))
+    month = get_extraction_month(ai_db)
     month_name = datetime.datetime.now().strftime("%B")
     path = os.path.dirname(os.path.abspath(__file__))
     path2file = path + '/AIReports/' + str(ai_db.ai_id) + '_ai_data.csv'
@@ -71,7 +86,7 @@ def add_rows(ai_db=None, model=None):
     with open(path2file) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            ctr += 1
+
             indicator_value = 0
             if 'Value' in row:
                 indicator_value = row['Value']
@@ -198,6 +213,7 @@ def add_rows(ai_db=None, model=None):
                     # lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
                     # indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
                 )
+                ctr += 1
             except Exception as ex:
                 print(ex)
 
@@ -310,7 +326,8 @@ def calculate_individual_indicators_weekly_values(ai_db):
     from internos.activityinfo.models import Indicator
 
     ai_id = str(ai_db.ai_id)
-    current_month = int(datetime.datetime.now().strftime("%m")) + 1
+    # current_month = int(datetime.datetime.now().strftime("%m")) + 1
+    current_month = get_extraction_month(ai_db) + 1
 
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(master_indicator=True) \
         .exclude(master_indicator_sub=True).only(
@@ -497,7 +514,8 @@ def calculate_individual_indicators_weekly_imported_values(ai_db):
     from internos.activityinfo.models import Indicator
 
     ai_id = str(ai_db.ai_id)
-    current_month = int(datetime.datetime.now().strftime("%m")) + 1
+    # current_month = int(datetime.datetime.now().strftime("%m")) + 1
+    current_month = get_extraction_month(ai_db) + 1
     master_indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,is_imported_by_calculation=True)
     if master_indicators:
         linked_indicators=[]
@@ -616,7 +634,8 @@ def calculate_individual_indicators_live_imported_values(ai_db):
     from internos.activityinfo.models import Indicator
 
     ai_id = str(ai_db.ai_id)
-    current_month = int(datetime.datetime.now().strftime("%m")) + 1
+    # current_month = int(datetime.datetime.now().strftime("%m")) + 1
+    current_month = get_extraction_month(ai_db) + 1
     master_indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id,
                                                  is_imported_by_calculation=True)
     if master_indicators:
@@ -2818,7 +2837,8 @@ def calculate_master_indicators_values_percentage(ai_db, report_type=None):
         'values_cumulative_weekly',
 
     )
-    last_month = int(datetime.datetime.now().strftime("%m")) + 1
+    # last_month = int(datetime.datetime.now().strftime("%m")) + 1
+    last_month = get_extraction_month(ai_db) + 1
 
     if report_type == 'live':
         report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
@@ -3084,7 +3104,8 @@ def calculate_master_indicators_values_denominator_multiplication(ai_db, report_
 
     )
 
-    last_month = int(datetime.datetime.now().strftime("%m")) + 1
+    # last_month = int(datetime.datetime.now().strftime("%m")) + 1
+    last_month = get_extraction_month(ai_db) + 1
 
     if report_type == 'live':
         report = LiveActivityReport.objects.filter(database_id=ai_db.ai_id)
@@ -3301,6 +3322,7 @@ def calculate_individual_indicators_values_2(ai_db):
     from internos.activityinfo.models import Indicator
 
     last_month = int(datetime.datetime.now().strftime("%m")) + 1
+    last_month = get_extraction_month(ai_db) + 1
     # last_month = 13
 
     ai_id = str(ai_db.ai_id)
