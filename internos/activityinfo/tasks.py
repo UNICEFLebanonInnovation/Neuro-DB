@@ -361,48 +361,26 @@ def replicate_ai_indicators(db_source, db_destination):
 
             new_indicator.save()
 
+    for activity in activities:
+        indicators = activity.activity_indicators
         for indicator in indicators.all():
-            new_indicator = Indicator.objects.get(
-                ai_id=indicator.ai_id,
-                ai_indicator=indicator.ai_indicator,
-                activity_id=new_activity.id,
-                name=indicator.name
-            )
+            new_activity = get_new_indicator_activity(activity, db_destination)
+            new_indicator = get_new_indicator(indicator, new_activity)
 
             if indicator.main_master_indicator:
                 new_indicator_activity = get_new_indicator_activity(indicator.main_master_indicator.activity,
                                                                     db_destination)
                 new_indicator.main_master_indicator = get_new_indicator(indicator.main_master_indicator, new_indicator_activity)
-                    # Indicator.objects.get(
-                    # ai_id=indicator.main_master_indicator.ai_id,
-                    # ai_indicator=indicator.main_master_indicator.ai_indicator,
-                    # activity__database_id=new_activity.database_id,
-                    # name=indicator.main_master_indicator.name
-                # )
 
             if indicator.numerator_indicator:
                 new_indicator_activity = get_new_indicator_activity(indicator.numerator_indicator.activity,
                                                                     db_destination)
                 new_indicator.numerator_indicator = get_new_indicator(indicator.numerator_indicator, new_indicator_activity)
 
-                # new_indicator.numerator_indicator = Indicator.objects.get(
-                #     ai_id=indicator.numerator_indicator.ai_id,
-                #     ai_indicator=indicator.numerator_indicator.ai_indicator,
-                #     activity__database_id=new_activity.database_id,
-                #     name=indicator.numerator_indicator.name
-                # )
-
             if indicator.denominator_indicator:
                 new_indicator_activity = get_new_indicator_activity(indicator.denominator_indicator.activity,
                                                                     db_destination)
                 new_indicator.denominator_indicator = get_new_indicator(indicator.denominator_indicator, new_indicator_activity)
-
-                # new_indicator.denominator_indicator = Indicator.objects.get(
-                #     ai_id=indicator.denominator_indicator.ai_id,
-                #     ai_indicator=indicator.denominator_indicator.ai_indicator,
-                #     activity__database_id=new_activity.database_id,
-                #     name=indicator.denominator_indicator.name
-                # )
 
             if indicator.sub_indicators:
                 sub_indicators = indicator.sub_indicators.all()
@@ -412,12 +390,6 @@ def replicate_ai_indicators(db_source, db_destination):
                                                                             db_destination)
                         new_sub_indicator = get_new_indicator(sub_indicator, new_indicator_activity)
 
-                        # new_sub_indicator = Indicator.objects.get(
-                        #     ai_id=sub_indicator.ai_id,
-                        #     ai_indicator=sub_indicator.ai_indicator,
-                        #     activity__database_id=new_activity.database_id,
-                        #     name=sub_indicator.name,
-                        # )
                         new_indicator.sub_indicators.add(new_sub_indicator)
                     except:
                         print(sub_indicator.name)
@@ -431,12 +403,6 @@ def replicate_ai_indicators(db_source, db_destination):
                                                                             db_destination)
                         new_sub_indicator = get_new_indicator(sub_indicator, new_indicator_activity)
 
-                        # new_sub_indicator = Indicator.objects.get(
-                        #     ai_id=sub_indicator.ai_id,
-                        #     ai_indicator=sub_indicator.ai_indicator,
-                        #     activity__database_id=new_activity.database_id,
-                        #     name=sub_indicator.name,
-                        # )
                         new_indicator.summation_sub_indicators.add(new_sub_indicator)
                     except:
                         print(sub_indicator.name)
