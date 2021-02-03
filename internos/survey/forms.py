@@ -1,5 +1,6 @@
-from django import forms
+import datetime
 
+from django import forms
 from .models import EconomicReporting, MonitoringReporting
 from django.contrib.admin.widgets import AdminDateWidget
 
@@ -24,3 +25,13 @@ class MonitoringReportingForm(forms.ModelForm):
     class Meta:
         model = MonitoringReporting
         fields = '__all__'
+
+
+BIRTH_YEAR_CHOICES = ['1980', '1981', '1982']
+CURRENT_YEAR = datetime.datetime.now().year
+
+
+class ResearchForm(forms.ModelForm):
+    # publication_year = forms.DateField(widget=forms.SelectDateWidget(years=BIRTH_YEAR_CHOICES))
+    publication_year = forms.ChoiceField(choices=list(((str(x), x) for x in range(CURRENT_YEAR - 5, CURRENT_YEAR + 5))),
+                                         initial=CURRENT_YEAR)
