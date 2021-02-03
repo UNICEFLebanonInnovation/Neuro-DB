@@ -11,7 +11,29 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from datetime import date
 from django.http import HttpResponseRedirect
-from .models import EconomicReporting, MonitoringReporting
+from .models import EconomicReporting, MonitoringReporting, Map, Research
+
+
+class MapsView(TemplateView):
+    template_name = 'survey/maps.html'
+
+    def get_context_data(self, **kwargs):
+        items = Map.objects.all()
+
+        return {
+            'maps': items
+        }
+
+
+class ResearchesView(TemplateView):
+    template_name = 'survey/researches.html'
+
+    def get_context_data(self, **kwargs):
+        items = Research.objects.all()
+
+        return {
+            'items': items
+        }
 
 
 class EconomicDashboardView(TemplateView):

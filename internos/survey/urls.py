@@ -26,4 +26,15 @@ urlpatterns = [
         view=views.DataSetsView.as_view(),
         name='data_sets'
     ),
+    url(
+        r'^Maps/$',
+        views.MapsView.as_view(),
+        name='maps'
+    ),
+
+    url(
+        r'^Researches/$',
+        views.ResearchesView.as_view(),
+        name='researches'
+    ),
 ]
