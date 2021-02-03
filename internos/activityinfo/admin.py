@@ -387,16 +387,6 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'is_section',
         'support_COVID',
         'is_imported',
-        'values',
-        'values_sections',
-        'values_sections_partners',
-        'values_sections_gov',
-        'values_sections_partners_gov',
-        'values_gov',
-        'values_partners',
-        'values_partners_gov',
-        'cumulative_values',
-        'highest_values'
         # 'support_disability',
         # 'values_tags'
     )
