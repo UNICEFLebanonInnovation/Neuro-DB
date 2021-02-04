@@ -857,7 +857,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     )
     actions = [
         'import_partners',
-        're_formatting_json',
+        'import_database_structure',
+        'replicate_database_indicators',
         'import_basic_data',
         'update_basic_data',
         'import_only_new',
@@ -942,7 +943,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                       ('activities', 'Activities'),
                     )
 
-    def re_formatting_json(self, request, queryset):
+    def import_database_structure(self, request, queryset):
 
         from .utilities import import_data_v4
         objects = 0
@@ -952,6 +953,14 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 request,
                 "{} objects created.".format(objects)
             )
+
+    def replicate_database_indicators(self, request, queryset):
+        from .tasks import replicate_ai_indicators
+        if queryset.count() == 2:
+            db_source = queryset[0]
+            db_dest = queryset[1]
+            if db_source.db_id == db_dest.db_id:
+                replicate_ai_indicators(db_source.id, db_dest.id)
 
     def import_partners(self, request,queryset):
         from .utilities import import_partners
