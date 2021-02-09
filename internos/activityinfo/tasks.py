@@ -367,10 +367,10 @@ def replicate_ai_indicators(db_source, db_destination):
             new_activity = get_new_indicator_activity(activity, db_destination)
             new_indicator = get_new_indicator(indicator, new_activity)
 
-            if indicator.main_master_indicator:
-                new_indicator_activity = get_new_indicator_activity(indicator.main_master_indicator.activity,
-                                                                    db_destination)
-                new_indicator.main_master_indicator = get_new_indicator(indicator.main_master_indicator, new_indicator_activity)
+            # if indicator.main_master_indicator:
+            #     new_indicator_activity = get_new_indicator_activity(indicator.main_master_indicator.activity,
+            #                                                         db_destination)
+            #     new_indicator.main_master_indicator = get_new_indicator(indicator.main_master_indicator, new_indicator_activity)
 
             if indicator.numerator_indicator:
                 new_indicator_activity = get_new_indicator_activity(indicator.numerator_indicator.activity,
@@ -392,6 +392,7 @@ def replicate_ai_indicators(db_source, db_destination):
 
                         new_indicator.sub_indicators.add(new_sub_indicator)
                     except:
+                        print('sub_indicators')
                         print(sub_indicator.name)
                         continue
 
@@ -405,6 +406,7 @@ def replicate_ai_indicators(db_source, db_destination):
 
                         new_indicator.summation_sub_indicators.add(new_sub_indicator)
                     except:
+                        print('summation_sub_indicators')
                         print(sub_indicator.name)
                         continue
 
