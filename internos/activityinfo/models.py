@@ -35,6 +35,12 @@ class Database(models.Model):
         unique=True,
         verbose_name='ID'
     )
+    parent_id = models.CharField(max_length=254,
+                             null=True,
+                             blank=True,
+                             # unique=True,
+                             verbose_name='ActivityInfo Parent ID'
+                             )
     db_id = models.CharField(max_length=254,
                              null=True,
                              blank=True,
@@ -462,6 +468,11 @@ class Indicator(models.Model):
     tag_focus = models.ForeignKey(IndicatorTag, blank=True, null=True, related_name='+')
     hpm_indicator = models.BooleanField(default=False)
     hpm_global_indicator = models.BooleanField(default=False)
+
+    is_lcrp = models.BooleanField(default=False)
+    is_standalone_HAC_2 = models.BooleanField(default=False)
+    is_additional_indicators = models.BooleanField(default=False)
+
     comment = JSONField(blank=True, null=True)
     has_hpm_note = models.BooleanField(default=False)
     hpm_additional_cumulative= models.PositiveIntegerField(default=0)

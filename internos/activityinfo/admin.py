@@ -465,6 +465,9 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'tag_programme',
                 'tag_focus',
                 'hpm_indicator',
+                'is_lcrp',
+                'is_standalone_HAC_2',
+                'is_additional_indicators',
                 'comment',
                 'target_hpm',
                 'has_hpm_note',
@@ -891,6 +894,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             'classes': ('suit-tab', 'suit-tab-general',),
             'fields': [
                 'ai_id',
+                'parent_id',
                 'db_id',
                 'name',
                 'label',
