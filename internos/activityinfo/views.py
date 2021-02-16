@@ -95,6 +95,8 @@ class ReportView(TemplateView):
         selected_governorates = self.request.GET.getlist('governorates', [])
         support_covid = self.request.GET.get('support_covid', -1)
 
+        tag_filter = self.request.GET.get('tag_filter', None)
+
         current_year = date.today().year
         current_month = date.today().month
         partner_info = {}
@@ -138,14 +140,22 @@ class ReportView(TemplateView):
 
         all_indicators = Indicator.objects.filter(activity__database=database).order_by('sequence')
 
-        if int(support_covid) == 1:
-            master_indicators = all_indicators.filter(activity__database=database, support_COVID=True).exclude(is_sector=True).order_by('sequence')
+        master_indicators = all_indicators.exclude(is_sector=True)
 
-        elif int(support_covid) == 0:
-            master_indicators = all_indicators.filter(activity__database=database, support_COVID=False).exclude(is_sector=True).order_by( 'sequence')
+        if tag_filter == 'support_covid':
+            master_indicators = master_indicators.filter(support_COVID=True)
 
-        else:
-            master_indicators = all_indicators.filter(activity__database=database).exclude(is_sector=True).order_by( 'sequence')
+        if tag_filter == 'hpm_indicator':
+            master_indicators = all_indicators.filter(hpm_indicator=True)
+
+        if tag_filter == 'is_lcrp':
+            master_indicators = all_indicators.filter(is_lcrp=True)
+
+        if tag_filter == 'is_standalone_HAC_2':
+            master_indicators = all_indicators.filter(is_standalone_HAC_2=True)
+
+        if tag_filter == 'is_additional_indicators':
+            master_indicators = all_indicators.filter(is_additional_indicators=True)
 
         if database.mapped_db:
             master_indicators1 = master_indicators.filter(master_indicator=True)
@@ -289,6 +299,7 @@ class ReportView(TemplateView):
             'selected_governorates': selected_governorates,
             'selected_months': selected_months,
             'support_covid':int(support_covid),
+            'tag_filter': tag_filter,
             'month': month,
             'year': today.year,
             'month_name': month_name,

@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+# coding=utf-8
+# -*- coding: utf-8 -*-
+
 import os
 import csv
-import json
 import datetime
 import subprocess
 import logging
@@ -8,8 +11,8 @@ import calendar
 from datetime import date
 
 from django.db.models import Sum, Q
-from django.conf import settings
-from django.template.defaultfilters import length
+from internos.activityinfo.client import Client
+from internos.activityinfo.exports import get_database_data, read_file, get_xlsx
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +52,7 @@ def get_live_extraction_month(ai_db):
         return current_month
 
 
-def r_script_command_line(script_name, ai_db):
+def r_script_command_line_old(script_name, ai_db):
     command = 'Rscript'
    # path = os.path.dirname(os.path.abspath(__file__))
     path = os.path.dirname(__file__)
@@ -67,8 +70,20 @@ def r_script_command_line(script_name, ai_db):
     return 1
 
 
+def r_script_command_line(script_name, ai_db):
+
+    client = Client()
+    filters = "LEFT(Month,4) == '{}'".format(ai_db.reporting_year.year)
+    if ai_db.parent_id:
+        get_database_data(client, database_id=ai_db.parent_id, resource_id=ai_db.db_id, database=ai_db,
+                          record_filter=filters)
+        # get_xlsx(client, database_id=ai_db.parent_id, resource_id=ai_db.db_id, database=ai_db, record_filter=filters)
+    else:
+        get_database_data(client, database_id=ai_db.db_id, database=ai_db, record_filter=filters)
+
+
 def read_data_from_file(ai_db, forced=False, report_type=None):
-    from internos.activityinfo.models import Database, ActivityReport, LiveActivityReport
+    from internos.activityinfo.models import ActivityReport, LiveActivityReport
     result = 0
 
     if report_type == 'live':
@@ -100,7 +115,6 @@ def get_awp_code(name):
             awp_code = name[:name.find('_')]
         elif ' - ' in name:
             awp_code = name[:name.find(' - ')]
-            # ai_indicator.awp_code = name[re.search('\d', name).start():name.find(':')]
             if ': ' in awp_code:
                 awp_code = awp_code[:awp_code.find(': ')]
         elif ': ' in name:
@@ -125,7 +139,6 @@ def get_label(data):
 
 def set_tags(indicator, tags):
     for tag in tags:
-        # if tag.name in indicator.name or tag.name.upper() in indicator.name or tag.name.title() in indicator.name:
         if tag.name in indicator.name or tag.name.title() in indicator.name:
             setattr(indicator, tag.tag_field, tag)
     indicator.save()
@@ -137,6 +150,197 @@ def clean_string(value, string):
 
 # todo to be merged with the add_rows function
 def add_rows_temp(ai_db=None, model=None):
+
+    month = get_current_extraction_month(ai_db)
+    path = os.path.dirname(os.path.abspath(__file__))
+    values = read_file(str(ai_db.ai_id)+'_ai_data.txt')
+    ctr = 0
+
+    for row in values:
+        indicator_value = 0
+        if 'Value' in row:
+            indicator_value = row['Value']
+
+        try:
+            indicator_value = float(indicator_value)
+        except Exception:
+            indicator_value = 0
+
+        funded_by = 'UNICEF'
+        partner_label = 'UNICEF'
+
+        start_date = None
+        if 'month' in row and row['month'] and not row['month'] == 'NA':
+            start_date = '{}-01'.format(row['month'])
+
+        if ai_db.reporting_year.year not in start_date:
+            continue
+
+        gov_code = row['reporting_office']
+        gov_name = row['reporting_office']
+
+        model.create(
+            month=month,
+            database=row['Folder'],
+            database_id=ai_db.ai_id,
+            report_id=row['FormId'],
+            indicator_id=row['Quantity Field ID'],
+            indicator_name=row['Quantity Field'],
+            indicator_awp_code='',
+            month_name=row['month'] if 'month' in row else '',
+            partner_label=partner_label,
+            location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
+            location_adminlevel_caza=row['caza.name'] if 'caza.name' in row else '',
+            form=row['Form'] if 'Form' in row else '',
+            location_adminlevel_cadastral_area_code=row['cadastral_area.code'] if 'cadastral_area.code' in row else'',
+            location_adminlevel_cadastral_area=row['cadastral_area.name'] if 'cadastral_area.name' in row else '',
+            governorate=row['governorate'] if 'governorate' in row else '',
+            location_adminlevel_governorate_code=gov_code,
+            location_adminlevel_governorate=gov_name,
+            partner_description='UNICEF',
+            project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
+            project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
+            project_label=row['projects.project_code'] if 'projects.project_code' in row else '',
+            project_description=row['projects.project_name'] if 'projects.project_name' in row else '',
+            funded_by=funded_by,
+            indicator_value=indicator_value,
+            indicator_units=row['units'] if 'units' in row else '',
+            reporting_section=row['reporting_section'] if 'reporting_section' in row else '',
+            site_type=row['site_type'] if 'site_type' in row else '',
+            location_longitude=row[
+                'ai_allsites.geographic_location.longitude'] if 'ai_allsites.geographic_location.longitude' in row else '',
+            location_latitude=row[
+                'ai_allsites.geographic_location.latitude'] if 'ai_allsites.geographic_location.latitude' in row else '',
+            location_alternate_name=row[
+                'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
+
+            location_name=row['ai_allsites.name'] if 'ai_allsites.name' in row else '',
+            partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
+
+            start_date=start_date,
+        )
+        ctr += 1
+
+    return ctr
+
+
+def add_rows(ai_db=None, model=None):
+    month = get_current_extraction_month(ai_db)
+    path = os.path.dirname(os.path.abspath(__file__))
+    values = read_file(str(ai_db.ai_id)+'_ai_data.txt')
+    ctr = 0
+    print('start add rows')
+
+    for row in values:
+        indicator_value = 0
+        if 'Value' in row:
+            indicator_value = row['Value']
+
+        try:
+            indicator_value = float(indicator_value)
+        except Exception:
+            indicator_value = 0
+
+        funded_by = row['funded_by.funded_by'] if 'funded_by.funded_by' in row else ''
+        partner_label = row['partner.name'] if 'partner.name' in row else ''
+        partner_label = partner_label.replace('-', '_')
+        partner_label = partner_label.encode("utf-8").replace('é', 'e')
+
+        if partner_label == 'UNICEF':
+            funded_by = 'UNICEF'
+
+        start_date = None
+        if 'month' in row and row['month'] and not row['month'] == 'NA':
+            date = row['month']
+            try:
+                date = datetime.datetime.strptime(date, '%Y-%m-%d')
+                start_date = date
+            except Exception:
+                 start_date = '{}-01'.format(date)
+
+        if 'month.' in row and row['month.'] and not row['month.'] == 'NA':
+            start_date = '{}-01'.format(row['month.'])
+        if 'date' in row and row['date'] and not row['date'] == 'NA':
+            start_date = row['date']
+
+        gov_code = 0
+        gov_name = ""
+        if 'governorate.code' in row:
+            if row['governorate.code'] == 'NA':
+                gov_code = 10
+            else:
+                gov_code = row['governorate.code']
+
+        if 'governorate.name' in row:
+            if row['governorate.name'] == 'NA':
+                gov_name = "National"
+            else:
+                gov_name = row['governorate.name']
+
+        support_covid1 = False
+        support_covid2 = False
+        support_covid3 = False
+
+        if 'X4.2.3_covid_adaptation' in row:
+            if row['X4.2.3_covid_adaptation'] == 'Yes':
+                support_covid1 = True
+
+        if 'covid_adaptation' in row:
+            if row['covid_adaptation'] == 'Yes':
+                support_covid2 = True
+
+        if 'covid_adapted_sensitization' in row:
+            if row['covid_adapted_sensitization'] == 'Yes':
+                support_covid3 = True
+
+        support_covid = support_covid1 or support_covid2 or support_covid3
+
+        model.create(
+            month=month,
+            database=row['Folder'],
+            database_id=ai_db.ai_id,
+            report_id=row['FormId'],
+            indicator_id=row['Quantity Field ID'],
+            indicator_name=row['Quantity Field'],
+            indicator_awp_code=get_awp_code(row['Quantity Field']),
+            month_name=row['month'] if 'month' in row else '',
+            partner_label=partner_label,
+            location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
+            location_adminlevel_caza=row['caza.name'] if 'caza.name' in row else '',
+            form=row['Form'] if 'Form' in row else '',
+            location_adminlevel_cadastral_area_code=row['cadastral_area.code'] if 'cadastral_area.code' in row else'',
+            location_adminlevel_cadastral_area=row['cadastral_area.name'] if 'cadastral_area.name' in row else '',
+            governorate=row['governorate'] if 'governorate' in row else '',
+            location_adminlevel_governorate_code=gov_code,
+            location_adminlevel_governorate=gov_name,
+            partner_description=row['partner.partner_full_name'] if 'partner.partner_full_name' in row else '',
+            project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
+            project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
+            project_label=row['projects.project_code'] if 'projects.project_code' in row else '',
+            project_description=row['projects.project_name'] if 'projects.project_name' in row else '',
+            funded_by=funded_by,
+            indicator_value=indicator_value,
+            indicator_units=row['units'] if 'units' in row else '',
+            reporting_section=row['reporting_section'] if 'reporting_section' in row else '',
+            site_type=row['site_type'] if 'site_type' in row else '',
+            location_longitude=row[
+                'ai_allsites.geographic_location.longitude'] if 'ai_allsites.geographic_location.longitude' in row else '',
+            location_latitude=row[
+                'ai_allsites.geographic_location.latitude'] if 'ai_allsites.geographic_location.latitude' in row else '',
+            location_alternate_name=row[
+                'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
+            location_name=row['ai_allsites.name'] if 'ai_allsites.name' in row else '',
+            partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
+            support_covid=support_covid,
+            start_date=start_date,
+        )
+        ctr += 1
+
+    return ctr
+
+
+# todo to be deleted
+def add_rows_temp_old(ai_db=None, model=None):
 
     # month = int(datetime.datetime.now().strftime("%m"))
     month = get_current_extraction_month(ai_db)
@@ -221,7 +425,8 @@ def add_rows_temp(ai_db=None, model=None):
     return ctr
 
 
-def add_rows(ai_db=None, model=None):
+# todo to be deleted
+def add_rows_old(ai_db=None, model=None):
 
     # month = int(datetime.datetime.now().strftime("%m"))
     month = get_current_extraction_month(ai_db)
@@ -438,12 +643,6 @@ def calculate_sum_target(ai_id):
         item.save()
 
     for item in top_indicators:
-        # if top_indicators.measurement_type == 'percentage':
-        #     try:
-        #         item.target = item.denominator_indicator.target / item.numerator_indicator.target
-        #     except Exception:
-        #         item.target = 0
-        # else:
         target_sum = item.summation_sub_indicators.exclude(master_indicator_sub=False,
                                                            master_indicator=False).aggregate(Sum('target'))
         item.target = target_sum['target__sum'] if target_sum['target__sum'] else 0
@@ -4555,6 +4754,7 @@ def get_months_list(ai_db,partners=None, govs=None,sections=None, report_type=No
 
     return months
 
+
 def calculate_indicators_highest_results(ai_db, report_type=None):
     from internos.activityinfo.models import Indicator, ActivityReport, LiveActivityReport
     from django.db import connection
@@ -4623,7 +4823,8 @@ def calculate_indicators_highest_results(ai_db, report_type=None):
                     values2 = indicator_values[8]  # values_partners
                     values3 = indicator_values[10]  # values_partners_gov
 
-                highest_month = max(values.values())
+                if len(values.values()) > 0:
+                    highest_month = max(values.values())
 
                 for key, value in values1.items():
                     keys = key.split('-')
@@ -4667,5 +4868,6 @@ def calculate_indicators_highest_results(ai_db, report_type=None):
                          'partners_govs': highest_partner_gov
                     }
                 indicator.save()
-        return indicators.count()
+
+    # return linked_indicators.count()
 
