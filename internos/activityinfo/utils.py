@@ -24,7 +24,7 @@ def get_extraction_month(ai_db):
     current_month = date.today().month
     reporting_year = ai_db.reporting_year.year
 
-    if current_year - 1 == int(reporting_year) and current_month == 1:
+    if current_year - 1 >= int(reporting_year):
         return 13
     else:
         return current_month
@@ -77,7 +77,7 @@ def r_script_command_line(script_name, ai_db):
     if ai_db.parent_id:
         get_database_data(client, database_id=ai_db.parent_id, resource_id=ai_db.db_id, database=ai_db,
                           record_filter=filters)
-        # get_xlsx(client, database_id=ai_db.parent_id, resource_id=ai_db.db_id, database=ai_db, record_filter=filters)
+        get_xlsx(client, database_id=ai_db.parent_id, resource_id=ai_db.db_id, database=ai_db, record_filter=filters)
     else:
         get_database_data(client, database_id=ai_db.db_id, database=ai_db, record_filter=filters)
 
@@ -153,7 +153,8 @@ def add_rows_temp(ai_db=None, model=None):
 
     month = get_current_extraction_month(ai_db)
     path = os.path.dirname(os.path.abspath(__file__))
-    values = read_file(str(ai_db.ai_id)+'_ai_data.txt')
+    path2file = path+'/AIReports/'+str(ai_db.ai_id)+'_ai_data.txt'
+    values = read_file(path2file)
     ctr = 0
 
     for row in values:
@@ -227,7 +228,8 @@ def add_rows_temp(ai_db=None, model=None):
 def add_rows(ai_db=None, model=None):
     month = get_current_extraction_month(ai_db)
     path = os.path.dirname(os.path.abspath(__file__))
-    values = read_file(str(ai_db.ai_id)+'_ai_data.txt')
+    path2file = path+'/AIReports/'+str(ai_db.ai_id)+'_ai_data.txt'
+    values = read_file(path2file)
     ctr = 0
     print('start add rows')
 
