@@ -211,7 +211,7 @@ def get_xlsx(client, database_id, resource_id=None, record_filter=None, database
     download_url = '{0}/{1}'.format(client.base_url, job_status['result']['downloadUrl'])
 
     download_file(client, download_url, str(database.ai_id)+"_ai_data.xlsx")
-    download_file(client, download_url, database.db_id+"_ai_data.xlsx")
+    # download_file(client, download_url, database.db_id+"_ai_data.xlsx")
 
 
 def download_file(client, url, filename=None):
@@ -229,6 +229,9 @@ def download_file(client, url, filename=None):
         local_filename = url.split('/')[-1]
     else:
         local_filename = filename
+
+    path = os.path.dirname(os.path.abspath(__file__))
+    local_filename = '{}/AIReports/{}'.format(path, local_filename)
 
     with requests.get(url, auth=client.auth, stream=True) as r:
         with open(local_filename, 'wb') as f:
