@@ -1,0 +1,167 @@
+{% extends "base2.html" %}
+{% load staticfiles i18n %}
+{% block project_title %}{% endblock %}
+{% block content %}
+<style>
+   .highcharts-figure, .highcharts-data-table table {
+   min-width: 500px;
+   max-width: 1200px;
+   min-height: 400px;
+   }
+   .highcharts-data-table table {
+   font-family: Verdana, sans-serif;
+   border-collapse: collapse;
+   border: 1px solid #EBEBEB;
+   margin: 10px auto;
+   text-align: center;
+   width: 100%;
+   max-width: 500px;
+   }
+   .highcharts-data-table caption {
+   padding: 1em 0;
+   font-size: 1.2em;
+   color: #555;
+   }
+   .highcharts-data-table th {
+   font-weight: 600;
+   padding: 0.5em;
+   }
+   .highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+   padding: 0.5em;
+   }
+   .highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+   background: #f8f8f8;
+   }
+   .highcharts-data-table tr:hover {
+   background: #f1f7ff;
+   }
+
+ 
+</style>
+<div class="app-main__inner watermark">
+   <div class="app-page-title">
+      <div class="page-title-wrapper">
+         <div class="page-title-heading">
+            {% comment %} 
+            <div class="page-title-icon">
+               <i class="pe-7s-keypad icon-gradient bg-mean-fruit">
+               </i>
+            </div>
+            {% endcomment %}
+            <div>
+               Child Protection Working Group Real time monitoring 2020
+               <div class="page-title-subheading">
+                  <div class="text-danger">
+                     <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                     This dashboard is under construction, please don't use it in any official report.
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="page-title-actions">
+         </div>
+      </div>
+   </div>
+   <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+      <li class="nav-item">
+         <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
+         <span>Children</span>
+         </a>
+      </li>
+      <li class="nav-item">
+         <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" href="#tab-content-1">
+         <span>Other</span>
+         </a>
+      </li>
+   </ul>
+   <div class="tab-content">
+      <div class="tab-pane tabs-animation active show" id="tab-content-0" role="tabpanel">
+        <div class="mb-3 card table no-shadow">
+           <div class="no-gutters row">
+              <div class="col-lg-6 ">
+                <div class="card  rm-border">
+                  <figure class="highcharts-figure ">
+                      <div id="cp_chart3"></div>
+                      <p class="highcharts-description">
+                      </p>
+                  </figure>
+                </div>
+                <ul id="cp_chart3_legend" class="legend-list py-4"></ul>
+              </div>
+              <div class="col-lg-6">  
+               <div class="card  rm-border">
+                  <figure class="highcharts-figure col-lg-6">
+                      <div id="cp_chart4"></div>
+                      <p class="highcharts-description">
+                      </p>
+                  </figure>
+                </div>
+                <ul id="cp_chart4_legend" class="legend-list py-4"></ul>
+              </div>
+             <div class="col-lg-6">  
+               <div class="card  rm-border">
+                  <figure class="highcharts-figure col-lg-6">
+                      <div id="cp_chart1"></div>
+                      <p class="highcharts-description">
+                      </p>
+                  </figure>
+                </div>
+                <ul id="cp_chart1_legend" class="legend-list py-4"></ul>
+              </div>
+             <div class="col-lg-6">  
+               <div class="card  rm-border">
+                  <figure class="highcharts-figure col-lg-6">
+                      <div id="cp_chart2"></div>
+                      <p class="highcharts-description">
+                      </p>
+                  </figure>
+                </div>
+                <ul id="cp_chart2_legend" class="legend-list py-4"></ul>
+              </div>
+
+            </div>
+          </div>
+
+
+
+      
+      </div>
+      <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
+         <div class="main-card mb-3 card">
+            <div class="card-body watermark">
+               <div class="table-responsive">
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock content %}
+{% block extra_js %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script type="text/javascript" src="{% static 'js/Highcharts.chart.js' %}"></script>
+<script type="text/javascript">
+   var data_set1 = '{{ data_set1|safe }}';
+   data_set1 = JSON.parse(data_set1);
+   
+   var data_set2 = '{{ data_set2|safe }}';
+   data_set2 = JSON.parse(data_set2);
+   
+   var data_set3 = '{{ data_set3|safe }}';
+   data_set3 = JSON.parse(data_set3);
+   
+   var data_set4 = '{{ data_set4|safe }}';
+   data_set4 = JSON.parse(data_set4);
+   
+   createChart(data_set1, 'cp_chart1', 'Requests for assistance by Lebanese', '', 'Children', 'Date', 'Child','cp_chart1_legend');
+   createChart(data_set2, 'cp_chart2', 'Requests for assistance by Non-Lebanese', '', 'Children', 'Date', 'Child','cp_chart2_legend');
+   
+   createChart(data_set3, 'cp_chart3', 'Reported gaps in services', '', '', 'Date', '','cp_chart3_legend');
+   createChart(data_set4, 'cp_chart4', 'Difficulty in accessing services', '', '', 'Date', '','cp_chart4_legend');
+   
+</script>
+{% endblock %}

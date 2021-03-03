@@ -1,0 +1,1957 @@
+{% extends template %}
+{% load staticfiles i18n %}
+{% block project_title %}{% endblock %}
+{% block content %}
+<script type="text/javascript" src="{% static 'css/highcharts.css' %}"></script>
+<style>
+   .highcharts-figure, .highcharts-data-table table {
+   min-width: 500px;
+   max-width: 1200px;
+   min-height: 400px;
+   border: 1px solid #eee;
+   }
+   .highcharts-data-table table {
+   font-family: Verdana, sans-serif;
+   border-collapse: collapse;
+   border: 1px solid #EBEBEB;
+   margin: 10px auto;
+   text-align: center;
+   width: 100%;
+   max-width: 500px;
+   }
+   .highcharts-data-table caption {
+   padding: 1em 0;
+   font-size: 1.2em;
+   color: #555;
+   }
+   .highcharts-data-table th {
+   font-weight: 600;
+   padding: 0.5em;
+   }
+   .highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+   padding: 0.5em;
+   }
+   .highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+   background: #f8f8f8;
+   }
+   .highcharts-data-table tr:hover {
+   background: #f1f7ff;
+   }
+   .widget-chart .widget-numbers {
+   font-weight: bold;
+   font-size: 2rem;
+   display: block;
+   line-height: 1;
+   margin: 1rem auto;
+   }
+   .widget-chart .widget-subheading + .widget-numbers {
+   margin-top: 0.5rem;
+   }
+   .widget-chart.text-left .widget-numbers {
+   margin-left: 0;
+   }
+   .widget-chart .widget-subheading:first-child {
+   margin-top: 0;
+   }
+   .widget-chart .widget-subheading {
+    margin: -0.5rem 0 0;
+    display: block;
+    opacity: 1;
+    color: #616060;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+   }
+   .widget-chart.text-left .widget-chart-content .widget-description {
+   -ms-flex-item-align: start;
+   align-self: flex-start;
+   }
+   .widget-chart .widget-numbers + .widget-chart-flex, .widget-chart .widget-numbers + .widget-description, .widget-chart .widget-numbers + .widget-subheading {
+   margin-top: -0.5rem;
+   }
+   .widget-chart .widget-description {
+   margin: 1rem 0 0;
+   }
+   .text-focus {
+   color: #444054 !important;
+   }
+   .widget-chart.text-left .widget-chart-content {
+   display: -webkit-box;
+   display: -ms-flexbox;
+   display: flex;
+   -webkit-box-orient: vertical;
+   -webkit-box-direction: normal;
+   -ms-flex-direction: column;
+   flex-direction: column;
+   -ms-flex-line-pack: center;
+   align-content: center;
+   -webkit-box-flex: 1;
+   -ms-flex: 1;
+   flex: 1;
+   position: relative;
+   flex-flow: column;
+   }
+   .blue-icon svg path{
+       fill:#446AB3
+   }
+   .widget-chart .widget-chart-content {
+   position: relative;
+   z-index: 5;
+   }
+   icon-wrapper {
+   width: 54px;
+   height: 54px;
+   margin: 0 auto;
+   position: relative;
+   overflow: hidden;
+   }
+   .icon-wrapper {
+   display: -webkit-box;
+   display: -ms-flexbox;
+   display: flex;
+   -ms-flex-line-pack: center;
+   align-content: center;
+   -webkit-box-align: center;
+   -ms-flex-align: center;
+   align-items: center;
+   }
+   .rounded-circle {
+   border-radius: 50% !important;
+   }
+   .icon-wrapper .icon-wrapper-bg {
+   position: absolute;
+   height: 60px;
+   width: 60px;
+   z-index: 3;
+   opacity: .2;
+   }
+   .opacity-9 {
+   opacity: .9 !important;
+   }
+   .bg-success {
+   background-color: #3ac47d !important;
+   }
+   .icon-wrapper i {
+   margin: 0 auto;
+   font-size: 1.7rem;
+   position: relative;
+   z-index: 5;
+   }
+   [class^="lnr-"], [class*=" lnr-"] {
+   font-family: 'Linearicons-Free';
+   speak: none;
+   font-style: normal;
+   font-weight: normal;
+   font-variant: normal;
+   text-transform: none;
+   line-height: 1;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   }
+   .widget-chart.text-left {
+   -webkit-box-orient: horizontal;
+   -webkit-box-direction: normal;
+   -ms-flex-direction: row;
+   flex-direction: row;
+   -webkit-box-align: center;
+   -ms-flex-align: center;
+   align-items: center;
+   }
+  
+   .card {
+   box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+   border-width: 0;
+   -webkit-transition: all .2s;
+   transition: all .2s;
+   }
+   .bg-transparent {
+   background: transparent !important;
+   }
+   .no-shadow {
+   box-shadow: 0 0 0 transparent !important;
+   }
+   .rm-border {
+   border-width: 0 !important;
+   }
+   .modal-backdrop {
+   z-index: -1;
+   }
+   #myModal {
+   top: 100px;
+   }
+   #myModal .modal-dialog {
+   max-width: 800px;
+   }
+ 
+    .list-group-item{
+        padding:0px;
+    }
+
+</style>
+<div class="app-main__inner watermark container-sm">
+   <div class="app-page-title">
+      <div class="page-title-wrapper">
+         <div class="page-title-heading">
+            {% comment %} 
+            <div class="page-title-icon">
+               <i class="pe-7s-keypad icon-gradient bg-mean-fruit">
+               </i>
+            </div>
+            {% endcomment %}
+            <div>
+               Population Figures in Lebanon
+            </div>
+            <button type="button" class="btn mb-0" data-toggle="modal" style="position: unset !important;" data-id="" data-target="#myModal"
+               title="Preview Report"><i class="fa fa-eye" style="font-size: 15px;color:#949494"></i>
+            </button>
+         </div>
+         <div class="page-title-actions">
+            
+         </div>
+      </div>
+   </div>
+   <!--<div class="mb-3 card">-->
+   <!--<div class="no-gutters row">-->
+   <!--<div class="col-sm-6 col-md-4 col-xl-4">-->
+   <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+      <li class="nav-item col-lg-6 col-xl-4 my-2">
+         <a role="tab" class=" active" id="tab-0" data-toggle="tab" href="#tab-content-0">
+            <div class="card rm-border bg-transparent widget-chart text-left">
+               <div class="icon-wrapper pos-relative bg-info">
+                  <div class="icon-wrapper-bg blue-icon opacity-9">
+                      <i >{% include   'images/multiple-users-silhouette.svg' %}</i>
+                    
+                  </div>
+               </div>
+               <div class="widget-chart-content">
+                  <div class="widget-subheading">Total Population</div>
+                  <div class="widget-numbers text-info"><span>5,742,742</span></div>
+                  <!--<div class="widget-description text-focus"> Stable-->
+                  <!--<span class="text-info pl-1">-->
+                  <!--<fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>-->
+                  <!--<span class="pl-1">0.0%</span>-->
+                  <!--</span>-->
+                  <!--</div>-->
+               </div>
+            </div>
+         </a>
+      </li>
+      <li class="nav-item col-lg-6 col-xl-4 my-2">
+         <a role="tab"  id="tab-1" data-toggle="tab" href="#tab-content-1">
+            <div class="card  rm-border bg-transparent widget-chart text-left">
+               <div class="icon-wrapper pos-relative bg-warning">
+                  <div class="icon-wrapper-bg opacity-9">
+                     <img src="{% static 'images/kids-couple.svg' %}" />
+                  </div>
+               </div>
+               <div class="widget-chart-content">
+                  <div class="widget-subheading">Total number of children</div>
+                  <div class="widget-numbers text-warning"><span>2,139,634</span></div>
+                  <div class="widget-description text-focus">% out of each nationality are: <span class="text-warning">172,200</span></div>
+               </div>
+            </div>
+         </a>
+      </li>
+      <li class="nav-item col-lg-6 col-xl-4 my-2">
+         <a role="tab"  id="tab-2" data-toggle="tab" href="#tab-content-2">
+            <div class="card  rm-border bg-transparent widget-chart text-left">
+               <div class="icon-wrapper pos-relative bg-danger">
+                  <div class="icon-wrapper-bg opacity-9">
+                     <img src="{% static 'images/big-store.svg' %}" />
+                  </div>
+               </div>
+               <div class="widget-chart-content">
+                  <div class="widget-subheading">Most Vulnerable Population</div>
+                  <div class="widget-numbers text-danger"><span>2,479,043</span></div>
+               </div>
+            </div>
+         </a>
+      </li>
+   </ul>
+   <!--</div>-->
+   <!--</div>-->
+   <!--</div>-->
+   <div class="tab-content">
+      <div class="tab-pane tabs-animation active show" id="tab-content-0" role="tabpanel">
+       
+       <!--<ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">-->
+         <!--<li class="nav-item">-->
+         <!--<a role="tab" class="nav-link active" id="tab-0-1" data-toggle="tab" href="#tab-content-0-1">-->
+         <!--<span>Lebanese Age Groups</span>-->
+         <!--</a>-->
+         <!--</li>-->
+         <!--<li class="nav-item">-->
+         <!--<a role="tab" class="nav-link" id="tab-0-2" data-toggle="tab" href="#tab-content-0-2">-->
+         <!--<span>Syrian Age Groups</span>-->
+         <!--</a>-->
+         <!--</li>-->
+         <!--<li class="nav-item">-->
+         <!--<a role="tab" class="nav-link" id="tab-0-3" data-toggle="tab" href="#tab-content-0-3">-->
+         <!--<span>Palestinian Age Groups PRL & PRS</span>-->
+         <!--</a>-->
+         <!--</li>-->
+         <!--</ul>-->
+         <div class="main-card  mx-3 card">
+            <div class="no-gutters row">
+               <div class="col-md-3">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">LEBANESE</div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success" style="color: #70C64A !important;">4,035,042</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-primary" style="color: #70C64A !important;">70.3%</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-3">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">SYRIANS</div>
+                                       <div class="widget-subheading">Displaced</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success" style="color: #EDDA2A !important;">1,500,000</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-primary" style="color: #EDDA2A !important;">26.1%</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-3">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">PALESTINIAN</div>
+                                       <div class="widget-subheading">Refugees from Lebanon</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-danger" style="color: #ED705A !important;">180,000</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-warning" style="color: #ED705A !important;">3.1%</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-3">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">PALESTINIAN</div>
+                                       <div class="widget-subheading">Refugees from Syria</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success" style="color: #E84D58 !important;">27,700</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-primary" style="color: #E84D58 !important;">0.5%</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-12">
+                  <ul class="list-group list-group-flush">
+                     <li class="list-group-item">
+                        <div class="widget-content p-0">
+                           <div class="widget-content-outer">
+                              <div class="widget-content-wrapper">
+                                 <div class="widget-subheading">Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]</div>
+                              </div>
+                           </div>
+                        </div>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div> 
+         <div class="no-gutters row" style="padding-bottom: 50px;">
+            <div class="col-md-6 item-block" style="margin: 0 auto;">
+               <div class="card  rm-border">
+                  <div id="populations_per_nationality"></div>
+               </div>
+            </div>
+            <div class="col-md-6 item-block" style="margin: 0 auto;">
+               <div class="card  rm-border">
+                  <div id="populations_per_age_group"></div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
+         <div class="main-card  mx-3 card">
+            <div class="no-gutters row">
+               <div class="col-md-3">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">LEBANESE</div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success" style="color: #70C64A !important;">1,256,916</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">% of the total Lebanese</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-primary" style="color: #70C64A !important;">31.2%</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-3">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">SYRIANS</div>
+                                       <div class="widget-subheading">Displaced</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success" style="color: #EDDA2A !important;">804,00</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">% of the total Syrian</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-primary" style="color: #EDDA2A !important;">53.6%</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-3">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">PALESTINIAN</div>
+                                       <div class="widget-subheading">Refugees from Lebanon</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-danger" style="color: #ED705A !important;">68,580</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">% of the total PRL </div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-warning" style="color: #ED705A !important;">38.1%</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-3">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">PALESTINIAN</div>
+                                       <div class="widget-subheading">Refugees from Syria</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success" style="color: #E84D58 !important;">10,138</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">% of the total PRS</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-primary" style="color: #E84D58 !important;">36.6%</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-12">
+                  <ul class="list-group list-group-flush">
+                     <li class="list-group-item">
+                        <div class="widget-content p-0">
+                           <div class="widget-content-outer">
+                              <div class="widget-content-wrapper">
+                                 <div class="widget-subheading">Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]</div>
+                              </div>
+                           </div>
+                        </div>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div> 
+         <div class="mb-3">
+            <div class="no-gutters row">
+              <div class="col-md-6">
+                <div class="card  rm-border">
+                 <div id="children_per_nationality"></div>
+                </div>
+              </div>
+            </div>
+         </div>
+      </div>
+      <div class="tab-pane tabs-animation fade" id="tab-content-2" role="tabpanel">
+          <div class="main-card  mx-3 card">
+            <div class="no-gutters row">
+               <div class="col-md-2">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">263 Cadasters</div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-primary"></div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">All Population</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-primary">4,292,701</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">Children</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-primary">1,350,371</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-2">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">Most Vulnerable</div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-danger"></div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">All Population</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-danger">2,470,043</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">Children</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-danger">931,760</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-2">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">2<sup>nd</sup> Most Vulnerable</div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-warning"></div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">All Population</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-warning">751,460</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">Children</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-warning">285,902</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-2">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">3<sup>rd</sup> Most Vulnerable</div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success" style="color: #EDDA2A !important;"></div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">All Population</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success" style="color: #EDDA2A !important;">469,736</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">Children</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success" style="color: #EDDA2A !important;">172,803</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-2">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">4<sup>th</sup> Most Vulnerable</div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success"></div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">All Population</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success">343,759</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">Children</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-success">131,008</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-2">
+                  <div class="pt-0 pb-0 card-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading">5<sup>th</sup> Most Vulnerable</div>
+                                       <div class="widget-subheading"></div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-info"></div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">All Population</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-info">257,703</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                        <li class="list-group-item">
+                           <div class="widget-content p-0">
+                              <div class="widget-content-outer">
+                                 <div class="widget-content-wrapper">
+                                    <div class="widget-content-left">
+                                       <div class="widget-heading"></div>
+                                       <div class="widget-subheading">Children</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                       <div class="widget-numbers text-info">94,256</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-12">
+                  <ul class="list-group list-group-flush">
+                     <li class="list-group-item">
+                        <div class="widget-content p-0">
+                           <div class="widget-content-outer">
+                              <div class="widget-content-wrapper">
+                                 <div class="widget-subheading">Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]</div>
+                              </div>
+                           </div>
+                        </div>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div> 
+         <div class="mb-3">
+            <div class="no-gutters row">
+             <div class="col-md-6">
+                <div class="card  rm-border">
+                 <div id="vulnerable_populations"></div>
+                </div>
+              </div>
+               
+            </div>
+         </div>
+      </div>
+   </div>
+   <!--<div class="row">-->
+   <!--<div class="col-lg-12">-->
+   <!--<div class="main-card mb-3 card">-->
+   <!--<div class="card-body watermark">-->
+   <!--<div class="table-responsive">-->
+   <!--<iframe src="{% static 'files/Population Figures in Lebanon-2020.pdf' %}" width="100%" height="500px"></iframe>-->
+   <!--</div>-->
+   <!--</div>-->
+   <!--</div>-->
+   <!--</div>-->
+   <!--</div>-->
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Report Preview</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body"><object data="{% static 'files/Population Figures in Lebanon-2020.pdf' %}"
+            type="application/pdf"  width="100%" style="height:500px;">    </object></div>
+         <div class="modal-footer">
+            Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock content %}
+{% block extra_js %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script type="text/javascript" src="{% static 'js/Highcharts.chart.js' %}"></script>
+<script type="text/javascript">
+   var data = {
+       2020: [
+           ['Lebanese', 1256916],
+           ['Syrians', 804000],
+           ['PRL', 68580],
+           ['PRS', 10138],
+       ],
+   };
+
+   var countries = [{
+       name: 'Lebanese',
+       flag: '{% static "images/rounded_flag_lebanon.jpg" %}',
+       color: 'rgba(255, 152, 0,0.4)',
+       borderColor:'#FF9800'
+   }, {
+       name: 'Syrians',
+       flag: '{% static "images/rounded_flag_syrian.jpg" %}',
+       color: 'rgba(0, 162, 255,0.4)',
+       borderColor: '#00A2FF'
+   }, {
+       name: 'PRL',
+       flag: '{% static "images/rounded_flag_palestine.jpg" %}',
+       color: 'rgba(163, 102, 188,0.4)',
+       borderColor: '#A366BC'
+   }, {
+       name: 'PRS',
+       flag: '{% static "images/rounded_flag_palestine.jpg" %}',
+       color: 'rgba(158, 229, 161,0.4)',
+       borderColor: '#9EE5A1'
+   }];
+   
+   
+   function getData(data) {
+       return data.map(function (country, i) {
+           return {
+               name: country[0],
+               y: country[1],
+               color: countries[i].color,
+               borderColor: countries[i].borderColor
+           };
+       });
+   }
+   
+   Highcharts.theme = {
+           colors: ['#34C73B', '#00A2FF', '#F192F1', '#9010BC', '#CF2C2C', '#FF9800'],
+           title: {
+               style: {
+                   color: '#4D4D4D',
+                   fontFamily: '"Poppins"',
+                   fontSize:'18px',
+                   fontWeight:'300',
+               }
+           },
+           subtitle: {
+               style: {
+                   color: '#6A707E',
+                   fontFamily: '"Poppins"',
+                   fontSize:'13px',
+                   fontWeight:'100',
+               }
+           },
+           yAxis: {
+               labels: {
+                       style: {
+                           color: '#525252',
+                           fontFamily: '"Poppins"',
+                           fontSize:'12px',
+                           fontWeight:'100',
+                       }
+                   }     
+           },
+           xAxis: {
+               labels: {
+                       style: {
+                           color: '#525252',
+                           fontFamily: '"Poppins"',
+                           fontSize:'12px',
+                           fontWeight:'100',
+                       }
+                   },     
+           },
+           legend: {
+               itemStyle: {
+                   fontFamily: '"Poppins"',
+                   fontSize:'13px',
+                   fontWeight:'100',
+                   color: '#ABAFB3'
+               },
+               itemHoverStyle:{
+                   color: 'gray'
+               },
+               itemMarginTop: 10,
+           },
+           tooltip:{
+               style: {
+                   color: '#ABAFB3',
+                   fontFamily: '"Poppins"',
+                   fontSize:'12px',
+                   fontWeight:'400',
+               }
+           },
+           drilldown: {
+               activeAxisLabelStyle: {
+                   color: '#525252',
+                   textDecoration:'none',
+                   fontWeight:'100',
+               },
+               activeDataLabelStyle: {
+                   color: '#ABAFB3',
+                   display:'none'
+               }
+           },
+           credits: {
+    enabled: false
+},
+       };
+   
+       Highcharts.setOptions(Highcharts.theme);
+   
+   var chart = Highcharts.chart('children_per_nationality', {
+       chart: {
+           type: 'column',
+           margin:70,
+           marginBottom:125,
+       },
+       title: {
+           //text: 'Total number of children: 2,139,634',
+           text:'',
+           align: 'left',
+       },
+       subtitle: {
+           text: 'Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]',
+           align: 'left',
+           verticalAlign: 'bottom',
+       },
+       plotOptions: {
+           series: {
+               grouping: false,
+               borderWidth: 1,
+               borderColor:'{point.borderColor}',
+               pointWidth:40,
+           }
+       },
+       legend: {
+           enabled: false
+       },
+       tooltip: {
+           shared: true,
+           <!--headerFormat: '<span style="font-size: 15px">{point.point.name}</span><br/>',-->
+           <!--pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y} Children</b><br/>'-->
+           formatter: function() {
+               return formatNumber(this.y);
+           },
+       },
+       xAxis: {
+           type: 'category',
+           max: 3,
+           labels: {
+               useHTML: true,
+               animate: true,
+               formatter: function () {
+                   var value = this.value,
+                       output;
+                   var country = '';
+   
+                   countries.forEach(function (country) {
+                       if (country.name === value) {
+                           output = country.flag;
+                       }
+                   });
+   
+                   return '<div style="text-align: center;"><img src="' + output + '" style="width: 30px; height: 30px;margin:5px"/><br>'+value+'</div>';
+               }
+           }
+       },
+       yAxis: [{
+           title: {
+               text: ''
+           },
+           showFirstLabel: false
+       }],
+       series: [{
+           name: '2020',
+           id: 'main',
+           dataSorting: {
+               enabled: true,
+               matchByName: true
+           },
+           dataLabels: [{
+               enabled: false,
+               inside: true,
+               style: {
+                   fontSize: '16px'
+               },
+               formatter: function() {
+                   return formatNumber(this.y);
+               }
+           }],
+           data: getData(data[2020]).slice()
+       }],
+       exporting: {
+           allowHTML: true
+       }
+   });
+   
+   
+   
+   
+   
+   Highcharts.chart('populations_per_nationality', {
+       chart: {
+           plotBackgroundColor: null,
+           plotBorderWidth: 0,
+           plotShadow: false,
+           type: 'pie'
+       },
+       title: {
+           //text: 'Total Population<br>5,742,742',
+           text: '',
+           align: 'center',
+           verticalAlign: 'middle',
+           y: 50
+       },
+       subtitle: {
+           text: 'Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]',
+           align: 'left',
+           verticalAlign: 'bottom',
+       },
+       tooltip: {
+           pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+       },
+       accessibility: {
+           point: {
+               valueSuffix: '%'
+           }
+       },
+       plotOptions: {
+           pie: {
+               allowPointSelect: true,
+               cursor: 'pointer',
+               dataLabels: {
+                   enabled: false,
+                   format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+               },
+               showInLegend: true
+           }
+       },
+       legend: {
+           align: 'right',
+           verticalAlign: 'middle',
+           layout: 'vertical',
+           
+       },
+       series: [{
+           name: 'Nationality',
+           colorByPoint: true,
+           innerSize: '50%',
+           data: [{
+               name: 'Lebanese',
+               y: 4035042,
+               color: '#FF9800'
+           }, {
+               name: 'Syrians',
+               y: 1500000,
+               color: '#00A2FF'
+           }, {
+               name: 'Palestinians',
+               y: 208800,
+               color: '#34C73B'
+           }]
+       }]
+   });
+   
+   
+   
+   // Create the chart
+   Highcharts.chart('vulnerable_populations', {
+       chart: {
+           type: 'column',
+             margin:80,
+           marginBottom:100,
+           
+       },
+       title: {
+           text: '',
+           
+       },
+       subtitle: {
+           text: 'Population in 263 as per UNICEF MSVI Analysis',
+           align: 'left',
+           verticalAlign: 'bottom',
+       },
+       accessibility: {
+           announceNewData: {
+               enabled: true
+           }
+       },
+       xAxis: {
+           type: 'category'
+       },
+       yAxis: {
+           title: {
+               //text: 'Total populations'
+               text:' '
+           }
+   
+       },
+       legend: {
+           enabled: false
+       },
+       plotOptions: {
+           series: {
+               borderWidth: 1,
+               borderColor:'{point.borderColor}',
+               pointWidth:40,
+               dataLabels: {
+                   enabled: false,
+                   formatter: function() {
+                     return formatNumber(this.point.y);
+                   }
+               }
+           }
+       },
+   
+       tooltip: {
+           formatter: function() {
+                 return '<b>'+this.point.name+': </b>'+ formatNumber(this.point.y);
+           }
+       },
+   
+       series: [
+           {
+               name: "MSVI Analysis",
+               colorByPoint: true,
+               data: [
+                   {
+                       name: "263 Cadasters",
+                       y: 4292701,
+                       drilldown: "263 Cadasters",
+                       color: '#3f6ad8'
+                   },
+                   {
+                       name: "Most Vulnerable",
+                       y: 2470043,
+                       drilldown: "Most Vulnerable",
+                       color: '#d92550'
+                   },
+                   {
+                       name: "2nd Most Vulnerable",
+                       y: 751460,
+                       drilldown: "2nd Most Vulnerable",
+                       color: '#f7b924'
+                   },
+                   {
+                       name: "3rd Most Vulnerable",
+                       y: 469736,
+                       drilldown: "3rd Most Vulnerable",
+                       color: '#EDDA2A'
+                   },
+                   {
+                       name: "4th Most Vulnerable",
+                       y: 343759,
+                       drilldown: "4th Most Vulnerable",
+                       color: '#3ac47d'
+                   },
+                   {
+                       name: "5th Most Vulnerable",
+                       y: 257703,
+                       drilldown: "5th Most Vulnerable",
+                       color: '#16aaff'
+                   }
+               ]
+           }
+       ],
+       drilldown: {
+           series: [
+               {
+                   name: "263 Cadasters",
+                   id: "263 Cadasters",
+                   data: [
+                       [
+                           "Children",
+                           1350371
+                       ],
+                       [
+                           "Lebanese",
+                           2907571
+                       ],
+                       [
+                           "LBN Children",
+                           905708
+                       ],
+                       [
+                           "Displaced Syrians",
+                           1212930
+                       ],
+                       [
+                           "SYR Children",
+                           650130
+                       ],
+                       [
+                           "Palestinian Refugees",
+                           172200
+                       ],
+                       [
+                           "PRL Children",
+                           59981
+                       ]
+                   ]
+               },
+               {
+                   name: "Most Vulnerable",
+                   id: "Most Vulnerable",
+                   data: [
+                       [
+                           "Children",
+                           931760
+                       ],
+                       [
+                           "Lebanese",
+                           1625629
+                       ],
+                       [
+                           "LBN Children",
+                           506383
+                       ],
+                       [
+                           "Displaced Syrians",
+                           699730
+                       ],
+                       [
+                           "SYR Children",
+                           375055
+                       ],
+                       [
+                           "Palestinian Refugees",
+                           144684
+                       ],
+                       [
+                           "PRL Children",
+                           50321
+                       ]
+                   ]
+               },
+               {
+                   name: "2nd Most Vulnerable",
+                   id: "2nd Most Vulnerable",
+                   data: [
+                       [
+                           "Children",
+                           285902
+                       ],
+                       [
+                           "Lebanese",
+                           504141
+                       ],
+                       [
+                           "LBN Children",
+                           157040
+                       ],
+                       [
+                           "Displaced Syrians",
+                           227655
+                       ],
+                       [
+                           "SYR Children",
+                           122023
+                       ],
+                       [
+                           "Palestinian Refugees",
+                           19664
+                       ],
+                       [
+                           "PRL Children",
+                           6839
+                       ]
+                   ]
+               },
+               {
+                   name: "3rd Most Vulnerable",
+                   id: "3rd Most Vulnerable",
+                   data: [
+                       [
+                           "Children",
+                           172803
+                       ],
+                       [
+                           "Lebanese",
+                           348860
+                       ],
+                       [
+                           "LBN Children",
+                           108670
+                       ],
+                       [
+                           "Displaced Syrians",
+                           117390
+                       ],
+                       [
+                           "SYR Children",
+                           62921
+                       ],
+                       [
+                           "Palestinian Refugees",
+                           3486
+                       ],
+                       [
+                           "PRL Children",
+                           1212
+                       ]
+                   ]
+               },
+               {
+                   name: "4th Most Vulnerable",
+                   id: "4th Most Vulnerable",
+                   data: [
+                       [
+                           "Children",
+                           131008
+                       ],
+                       [
+                           "Lebanese",
+                           234114
+                       ],
+                       [
+                           "LBN Children",
+                           72927
+                       ],
+                       [
+                           "Displaced Syrians",
+                           105990
+                       ],
+                       [
+                           "SYR Children",
+                           56811
+                       ],
+                       [
+                           "Palestinian Refugees",
+                           3655
+                       ],
+                       [
+                           "PRL Children",
+                           1271
+                       ]
+                   ]
+               },
+               {
+                   name: "5th Most Vulnerable",
+                   id: "5th Most Vulnerable",
+                   data: [
+                       [
+                           "Children",
+                           94256
+                       ],
+                       [
+                           "Lebanese",
+                           194827
+                       ],
+                       [
+                           "LBN Children",
+                           60689
+                       ],
+                       [
+                           "Displaced Syrians",
+                           62165
+                       ],
+                       [
+                           "SYR Children",
+                           33320
+                       ],
+                       [
+                           "Palestinian Refugees",
+                           711
+                       ],
+                       [
+                           "PRL Children",
+                           274
+                       ]
+                   ]
+               }
+           ]
+       }
+   });
+   
+   
+   
+   
+   
+   
+   
+   // Create the chart
+   Highcharts.chart('populations_per_age_group', {
+       chart: {
+           type: 'column',
+           margin:70,
+           marginBottom:115,
+           
+       },
+       title: {
+           text: '',
+           align: 'left',
+           verticalAlign: 'bottom',
+       },
+       subtitle: {
+           text: 'Total populations per age group',
+           align: 'left',
+           verticalAlign: 'bottom',
+       },
+       accessibility: {
+           announceNewData: {
+               enabled: true
+           }
+       },
+       xAxis: {
+           type: 'category'
+       },
+       yAxis: {
+           title: {
+               //text: 'Total populations'
+               text: ' '
+           }
+   
+       },
+       legend: {
+           enabled: false
+       },
+       plotOptions: {
+           series: {
+               borderWidth: 1,
+               borderColor:'{point.borderColor}',
+               pointWidth:40,
+               dataLabels: {
+                   enabled: false,
+                   <!--format: '{point.value}'-->
+                   formatter: function() {
+                     return formatNumber(this.point.y);
+                   }
+               }
+           }
+       },
+   
+       tooltip: {
+           <!--headerFormat: '<span style="font-size:11px">{series.name}</span><br>',-->
+           <!--pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.value}</b><br/>'-->
+           formatter: function() {
+                 return '<b>'+this.point.name+': </b>'+ formatNumber(this.point.y);
+           }
+       },
+   
+       series: [
+           {
+               name: "Nationalities",
+               colorByPoint: true,
+               data: [
+                   {
+                       name: "Lebanese",
+                       y: 4035042,
+                       drilldown: "Lebanese",
+                       color: 'rgba(255, 152, 0,0.4)',
+                       borderColor:'#FF9800'
+                   },
+                   {
+                       name: "Syrian",
+                       y: 1500000,
+                       drilldown: "Syrian",
+                       color: 'rgba(0, 162, 255,0.4)',
+                       borderColor: '#00A2FF'
+                   },
+                   {
+                       name: "PRL",
+                       y: 180000,
+                       drilldown: "PRL",
+                       color: 'rgba(163, 102, 188,0.4)',
+                       borderColor: '#A366BC'
+                   },
+                   {
+                       name: "PRS",
+                       y: 27700,
+                       drilldown: "PRS",
+                       color: 'rgba(158, 229, 161,0.4)',
+                       borderColor: '#9EE5A1'
+                   }
+               ]
+           }
+       ],
+       drilldown: {
+           series: [
+               {
+                   name: "Lebanese",
+                   id: "Lebanese",
+                   data: [
+                       [
+                           "Under 1 year",
+                           72758
+                       ],
+                       [
+                           "Under 2 years",
+                           171937
+                       ],
+                       [
+                           "Under 5 years",
+                           499339
+                       ],
+                       [
+                           "3-5 years",
+                           357407
+                       ],
+                       [
+                           "6-14 years",
+                           1218975
+                       ],
+                       [
+                           "6-11 years",
+                           770825
+                       ],
+                       [
+                           "15-18 years",
+                           477349
+                       ],
+                       [
+                           "3-18 years",
+                           1973031
+                       ],
+                       [
+                           "0-5 years",
+                           639012
+                       ],
+                       [
+                           "0-17 years",
+                           2135887
+                       ],
+                       [
+                           "12-14 years",
+                           367448
+                       ],
+                       [
+                           "12-17 years",
+                           726045
+                       ],
+                       [
+                           "15-17 years",
+                           358193
+                       ],
+                       [
+                           "10-14 years",
+                           622504
+                       ]
+                   ]
+               },
+               {
+                   name: "Syrian",
+                   id: "Syrian",
+                   data: [
+                       [
+                           "Under 1 year",
+                           30255
+                       ],
+                       [
+                           "Under 2 years",
+                           84544
+                       ],
+                       [
+                           "Under 5 years",
+                           257412
+                       ],
+                       [
+                           "3-5 years",
+                           167743
+                       ],
+                       [
+                           "6-14 years",
+                           401348
+                       ],
+                       [
+                           "6-11 years",
+                           293300
+                       ],
+                       [
+                           "15-18 years",
+                           118569
+                       ],
+                       [
+                           "3-18 years",
+                           687661
+                       ],
+                       [
+                           "0-5 years",
+                           312116
+                       ],
+                       [
+                           "0-17 years",
+                           805199
+                       ],
+                       [
+                           "12-14 years",
+                           108047
+                       ],
+                       [
+                           "12-17 years",
+                           199779
+                       ],
+                       [
+                           "15-17 years",
+                           91732
+                       ],
+                       [
+                           "10-14 years",
+                           197362
+                       ]
+                   ]
+               },
+               {
+                   name: "PRL",
+                   id: "PRL",
+                   data: [
+                       [
+                           "Under 1 year",
+                           3240
+                       ],
+                       [
+                           "Under 2 years",
+                           6689
+                       ],
+                       [
+                           "Under 5 years",
+                           17386
+                       ],
+                       [
+                           "3-5 years",
+                           10768
+                       ],
+                       [
+                           "6-14 years",
+                           30824
+                       ],
+                       [
+                           "6-11 years",
+                           20578
+                       ],
+                       [
+                           "15-18 years",
+                           14231
+                       ],
+                       [
+                           "3-18 years",
+                           55824
+                       ],
+                       [
+                           "0-5 years",
+                           21041
+                       ],
+                       [
+                           "0-17 years",
+                           62601
+                       ],
+                       [
+                           "12-14 years",
+                           10247
+                       ],
+                       [
+                           "12-17 years",
+                           20982
+                       ],
+                       [
+                           "15-17 years",
+                           10736
+                       ],
+                       [
+                           "10-14 years",
+                           16772
+                       ]
+                   ]
+               },
+               {
+                   name: "PRS",
+                   id: "PRS",
+                   data: [
+                       [
+                           "Under 1 year",
+                           527
+                       ],
+                       [
+                           "Under 2 years",
+                           1214
+                       ],
+                       [
+                           "Under 5 years",
+                           3017
+                       ],
+                       [
+                           "3-5 years",
+                           1758
+                       ],
+                       [
+                           "6-14 years",
+                           6022
+                       ],
+                       [
+                           "6-11 years",
+                           4216
+                       ],
+                       [
+                           "15-18 years",
+                           1973
+                       ],
+                       [
+                           "3-18 years",
+                           9753
+                       ],
+                       [
+                           "0-5 years",
+                           3631
+                       ],
+                       [
+                           "0-17 years",
+                           11172
+                       ],
+                       [
+                           "12-14 years",
+                           1806
+                       ],
+                       [
+                           "12-17 years",
+                           3325
+                       ],
+                       [
+                           "15-17 years",
+                           1518
+                       ],
+                       [
+                           "10-14 years",
+                           3252
+                       ]
+                   ]
+               }
+           ]
+       }
+   });
+   
+   
+</script>
+{% endblock %}

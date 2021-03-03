@@ -1,0 +1,5 @@
+{% for gov in governorates %}
+<option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
+  {{ gov.location_adminlevel_governorate }}
+</option>
+{% endfor %}

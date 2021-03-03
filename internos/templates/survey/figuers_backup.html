@@ -1,0 +1,93 @@
+Highcharts.chart('vulnerable_populations', {
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: 'Population in the Vulnerable Cadasters based on UNICEF MSVI'
+    },
+    subtitle: {
+        text: '[Multi-Sections Vulnerability Index]'
+    },
+    xAxis: {
+        categories: [
+            '263 Cadasters',
+            'Most Vulnerable',
+            '2nd Most Vulnerabke',
+            '3rd Most Vulnerable',
+            '4th Most Vulnerable',
+            '5th Most Vulnerable',
+        ],
+        crosshair: true
+    },
+    yAxis: {
+        min: 0,
+        title: {
+            text: 'Number of Most Vulnerable'
+        }
+    },
+    tooltip: {
+        <!--headerFormat: '<span style="font-size:10px">{point.key}</span><table>',-->
+        <!--pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +-->
+            <!--'<td style="padding:0"><b>{point.y} </b></td></tr>',-->
+        <!--footerFormat: '</table>',-->
+        formatter: function() {
+              var html = '<span style="font-size:10px">'+this.x+'</span><table>'
+              html = html + '<tr><td style="color:'+this.points[0].color+';padding:0">Lebanese: </td>' +
+              '<td style="padding:0"><b>'+formatNumber(this.points[0].y)+' </b></td></tr>';
+
+              html = html + '<tr><td style="color:'+this.points[1].color+';padding:0">Syrian: </td>' +
+              '<td style="padding:0"><b>'+formatNumber(this.points[1].y)+' </b></td></tr>';
+
+              html = html + '<tr><td style="color:'+this.points[2].color+';padding:0">Palestinians: </td>' +
+              '<td style="padding:0"><b>'+formatNumber(this.points[2].y)+' </b></td></tr>';
+
+              html = html + '</table>';
+
+              return html;
+        },
+        shared: true,
+        useHTML: true
+    },
+    plotOptions: {
+        column: {
+            pointPadding: 0.2,
+            borderWidth: 0
+        }
+    },
+    series: [
+    {
+        name: 'ALL POPULATION',
+        data: [1625629, 504141, 348860, 234114, 194827],
+        color: '#70C64A'
+
+    },
+    {
+        name: 'Children',
+        data: [1625629, 504141, 348860, 234114, 194827],
+        color: '#70C64A'
+
+    },
+    {
+        name: 'Lebanese',
+        data: [1625629, 504141, 348860, 234114, 194827],
+        color: '#70C64A'
+
+    },
+    {
+        name: 'Children',
+        data: [1625629, 504141, 348860, 234114, 194827],
+        color: '#70C64A'
+
+    },
+     {
+        name: 'Syrians',
+        data: [699730, 227655, 117390, 105990, 62165],
+        color: '#EDDA2A'
+
+    }, {
+        name: 'Palestinians',
+        data: [144684, 19664, 3486, 3655, 711],
+        color: '#ED705A'
+
+    }]
+});

@@ -1,0 +1,572 @@
+{% load staticfiles i18n %}
+{% load util_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<!-- Google Tag Manager -->
+
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+
+})(window,document,'script','dataLayer','GTM-T8ZLMTW');</script>
+
+<!-- End Google Tag Manager -->
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'images/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'images/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'images/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'images/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'images/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{% static 'images/ms-icon-144x144.png' %}">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Neuro-DB |</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="This is an example dashboard created using build-in elements and components.">
+    <meta name="msapplication-tap-highlight" content="no">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <!--<link href="{% static 'css/main.87c0748b313a1dda75f5.css' %}" rel="stylesheet">-->
+    <link href="{% static 'css/editedStyle.css' %}" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <!--<link href="{% static 'css/custom.min.css' %}" rel="stylesheet">-->
+    <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
+    <link href="{% static 'tellme/feedback.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g==" crossorigin="anonymous" />
+    <style>
+
+        #toTop {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .vertical-right-aligned {
+            transform: rotate(-90deg);
+            transform-origin: 100% 100%;
+            position: fixed;
+            right: 0;
+            top: 50%;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Google Tag Manager (noscript) -->
+
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T8ZLMTW"
+
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- End Google Tag Manager (noscript) -->
+
+    <button type="button" id="feedback-btn" class="btn btn-outline-primary vertical-right-aligned">
+        Feedback <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
+    </button>
+
+    <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
+        <div class="app-header header-shadow">
+            <div class="app-header__logo">
+                <a href="/" class="logo-src" data-step="1" data-intro="Go to home page" >
+                    <img src="{% static 'images/logo2.png' %}" width="170" height="40" alt="Neuro-DB-logo" />
+                </a>
+                <div class="header__pane ml-auto">
+                    <div>
+                        <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                            data-class="closed-sidebar">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="app-header__mobile-menu">
+                <div>
+                    <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="app-header__menu">
+                <span>
+                    <button type="button"
+                        class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                        <span class="btn-icon-wrapper">
+                            <i class="fa fa-ellipsis-v fa-w-6"></i>
+                        </span>
+                    </button>
+                </span>
+            </div>
+            <div class="app-header__content">
+                <input id="reporting_year" hidden value="{{ reporting_year }}">
+                <div class="app-header-left">
+                    <div class="search-wrapper" data-step="8" data-intro="Search for a specific Indicator">
+                        <div class="input-holder" id="searchdiv">
+                            <input type="text" class="search-input" id="search-input" onkeyup="search()"
+                                placeholder="Type to search">
+                            <button class="search-icon"><span></span></button>
+                        </div>
+                        <button class="close" id="close-search"></button>
+                    </div>
+                    <ul class="header-menu nav">
+                        <li class="nav-item">
+                            <!--<div data-step="3"-->
+                                <!--data-intro="For technical issue please call Ali Chamseddine or Mohamad Karnib">-->
+                                <!--<a class="user-profile nav-link"-->
+                                    <!--href="mailto:achamseddine@unicef.org;mkarnib@unicef.org?subject=ActivityInfo: Technical issue"-->
+                                    <!--data-toggle="tooltip" data-placement="right" data-html="true" title="For technical issue please call: <br />-->
+                              <!--Ali Chamseddine or Mohamad Karnib">-->
+                                    <!--<img src="{% static 'images/support-1.png' %}" alt=""-->
+                                        <!--style="width: 40px; height: 40px;" />-->
+                                <!--</a>-->
+                            <!--</div>-->
+
+                        </li>
+
+
+                    </ul>
+                </div>
+
+                <div class="app-header-right">
+
+                    <div class="d-inline-block mr-3">
+
+                      {% comment %} <a aria-haspopup="true" type="button" aria-expanded="true" class="btn-shadow btn btn-outline-alternate"
+                                    href="mailto:achamseddine@unicef.org;mkarnib@unicef.org?subject=ActivityInfo: Technical issue"
+                                    data-toggle="tooltip" data-placement="right" data-html="true" title="For technical issue please call: <br />
+                              Ali Chamseddine or Mohamad Karnib">
+                          <i class="pe-7s-call"></i>
+                      </a> {% endcomment %}
+
+                    </div>
+
+                  {% comment %} {% block filter %}
+                      <a class="btn shadow  btn-outline-warning" href="javascript:void(0);"
+                         onclick="startIntro();" data-toggle="tooltip"
+                         data-placement="bottom" title="Show me some tips">
+                        <i class="pe-7s-magic-wand" aria-hidden="true"></i>
+                      </a>
+                  {% endblock filter %} {% endcomment %}
+
+                    <div class="header-btn-lg pr-0" style="padding-left: 20px;margin-left: 10px;border-left: 1.5px solid #dee2e6;">
+                        <div class="widget-content p-0">
+                            <div class="widget-content-wrapper">
+                                <div class="widget-content-left">
+                                    <div class="btn-group">
+                                        {% if request.user.is_authenticated %}
+                                        <button data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            class="p-0 btn d-flex align-items-center">
+                                            <div class="rounded-circle mr-2" ></div>
+                                          
+                                            {{ request.user.email }}
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left ml-2"></i>
+                                        </button>
+                                        <div tabindex="-1" role="menu" aria-hidden="true"
+                                            class="dropdown-menu dropdown-menu-right">
+                                            {% if request.user.is_staff %}
+                                            <a type="button" tabindex="0" class="dropdown-item" href="/admin/">Admin</a>
+                                            {% endif %}
+                                            <div tabindex="-1" class="dropdown-divider"></div>
+                                            <a href="{% url 'account_logout' %}" type="button" tabindex="0"
+                                                class="dropdown-item"><i class="fa fa-sign-out pull-right"></i>Log
+                                                Out</a>
+                                        </div>
+
+                                        {% else %}
+
+                                        <button data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            class="user-profile p-0 btn d-flex align-items-center">
+                                            <img width="42" class="rounded-circle"
+                                                src="{% static 'images/new_user.png' %}" alt="">
+                                            {{ request.user }}
+                                            <i class="fa fa-angle-down ml-2 opacity-8"></i>
+                                        </button>
+                                        <div tabindex="-1" role="menu" aria-hidden="true"
+                                            class="dropdown-menu dropdown-menu-right dropdown-usermenu">
+
+                                            <div tabindex="-1" class="dropdown-divider"></div>
+                                            <a href="{% url 'account_login' %}" type="button" tabindex="0"
+                                                class="dropdown-item"><i class="fa fa-sign-in pull-right"></i>Login</a>
+                                        </div>
+                                        {% endif %}
+                                        <i class="pl-3 py-2">{% include   'images/Icon-Mail.svg' %}</i>
+                                        
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="app-main">
+            <div class="app-sidebar sidebar-shadow">
+                <div class="app-header__logo">
+                    <div class="logo-src"></div>
+                    <div class="header__pane ml-auto">
+                        <div>
+                            <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                                data-class="closed-sidebar">
+                                <span class="hamburger-box">
+                                    <span class="hamburger-inner"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="app-header__mobile-menu">
+                    <div>
+                        <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div class="app-header__menu">
+                    <span>
+                        <button type="button"
+                            class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                            <span class="btn-icon-wrapper">
+                                <i class="fa fa-ellipsis-v fa-w-6"></i>
+                            </span>
+                        </button>
+                    </span>
+                </div>
+
+
+                <div class="scrollbar-sidebar">
+                    <div class="app-sidebar__inner" data-step="2" data-intro="Navigation menu for other sections">
+                        <ul class="vertical-nav-menu">
+                        
+                           <li class="app-sidebar__heading">Crisis Response</li>
+
+                              {% get_Crisis_db as databases %}
+                              {% for db in databases %}
+                           <li id="{{ db.ai_id }}">
+                            <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ db.ai_id }}" class="crisis_link ">
+                                <i class="metismenu-icon pe-7s-settings"></i>
+                              {{ db.name }}
+                                {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                            </a>
+                            </li>
+                          {% endfor %}
+                           <li id="eco_01">
+                            <a href="{% url 'survey:economic_dashboard' %}" class="">
+                                <i class="metismenu-icon pe-7s-cash"></i>
+                                Economic Dashboard
+                              {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                            </a>
+                            </li>
+                           <li>
+                              <a href="{% url 'activityinfo:blast_dashboard' %}" class="">
+                                  <i class="metismenu-icon pe-7s-target"></i>
+                                  Beirut Blast
+                                {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                              </a>
+                            </li>
+                            <li class="app-sidebar__heading">ActivityInfo</li>
+                            <li>
+                                <a href="/">
+                                    <i class="metismenu-icon pe-7s-menu"></i>
+                                    AI Results
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul id="databases_list">
+                                    {% get_databases as databases %}
+                                    {% for db in databases %}
+                                    <li id="{{db.ai_id}}">
+                                        <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}"
+                                            class="">{{ db.label }}
+                                            <i class="metismenu-icon"></i>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            <li id="hpm">
+                                <a href="{% url 'activityinfo:hpm' %}?rep_year={{ reporting_year }}">
+                                    <i class="metismenu-icon pe-7s-display2"></i>
+                                    HPM Tables
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="">
+                                    <i class="metismenu-icon pe-7s-science"></i>
+                                    Sector Results
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul id="sector_list">
+                                    {% get_databases True as databases %}
+                                    {% for db in databases %}
+                                    <li id="sector_{{ db.ai_id }}">
+                                        <a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">{{ db.sector_label }}
+                                            <i class="metismenu-icon"></i>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+
+
+                            <li class="app-sidebar__heading">Partnership</li>
+                            <li>
+                                <a href="{% url 'etools:partnership' %}">
+                                    <i class="metismenu-icon pe-7s-user"></i>
+                                    Partner Profile
+                                  <div class="ml-auto badge badge-info" style="padding: 2px;font-size: 10px;">Updated</div>
+                                </a>
+                            </li>
+                            <!--<li>-->
+                                <!--   <a href="{% url 'etools:interventions' %}">-->
+                                <!--<a href="">-->
+                                    <!--<i class="metismenu-icon pe-7s-link"></i>-->
+                                    <!--Interventions </a>-->
+                            <!--</li>-->
+                            <!--<li>-->
+                                <!--<a href="">-->
+                                    <!--       <a href="{% url 'etools:programmatic_visits_monitoring' %}">-->
+                                    <!--<i class="metismenu-icon pe-7s-monitor"></i>-->
+                                    <!--Programmatic Visits  </a>-->
+                            <!--</li>-->
+                          <li class="app-sidebar__heading">Other Resources</li>
+                          <li>
+                              <a href="">
+                                  <i class="metismenu-icon pe-7s-map-2"></i>
+                                  Maps
+                                  <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                              </a>
+                              <ul id="maps_list">
+                                   <li>
+                                      <a href="https://interagency.herokuapp.com/Dashboard/Maps/" target="_blank">
+                                          UNICEF Maps
+                                          {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                                      </a>
+                                    </li>
+                                    <li>
+                                      <a href="{% url 'etools:donor_mapping' %}">
+                                          Donor Mapping
+                                          {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                                      </a>
+                                    </li>
+                                    <li>
+                                      <a href="" target="_blank">
+                                           Vulnerability Maps
+                                          <div class="ml-auto badge badge-info" style="padding: 2px;font-size: 10px;">soon</div>
+                                      </a>
+                                    </li>
+                              </ul>
+                          </li>
+                           <li>
+                              <a href="{% url 'survey:population_figures' %}">
+                                  <i class="metismenu-icon pe-7s-users" aria-hidden="true"></i>
+                                  Population Figures
+                                  {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                              </a>
+                            </li>
+                           <li>
+                              <a href="{% url 'survey:child_protection' %}">
+                                  <i class="metismenu-icon pe-7s-leaf" aria-hidden="true"></i>
+                                  CPWG RT. Monitoring
+                                  {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                              </a>
+                            </li>
+                             <li>
+                                <a href="https://interagency.herokuapp.com/Dashboard/Researches/" target="_blank">
+                                    <i class="metismenu-icon pe-7s-repeat" aria-hidden="true"></i>
+                                    Research Tracker
+                                    {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                                </a>
+                              </li>
+                             <li>
+                                <a href="https://data.unicef.org/" target="_blank">
+                                    <i class="metismenu-icon pe-7s-server" aria-hidden="true"></i>
+                                    Data.UNICEF
+                                    {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                                </a>
+                              </li>
+                             <li>
+                                <a href="https://www.dropbox.com/sh/htj0ijgn0031xq4/AAC5OuoeQnAy3Urrph1WJBawa?dl=0" target="_blank">
+                                    <i class="metismenu-icon pe-7s-box2" aria-hidden="true"></i>
+                                    IM Dropbox
+                                    {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                                </a>
+                              </li>
+                             <li>
+                                <a href="{% url 'survey:data_sets' %}">
+                                    <i class="metismenu-icon pe-7s-server" aria-hidden="true"></i>
+                                    Data sets
+                                    {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                                </a>
+                              </li>
+
+                          <!--<li class="app-sidebar__heading">Maps</li>-->
+                           <!--<li>-->
+                              <!--<a href="https://interagency.herokuapp.com/Dashboard/Maps/" target="_blank">-->
+                                  <!--<i class="metismenu-icon pe-7s-map-2" aria-hidden="true"></i>-->
+                                  <!--UNICEF Maps-->
+                                  <!--{% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}-->
+                              <!--</a>-->
+                            <!--</li>-->
+                           <!--<li>-->
+                              <!--<a href="" target="_blank">-->
+                                  <!--<i class="metismenu-icon pe-7s-map-2" aria-hidden="true"></i>-->
+                                  <!--Donor Maps-->
+                                  <!--<div class="ml-auto badge badge-info" style="padding: 2px;font-size: 10px;">soon</div>-->
+                              <!--</a>-->
+                            <!--</li>-->
+                           <!--<li>-->
+                              <!--<a href="" target="_blank">-->
+                                  <!--<i class="metismenu-icon pe-7s-map-2" aria-hidden="true"></i>-->
+                                  <!--Vulnerability Maps-->
+                                  <!--<div class="ml-auto badge badge-info" style="padding: 2px;font-size: 10px;">soon</div>-->
+                              <!--</a>-->
+                            <!--</li>-->
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="app-main__outer">
+                {% block content %}
+                {% endblock content %}
+                <div class="app-wrapper-footer">
+                    <div class="app-footer">
+                        <div class="app-footer__inner card py-4">
+                            <div class="app-footer-left">
+                                <ul class="nav">
+                                    <li class="nav-item">
+                                        <i class="py-2">{% include   'images/unicef-logo-horizontal.svg' %}</i>
+                                    </li>
+                                    <li class="nav-item">
+                                        <div class="nav-link">
+                                            2021 Copyrights © <a href="https://www.unicef.org/lebanon/"  target="_blank" class="text-primary pl-1"> Neuro-DB</a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="app-footer-right">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'vendors/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <!--<script type="text/javascript" src="{% static 'js/main.87c0748b313a1dda75f5.js' %}"></script>-->
+    <!-- Custom Theme Scripts -->
+    <!--<script src="{% static 'js/custom.min.js' %}"></script>-->
+    <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw==" crossorigin="anonymous"></script>
+    {% include 'tellme/js_inc.html' %}
+    {% block extra_js %}{% endblock %}
+
+    <script>
+        $(document).on("click", function (event) {
+            var $trigger = $(".dropdown");
+            if ($trigger !== event.target && !$trigger.has(event.target).length) {
+                $(".dropdown-menu-xl").slideUp("fast");
+            }
+        });
+
+        $(document).ready(function () {
+            $(window).scroll(function () {
+                if ($(this).scrollTop() != 0) {
+                    $('#toTop').fadeIn();
+                } else { $('#toTop').fadeOut(); }
+            });
+            $('#toTop').click(function () {
+                $("html,body").animate({ scrollTop: 0 }, 600); return false;
+            }); $('.print-page').click(function () {
+                $('.expanded-all').trigger('click'); $('.read-more').hide(); window.print();
+            });
+        });
+
+    </script>
+<script type="text/javascript">
+      function startIntro(){
+        var intro = introJs();
+          intro.setOptions({
+            steps: [
+              {
+                element: '#step1',
+                intro: $('#slide1').html()
+              },
+              {
+                element: '#step1a',
+                intro: $('#slide1a').html()
+              },
+              {
+                element: '#step2',
+                intro: $('#slide2').html()
+                <!--position: 'right'-->
+              },
+              {
+                element: '#step3',
+                intro: $('#slide3').html(),
+              },
+              {
+                element: '#step3a',
+                intro: $('#slide3a').html(),
+              },
+              {
+                element: '#step3b',
+                intro: $('#slide3b').html(),
+              },
+              {
+                element: '#blocks',
+                intro: $('#blocks').attr('title'),
+              },
+              {
+                element: '#step4',
+                intro: $('#slide3c').html(),
+              },
+              {
+                element: '#step4a',
+                intro: $('#slide4a').html(),
+              }
+            ]
+          });
+
+          intro.start();
+      }
+    </script>
+    {% block modal %}{% endblock %}
+</body>
+
+</html>

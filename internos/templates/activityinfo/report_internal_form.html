@@ -1,0 +1,723 @@
+{% extends "base2.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}{% endblock %}
+
+{% block content %}
+<div class="app-main__inner">
+  <div class="app-page-title">
+    <div class="page-title-wrapper">
+      <div class="page-title-heading">
+        <div class="page-title-icon">
+          <i class="fa fa-fw icon-gradient bg-happy-fisher" aria-hidden="true"></i>
+        </div>
+        <div> Internal Reporting Form | {{ database.label }} | {{ reporting_year}}
+          <div class="page-title-subheading">
+          </div>
+        </div>
+      </div>
+      <div class="page-title-actions">
+      </div>
+    </div>
+  </div>
+  <div class="main-card mb-2 card mt-3">
+    <div class="card-header">
+      <nav class="" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{{ db_url }}?rep_year={{ reporting_year }}&ai_id={{ database.ai_id }}">
+             {{ database.label }}
+            </a>
+          </li>
+          <li class="breadcrumb-item"><a href="{% url 'activityinfo:report_internal' %}?rep_year={{ reporting_year }}&ai_id={{ database.ai_id }}">Internal Reporting</a></li>
+          <li class="active breadcrumb-item" aria-current="page">Indicator Form</li>
+      </ol>
+      </nav>
+  </div>
+    </div>
+
+
+  <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+    <li class="nav-item">
+       <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
+        <span>General Information</span>
+      </a>
+
+    </li>
+    <li class="nav-item">
+
+      <a role="tab"  class="nav-link " id="tab-1" data-toggle="tab" href="#tab-content-1">
+        <span>Values</span>
+      </a>
+
+    </li>
+
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane tabs-animation active show" id="tab-content-0" role="tabpanel">
+      <form method="post" id="indicatorform" action="{% url 'activityinfo:report_internal_form' %}?rep_year={{ reporting_year }}"
+            class="needs-validation" novalidate>
+        <input type="hidden" name="ai_id" value="{{ database.ai_id }}">
+        <input type="hidden" name="id" value="{{ indicator.id }}">
+        <input type="hidden" name="form_name" value="indicatorform">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="main-card mb-3 card">
+              <div class="card-body">
+                <h5 class="card-title">Basic Info</h5>
+                <div class="position-relative form-group">
+                  <label for="indicator_name" class="">Name</label>
+                  <textarea id="indicator_name" name="name" required class="form-control form-control-sm">{{ indicator.name }}</textarea>
+                   <div class="invalid-feedback">Please provide name.</div>
+                </div>
+                <div class="position-relative form-group">
+                  <label for="code" class="">AWP Code</label>
+                  <input name="awp_code" id="code" type="text" value="{{ indicator.awp_code }}" class="form-control form-control-sm">
+                </div>
+                <div class="position-relative form-group">
+                  <label for="activity_id" class="">Select Activity</label>
+                  <select name="activity" id="activity_id" class="custom-select">
+                    {% for activity in activities %}
+                    <option value="{{ activity.id }}"{% if indicator.activity  == activity %}selected{% endif %}>{{ activity.name }}</option>
+                    {% endfor %}
+                  </select></div>
+
+                <div class="position-relative form-group">
+                  <label for="unit" class="">Select Unit</label>
+                  <select name="unit" id="unit" class="custom-select" data-value="{{ indicator.units }}" required>
+                    <option value="Children">Children</option>
+                    <option value="Individuals">Individuals</option>
+                    <option value="Adolescents_Youth">Adolescents & Youth</option>
+                    <option value="Caregivers">Caregivers</option>
+                    <option value="Households">Households</option>
+                    <option value="Platforms">Platforms</option>
+                    <option value="Locations">Locations</option>
+                    <option value="Community_Centers"> Community Centers</option>
+                    <option value="m2">M2 (Meter square)</option>
+                    <option value="m3"> M3 (Meter Cube)</option>
+                    <option value="other">Other units</option>
+                  </select>
+                  <div class="invalid-feedback">Please select a unit.</div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="main-card mb-2 card">
+              <div class="card-body">
+                <h5 class="card-title"> Choose Types</h5>
+                <div class="position-relative form-group">
+                    <div class="custom-check custom-control">
+                      <input type="checkbox" id="master_indicator" value="master_indicator"  name="level" class="custom-control-input" {% if indicator.master_indicator %} checked {% endif %}>
+                      <label class="custom-control-label" for="master_indicator" >
+                        Master Indicator</label>
+                    </div>
+                    <div class="custom-check custom-control">
+                      <input type="checkbox" id="sub_master_indicator" value="sub_master_indicator" name="level"  class="custom-control-input" {% if indicator.master_indicator_sub %} checked {% endif %}>
+                      <label class="custom-control-label" for="sub_master_indicator">Sub Master Indicator</label>
+                    </div>
+                </div>
+                 <div class="position-relative form-group">
+                    <div class="custom-check custom-control">
+
+                      {% if indicator.type == 'quantity' %}
+                      <input type="checkbox" id="quantity" value="quantity" name="type" class="custom-control-input" checked>
+                    {% else %}
+                      <input type="checkbox" id="quantity" value="quantity" name="type" class="custom-control-input" >
+                    {% endif %}
+                       <label class="custom-control-label" for="quantity">Quantitative</label></div>
+                    <div class="custom-check custom-control">
+                      {% if indicator.type == 'quality' %}
+                      <input type="checkbox" id="quality" value="quality" name="type" class="custom-control-input" checked>
+                      {% else %}
+                       <input type="checkbox" id="quality" value="quality" name="type" class="custom-control-input" >
+                     {% endif %}
+                      <label class="custom-control-label" for="quality">Qualitative</label></div>
+                </div>
+              </div>
+            </div>
+            {% if step == 1 %}
+             <div class="main-card mb-2 card" id="indicator_quality" style="display:none">
+            <div class="card-body">
+                <h5 class="card-title">Qualitative Option </h5>
+                <div class="position-relative form-group">
+
+                     <div class="position-relative form-group">
+                  <label for="qualitative_target" class="">Target</label>
+                  <input name="qualitative_target" id="qualitative_target" type="text" value="{{ indicator.qualitative_target }}" class="form-control form-control-sm">
+                </div>
+                    <div class="position-relative form-group">
+              <label for="status" class="" style="display:block">Status</label>
+              <select id="status" name="status" class="form-control form-control-sm">
+                <option value="On_Track">ON TRACK</option>
+                <option value="Off_Track">OFF TRACK</option>
+                <option value="Over_Track">OVER TRACK</option>
+              </select>
+              </div>
+              <div class="position-relative form-group">
+              <label for="qualitative_result" class="" style="display:block">General Result</label>
+              <textarea class="form-control form-control-sm" name="qualitative_result" id="qualitative_result"></textarea>
+              </div>
+                </div>
+             </div>
+            </div>
+
+             <div class="main-card mb-2 card" id="indicator_quantity" style="display:none">
+              <div class="card-body">
+                <h5 class="card-title"> Quantitative Option</h5>
+                <div class="position-relative form-group">
+                  <div>
+                    <div class="position-relative form-group">
+                  <label for="target" class="">Target</label>
+                  <input name="target" id="target" type="number" min="0" value="{{ indicator.target }}" class="form-control form-control-sm">
+                </div>
+                  </div>
+                </div>
+                <div class="position-relative form-group">
+                  <div>
+                    <div class="custom-check custom-control">
+                      {% if indicator.measurement_type == 'percentage' %}
+                      <input type="checkbox" id="percentage" value="percentage" name="measurement"  class="custom-control-input" checked>
+                    {% else %}
+                      <input type="checkbox" id="percentage" value="percentage" name="measurement"  class="custom-control-input">
+                      {% endif %}
+                      <label class="custom-control-label" for="percentage">Percentage</label></div>
+                    <div class="custom-check custom-control">
+                       {% if indicator.measurement_type == 'numeric' %}
+                      <input type="checkbox" id="numeric" value="numeric" name="measurement" class="custom-control-input" checked>
+                      {% else %}
+                      <input type="checkbox" id="numeric" value="numeric" name="measurement" class="custom-control-input" >
+                      {% endif %}
+                      <label class="custom-control-label" for="numeric">Numeric</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% else %}
+            {% if indicator.type == 'quantity' %}
+            <div class="main-card mb-2 card" id="indicator_quantity" >
+              <div class="card-body">
+                <h5 class="card-title"> Quantitative Target</h5>
+                 <div class="position-relative form-group">
+                  <div>
+                    <div class="custom-check custom-control">
+                      {% if indicator.measurement_type == 'percentage' %}
+                      <input type="checkbox" id="percentage" value="percentage" name="measurement"  class="custom-control-input" checked>
+                    {% else %}
+                      <input type="checkbox" id="percentage" value="percentage" name="measurement"  class="custom-control-input">
+                      {% endif %}
+                      <label class="custom-control-label" for="percentage">Percentage</label></div>
+                    <div class="custom-check custom-control">
+                       {% if indicator.measurement_type == 'numeric' %}
+                      <input type="checkbox" id="numeric" value="numeric" name="measurement" class="custom-control-input" checked>
+                      {% else %}
+                      <input type="checkbox" id="numeric" value="numeric" name="measurement" class="custom-control-input" >
+                      {% endif %}
+                      <label class="custom-control-label" for="numeric">Numeric</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="position-relative form-group">
+                  <div>
+                    <div class="position-relative form-group">
+                  <label for="target" class="">Target</label>
+                  <input name="target" id="target" type="number" min="0"  value="{{ indicator.target }}" class="form-control form-control-sm">
+                </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            {% endif %}
+            {% if indicator.type == 'quality' %}
+           <div class="main-card mb-2 card" id="indicator_quality">
+            <div class="card-body">
+                <h5 class="card-title">Qualitative Option </h5>
+                <div class="position-relative form-group">
+                  <div class="position-relative form-group">
+                  <label for="qualitative_target" class=""> Qualitative Target</label>
+                  <input name="qualitative_target" id="qualitative_target" type="text" value="{{ indicator.qualitative_target }}" class="form-control form-control-sm">
+                  </div>
+                </div>
+              <div class="position-relative form-group">
+              <label for="status" class="" style="display:block">Status</label>
+              <select id="status" name="status" class="form-control form-control-sm" data-value="{{ indicator.status }}">
+                <option value="On_Track">ON TRACK</option>
+                <option value="Off_Track">OFF TRACK</option>
+                <option value="Over_Track">OVER TRACK</option>
+              </select>
+              </div>
+              <div class="position-relative form-group">
+              <label for="qualitative_result" class="" style="display:block">General Result</label>
+              <textarea class="form-control form-control-sm" name="qualitative_result" id="qualitative_result">{{ indicator.qualitative_result }}</textarea>
+              </div>
+             </div>
+            </div>
+            {% endif %}
+         {% endif %}
+            <button type="submit" id="submit_form"  class="btn btn-outline-primary">Save</button>
+          </div>
+        </div>
+         {% csrf_token %}
+      </form>
+    </div>
+    <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
+
+      {% if indicator.type == 'quality' %}
+      <div class="row">
+         <div class="col-md-6">
+      <div class="main-card mb-3 card">
+        <div class="card-body">
+          <h5 class="card-title">Add Result per Governorate per Month</h5>
+          <div id="response_result"></div>
+           <div class="position-relative form-group">
+            <label for="result" class="" style="display:block">Result</label>
+            <input type="text" id="result" class="form-control form-control-sm">
+               <div id="month_result" class="invalid-tooltip">Please Enter Result !!</div>
+          </div>
+          <div class="position-relative form-group">
+            <label for="months" class="" style="display:block">Month</label>
+            <select id="months" class="form-control form-control-sm">
+               {% for month, month_name in months %}
+              <option value="{{ month }}">{{month_name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+           <div class="position-relative form-group">
+            <label>Multiple Governorates</label>
+          </div>
+          {% for gov_id ,gov_name in governorates %}
+          <div class="custom-check custom-control">
+            <input type="checkbox" id="{{ gov_name }}" value="{{ gov_id }}"  name="govs" class="custom-control-input">
+            <label class="custom-control-label" for="{{ gov_name }}" >{{ gov_name }}
+            </label>
+          </div>
+          {% endfor %}
+          <div class="mt-3">
+              <input type="button" class="btn btn-outline-primary" id="add_result" value="Add Row">
+          </div>
+        </div>
+      </div>
+       </div>
+         <div class="col-md-6">
+      <div class="main-card mb-3 card">
+        <div class="card-body">
+          <h5 class="card-title">Added Results </h5>
+         <table id="table_result" class="table table-striped table-bordered">
+           <thead>
+           <tr>
+             <th>Result</th>
+             <th>Governorate</th>
+              <th>Month</th>
+             <th></th>
+           </tr>
+           </thead>
+           <tbody>
+           {% if indicator.results.items %}
+           {% for key , value in indicator.results.items %}
+           {% split_results key value as item %}
+
+            <tr id="{{ key }}">
+              <td data-value="{{ item.result }}">{{ item.result }}</td>
+              <td data-value="{{ item.gov }}">{{ item.gov_name }}</td>
+              <td data-value="{{ item.month_num }}">{{ item.month }}</td>
+              <td><a class='btn btn-outline-primary remove_result'>X</a></td>
+            </tr>
+           {% endfor %}
+           {% endif %}
+           </tbody>
+         </table>
+         <form method="Post" id="resultsform" action="{% url 'activityinfo:report_internal_form' %}?rep_year={{ reporting_year }}">
+             <input type="hidden" name="form_name" value="resultsform">
+            <input type="hidden" id="row_results" name="row_results" value="">
+            <input type="hidden" name="ai_id" value="{{ database.ai_id }}">
+            <input type="hidden" name="id" value="{{ indicator.id }}">
+           <button id="save_results" class="btn btn-outline-primary">Save</button>
+            {% csrf_token %}
+          </form>
+        </div>
+      </div>
+         </div>
+      </div>
+      {% else %}
+        <div class="row">
+         <div class="col-md-6">
+      <div class="main-card mb-3 card">
+        <div class="card-body">
+          <h5 class="card-title">Add value per Governorate per month</h5>
+          <div id="response"></div>
+          <div class="position-relative form-group">
+            <label for="filter_governorates" class="" style="display:block">Select Governorate</label>
+                  <select class="custom-select" id="filter_governorates"
+                    name="governorates" style="display:block">
+              {% for code, name in governorates %}
+              <option value="{{ code }}" {% if code == selected_governorates %}selected{% endif %}>
+                {{ name }}
+              </option>
+              {% endfor %}
+            </select>
+            </div>
+
+            <div class="position-relative form-group">
+            <label for="month" class="" style="display:block">Month</label>
+            <input type="month" id="month"  pattern="[0-9]{2}" required class="form-control form-control-sm " min="2020-01" max="2020-12">
+            <div id="invalid-month" class="invalid-tooltip">Please choose month !!</div>
+          </div>
+          <div class="position-relative form-group">
+            <label for="value" class="" style="display:block">Value</label>
+            <input type="number" id="value" min="0" value="0" required class="form-control form-control-sm">
+            <div id="invalid-value" class="invalid-tooltip">Please set value !!</div>
+          </div>
+          <div>
+              <input type="button" class="btn btn-outline-primary" id="add_gov" value="Add Row">
+          </div>
+        </div>
+      </div>
+       </div>
+         <div class="co l-md-6">
+      <div class="main-card mb-3 card">
+        <div class="card-body">
+          <h5 class="card-title">Added Values </h5>
+         <form method="Post" id="valuesform" action="{% url 'activityinfo:report_internal_form' %}?rep_year={{ reporting_year }}">
+           <input type="hidden" name="form_name" value="valuesform">
+           <input type="hidden" id="row_values" name="row_values" value="">
+            <input type="hidden" name="ai_id" value="{{ database.ai_id }}">
+            <input type="hidden" name="id" value="{{ indicator.id }}">
+           <table id="table_values" class="table table-striped table-bordered">
+           <thead>
+           <tr>
+             <th>Governorate</th>
+             <th>Month</th>
+             <th>Value</th>
+              <th></th>
+           </tr>
+           </thead>
+           <tbody>
+           {% for row in reports %}
+           <tr id="{{ row.location_adminlevel_governorate_code }}-{{ row.month }}" >
+             <td data-value="{{ row.location_adminlevel_governorate_code }}">
+                 {{ row.location_adminlevel_governorate }}
+             </td>
+             <td data-value="{{ row.month }}">
+               {{ row.month }}
+             </td>
+             <td data-value=" {{ row.indicator_value }}">
+            <input type="number" value="{{ row.indicator_value|number_format }}" min="0" class="form-control form-control-sm td_value">
+             </td>
+             <td><a class="btn btn-outline-primary remove_gov">X</a></td>
+           </tr>
+           {% endfor%}
+           </tbody>
+         </table>
+           <button type="submit" id="save_values" class="btn btn-outline-primary">Save</button>
+
+           {% csrf_token %}
+          </form>
+
+        </div>
+      </div>
+       </div>
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock content %}
+{% block extra_js %}
+   <script src="{% static 'vendors/bootstrap/js/alert.js' %}"></script>
+<script>
+
+$(document).ready(function () {
+
+
+ var selected = $("#unit").data("value");
+      $("#unit").val(selected).attr("selected", "selected");
+
+ var selected_status = $("#status").data("value");
+      $("#status").val(selected_status).attr("selected", "selected");
+
+ $('#master_indicator').change(function(){
+        if($(this).is(':checked')){
+          $('#sub_master_indicator').attr('checked', false);
+        }
+      });
+
+       $('#sub_master_indicator').change(function(){
+        if($(this).is(':checked')){
+          $('#master_indicator').attr('checked', false);
+        }
+      });
+
+      $('#quantity').change(function(){
+         $('#indicator_quantity').toggle(this.checked);
+        if($(this).is(':checked')){
+          $('#quality').attr('checked', false);
+          $('#indicator_quality').hide("slow");
+        }
+      });
+
+       $('#quality').change(function(){
+        $('#indicator_quality').toggle(this.checked);
+        if($(this).is(':checked')){
+          $('#quantity').attr('checked', false);
+          $('#indicator_quantity').hide("slow");
+        }
+
+      });
+
+       $('#numeric').change(function(){
+        if($(this).is(':checked')){
+          $('#percentage').attr('checked', false);
+        }
+      });
+
+       $('#percentage').change(function(){
+        if($(this).is(':checked')){
+          $('#numeric').attr('checked', false);
+        }
+      });
+
+
+       var id = getUrlParameter('step');
+      if ( id == 2){
+        var active_item = $("#tab-0");
+        active_item.removeClass("active");
+        var href = $(active_item).attr('href');
+        $(href).removeClass("active show");
+        $(href).addClass("fade");
+
+        var item = $("#tab-1");
+        item.removeClass("disabled");
+        item.addClass("active");
+        var href2 = $(item).attr('href');
+        $(href2).removeClass("fade");
+        $(href2).addClass("active show");
+      }
+     if ( id == 1){
+        var item = $("#tab-1");
+        item.addClass("disabled");
+     }
+});
+       $(document).on("change paste keyup",".td_value", function() {
+          var result = $(this).val();
+          $(this).parents('td').data('value', result);
+      });
+      $(document).on("click", "#add_gov", function(e) {
+
+         var selectedvalue = $("#filter_governorates").val();
+         var gov = $("#filter_governorates").find("option:selected").text();
+         var month = $("#month").val();
+         var value = $("#value").val();
+         var tr_id = selectedvalue +"-" + month;
+
+         if(month.length==0){
+            $('#month').addClass('validate_input');
+            $('#invalid-month').show();
+          }
+          else if (value == 0){
+           $('#value').addClass('validate_input');
+            $('#invalid-value').show();
+          }
+         else
+          {
+              if ($('#'+tr_id).length)
+              {
+                 $("#response").animate({
+                    height: '+=72px'
+                }, 300);
+
+                $('<div class="alert alert-danger">' +
+                  '<button type="button" class="close" data-dismiss="alert">' +
+                  '&times;</button>This governorate has already value in this month !! </div>').hide().appendTo('#response').fadeIn(1000);
+
+                 $(".alert").delay(3000).fadeOut(
+                "normal",
+                function(){
+                  $(this).remove();
+                });
+
+                $("#response").delay(4000).animate({
+                      height: '-=72px'
+                  }, 300);
+
+               }
+              else
+              {
+                var markup = "<tr id="+tr_id+"><td data-value="+ selectedvalue +">"+ gov +"</td><td data-value="+ month +">"+month+"</td><td data-value="+ value + ">"+ "<input type='number' value='" + value +"' min='0' class='form-control form-control-sm td_value'>"+"</td><td><a class='btn btn-outline-primary remove_gov'>X</a></td></tr>";
+                 $("#table_values  tbody").append(markup);
+              }
+          }
+      });
+      $('#month').on("change paste keyup", function() {
+
+          $('#invalid-month').hide();
+           $('#month').removeClass('validate_input');
+      });
+
+     $('#value').on("change paste keyup", function() {
+
+              $('#invalid-value').hide();
+               $('#value').removeClass('validate_input');
+     });
+
+      $(document).on("click", "#table_values tr td >a.remove_gov", function(e) {
+         $(this).parents("tr").remove();
+      });
+
+      function CreateValuesJson() {
+        var myRows = [];
+        var $headers = $("#table_values thead tr").find("th");
+        var $rows = $("#table_values tbody tr").each(function(index) {
+          $cells = $(this).find("td");
+          myRows[index] = {};
+        $cells.each(function(cellIndex) {
+
+         myRows[index][$($headers[cellIndex]).html()] = $(this).data("value");
+          });
+        });
+        var myObj = {};
+        myObj.myrows = myRows;
+        $('#row_values').val(JSON.stringify(myObj));
+      }
+<!------------------ Results Form --------------------------->
+
+      $(document).on("click", "#add_result", function(e) {
+
+            var month = $("#months").find("option:selected").text();
+            var selected_month = $("#months").val();
+
+            var result = $("#result").val();
+            var selectedvalue = []
+            var dict = {};
+            $.each($("input[name='govs']:checked"), function(){
+              selected_gov=$(this).val();
+               gov_name = $(this).next('label').text();
+              selectedvalue.push(selected_gov);
+               var markup = "<tr id="+ selected_month + "-" + selected_gov +"><td data-value="+ result +">" + result + "</td><td data-value="+ selected_gov +">" + gov_name + "</td><td data-value="+ selected_month +">" + month + "</td><td><a class='btn btn-outline-primary remove_result'>X</a></td></tr>";
+              dict[selected_month+"-"+selected_gov]=markup;
+            });
+
+          if(result.length==0){
+              $('#result').addClass('validate_input');
+              $('#month_result').show();
+          }
+         else
+          {
+            for (row in dict){
+              if ($('#'+row).length)
+              {
+                 $("#response_result").animate({
+                    height: '+=72px'
+                }, 300);
+
+                $('<div class="alert alert-danger">' +
+                  '<button type="button" class="close" data-dismiss="alert">' +
+                  '&times;</button>Result for this governorate in selected month is already added !! </div>').hide().appendTo('#response_result').fadeIn(1000);
+
+                 $(".alert").delay(3000).fadeOut(
+                "normal",
+                function(){
+                  $(this).remove();
+                });
+
+                $("#response_result").delay(4000).animate({
+                      height: '-=72px'
+                  }, 300);
+               break;
+               }
+              else
+              {
+                  $("#table_result  tbody").append(dict[row]);
+
+              }
+            }
+          }
+          $("#result").val("");
+          $('input[name=govs]').each(function()
+            {
+               this.checked = false;
+            });
+
+
+      });
+      $('#result').on("change paste keyup", function() {
+
+        $('#month_result').hide();
+        $('#result').removeClass('validate_input');
+      });
+
+      $(document).on("click", "#table_result tr td >a.remove_result", function(e) {
+        $(this).parents("tr").remove();
+      });
+
+      function CreateResultsJson() {
+          var myRows = [];
+          var $headers = $("#table_result thead tr").find("th");
+          var $rows = $("#table_result tbody tr").each(function(index) {
+            $cells = $(this).find("td");
+            myRows[index] = {};
+           $cells.each(function(cellIndex) {
+           myRows[index][$($headers[cellIndex]).html()] = $(this).data("value");
+            });
+          });
+          var myObj = {};
+          myObj.myrows = myRows;
+          $('#row_results').val(JSON.stringify(myObj));
+        }
+      $().ready(function() {
+        $("#save_values").click(function() {
+                CreateValuesJson();
+            });
+        $("#save_results").click(function() {
+               CreateResultsJson();
+            });
+      });
+
+      var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+      };
+
+
+
+</script>
+    <script>
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+ </script>
+{% endblock  %}

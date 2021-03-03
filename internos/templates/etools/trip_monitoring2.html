@@ -1,0 +1,664 @@
+{% extends "base.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}Neuro-DB{% endblock %}
+
+{% block content %}
+<!-- top tiles -->
+<!-- /top tiles -->
+
+<style>
+  div.panel-footer {
+    background-color: #fff !important;
+  }
+  p {
+    background-color: #f7f9fa;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .sidebar-box {
+    max-height: 120px;
+    position: relative;
+    overflow: hidden;
+  }
+  .sidebar-box .read-more {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 15px 0;
+    opacity: 0.9;
+  }
+  .btn-filter.on {
+    background-color: #0089d2;
+    color: white;
+  }
+  .btn-filter-no.on {
+    background-color: #0089d2;
+    color: white;
+  }
+  span.trip-planned {
+    background-color: rgba(250,237,119,.6);
+  }
+  span.trip-submitted {
+    background-color: rgba(206,188,6,.6);
+  }
+  span.trip-approved {
+    background-color: rgba(141,198,63,.45);
+  }
+  span.trip-completed {
+    background-color: rgba(141,198,63,1);
+  }
+  .x_title span.label {
+      color: white;
+  }
+  div.trip-filter {
+    cursor: pointer;
+  }
+  .travel-counts .label {
+    cursor: pointer;
+  }
+  #mapView {
+    height: 500px;
+    width: 80%;
+    border: 1px solid;
+  }
+  #myTabContent {
+    padding-top: 10px;
+  }
+  div.count.active a {
+    color: #0089d2;
+  }
+  .bootstrap-select button.dropdown-toggle {
+     background-color: #337ab7;
+     color: white !important;
+  }
+  .bootstrap-select {
+      width: 150px !important;
+  }
+  .table thead {
+    background-color: #00AEEE;
+    color: white;
+  }
+  .w-70 { width: 70px; max-width: 70px;}
+  .w-100 { width: 100px; max-width: 100px;}
+  .w-120 { width: 120px; max-width: 120px;}
+  .w-130 { width: 130px; max-width: 130px;}
+  .w-140 { width: 140px; max-width: 140px;}
+  .w-150 { width: 150px; max-width: 150px;}
+  .w-200 { width: 200px; max-width: 200px;}
+  .w-400 { width: 400px; max-width: 400px;}
+  .w-500 { width: 500px; max-width: 500px;}
+</style>
+
+<div class="row tile_count" data-step="4" data-intro="Click on the number to view the details. The default view is the All programmatic Visits">
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> All Visits</span>
+    <div class="count {% if travel_status == 'all' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=0&month={{ selected_month }}">{{ programmatic_visits }}</a>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Planned Visits</span>
+    <div class="count {% if travel_status == 'planned' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=planned&month={{ selected_month }}">{{ programmatic_visits_planned }}</a>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Submitted Visits</span>
+    <div class="count {% if travel_status == 'submitted' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=submitted&month={{ selected_month }}">{{ programmatic_visits_submitted }}</a>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Approved Visits</span>
+    <div class="count {% if travel_status == 'approved' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=approved&month={{ selected_month }}">{{ programmatic_visits_approved }}</a>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> Completed Visits</span>
+    <div class="count {% if travel_status == 'completed' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=completed&month={{ selected_month }}">{{ programmatic_visits_completed }}</a>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+    <span class="count_top"><i class="fa fa-info"></i> HACT Visit with Report</span>
+    <div class="count {% if travel_status == 'completed_report' %}active{% endif %}">
+      <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status=completed_report&month={{ selected_month }}">{{ programmatic_visits_completed_report }}</a>
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+
+    <div class="x-panel">
+      <div class="x_title">
+        <h2>
+          <strong>Programmatic Visits Monitoring</strong>
+        </h2>
+        <ul class="nav navbar-right panel_toolbox">
+          <li><a class="collapse-link"></a></li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="clearfix"></div>
+
+    </div>
+    <div class="row" id="trips_monitor">
+
+      <ul class="nav nav-tabs" role="tablist" id="myTab">
+        <li class="nav-item active" data-step="5" data-intro="Dashboard">
+          <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+            aria-selected="true">Dashboard</a>
+        </li>
+        <li class="nav-item" data-step="6" data-intro="Number of Programmatic Visits per Office per Section">
+          <a class="nav-link" id="report-tab" data-toggle="tab" href="#report" role="tab" aria-controls="report"
+            aria-selected="false">Report Per Partner</a>
+        </li>
+        <li class="nav-item" data-step="6" data-intro="Number of Programmatic Visits per Office per Section">
+          <a class="nav-link" id="report2-tab" data-toggle="tab" href="#report2" role="tab" aria-controls="report2"
+            aria-selected="false">Report Per Section</a>
+        </li>
+        <li class="nav-item" data-step="7" data-intro="Geo location of the Programmatic Visits">
+          <a class="nav-link" id="map-tab" data-toggle="tab" href="#map" role="tab" aria-controls="map"
+            aria-selected="false">Map</a>
+        </li>
+        <!--<li class="nav-item">-->
+          <!--<a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"-->
+            <!--aria-selected="false">Warnings</a>-->
+        <!--</li>-->
+      </ul>
+
+      <div class="tab-content" id="myTabContent">
+
+        <!--chart-->
+        <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">
+          <form action="{% url 'etools:programmatic_visits_monitoring' %}" method="get">
+            <input type="hidden" name="travel_status" value="{{ travel_status }}" />
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Year" name="year" data-style="btn-info">
+                    <option value="2017" {% if selected_year == 2017  %}selected{% endif %}>2017</option>
+                    <option value="2018" {% if selected_year == 2018 %}selected{% endif %}>2018</option>
+                    <option value="2019" {% if selected_year == 2019 %}selected{% endif %}>2019</option>
+                </select>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Section" name="section" data-style="btn-info">
+                    {% for item in sections %}
+                        <option value="{{ item.id }}" {% if item.id == selected_section %}selected{% endif %}>{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Partner" name="partner" data-style="btn-info">
+                    {% for item in partners %}
+                        <option value="{{ item.partner_id }}" {% if item.partner_id == selected_partner %}selected{% endif %}>{{ item.partner_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Donor" name="donor" data-style="btn-info">
+                    {% for item in donors %}
+                        <option value="{{ item }}" {% if item == selected_donor %}selected{% endif %}>{{ item }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-success">Search</button>
+            <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status={{ travel_status }}" class="btn btn-warning">Cancel</a>
+          </div>
+
+        </form>
+          {% include 'etools/trip_monitoring_chart.html' %}
+        </div>
+
+        <!--Report per partner-->
+        <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
+          <form action="{% url 'etools:programmatic_visits_monitoring' %}" method="get">
+            <input type="hidden" name="travel_status" value="{{ travel_status }}" />
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Year" name="year" data-style="btn-info">
+                    <option value="2017" {% if selected_year == 2017  %}selected{% endif %}>2017</option>
+                    <option value="2018" {% if selected_year == 2018 %}selected{% endif %}>2018</option>
+                    <option value="2019" {% if selected_year == 2019 %}selected{% endif %}>2019</option>
+                </select>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Donor" name="donor" data-style="btn-info">
+                    {% for item in donors %}
+                        <option value="{{ item.id }}" {% if item.id == selected_donor %}selected{% endif %}>{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-success">Search</button>
+            <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status={{ travel_status }}" class="btn btn-warning">Cancel</a>
+          </div>
+
+        </form>
+          <div class="x_content" style="" id="">
+            <table content="monitoring visits.csv" style="background-color: white;"
+                   data-tableName="monitoring visits - 2019"
+                   class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                    <th rowspan="2" style="vertical-align: middle;"></th>
+                    <th colspan="{{ sections|length }}" content="Beirut/Mount Lebanon" style="vertical-align: middle;">Central Beirut and South</th>
+                    <th colspan="{{ sections|length }}" content="Beirut/Mount Lebanon" style="vertical-align: middle;">North</th>
+                    <th colspan="{{ sections|length }}" content="Beirut/Mount Lebanon" style="vertical-align: middle;">Bekaa as East</th>
+                    <th rowspan="2" style="vertical-align: middle;">Total</th>
+                </tr>
+                <tr>
+                    {% for section in sections %}
+                      <th class="w-100" style="vertical-align: middle;">{{ section.code }}</th>
+                    {% endfor %}
+                    {% for section in sections %}
+                      <th class="w-100" style="vertical-align: middle;">{{ section.code }}</th>
+                    {% endfor %}
+                    {% for section in sections %}
+                      <th class="w-100" style="vertical-align: middle;">{{ section.code }}</th>
+                    {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for partner in partners %}
+                  {% get_array_value trip_details partner.partner_id 0 0 as pdata %}
+                  {% if pdata %}
+                  <tr>
+                    <th class="w-500" style="background-color: {{ section.color }}">{{ partner.partner__name }}</th>
+                      {% for section in sections %}
+                          <td class="w-100 travel-counts">
+                            {% get_trip_values trip_details partner.partner_id "1,40,39" section.id as data %}
+                            {% if data %}
+                                <span class="label label-primary">{{ data }}</span>
+                            {% else %}
+                                0
+                            {% endif %}
+                          </td>
+                      {% endfor %}
+                      {% for section in sections %}
+                          <td class="w-100 travel-counts">
+                            {% get_trip_values trip_details partner.partner_id "37,38" section.id as data %}
+                            {% if data %}
+                                <span class="label label-primary">{{ data }}</span>
+                            {% else %}
+                                0
+                            {% endif %}
+                          </td>
+                      {% endfor %}
+                      {% for section in sections %}
+                          <td class="w-100 travel-counts">
+                            {% get_trip_values trip_details partner.partner_id "36" section.id as data %}
+                            {% if data %}
+                                <span class="label label-primary">{{ data }}</span>
+                            {% else %}
+                                0
+                            {% endif %}
+                          </td>
+                      {% endfor %}
+                    <td>
+                      {% get_trip_values trip_details partner.partner_id 0 sections as data %}
+                        {% if data %}
+                            <span class="label label-primary">{{ data }}</span>
+                        {% else %}
+                            0
+                        {% endif %}
+                    </td>
+                  </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr>
+                  <td>Total</td>
+                      {% for section in sections %}
+                          <td class="w-100 travel-counts">
+                            {% get_trip_values trip_details 0 "1,40,39" section.id as data %}
+                            {% if data %}
+                                <span class="label label-primary">{{ data }}</span>
+                            {% else %}
+                                0
+                            {% endif %}
+                          </td>
+                      {% endfor %}
+                      {% for section in sections %}
+                          <td class="w-100 travel-counts">
+                            {% get_trip_values trip_details 0 "37,38" section.id as data %}
+                            {% if data %}
+                                <span class="label label-primary">{{ data }}</span>
+                            {% else %}
+                                0
+                            {% endif %}
+                          </td>
+                      {% endfor %}
+                      {% for section in sections %}
+                          <td class="w-100 travel-counts">
+                            {% get_trip_values trip_details 0 "36" section.id as data %}
+                            {% if data %}
+                                <span class="label label-primary">{{ data }}</span>
+                            {% else %}
+                                0
+                            {% endif %}
+                          </td>
+                      {% endfor %}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!--Report per section-->
+        <div class="tab-pane fade" id="report2" role="tabpanel" aria-labelledby="report2-tab">
+          <form action="{% url 'etools:programmatic_visits_monitoring' %}" method="get">
+            <input type="hidden" name="travel_status" value="{{ travel_status }}" />
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Year" name="year" data-style="btn-info">
+                    <option value="2017" {% if selected_year == 2017  %}selected{% endif %}>2017</option>
+                    <option value="2018" {% if selected_year == 2018 %}selected{% endif %}>2018</option>
+                    <option value="2019" {% if selected_year == 2019 %}selected{% endif %}>2019</option>
+                </select>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Partner" name="partner" data-style="btn-info">
+                    {% for item in partners %}
+                        <option value="{{ item.partner_id }}" {% if item.partner_id == selected_partner %}selected{% endif %}>{{ item.partner_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Donor" name="donor" data-style="btn-info">
+                    {% for item in donors %}
+                        <option value="{{ item.id }}" {% if item.id == selected_donor %}selected{% endif %}>{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-success">Search</button>
+            <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status={{ travel_status }}" class="btn btn-warning">Cancel</a>
+          </div>
+
+        </form>
+          <div class="x_content">
+            <table content="monitoring visits.csv"
+                   data-tableName="monitoring visits - 2019"
+                   class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th></th>
+                    <th class="w-200" content="Beirut/Mount Lebanon" style="vertical-align: middle;">Central Beirut and South</th>
+                    <th class="w-200" content="Beirut/Mount Lebanon" style="vertical-align: middle;">North</th>
+                    <th class="w-200" content="Beirut/Mount Lebanon" style="vertical-align: middle;">Bekaa as East</th>
+                    <th class="w-200">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for section in sections %}
+                  <tr>
+                    <th class="w-200" style="background-color: {{ section.color }}">{{ section.name }}</th>
+                    <td class="w-200 travel-counts">
+                      {% get_array_value trip_details 0 "1,40,39" section.id as data %}
+                      {% if data %}
+                        <span class="label label-primary">{{ data }}</span>
+                      {% else %}
+                          0
+                      {% endif %}
+                    </td>
+                    <td class="w-200 travel-counts">
+                      {% get_array_value trip_details 0 "37,38" section.id as data %}
+                      {% if data %}
+                        <span class="label label-primary">{{ data }}</span>
+                      {% else %}
+                          0
+                      {% endif %}
+                    </td>
+                    <td class="w-200 travel-counts">
+                      {% get_array_value trip_details 0 "36" section.id as data %}
+                      {% if data %}
+                        <span class="label label-primary">{{ data }}</span>
+                      {% else %}
+                          0
+                      {% endif %}
+                    </td>
+                    <td class="w-200">
+                      {% get_array_value trip_details 0 0 section.id as data %}
+                      {% if data %}
+                        <span class="label label-primary">{{ data }}</span>
+                      {% else %}
+                        0
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+                <tr>
+                    <th class="w-200">Total</th>
+                    <td class="w-200">
+                      {% get_array_value trip_details 0 "1,40,39" 0 as data %}
+                      {% if data %}
+                        <span class="label label-primary">{{ data }}</span>
+                      {% else %}
+                        0
+                      {% endif %}
+                    </td>
+                    <td class="w-200">
+                      {% get_array_value trip_details 0 "37,38" 0 as data %}
+                      {% if data %}
+                        <span class="label label-primary">{{ data }}</span>
+                      {% else %}
+                        0
+                      {% endif %}
+                    </td>
+                    <td class="w-200">
+                      {% get_array_value trip_details 0 "36" 0 as data %}
+                      {% if data %}
+                        <span class="label label-primary">{{ data }}</span>
+                      {% else %}
+                        0
+                      {% endif %}
+                    </td>
+                    <td class="w-200">
+                      {% get_array_value trip_details 0 0 0 as data %}
+                      {% if data %}
+                        <span class="label label-primary">{{ data }}</span>
+                      {% else %}
+                        0
+                      {% endif %}
+                    </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!--map-->
+        <div class="tab-pane fade" id="map" role="tabpanel" aria-labelledby="map-tab">
+          <form action="{% url 'etools:programmatic_visits_monitoring' %}" method="get">
+            <input type="hidden" name="travel_status" value="{{ travel_status }}" />
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Year" name="year" data-style="btn-info">
+                    <option value="2017" {% if selected_year == 2017  %}selected{% endif %}>2017</option>
+                    <option value="2018" {% if selected_year == 2018 %}selected{% endif %}>2018</option>
+                    <option value="2019" {% if selected_year == 2019 %}selected{% endif %}>2019</option>
+                </select>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Governorate" name="gov" data-style="btn-info">
+                    {% for item in governorates %}
+                        <option value="{{ item.id }}" {% if item.id == selected_governorate %}selected{% endif %}>{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Partner" name="partner" data-style="btn-info">
+                    {% for item in partners %}
+                        <option value="{{ item.partner_id }}" {% if item.partner_id == selected_partner %}selected{% endif %}>{{ item.partner_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6" style="overflow: unset !important;">
+                <select class="selectpicker show-tick" data-actions-box="true" title="Select a Donor" name="donor" data-style="btn-info">
+                    {% for item in donors %}
+                        <option value="{{ item.id }}" {% if item.id == selected_donor %}selected{% endif %}>{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-success">Search</button>
+            <a href="{% url 'etools:programmatic_visits_monitoring' %}?travel_status={{ travel_status }}" class="btn btn-warning">Cancel</a>
+          </div>
+
+        </form>
+          <div id="mapView"></div>
+        </div>
+
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+          warnings
+        </div>
+      </div>
+
+      {% csrf_token %}
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+</div>
+<br />
+{% endblock content %}
+
+{% block extra_js %}
+  <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
+  <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.11/"></script>
+
+<script>
+    var user_token = '{{ user_token }}';
+    var href_full_path = '{{ request.build_absolute_uri }}';
+    var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
+    var points = '{{ trip_details.locations|safe }}';
+    points = JSON.parse(points);
+
+    var symbol = {
+      style: "square",
+      color: "blue",
+      size: "8px",  // pixels
+      outline: {  // autocasts as new SimpleLineSymbol()
+        color: [ 255, 255, 0 ],
+        width: 3  // points
+      }
+    };
+
+    var symbol_icon = {
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    var markerSymbol = {
+      type: "picture-marker", // autocasts as new SimpleMarkerSymbol()
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    $(document).ready(function(){
+
+        $('.travel-counts').dblclick(function(){
+            $('.travel-details').hide();
+            $(this).find('.travel-details').show();
+        });
+
+        $('ul.child_menu').hide();
+
+        require([
+          "esri/Map",
+          "esri/views/MapView",
+          "esri/symbols/SimpleMarkerSymbol",
+          "esri/symbols/PictureMarkerSymbol",
+          "esri/geometry/Point",
+          "esri/Graphic",
+        ], function(Map, MapView, SimpleMarkerSymbol, PictureMarkerSymbol, Point, Graphic) {
+
+          var map = new Map({
+              basemap: "topo-vector"
+          });
+
+          var view = new MapView({
+            container: "mapView",
+            map: map,
+            center: [35.82685, 34.3461],
+            zoom: 8
+          });
+
+          $(points).each(function(i, item){
+
+              var travel_url = '<a href="'+item.travel_url+'" target="_blank"><i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i></a>';
+
+              var lineAtt = {
+                Name: item.name,
+                Number: item.travel,
+                Title: travel_url,
+                Traveler: item.traveler_name,
+                Section: item.section,
+                Office: item.office,
+
+              };
+
+              var pointGraphic = new Graphic({
+                geometry: {
+                  type: "point",
+                  longitude: item.longitude,
+                  latitude: item.latitude
+                },
+                symbol: markerSymbol,
+                attributes: lineAtt,
+                popupTemplate: {
+                  title: "{Number} {Title}",
+                  content: [
+                    {
+                      type: "fields",
+                      fieldInfos: [
+                        {
+                          fieldName: "Name"
+                        },
+                        {
+                          fieldName: "Traveler"
+                        },
+                        {
+                          fieldName: "Section"
+                        },
+                        {
+                          fieldName: "Office"
+                        },
+                      ]
+                    }
+                  ]
+                }
+              });
+
+              view.graphics.add(pointGraphic);
+
+          });
+
+        });
+    });
+
+</script>
+
+{% endblock %}

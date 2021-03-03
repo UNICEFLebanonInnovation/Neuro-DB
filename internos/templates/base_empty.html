@@ -1,0 +1,482 @@
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load gtm_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+{% gtm_head "GTM-5ML88K6" %}
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'images/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'images/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'images/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'images/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'images/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{% static 'images/ms-icon-144x144.png' %}">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Neuro-DB |</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="This is an example dashboard created using build-in elements and components.">
+    <meta name="msapplication-tap-highlight" content="no">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <!--<link href="{% static 'css/main.87c0748b313a1dda75f5.css' %}" rel="stylesheet">-->
+    <link href="{% static 'css/editedStyle.css' %}" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <!--<link href="{% static 'css/custom.min.css' %}" rel="stylesheet">-->
+    <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
+    <link href="{% static 'tellme/feedback.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g==" crossorigin="anonymous" />
+    <style>
+
+        #toTop {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .vertical-right-aligned {
+            transform: rotate(-90deg);
+            transform-origin: 100% 100%;
+            position: fixed;
+            right: 0;
+            top: 50%;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+
+{% gtm_body "GTM-5ML88K6" %}
+
+    <!--<button type="button" id="feedback-btn" class="btn btn-outline-primary vertical-right-aligned">-->
+        <!--Feedback <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>-->
+    <!--</button>-->
+
+    <div class="app-container app-theme-white body-tabs-shadow fixed-header closed-sidebar-mobile closed-sidebar">
+        <div class="app-header header-shadow">
+            <div class="blue-banner">
+                <div class="px-4 d-flex justify-content-between">
+                    <i class="py-2">{% include   'images/unicef-logo-horizontal.svg' %}</i>
+                 
+                  <div class=" d-flex align-items-center mr-4">
+                    <a href="{% url 'account_login' %}" class="pr-3 disabled" >Login</a>
+                    <!--<div class="bar" ></div>-->
+                    <!--<img src="{% static "images/Icon-Mail.svg" %}" class="pl-3 py-2"/>-->
+                  </div>
+                </div>
+                
+            </div>
+          <div class="header-flex" id="fixed-top-header">
+            <div class="app-header__logo pl-3">
+                <a href="/" class="logo-src" data-step="1" data-intro="Go to home page" >
+                    <img src="{% static 'images/logo2.png' %}" width="170" height="40" alt="Neuro-DB-logo" />
+                </a>
+                <div class="header__pane ml-auto d-md-none">
+                    <div>
+                        <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                            data-class="closed-sidebar">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="app-header__mobile-menu">
+                <div>
+                    <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="app-header__menu">
+                <span>
+                    <button type="button"
+                        class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                        <span class="btn-icon-wrapper">
+                            <i class="fa fa-search fa-w-6"></i>
+                        </span>
+                    </button>
+                </span>
+               
+            </div>
+            <div class="app-header__content">
+                <input id="reporting_year" hidden value="{{ reporting_year }}">
+                <div class="app-header-left">
+                    <div class="search-wrapper" data-step="8" data-intro="Search for a specific Indicator">
+                        <div class="input-holder" id="searchdiv">
+                            <input type="text" class="search-input" id="search-input" onkeyup="search()"
+                                placeholder="Type to search">
+                            <button class="search-icon"><span></span></button>
+                        </div>
+                        <button class="close" id="close-search"></button>
+                    </div>
+                    
+                </div>
+
+                <div class="app-header-right">
+
+                    <div class="d-inline-block ">
+                        <ul class="header-menu nav d-lg-flex d-none">
+                            <li class="px-4">
+                               <a href="/#crisis" class="nav-item" >
+                                <i>{% include   'images/alert.svg' %}</i>
+                                <span class="pt-1">RESPONSE</span>
+                               </a>
+                            </li>
+                            <li class="px-4">
+                               <a href="/#activity" class="nav-item" >
+                                <i>{% include   'images/dashboard.svg' %}</i>
+                                <span class="pt-1">ACTIVITY INFO</span>
+                               </a>
+                            </li>
+                            <li class="px-4">
+                               <a href="{% url 'survey:population_figures' %}" class="nav-item" >
+                                <i>{% include   'images/multiple-users-silhouette.svg' %}</i>
+                                <span class="pt-1">POPULATION</span>
+                               </a>
+                            </li>
+                            <li class="px-4">
+                                
+                                 <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
+                                        data-toggle="dropdown" class="p-0 nav-item btn btn-link">
+                                  <i>{% include   'images/maps.svg' %}</i>
+                                  <span class="pt-1">MAPS</span>
+                                  
+                                </button>
+                                <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
+                                  <a href="{% url 'survey:maps' %}"   type="button" tabindex="0"  class="dropdown-item" style="text-transform: none;">UNICEF Maps</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                  <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://storymaps.arcgis.com/stories/e16dcc28993e4a8288068595bf37fd9a" target="_blank">
+                                    Beirut Blast</a> 
+                                </div>
+                
+                          
+                            </li>
+
+                          
+                            <li class="px-4">
+                                
+                                 <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
+                                        data-toggle="dropdown" class="p-0 nav-item btn btn-link">
+                                  <i>{% include   'images/human-resources.svg' %}</i>
+                                  <span class="pt-1">OTHERS</span>
+                                  
+                                </button>
+                                <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
+                                  <a href="https://data.unicef.org/country/lbn/" target="_blank" type="button" tabindex="0"  class="dropdown-item" style="text-transform: none;">Lebanon Country Profile</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                  <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://data.unicef.org/resources/resource-type/datasets/" target="_blank">
+                                    Global UNICEF Data Sets</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                  <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="http://mics.unicef.org/" target="_blank">
+                                    UNICEF MICS</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                  <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://data.unicef.org/open-data/" target="_blank">
+                                    UNICEF Open Data</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                  <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://data.unicef.org/" target="_blank">
+                                    Data.UNICEF</a> 
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                   <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="http://ialebanon.unhcr.org/vasyr/#/" target="_blank">
+                                    VASYR</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                   <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://www.unicef.org/appeals/lebanon/situation-reports" target="_blank">
+                                    UNICEF Situation Reports</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                   <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://etools.unicef.org/landing/" target="_blank">
+                                    Etools</a>    
+                                     
+                                 
+                                </div>
+                
+                          
+                            </li>
+                            
+                          
+                           
+                            {% comment %} <li class="px-4">
+                               <a href="#" class="nav-item" >
+                                <i>{% include   'images/dashboard.svg' %}</i>
+                                <span class="pt-1">DASHBOARD</span>
+                               </a>
+                            </li> {% endcomment %}
+                        </ul>
+                    </div>
+
+                  {% block filter %}
+                      <!--<a class="btn shadow  btn-outline-warning" href="javascript:void(0);"-->
+                         <!--onclick="startIntro();" data-toggle="tooltip"-->
+                         <!--data-placement="bottom" title="Show me some tips">-->
+                        <!--<i class="pe-7s-magic-wand" aria-hidden="true"></i>-->
+                      <!--</a>-->
+                  {% endblock filter %}
+
+                    {% comment %} <div class="header-btn-lg pr-0" style="padding-left: 20px;margin-left: 10px;border-left: 1.5px solid #dee2e6;">
+                        <div class="widget-content p-0">
+                            <div class="widget-content-wrapper">
+
+                            </div>
+                        </div>
+                    </div> {% endcomment %}
+                </div>
+
+             </div>
+          </div>
+        </div>
+        <div class="app-main">
+         <div class="app-sidebar sidebar-shadow d-lg-none">
+                <div class="app-header__logo">
+                    <div class="logo-src"></div>
+                    <div class="header__pane ml-auto">
+                        <div>
+                            <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                                data-class="closed-sidebar">
+                                <span class="hamburger-box">
+                                    <span class="hamburger-inner"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="app-header__mobile-menu">
+                    <div>
+                        <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div class="app-header__menu">
+                    <span>
+                        <button type="button"
+                            class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                            <span class="btn-icon-wrapper">
+                                <i class="fa fa-ellipsis-v fa-w-6"></i>
+                            </span>
+                        </button>
+                    </span>
+                </div>
+
+
+                <div class="scrollbar-sidebar">
+                    <div class="app-sidebar__inner" data-step="2" data-intro="Navigation menu for other sections">
+                        <ul class="vertical-nav-menu">
+                            <li>
+                                <a href="/#crisis" class="d-flex align-items-center">
+                                    <i class="metismenu-icon">{% include   'images/alert.svg' %}</i>
+                                    RESPONSE
+                                    
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/#activity" class="d-flex align-items-center">
+                                    <i class="metismenu-icon"> {% include   'images/megaphone.svg' %}</i>
+                                    ACTIVITY INFO
+                                    
+                                </a>
+                            </li>
+                           
+                            <li>
+                                <a href="{% url 'survey:population_figures' %}" class="d-flex align-items-center">
+                                    <i class="metismenu-icon">{% include   'images/business-partnership.svg' %}</i>
+                                    POPULATION
+                                    
+                                </a>
+                            </li>
+                             <li>
+                                <a href="{% url 'survey:maps' %}"  class="d-flex align-items-center">
+                                    <i class="metismenu-icon">{% include   'images/dashboard.svg' %}</i>
+                                    MAPS
+                                    
+                                </a>
+                            </li>
+                         
+                        
+                            <li>
+                                <a href="/" class="d-flex align-items-center">
+                                    <i class="metismenu-icon">{% include   'images/human-resources.svg' %}</i>
+                                    OTHERS
+                                    
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="app-main__outer">
+                {% block content %}
+                {% endblock content %}
+                <div class="app-wrapper-footer">
+                    <div class="app-footer">
+                        <div class="app-footer__inner card py-4">
+                            <div class="app-footer-left">
+                                <ul class="nav">
+                                    <li class="nav-item">
+                                        <i class="py-2">{% include   'images/unicef-logo-horizontal.svg' %}</i>
+                                    </li>
+                                    <li class="nav-item">
+                                        <div class="nav-link">
+                                            2021 Copyrights © Neuro-DB
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="app-footer-right">
+                                <a href="https://www.instagram.com/uniceflebanon/" target="_blank"><i class="p-2 icon">{% include   'images/instagram.svg' %}</i></a>
+                                <a href="https://www.facebook.com/UNICEFLebanon/" target="_blank"><i class="p-2 ">{% include   'images/facebook.svg' %}</i></a>
+                                <a href="https://twitter.com/uniceflebanon" target="_blank"><i class="p-2 icon">{% include   'images/twitter.svg' %}</i></a>
+                                <a href="https://www.youtube.com/user/UnicefLebanonChannel" target="_blank"><i class="p-2 icon">{% include   'images/youtube-brands.svg' %}</i></a>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'vendors/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <!-- Custom Theme Scripts -->
+    <!--<script src="{% static 'js/custom.min.js' %}"></script>-->
+    <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw==" crossorigin="anonymous"></script>
+    {% include 'tellme/js_inc.html' %}
+    {% block extra_js %}{% endblock %}
+
+    <script>
+    
+    window.onscroll = function() {myFunction()};
+
+        var header = document.getElementById("fixed-top-header");
+        var sticky = header.offsetTop;
+        
+        function myFunction() {
+          if (window.pageYOffset > sticky && document.documentElement.scrollHeight  > window.innerHeight*1.6) {
+            header.classList.add("sticky");
+            $('.app-main').css('margin-top','60px');
+          } else {
+            header.classList.remove("sticky");
+            $('.app-main').css('margin-top','0px');
+          }
+        }
+
+
+        $(document).on("click", function (event) {
+            var $trigger = $(".dropdown");
+            if ($trigger !== event.target && !$trigger.has(event.target).length) {
+                $(".dropdown-menu-xl").slideUp("fast");
+            }
+        });
+
+        $(document).ready(function () {
+            $(window).scroll(function () {
+                if ($(this).scrollTop() != 0) {
+                    $('#toTop').fadeIn();
+                } else { $('#toTop').fadeOut(); }
+            });
+            $('#toTop').click(function () {
+                $("html,body").animate({ scrollTop: 0 }, 600); return false;
+            }); $('.print-page').click(function () {
+                $('.expanded-all').trigger('click'); $('.read-more').hide(); window.print();
+            });
+        });
+
+    </script>
+<script type="text/javascript">
+      function startIntro(){
+        var intro = introJs();
+          intro.setOptions({
+            steps: [
+              {
+                element: '#step1',
+                intro: $('#slide1').html()
+              },
+              {
+                element: '#step1a',
+                intro: $('#slide1a').html()
+              },
+              {
+                element: '#step2',
+                intro: $('#slide2').html()
+                <!--position: 'right'-->
+              },
+              {
+                element: '#step3',
+                intro: $('#slide3').html(),
+              },
+              {
+                element: '#step3a',
+                intro: $('#slide3a').html(),
+              },
+              {
+                element: '#step3b',
+                intro: $('#slide3b').html(),
+              },
+              {
+                element: '#step3d',
+                intro: $('#slide3d').html(),
+              },
+              {
+                element: '#step4',
+                intro: $('#slide3c').html(),
+              },
+              {
+                element: '#step4a',
+                intro: $('#slide4a').html(),
+              },
+              {
+                element: '#step4c',
+                intro: $('#slide4c').html(),
+              }
+            ]
+          });
+
+          intro.start();
+
+          <!--intro.setOption('doneLabel', 'Go to Programme Monitoring Page').start().oncomplete(function() {-->
+             <!--window.location.href = '/activityinfo/home';-->
+          <!--});-->
+      }
+
+    </script>
+    {% block modal %}{% endblock %}
+</body>
+
+</html>

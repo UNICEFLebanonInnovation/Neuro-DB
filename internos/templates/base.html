@@ -1,0 +1,341 @@
+{% load staticfiles i18n %}
+{% load util_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<!-- Google Tag Manager -->
+
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+
+})(window,document,'script','dataLayer','GTM-T8ZLMTW');</script>
+
+<!-- End Google Tag Manager -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'images/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'images/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'images/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'images/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'images/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192"  href="{% static 'images/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{% static 'images/ms-icon-144x144.png' %}">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Neuro-DB | </title>
+
+    <!-- Bootstrap -->
+    <link href="{% static 'vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="{% static 'vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/font-awesome/css/font-awesome-animation.min.css' %}" rel="stylesheet">
+    <!--<link href="{% static 'vendors/font-awesome/css/fontawesome-cheatsheet.min.css' %}" rel="stylesheet">-->
+    <!-- NProgress -->
+    <link href="{% static 'vendors/nprogress/nprogress.css' %}" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="{% static 'vendors/iCheck/skins/flat/green.css' %}" rel="stylesheet">
+
+    <!-- bootstrap-progressbar -->
+    <link href="{% static 'vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css' %}" rel="stylesheet">
+    <!-- JQVMap -->
+    <link href="{% static 'vendors/jqvmap/dist/jqvmap.min.css' %}" rel="stylesheet"/>
+    <!-- bootstrap-daterangepicker -->
+    <link href="{% static 'vendors/bootstrap-daterangepicker/daterangepicker.css' %}" rel="stylesheet">
+    <!-- Datatables -->
+    <link href="{% static 'vendors/datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="{% static 'css/custom.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/intro.js/css/introjs.css' %}" rel="stylesheet">
+    <link href="{% static 'tellme/feedback.min.css' %}" rel="stylesheet">
+    <style>
+      .site_title {padding-left: 8px; height: 65px; padding-top: 6px;}
+      #toTop{position: fixed;bottom: 10px;right: 10px;cursor: pointer;display: none;}
+      .vertical-right-aligned {transform: rotate(-90deg);transform-origin: 100% 100%;position: fixed;right: 0;top: 50%;z-index: 100;}
+    </style>
+  </head>
+
+  <body class="nav-sm">
+<!-- Google Tag Manager (noscript) -->
+
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T8ZLMTW"
+
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- End Google Tag Manager (noscript) -->
+    <button type="button" id="feedback-btn" class="btn btn-info vertical-right-aligned">
+        Feedback <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
+    </button>
+
+    <div class="container body container-narrow">
+      <div class="main_container">
+        <div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+            <div class="navbar nav_title" style="border: 0;">
+              <a href="/" class="site_title" data-step="1" data-intro="Go to home page">
+                <img src="{% static 'images/logo.png' %}" height="55" width="55" alt="Neuro-DB-logo"/>
+                <span>Neuro-DB</span>
+              </a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <!-- menu profile quick info -->
+            <div class="profile clearfix">
+              <!--<div class="profile_pic">-->
+                <!--<img src="{% static 'images/profile.png' %}" alt="..." class="img-circle profile_img">-->
+              <!--</div>-->
+              <div class="profile_info">
+                {% if request.user.is_authenticated %}
+                <span>Welcome,</span>
+                <h2>{{ request.user }}</h2>
+                {% endif %}
+              </div>
+            </div>
+            <!-- /menu profile quick info -->
+
+            <br />
+
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+              <div class="menu_section" data-step="2" data-intro="Navigation menu for other sections">
+                <h3>General</h3>
+                <ul class="nav side-menu">
+
+                  <li><a><i class="fa fa-table"></i> AI Dashboards <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      {% get_databases as databases %}
+                      {% for db in databases %}
+                        <li><a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+                      {% endfor %}
+                    </ul>
+                  </li>
+
+                  <li><a><i class="fa fa-list-alt"></i> AI Sector <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      {% get_databases True as databases %}
+                      {% for db in databases %}
+                        <li><a href="{% url 'activityinfo:report_sector' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+                      {% endfor %}
+                    </ul>
+                  </li>
+
+                  <!--<li><a><i class="fa fa-pie-chart"></i> Data Visualisations <span class="fa fa-chevron-down"></span></a>-->
+                    <!--<ul class="nav child_menu">-->
+                      <!--{% get_databases as databases %}-->
+                      <!--{% for db in databases %}-->
+                        <!--<li><a href="{% url 'activityinfo:dashboard' %}?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>-->
+                      <!--{% endfor %}-->
+                    <!--</ul>-->
+                  <!--</li>-->
+
+                  <li><a href="{% url 'activityinfo:hpm' %}"><i class="fa fa-bar-chart-o"></i> HPM <span class="fa fa-file-text-o"></span></a></li>
+                  <!--<li><a href="{% url 'etools:partner_profile' %}"><i class="fa fa-slideshare"></i> Partner Profile <span class="fa fa-file-text-o"></span></a></li>-->
+                  <!--<li><a href="{% url 'locations:site_profile' %}"><i class="glyphicon glyphicon-map-marker"></i> Site Profile <span class="fa fa-file-text-o"></span></a></li>-->
+                  <!--<li><a href="{% url 'activityinfo:hpm' %}"><i class="fa fa-bar-chart-o"></i> HPM </a></li>-->
+                  <!--<li><a href="{% url 'etools:partner_profile' %}"><i class="fa fa-slideshare"></i> Partner Profile <span class="fa fa-file-text-o"></span></a></li>-->
+
+                  <li><a><i class="fa fa-slideshare"></i>Partnership<span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="{% url 'etools:partner_profile' %}">Partner Profile</a></li>
+                      <li><a href="{% url 'etools:interventions' %}">Interventions</a></li>
+                      <li><a href="{% url 'etools:programmatic_visits_monitoring' %}">Programmatic Visits Monitoring</a></li>
+                      <!--<li><a href="{% url 'etools:hact' %}">HACT (beta)</a></li>-->
+                    </ul>
+                  </li>
+
+                </ul>
+
+                <!--<i class="fa fa-phone"></i>-->
+              </div>
+
+              <div class="menu_section" style="position: fixed; bottom: 5px; left: 11px;" data-step="3"
+                   data-intro="For technical issue please call Ali Chamseddine or Mohamad Karnib">
+                  <a class="user-profile" href="mailto:achamseddine@unicef.org;mkranib@unicef.org?subject=ActivityInfo: Techincal issue"
+                   data-toggle="tooltip" data-placement="right" data-html="true"
+                    title="For technical issue please call: <br />
+                    Ali Chamseddine or Mohamad Karnib">
+                      <img src="{% static 'images/support-1.jpg' %}" alt="" style="width: 50px; height: 50px;"/>
+                  </a>
+              </div>
+            </div>
+            <!-- /sidebar menu -->
+
+            <!-- /menu footer buttons -->
+            <!-- /menu footer buttons -->
+          </div>
+        </div>
+
+        <!-- top navigation -->
+        <div class="top_nav">
+          <div class="nav_menu">
+            <nav>
+              <div class="nav toggle">
+                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+              </div>
+
+              <ul class="nav navbar-nav" style="padding-top: 10px;">
+                <li class="">
+                  <img src="{% static 'images/unicef_logo.png' %}" height="50" style="margin-top: -7px;" alt=""/>
+                  <span class="text-primary" style="font-size: 17px; padding-left: 10px;">
+                    {% block project_title %}{% endblock %}
+                  </span>
+                </li>
+              </ul>
+
+              <ul class="nav navbar-nav navbar-right" style="width: 40%;">
+                <li class="">
+                  {% if request.user.is_authenticated %}
+                    <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                      <img src="{% static 'images/profile.png' %}" alt="">{{ request.user }}
+                      <span class=" fa fa-angle-down"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-usermenu pull-right">
+                      {% if request.user.is_staff %}
+                      <li><a href="/admin/">Admin</a></li>
+                      {% endif %}
+                      <!--<li>-->
+                        <!--<a href="javascript:;">-->
+                          <!--<span class="badge bg-red pull-right">50%</span>-->
+                          <!--<span>Settings</span>-->
+                        <!--</a>-->
+                      <!--</li>-->
+                      <!--<li><a href="javascript:;">Help</a></li>-->
+                      <li><a href="{% url 'account_logout' %}"><i class="fa fa-sign-out pull-right"></i>Log Out</a></li>
+                    </ul>
+                    {% else %}
+                        <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                          <img src="{% static 'images/profile.png' %}" alt="">
+                          <span class=" fa fa-angle-down"></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-usermenu pull-right">
+                          <li><a href="{% url 'account_login' %}"><i class="fa fa-sign-in pull-right"></i>Login</a></li>
+                        </ul>
+                    {% endif %}
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <!-- /top navigation -->
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+
+          {% block content %}
+          {% endblock content %}
+
+          <div id="toTop" class="btn btn-info"><span class="glyphicon glyphicon-chevron-up"></span> Back to Top</div>
+        </div>
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            UNICEF - 2019
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="{% static 'vendors/jquery/dist/jquery.min.js' %}"></script>
+    <!-- Bootstrap -->
+    <script src="{% static 'vendors/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <!-- FastClick -->
+    <script src="{% static 'vendors/fastclick/lib/fastclick.js' %}"></script>
+    <!-- NProgress -->
+    <script src="{% static 'vendors/nprogress/nprogress.js' %}"></script>
+    <!-- Chart.js -->
+    <script src="{% static 'vendors/Chart.js/dist/Chart.min.js' %}"></script>
+    <!-- gauge.js -->
+    <script src="{% static 'vendors/gauge.js/dist/gauge.min.js' %}"></script>
+    <!-- bootstrap-progressbar -->
+    <script src="{% static 'vendors/bootstrap-progressbar/bootstrap-progressbar.min.js' %}"></script>
+    <!-- iCheck -->
+    <script src="{% static 'vendors/iCheck/icheck.min.js' %}"></script>
+    <!-- Skycons -->
+    <script src="{% static 'vendors/skycons/skycons.js' %}"></script>
+    <!-- Flot -->
+    <script src="{% static 'vendors/Flot/jquery.flot.js' %}"></script>
+    <script src="{% static 'vendors/Flot/jquery.flot.pie.js' %}"></script>
+    <script src="{% static 'vendors/Flot/jquery.flot.time.js' %}"></script>
+    <script src="{% static 'vendors/Flot/jquery.flot.stack.js' %}"></script>
+    <script src="{% static 'vendors/Flot/jquery.flot.resize.js' %}"></script>
+    <!-- Flot plugins -->
+    <script src="{% static 'vendors/flot.orderbars/js/jquery.flot.orderBars.js' %}"></script>
+    <script src="{% static 'vendors/flot-spline/js/jquery.flot.spline.min.js' %}"></script>
+    <script src="{% static 'vendors/flot.curvedlines/curvedLines.js' %}"></script>
+    <!-- DateJS -->
+    <script src="{% static 'vendors/DateJS/build/date.js' %}"></script>
+    <!-- JQVMap -->
+    <script src="{% static 'vendors/jqvmap/dist/jquery.vmap.js' %}"></script>
+    <script src="{% static 'vendors/jqvmap/dist/maps/jquery.vmap.world.js' %}"></script>
+    <script src="{% static 'vendors/jqvmap/examples/js/jquery.vmap.sampledata.js' %}"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="{% static 'vendors/moment/min/moment.min.js' %}"></script>
+    <script src="{% static 'vendors/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+    <!-- Datatables -->
+    <script src="{% static 'vendors/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'vendors/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script src="{% static 'vendors/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js' %}"></script>
+    <script src="{% static 'vendors/datatables.net-buttons/js/buttons.flash.min.js' %}"></script>
+    <script src="{% static 'vendors/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'vendors/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js' %}"></script>
+    <script src="{% static 'vendors/datatables.net-keytable/js/dataTables.keyTable.min.js' %}"></script>
+    <script src="{% static 'vendors/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js' %}"></script>
+    <script src="{% static 'vendors/datatables.net-scroller/js/dataTables.scroller.min.js' %}"></script>
+
+    <!-- Custom Theme Scripts -->
+    <script src="{% static 'js/custom.min.js' %}"></script>
+    <script src="{% static 'vendors/intro.js/js/intro.js' %}"></script>
+    {% include 'tellme/js_inc.html' %}
+    {% block extra_js %}{% endblock %}
+    <script>
+        $(document).ready(function(){
+              $(window).scroll(function () {
+              if ($(this).scrollTop() != 0) {
+                $('#toTop').fadeIn();
+              } else {
+                $('#toTop').fadeOut();
+              }
+            });
+            $('#toTop').click(function(){
+                $("html, body").animate({ scrollTop: 0 }, 600);
+                return false;
+            });
+            $('.print-page').click(function(){
+                $('.expanded-all').trigger('click');
+                $('.read-more').hide();
+                window.print();
+            });
+        });
+    </script>
+  </body>
+</html>

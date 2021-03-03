@@ -1,0 +1,953 @@
+{% extends template %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}{% endblock %}
+
+{% block filter %}
+
+
+
+{% endblock filter %}
+
+{% block content %}
+
+
+
+<div class="app-main__inner">
+      <div class="app-page-title">
+      <div class="page-title-wrapper">
+         <div class="page-title-heading">
+              <a href="javascript:history.back()">
+                 <i class="unicef-icon icon-Return ml-0 mr-2 back-btn"></i>
+             </a>
+            <div>
+               {{ database.label }} | {{reporting_year}}
+            </div>
+         </div>
+         <div class="page-title-actions">
+                <form id="filterForm" action="{% url 'activityinfo:report' %}" method="get"  data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"
+                        data-govs-url="{% url 'activityinfo:ajax_load_govs' %}" data-month-url="{% url 'activityinfo:ajax_load_months' %}">
+            
+                  <div class="page-title-wrapper">
+                    <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
+                    <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter by multiple Partners, Locations, and/or Months">
+                     
+                      <div style="width:100%;">
+                        <div class="row">
+                          <div class="col-lg-12 col-sm-12">
+                            {% if database.have_partners %}
+                            <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
+                              {% for partner in partners %}
+                            <option class="dropdown-item" value="{{ partner.partner_id }}"
+                                    {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
+                            </option>
+                            {% endfor %}
+                          </select>
+                            {% endif %}
+                            {% if database.have_governorates %}
+                          <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates" data-name="Governorates" data-title="Selected Governorates">
+                            {% for gov in governorates %}
+                            <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
+                              {{ gov.location_adminlevel_governorate }}
+                            </option>
+                            {% endfor %}
+                          </select>
+                            {% endif %}
+            
+                            {% if database.have_offices %}
+                          <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates" data-name="Field Offices" data-title="Selected Offices">
+                            {% for gov in governorates %}
+                            <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
+                              {{ gov.location_adminlevel_governorate }}
+                            </option>
+                            {% endfor %}
+                          </select>
+                            {% endif %}
+            
+                          <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
+                             {% for month, month_name in months %}
+                            <option class="dropdown-item" value="{{ month }}" {% if month in selected_months %} selected {% endif %}>
+                              {{ month_name }}
+                            </option>
+                            {% endfor %}
+                          </select>
+                            {% if database.have_covid %}
+                            <select class="btn btn-outline-danger" id="filter_covid" name="support_covid" >
+                                 <option class="dropdown-item"  value="-1">Support COVID</option>
+                                 <option class="dropdown-item" {% if support_covid == 1 %} selected {% endif %} value="1">Yes</option>
+                                 <option class="dropdown-item"  {% if support_covid == 0 %} selected {% endif %} value="0">NO</option>
+                            </select>
+                            {% endif %}
+                            <button type="submit" class="btn btn-md shadow btn-light mr-left-5" title="Search" onclick="$('#loading').show();">
+                              <i style="font-weight:bolder" class="pe-7s-search"></i>
+                            </button>
+                            <a href="{% url 'activityinfo:report' %}?ai_id={{ database.ai_id }}"title="Cancel"
+                             class="btn btn-md btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
+                             <div  id="loading" class="d-inline-block"  style="display:none !important" >
+                              <img src="{% static 'images/loader.gif' %}" width="40px" height="40px" alt="" />
+                            </div>
+                        </div>
+                      </div>
+                        {% comment %} <div class="page-title-subheading">
+                        Filter by multiple Partners, Locations, and/or Months
+                        </div> {% endcomment %}
+                      </div>
+                    </div>
+                  </div>
+                </form>
+         </div>
+      </div>
+
+   </div>
+    
+    
+
+      
+      
+      
+
+  <div class="row">
+    <div class="col-lg-12">
+                    <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+              <li class="nav-item">
+                <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
+                  <span>Dashboard | {{ database.label }} | {{reporting_year}} </span>
+                </a>
+              </li>
+            
+
+            
+        
+          <div class="btn-actions-pane-right">
+              <div class="d-inline-block dashboard_icons mr-3">
+                   
+                   <i class="header-icon">
+                         <span data-step="6" data-intro="Collapse / Expand master indicators">
+                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Collapse All" class="collapse-all active"><i class="unicef-icon icon-expand-up"></i></a>
+                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Expand All" class="expanded-all"><i
+                                      class="unicef-icon icon-expand-down"></i></a>
+                                  </span>
+                  </i>
+                   
+                {% if display_live  %}
+                  <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
+                     data-placement="top" title="Live Data Monitoring" class="text-danger"
+                     data-step="9" data-intro="Open live ActivityInfo Dashboard">
+                    <img src="{% static 'images/live-streaming.svg' %}" />
+                  </a>
+                {% endif%}
+              <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
+                 data-placement="top" title="Disaggregation" class="text-success">
+                <img src="{% static 'images/gps-fixed-indicator.svg' %}" />
+              </a>
+              
+                 {% if database.have_partners   %}
+                   <a
+                        href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}"
+                        class="text-info" data-toggle="tooltip" title="Partners' Results">
+                        <img src="{% static 'images/multiple-users-silhouette.svg' %}" />
+                   </a>
+                  {% endif %}
+
+              <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
+                 data-placement="top" title="Disability Report" class="text-warning"
+                 data-step="16" data-intro="Disability report">
+                <img src="{% static 'images/disability.svg' %}" />
+              </a>
+           
+               
+            
+                {% include "activityinfo/focalpoints.html" %}
+                 <div class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Download" data-intro="Download Dashboard report and Raw Data">
+                    <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download"
+                            data-toggle="dropdown" class=" p-1 mb-1 btn btn-link">
+                      <img src="{% static 'images/import.svg' %}" />
+                      
+                    </button>
+                    <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
+                      <a type="button" tabindex="0" id="export1" class="dropdown-item" style="text-transform: none;">Current
+                        Dashboard</a>
+                      <div tabindex="-1" class="dropdown-divider"></div>
+                      <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                         href="{% url 'activityinfo:export' %}?ai_id={{ database.ai_id }}&month={{ month }}&format=mapping_extraction3">
+                        Raw Data</a>
+                      <div tabindex="-1" class="dropdown-divider"></div>
+                    </div>
+                  </div>
+                  <div class="d-inline-block" >
+                     {% include "activityinfo/filter_calendar.html" %} 
+                  </div>
+                
+            </div>
+           
+
+                {% comment %} {% if database.have_internal_reporting %}
+                    <a href=" {% url 'activityinfo:report_internal' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}" class="link">
+                  <i class="nav-link-icon pe-7s-edit" style="font-size:25px;"></i>
+                  <span>Internal Reporting</span>
+                  </a>
+                {% endif %} {% endcomment %}
+
+            </div>
+         
+
+
+          </ul>
+          
+      <div class="main-card mb-3 card">
+           
+          {% comment %} <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
+              <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
+              <a href="#" class="expanded-all"><i
+                class="fa fa-bars"></i></a>
+            </span> </i>{% endcomment %}
+    
+        <div class="card-body">
+          <div class="table-responsive">
+            <table fixed="6" class="mb-0 table table-striped table-hover table-tags" id="exportheader"
+                   content="{{ database.label }}_Dashboard_ {{ current_month_name}}_{{ database.reporting_year.name }}.csv"
+                   data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.name }}">
+              <thead>
+              <tr>
+                 <th content="Status"></th> 
+                <th content="Indicator Name"> Indicator Name</th>
+                <th content="RWP Code">RWP Code</th>
+                <th content="Target">Target</th>
+                <th content="Cumulative Results of All Months" data-toggle="tooltip" data-placement="top"
+                    title="Cumulative Results of All Months">Cumulative Results <i class="fa fa-question-circle-o"></i>
+                </th>
+                <th content="Total Percentage achieved of all months" data-toggle="tooltip" data-placement="top"
+                    title="Total Percentage achieved of all months">
+                  Percentage Achieved <i class="fa fa-question-circle-o"></i>
+                </th>
+                
+
+                {% for month, month_name in t_months %}
+                <th content="{{ month_name }}">{{ month_name }}</th>
+                {% endfor %}
+              </tr>
+              </thead>
+              <tbody>
+              {% for item in master_indicators %}
+                
+              <tr itemid="{{ item.id }}"
+                  {% if item.master_indicator or not database.mapped_db %}class="level1 master_indicator collapsed"
+                  {% elif item.individual_indicator %}class="level1 individual_indicator collapsed" {% endif %}>
+                 <td class="badge-item">
+                   <div class='badge {{ item.status_color }}'>
+                    {{ item.status }}
+                   </div>  
+                </td> 
+                
+                <td class="w-200">
+                
+                   
+                  
+                 
+                    <span> {{ item.name }}</span>
+                    {% if item.support_COVID %}
+                    <a  data-toggle="tooltip" data-placement="right" title="Support COVID_19" style="cursor:pointer">
+                    <i class="metismenu-icon pe-7s-settings" style="color:#ef6283;font-size:16px"></i>
+                    </a>
+                    {% endif %}
+                 
+                  
+                  
+                </td>
+
+                <td class="w-10">{{ item.awp_code }}</td>
+                <td class="w-10">
+                  {% if item.measurement_type == 'percentage' %}
+                  {{ item.target }}%
+                  {% else %}
+                  {{ item.target|number_format }}
+                  {% endif %}
+                </td>
+                <td class="w-10">
+                  {{ item.cumulative }}
+                </td>
+                <td class="w-10">
+                  {{ item.achieved }}
+                </td>
+              
+
+                {% for month, month_name in t_months %}
+                <td class="w-10">
+                  {% get_indicator_value item month selected_partners selected_governorates as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+              {% for item1 in item.sub_list_filtered %}
+              <tr class="level2 level2-{{ item.id }} collapsed" itemid="{{ item.id }}-{{ item1.id }}"
+                  {% if item1.master_indicator_sub %}style="border-bottom:2px solid #fff;"
+                  {% elif item1.individual_indicator %}style="border-bottom:2px solid #fff;" {% endif %}>
+                <td class="badge-item">
+                  {% if item1.master_indicator_sub %}
+                   <div class='badge {{ item.status_color }}'>
+                    {{ item.status }}
+                   </div>  
+                  {% endif %}
+                </td> 
+               <td class="w-200">
+                  
+                  
+                    <span> {{ item1.name }}</span>
+                 
+                  
+                  
+                </td>
+                  {% if item1.master_indicator_sub %}
+                 <td class="w-10">{{ item1.awp_code }}</td>
+                 <td class="w-10">
+                   {% if item1.measurement_type == 'percentage' %}
+                  {{ item1.target }}%
+                  {% else %}
+                  {{ item1.target|number_format }}
+                  {% endif %}
+                </td>
+                {% else %}
+                
+                <td class="w-10"></td>
+                <td class="w-10"></td>
+                {% endif %}
+
+                <td class="w-10">
+
+                  {{ item1.cumulative }}
+                </td>
+                <td class="w-10">
+                  {{ item1.achieved }}
+                </td>
+                  
+            
+                
+
+                {% for month, month_name in t_months %}
+                <td class="w-10">
+                  {% get_indicator_value item1 month selected_partners selected_governorates as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+              {% for item2 in item1.sub_list_filtered %}
+              {% if item2.master_indicator == 0 and item2.master_indicator_sub == 0 %}
+              <tr class="level3 level3-{{ item.id }} level3-{{ item.id }}-{{ item1.id }} collapsed"
+                  {% if item2.individual_indicator %} class="individual" {% endif %}
+                  itemid="{{ item.id }}-{{ item1.id }}-{{ item2.id }}">
+
+                <td></td>
+                <td class="w-150">{{ item2.name }}</td>
+                <td class="w-10">
+                   {% if item2.individual_indicator %}
+                  {{ item2.awp_code }}
+                  {% endif %}
+                </td>
+                <td class="w-10"></td>
+                <td class="w-10">
+                  {{ item2.cumulative }}
+                </td>
+
+                <td class="w-10">
+
+                </td>
+                {% for month, month_name in t_months %}
+                <td class="w-10">
+                  {% get_indicator_value item2 month selected_partners selected_governorates as value %}
+                  {{ value }}
+                </td>
+                {% endfor %}
+              </tr>
+              {% endif %}
+              {% endfor %}
+              {% endfor %}
+
+
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Partner Modal -->
+    {% if partner_info %}
+    <div id="partnerModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="width: 800px !important;">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Partner Profile</h4>
+          </div>
+          <div class="modal-body" style="width: 800px !important;">
+            <div class="row">
+              <div class="col-md-12" style="font-size: 16px;">
+                <i class="fa fa-user" style="color: #0089d2;"></i>
+                <a href="https://etools.unicef.org/pmp/partners/{{ partner_info.etl_id }}/details" target="_blank"
+                   class="text-info">
+                  {{ partner_info.name }} <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                </a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12" style="font-size: 16px;">
+                <i class="fa fa-tags" style="color: #0089d2;"></i>
+                {{ partner_info.type }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12" style="font-size: 16px;">
+                <i class="fa fa-star-o" style="color: #0089d2;"></i>
+                {{ partner_info.rating }}
+              </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <br/>
+
+            {% if partner_info.interventions %}
+            <div class="row">
+              <h5 class="modal-title">Interventions</h5>
+            </div>
+            <br/>
+            {% endif %}
+            {% for inter in partner_info.interventions %}
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+              <div class="col-md-6">
+                <i class="fa fa-file-text-o" style="font-size: 16px; color: #0089d2;"></i>
+                <a href="https://etools.unicef.org/pmp/interventions/{{ inter.etl_id }}/details" target="_blank">
+                  {{ inter.number }}
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                </a>
+              </div>
+              <div class="col-md-2">
+                <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.start }}
+              </div>
+              <div class="col-md-2">
+                <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.end }}
+              </div>
+            </div>
+
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+              <div class="col-md-6">
+                <i class="fa fa-map-o" style="font-size: 16px; color: #0089d2;"></i>
+                {% for p_code in inter.location_p_codes %}
+                {{ p_code }}
+                {% endfor %}
+              </div>
+              <div class="col-md-4">
+                <i class="fa fa-usd" style="font-size: 16px; color: #0089d2;"></i>
+                {{ inter.total_budget }} {{ inter.budget_currency }}
+              </div>
+            </div>
+            {% endfor %}
+
+            {% if partner_info.programmatic_visits %}
+            <br/>
+            <div class="row">
+              <h5 class="modal-title">{{ partner_info.programmatic_visits.nbr_visits }} Programmatic Visit(s) in {{ year
+                }}
+              </h5>
+            </div>
+            <br/>
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+              <div class="col-md-6">
+                <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                {{ partner_info.programmatic_visits.last_visit.travel }}
+                {{ partner_info.programmatic_visits.last_visit.travel.purpose }}
+                <a
+                  href="https://etools.unicef.org/t2f/edit-travel/{{ partner_info.programmatic_visits.last_visit.travel.id }}"
+                  target="_blank">
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                </a>
+              </div>
+              <div class="col-md-6">
+                <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i>
+                Last Visit in {{ partner_info.programmatic_visits.last_visit.date }}
+              </div>
+            </div>
+            {% endif %}
+
+            {% if partner_info.audits.nbr_audits %}
+            <br/>
+            <div class="row">
+              <h5 class="modal-title">{{ partner_info.audits.nbr_audits }} Audit(s) in {{ year }}</h5>
+            </div>
+            <br/>
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+              <div class="col-md-6">
+                <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                {{ partner_info.audits.last_audit }}
+                <a href="https://etools.unicef.org/ap/audits/{{ partner_info.audits.last_audit.id }}" target="_blank">
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                </a>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if partner_info.micro_assessments.nbr_audits %}
+            <br/>
+            <div class="row">
+              <h5 class="modal-title">{{ partner_info.micro_assessments.nbr_audits }} Micro assessment(s) in {{ year
+                }}</h5>
+            </div>
+            <br/>
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+              <div class="col-md-6">
+                <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                {{ partner_info.micro_assessments.last_audit }}
+                <a
+                  href="https://etools.unicef.org/ap/micro-assessments/{{ partner_info.micro_assessments.last_audit.id }}"
+                  target="_blank">
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                </a>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if partner_info.spot_checks.nbr_audits %}
+            <br/>
+            <div class="row">
+              <h5 class="modal-title">{{ partner_info.spot_checks.nbr_audits }} Spot Check(s) in {{ year }}</h5>
+            </div>
+            <br/>
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+              <div class="col-md-6">
+                <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                {{ partner_info.spot_checks.last_audit }}
+                <a href="https://etools.unicef.org/ap/spot-checks/{{ partner_info.spot_checks.last_audit.id }}"
+                   target="_blank">
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                </a>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if partner_info.special_visits.nbr_audits %}
+            <br/>
+            <div class="row">
+              <h5 class="modal-title">{{ partner_info.special_visits.nbr_audits }} Special Visit(s) in {{ year }}</h5>
+            </div>
+            <br/>
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+              <div class="col-md-6">
+                <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                {{ partner_info.special_visits.last_audit }}
+                <a href="https://etools.unicef.org/ap/special-visits/{{ partner_info.special_visits.last_audit.id }}"
+                   target="_blank">
+                  <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                </a>
+              </div>
+            </div>
+            {% endif %}
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
+<script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>
+<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+<script  src="{% static 'js/table-fixed.js' %}"></script>
+
+<script>
+
+
+  $(document).ready(function () {
+
+    loadTables();
+     
+  var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+};
+
+    var id = getUrlParameter('ai_id');
+    var selected_li=$('li#'+id).find('a');
+    var parent = selected_li.parent();
+    parent.addClass("mm-active");
+    selected_li.addClass("mm-active");
+
+  $('#filter_covid').multiselect({
+  
+      includeSelectAllOption : true,
+      nonSelectedText: 'Support COVID',
+      numberDisplayed:1,
+      buttonClass:'btn btn-outline',
+
+  });
+
+  $('#filter_partners').multiselect({
+
+    includeSelectAllOption : true,
+		nonSelectedText: 'Partners',
+		nSelectedText:'selected partners',
+		numberDisplayed:1,
+		 maxHeight: 350,
+     buttonClass:'btn btn-outline',
+  });
+ $('#filter_governorates').multiselect({
+
+    includeSelectAllOption : true,
+		nonSelectedText: $('#filter_governorates').attr('data-name'),
+		nSelectedText: $('#filter_governorates').attr('data-title'),
+		numberDisplayed:1,
+		 maxHeight: 350,
+     buttonClass:'btn btn-outline',
+  });
+
+$('#filter_month').multiselect({
+    includeSelectAllOption : true,
+		nonSelectedText: 'Months',
+		nSelectedText:'selected months',
+		numberDisplayed:1,
+		 maxHeight: 350,
+     buttonClass:'btn btn-outline',
+  });
+
+      $('.level1').addClass('collapsed');
+      $('.level2').addClass('collapsed');
+      $('.level3').addClass('collapsed');
+
+      $('.level2').hide();
+      $('.level3').hide();
+
+    $('.expanded-all').click(function () {
+      $('.expanded-all').addClass('active');
+      $('.collapse-all').removeClass('active');
+
+      $('.level1').removeClass('collapsed');
+      $('.level2').removeClass('collapsed');
+      $('.level3').removeClass('collapsed');
+
+      $('.level1').show();
+      $('.level2').show();
+      $('.level3').show();
+    });
+
+    $('.collapse-all').click(function () {
+      $('.expanded-all').removeClass('active');
+      $('.collapse-all').addClass('active');
+
+      $('.level1').addClass('collapsed');
+      $('.level2').addClass('collapsed');
+      $('.level3').addClass('collapsed');
+
+      $('.level2').hide();
+      $('.level3').hide();
+    });
+
+    $('.level1').dblclick(function () {
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level2-' + itemid;
+      var sub_sub_items = 'tr.level3-' + itemid;
+      
+
+      if ($(this).hasClass('collapsed')) {
+        $(sub_items).show();
+        $(this).removeClass('collapsed');
+        $('.sticky-header').removeClass('sticky-header');
+        $('tr[itemid='+itemid+'] td').addClass('sticky-header');
+      } else {
+        $(sub_items).hide();
+        $(sub_items).addClass('collapsed');
+        $(sub_sub_items).hide();
+        $(this).addClass('collapsed');
+        $('tr[itemid='+itemid+'] td').removeClass('sticky-header');
+      }
+    });
+
+    $('.level2').dblclick(function () {
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level3-' + itemid;
+
+      if ($(this).hasClass('collapsed')) {
+        $(sub_items).show();
+        $(this).removeClass('collapsed');
+       //   $(".sticky-header").removeClass('sticky-header');
+
+        // $('tr[itemid='+itemid+'] td').addClass('sticky-header');
+      } else {
+        $(sub_items).hide();
+        $(this).addClass('collapsed');
+       //  $('tr[itemid='+itemid+'] td').removeClass('sticky-header');
+      }
+    });
+  });
+
+
+
+  function download_csv(csv, filename) {
+    var csvFile;
+    var downloadLink;
+
+    csvFile = new Blob([csv], { type: "text/csv" });
+    downloadLink = document.createElement("a");
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+  }
+
+  function export_table_to_csv(html, filename) {
+    var csv = [];
+    $("tr:hidden,td:hidden","#exportheader").remove();
+    var rows_header = document.querySelectorAll("table#exportheader thead tr");
+    var rows = document.querySelectorAll("table#exportheader tbody tr");
+    for (var i = 0; i < rows_header.length; i++) {
+      var row = [], cols = rows_header[i].querySelectorAll("th");
+      for (var j = 0; j < cols.length; j++)
+        row.push($(cols[j]).attr('content'));
+      csv.push(row.join(","));
+    }
+    for (var i = 0; i < rows.length; i++) {
+      var row = [], cols = rows[i].querySelectorAll("td");
+      for (var j = 0; j < cols.length; j++) {
+        if ($(cols[j]).attr('colspan') == '2') {
+          row.push('');
+        }
+        row.push('"' + cols[j].innerText + '"');
+      }
+      csv.push(row.join(","));
+    }
+    // Download CSV
+    download_csv(csv.join("\n"), filename);
+  }
+
+  document.querySelector("#export1").addEventListener("click", function () {
+    var html = document.querySelector("table").outerHTML;
+    var file_name = $("#exportheader").attr("content");
+    export_table_to_csv(html, file_name);
+  });
+
+function search() {
+  $('input#search-input').quicksearch('table#exportheader tbody tr', {
+    'delay': 300,
+    'selector': 'td',
+    'stripeRows': ['odd', 'even'],
+    'loader': 'span.loading',
+    'bind': 'keyup click input',
+    'prepareQuery': function (val) {
+    return new RegExp(val, "i");
+  },
+    'testQuery': function (query, txt, _row) {
+      return query.test(txt);
+    }
+});
+}
+
+  $('#close-search').click(function(e) {
+  $("#searchdiv").triggerHandler("focus");
+      $('input#search-input').val('').focus();
+      search();
+       $('.level1').addClass('collapsed');
+      $('.level2').addClass('collapsed');
+      $('.level3').addClass('collapsed');
+
+      $('.level2').hide();
+      $('.level3').hide();
+  });
+
+</script>
+ <script>
+
+    $("#filter_partners").change(function () {
+    var partnerId = $(this).val();
+    var ai_id = $('#ai_id').val();
+    var month_Id = $('#filter_month').val();
+    var gov_Id = $('#filter_governorates').val();
+
+    var gov_url = $("#filterForm").attr("data-govs-url");
+    var month_url = $("#filterForm").attr("data-month-url");
+    var partner_url = $("#filterForm").attr("data-partner-url");
+
+    if (partnerId == null){
+
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'month_id':month_Id,
+            'gov_id':gov_Id,
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+         });
+      }
+
+    if(gov_Id == null){
+      $.ajax({
+          url: gov_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'month_id':month_Id
+           },
+          success: function (data) {
+            $("#filter_governorates").html(data);
+            $("#filter_governorates").multiselect('rebuild');
+          }
+      });
+    }
+    if( month_Id == null){
+
+      $.ajax({
+          url: month_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'gov_id':gov_Id
+           },
+          success: function (data) {
+            $("#filter_month").html(data);
+            $("#filter_month").multiselect('rebuild');
+          }
+      });
+    }
+ });
+ $('#filter_month').on('change', function() {
+
+      var partnerId=$("#filter_partners").val();
+      var gov_Id = $('#filter_governorates').val();
+      var ai_id = $('#ai_id').val();
+      var month_Id = $(this).val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+       var month_url = $("#filterForm").attr("data-month-url");
+      if (partnerId == null){
+
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'month_id':month_Id,
+            'gov_id':gov_Id,
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+         });
+      }
+      if (gov_Id == null){
+
+           $.ajax({
+              url: gov_url,
+              data: {
+              'ai_id':ai_id,
+              'month_id':month_Id,
+              'partner_id':partnerId,
+               },
+              success: function (data) {
+
+                $("#filter_governorates").html(data);
+                $("#filter_governorates").multiselect('rebuild');
+              }
+           });
+      }
+    if( month_Id ==  null){
+      $.ajax({
+          url: month_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'gov_id':gov_Id
+           },
+          success: function (data) {
+            $("#filter_month").html(data);
+            $("#filter_month").multiselect('rebuild');
+          }
+      });
+    }
+    });
+
+    $('#filter_governorates').change(function () {
+
+      var partnerId=$("#filter_partners").val();
+      var gov_Id = $(this).val();
+      var ai_id = $('#ai_id').val();
+      var month_Id = $('#filter_month').val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var month_url = $("#filterForm").attr("data-month-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+
+      if (gov_Id == null){
+
+           $.ajax({
+              url: gov_url,
+              data: {
+              'ai_id':ai_id,
+              'month_id':month_Id,
+              'partner_id':partnerId,
+               },
+              success: function (data) {
+
+                $("#filter_governorates").html(data);
+                $("#filter_governorates").multiselect('rebuild');
+              }
+           });
+      }
+      if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'month_id':month_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
+      if ( month_Id == null ){
+
+        $.ajax({
+            url: month_url,
+            data: {
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'gov_id':gov_Id
+             },
+            success: function (data) {
+              $("#filter_month").html(data);
+              $("#filter_month").multiselect('rebuild');
+            }
+        });
+      }
+    });
+
+  </script>
+{% endblock %}

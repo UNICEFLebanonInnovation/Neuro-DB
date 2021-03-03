@@ -1,0 +1,233 @@
+{% extends template %}
+
+{% load staticfiles i18n %}
+{% block project_title %}{% endblock %}
+{% block content %}
+<style>
+   .highcharts-figure, .highcharts-data-table table {
+   min-width: 500px;
+   max-width: 1200px;
+   min-height: 400px;
+   }
+   .highcharts-data-table table {
+   font-family: Verdana, sans-serif;
+   border-collapse: collapse;
+   border: 1px solid #EBEBEB;
+   margin: 10px auto;
+   text-align: center;
+   width: 100%;
+   max-width: 500px;
+   }
+   .highcharts-data-table caption {
+   padding: 1em 0;
+   font-size: 1.2em;
+   color: #555;
+   }
+   .highcharts-data-table th {
+   font-weight: 600;
+   padding: 0.5em;
+   }
+   .highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+   padding: 0.5em;
+   }
+   .highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+   background: #f8f8f8;
+   }
+   .highcharts-data-table tr:hover {
+   background: #f1f7ff;
+   }
+
+ 
+ 
+</style>
+<div class="app-main__inner watermark container-sm">
+   <div class="app-page-title">
+      <div class="page-title-wrapper ">
+         <div class="page-title-heading">
+            {% comment %} <div class="page-title-icon">
+               <i class="pe-7s-keypad icon-gradient bg-mean-fruit">
+               </i>
+            </div> {% endcomment %}
+            <div>
+               Economic Dashboard 2020
+               <div class="page-title-subheading">
+                  <div class="text-danger">
+                     <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                     This dashboard is under construction, please don't use it in any official report.
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="page-title-actions">
+         </div>
+      </div>
+   </div>
+   <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+      <li class="nav-item">
+         <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
+         <span>Economy</span>
+         </a>
+      </li>
+      <li class="nav-item">
+         <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" href="#tab-content-1">
+         <span>Other</span>
+         </a>
+      </li>
+   </ul>
+   <div class="tab-content">
+      <div class="tab-pane tabs-animation active show" id="tab-content-0" role="tabpanel">
+         <div class="mb-3 card no-shadow">
+            <div class="no-gutters row">
+               <div class="col-lg-6 col-xl-4">
+                  <div class="card rm-border bg-transparent widget-chart text-left">
+                     <div class="icon-wrapper pos-relative bg-info">
+                        <div class="icon-wrapper-bg opacity-9">
+                         <img src="{% static 'images/money.svg' %}" />
+                        </div>
+                        
+                      
+                     </div>
+                     <div class="widget-chart-content">
+                        <div class="widget-subheading">Official Rate</div>
+                        <div class="widget-numbers text-info"><span>{{ official_rate }}</span></div>
+                        <div class="widget-description text-focus">
+                           Stable
+                           <span class="text-info pl-1">
+                              <!--<fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>-->
+                              <span class="pl-1">0.0%</span>
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="col-lg-6 col-xl-4">
+                  <div class="card  rm-border bg-transparent widget-chart text-left">
+                     <div class="icon-wrapper pos-relative bg-success">
+                        <div class="icon-wrapper-bg opacity-9">
+                           <img src="{% static 'images/museum.svg' %}" />
+                        </div>
+                        
+                     </div>
+                     <div class="widget-chart-content">
+                        <div class="widget-subheading">BDL Rate</div>
+                        <div class="widget-numbers text-success"><span>{{ bdl_rate }}</span></div>
+                        {% if bdl_percentage_status %}
+                        <div class="widget-description text-focus">
+                           Increased by 
+                           <span class="text-danger pl-1">
+                              <fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>
+                              <span class="pl-1">{{ bdl_rate_per }}%</span>
+                           </span>
+                        </div>
+                        {% else %}
+                        <div class="widget-description text-focus">
+                           Decrease by 
+                           <span class="text-success pl-1">
+                              <fa name="angle-down" _nghost-djc-c2="" ng-reflect-name="angle-down"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-down" ng-reflect-klass="fa fa-angle-down" ng-reflect-ng-class=""></i></fa>
+                              <span class="pl-1">{{ bdl_rate_per }}%</span>
+                           </span>
+                        </div>
+                        {% endif %}
+                     </div>
+                  </div>
+               </div>
+               <div class="col-lg-6 col-xl-4">
+                  <div class="card  rm-border bg-transparent widget-chart text-left">
+                     <div class="icon-wrapper pos-relative bg-danger">
+                        <div class="icon-wrapper-bg opacity-9">
+                          <img src="{% static 'images/big-store.svg' %}" />
+                        </div>
+                        
+                     </div>
+                     <div class="widget-chart-content">
+                        <div class="widget-subheading">Market Rate</div>
+                        <div class="widget-numbers text-danger"><span>{{ market_rate }}</span></div>
+                        {% if market_percentage_status %}
+                        <div class="widget-description text-focus">
+                           Increased by 
+                           <span class="text-danger pl-1">
+                              <fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>
+                              <span class="pl-1">{{ market_rate_per }}%</span>
+                           </span>
+                        </div>
+                        {% else %}
+                        <div class="widget-description text-focus">
+                           Decrease by 
+                           <span class="text-success pl-1">
+                              <fa name="angle-down" _nghost-djc-c2="" ng-reflect-name="angle-down"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-down" ng-reflect-klass="fa fa-angle-down" ng-reflect-ng-class=""></i></fa>
+                              <span class="pl-1">{{ market_rate_per }}%</span>
+                           </span>
+                        </div>
+                        {% endif %}
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="mb-3 card table no-shadow">
+           <div class="no-gutters row">
+              <div class="col-lg-6 ">
+                <div class="card  rm-border">
+                  <figure class="highcharts-figure ">
+                      <div id="food_chart"></div>
+                      <p class="highcharts-description">
+                      </p>
+                  </figure>
+                </div>
+                <ul id="food_chart_legend" class="legend-list py-4"></ul>
+              </div>
+              <div class="col-lg-6">  
+               <div class="card  rm-border">
+                  <figure class="highcharts-figure col-lg-6">
+                      <div id="fuel_chart"></div>
+                      <p class="highcharts-description">
+                      </p>
+                  </figure>
+                </div>
+                <ul id="fuel_chart_legend" class="legend-list py-4"></ul>
+              </div>
+
+            </div>
+          </div>
+         </div>
+       
+      <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
+         <div class="main-card mb-3 card">
+            <div class="card-body watermark">
+               <div class="table-responsive">
+                  <figure class="highcharts-figure">
+                     <div id="cp_chart1"></div>
+                     <p class="highcharts-description">
+                     </p>
+                  </figure>
+                  <figure class="highcharts-figure">
+                     <div id="cp_chart2"></div>
+                     <p class="highcharts-description">
+                     </p>
+                  </figure>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock content %}
+{% block extra_js %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+{% comment %} <script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script> {% endcomment %}
+<script type="text/javascript" src="{% static 'js/Highcharts.chart.js' %}"></script>
+<script type="text/javascript">
+   var food_data = '{{ food_data|safe }}';
+   food_data = JSON.parse(food_data);
+   
+   var fuel_data = '{{ fuel_data|safe }}';
+   fuel_data = JSON.parse(fuel_data);
+   
+   createChart(food_data, 'food_chart', 'Price of essential food in WFP contracted shops', 'Source: WFP M&E unit', 'Price in LBP', 'Date', 'LBP','food_chart_legend');
+   createChart(fuel_data, 'fuel_chart', 'Price of fuel', 'Source: Ministry of Energy & Water', 'Price in LBP', 'Date', 'LBP','fuel_chart_legend');
+   
+</script>
+{% endblock %}

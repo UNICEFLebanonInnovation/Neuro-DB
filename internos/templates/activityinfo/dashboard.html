@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load staticfiles i18n %}
+
+{% block project_title %}Neuro-DB{% endblock %}
+
+{% block content %}
+<!-- top tiles -->
+{% include 'activityinfo/statistics.html' %}
+<!-- /top tiles -->
+
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="">
+      <!--<img style="width: 100%; height: 800px;" src="{% static 'images/sample_bi.png' %}" />-->
+      <iframe style="width: 100%; height: 800px;" src="{{ database.dashboard_link }}" frameborder="0" allowfullscreen="true"></iframe>
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+</div>
+<br />
+{% endblock content %}

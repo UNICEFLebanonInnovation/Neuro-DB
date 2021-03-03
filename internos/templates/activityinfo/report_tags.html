@@ -1,0 +1,697 @@
+{% extends template %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+{% block content %}
+<style>
+.table-scroll thead th{
+    position:sticky;
+}
+</style>
+
+<div class="app-main__inner">
+    
+   <div class="app-page-title">
+      <div class="page-title-wrapper">
+         <div class="page-title-heading">
+             <a href="javascript:history.back()">
+                 <i class="unicef-icon icon-Return ml-0 mr-2 back-btn"></i>
+             </a>
+            <div>
+               {{ database.label }}  | {{ reporting_year }}
+            </div>
+         </div>
+         <div class="page-title-actions">
+                  <form id="filterForm" action="{% url 'activityinfo:report_tags' %}?rep_year={{ database.reporting_year }}" method="get"  data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"
+                        data-govs-url="{% url 'activityinfo:ajax_load_govs' %}" data-month-url="{% url 'activityinfo:ajax_load_months' %}">
+                    <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
+                  <div class="page-title-wrapper">
+            
+                    <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
+                      <!--<div class="px-3">-->
+                      <!--  <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title="Copy to use filter"></i>-->
+                      <!--  </i>-->
+                      <!--</div>-->
+                      <div style="width:100%;">
+                        <div class="row">
+                          <div class="col-12">
+                            <select class="btn btn-outline-primary" multiple="multiple" id="filter_partners" name="partners">
+                            {% for partner in partners %}
+                            <option class="dropdown-item" value="{{ partner.partner_id }}"
+                                    {% if partner.partner_id in selected_partners %}selected{% endif %}>{{ partner.partner_label }}
+                            </option>
+                            {% endfor %}
+                          </select>
+                          <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates">
+                            {% for gov in governorates %}
+                            <option class="dropdown-item" value="{{ gov.location_adminlevel_governorate_code }}" {% if gov.location_adminlevel_governorate_code in selected_governorates %}selected{% endif %}>
+                              {{ gov.location_adminlevel_governorate }}
+                            </option>
+                            {% endfor %}
+                          </select>
+            
+                          <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
+                             {% for month, month_name in months %}
+                            <option class="dropdown-item" value="{{ month }}" {% if month|stringformat:"i" in selected_months %} selected {% endif %}>
+                              {{ month_name }}
+                            </option>
+                            {% endfor %}
+                          </select>
+                        <button type="submit" class="btn btn-md shadow btn-light mr-left-5" title="Search"><i style="font-weight:bolder" class="pe-7s-search"></i></button>
+                          <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ database.ai_id }}&?rep_year={{ reporting_year }}"title="Cancel"
+                             class="btn btn-md btn-light d-inline-block"><i class="fa fa-fw" aria-hidden="true"></i></a>
+                             <div  id="loading" class="d-inline-block"  style="display:none !important" >
+                              <img src="{% static 'images/loader.gif' %}" width="40px" height="40px" alt="" />
+                            </div>
+                        </div>
+                      </div>
+                        {% comment %} <div class="page-title-subheading">
+                          Filter by multiple Partners, Governorates, and Months
+                        </div> {% endcomment %}
+                      </div>
+                    </div>
+                  </div>
+                </form>
+         </div>
+      </div>
+
+   </div>
+   
+     
+            
+            
+
+<div class="row">
+  <div class="col-lg-12">
+     <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+              <li class="nav-item">
+                <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
+                  <span>Disaggregated AI Results | {{ database.label }}  | {{ reporting_year }}</span>
+                </a>
+              </li>
+              <div class="btn-actions-pane-right dashboard_icons mr-3">
+                  <i class="header-icon">
+                         <span data-step="6" data-intro="Collapse / Expand master indicators">
+                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Collapse All" class="collapse-all active"><i class="unicef-icon icon-expand-up"></i></a>
+                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Expand All" class="expanded-all"><i
+                                      class="unicef-icon icon-expand-down"></i></a>
+                                  </span>
+                  </i>
+                  <div class=" d-inline-block" data-intro="Download Dashboard report">
+                          <button type="button" tabindex="0" id="export1"  class=" p-1 mb-1 btn btn-link" data-toggle="tooltip"
+                                  title="download ">
+                           <img src="{% static 'images/import.svg' %}" /></button>
+                  </div>
+                   
+              </div>
+     </ul>
+    <div class="main-card mb-3 card">
+        {% comment %} <div class="card-header">
+            <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
+              <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
+              <a href="#" class="expanded-all"><i
+                class="fa fa-bars"></i></a>
+            </span> </i>
+         Disaggregated AI Results | {{ database.label }}  | {{ reporting_year }}
+            {% endcomment %}
+        
+      <div class="d-inline-block card-body">
+          
+        
+        <div  class="table-responsive table-scroll">
+          <table class="mb-0 table table-hover table-tags" id="export_tags"
+                 content="Disaggregation Dashboard of {{ database.label }}_{{ current_month_name }}_{{ database.reporting_year.name }}.csv"
+                 data-tableName="Dashboard - {{ database.label }} - {{ reporting_year}}"
+                 fixed="2">
+            <thead>
+            <tr>
+              <th ></th>
+              <th ></th>
+              <th  content="Indicator Information" colspan="3" >
+                Indicator Information
+              </th>
+              {% if tags_gender %}
+              <th content="Gender" colspan="{{ tags_gender_number }}">Gender</th>
+              {% endif %}
+              {% if tags_nationality %}
+              <th content="Nationalities" colspan="{{ tags_nationality_number }}">Nationalities</th>
+              {% endif %}
+              {% if tags_age %}
+              <th colspan="{{ tags_age_number }}" content="Age Groups">Age Groups</th>
+              {% endif %}
+              {% if tags_disability %}
+              <th colspan="{{ tags_disability_number }}" content="Disabilities">Disabilities</th>
+              {% endif %}
+            </tr>
+            <tr>
+              <th content="Status"></th>
+              <th class="w-200" content="Indicator Name">Indicator Name</th>
+              <th class="w-10" content="RWP Code">RWP Code</th>
+              <th class="w-10" content="Target" >Target</th>
+              <th class="w-10" content="Cumulative Results" data-toggle="tooltip" data-placement="top"
+                  title="Cumulative Results of All Months">
+                Cumulative Results <i class="fa fa-question-circle-o"></i>
+              </th>
+              <th class="w-10" content="Percentage Achieved" data-toggle="tooltip"
+                  data-placement="top" title="Total Percentage achieved of all months">
+                Percentage Achieved <i class="fa fa-question-circle-o"></i>
+              </th>
+              {% comment %} <th class="w-10" content="Status">Status</th> {% endcomment %}
+              {% for tag in tags_gender %}
+              <th content="{{ tag.tag_gender__label }}">{{ tag.tag_gender__label }}</th>
+              {% endfor %}
+
+              {% for tag in tags_nationality %}
+              <th class="w-10" content="{{ tag.tag_nationality__label }}">{{ tag.tag_nationality__label }}</th>
+              {% endfor %}
+
+              {% for tag in tags_age %}
+              <th class="w-10" content="{{ tag.tag_age__label }}">{{ tag.tag_age__label }}</th>
+              {% endfor %}
+
+              {% for tag in tags_disability %}
+              <th class="w-10" content="{{ tag.tag_disability__label }}">{{ tag.tag_disability__label }}</th>
+              {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in master_indicators %}
+
+            <tr class="level1 master_indicator collapsed" itemid="{{ item.id }}">
+                 <td class="badge-item">
+                   <div class='badge {{ item.status_color }}'>
+                    {{ item.status }}
+                   </div>  
+                </td> 
+                
+              <td class="w-200">
+                 
+                  {{ item.name }}
+                
+              </td>
+              <td class="w-10">{{ item.awp_code }}</td>
+              <td class="w-10">
+                {% if item.measurement_type == 'percentage' %}
+                {{ item.target }}%
+                {% else %}
+                {{ item.target|number_format }}
+                {% endif %}
+              </td>
+              <td class="w-10">
+                {{ item.cumulative }}
+              </td>
+              <td class="w-10">
+
+                {{ item.achieved }}
+              </td>
+              {% comment %} <td class="w-10">
+                <div class='badge {{ item.status_color }}'>{{ item.status }}</div>
+              </td> {% endcomment %}
+
+              {% for tag in tags_gender %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_gender__name None selected_months selected_partners selected_governorates as value %}
+                 {% if value != "0" %}{{ value | number_format }}{% else %} N/A {% endif %}
+                <br/>
+               {% if value != "0" %}{{ value|percentage_float:item.cumulative }}%{% else %}N/A {% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_nationality %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_nationality__name None selected_months selected_partners selected_governorates as value %}
+                {% if value != "0" %}{{ value | number_format }}{% else %} N/A {% endif %}
+                <br/>
+               {% if value != "0" %}{{ value|percentage_float:item.cumulative }}%{% else %} N/A {% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_age %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_age__name None selected_months selected_partners selected_governorates as value %}
+                 {% if value != "0" %}{{ value | number_format }}{% else %} N/A {% endif %}
+                <br/>
+
+               {% if value != "0" %}{{ value|percentage_float:item.cumulative }}%{% else %} N/A {% endif %}
+
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_disability %}
+              <td class="w-10">
+                {% get_indicator_tag_value item tag.tag_disability__name None selected_months selected_partners selected_governorates as value %}
+                 {% if value != "0" %}{{ value | number_format }}{% else %} N/A {% endif %}
+                <br/>
+
+               {% if value != "0" %}{{ value|percentage_float:item.cumulative }}%{% else %} N/A {% endif %}
+              </td>
+              {% endfor %}
+            </tr>
+              {% for item1 in item.sub_list_filtered %}
+              <tr class="level2 level2-{{ item.id }} sub_master_indicator collapsed" itemid="{{ item.id }}-{{ item1.id }}">
+                 <td class="badge-item">
+                   {% if item1.master_indicator_sub %}
+                      <div class='badge {{ item1.status_color_sector }}'>
+                            {{ item1.status_sector }}
+                          </div>  
+                    {% endif %}     
+                </td> 
+                
+                <td class="w-200">
+                    {{ item1.name }}
+                </td>
+                 <td class="w-10">{{ item1.awp_code }}</td>
+                 <td class="w-10">
+                   {% if item1.measurement_type == 'percentage' %}
+                  {{ item1.target }}%
+                  {% else %}
+                  {{ item1.target|number_format }}
+                  {% endif %}
+                </td>
+                <td class="w-10">
+                  {{ item1.cumulative }}
+                </td>
+                <td class="w-10">
+                  {{ item1.achieved }}
+                </td>
+
+           
+                {% for tag in tags_gender %}
+              <td class="w-10">
+                {% get_indicator_tag_value item1 tag.tag_gender__name None  selected_months selected_partners selected_governorates as value %}
+                 {% if value != "0" %} {{ value | number_format }} {% else %} N/A {% endif %}
+                <br/>
+               {% if value != "0" %} {{ value|percentage_float:item1.cumulative }}% {% else %} N/A {% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_nationality %}
+              <td class="w-10">
+                {% get_indicator_tag_value item1 tag.tag_nationality__name None selected_months selected_partners selected_governorates as value %}
+                {% if value != "0" %}{{ value | number_format }}{% else %} N/A {% endif %}
+                <br/>
+             {% if item.cumulative_values.months %}
+               {% if value != "0" %}{{ value|percentage_float:item1.cumulative }}%{% else %} N/A {% endif %}
+                {% endif %}
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_age %}
+              <td class="w-10">
+                {% get_indicator_tag_value item1 tag.tag_age__name None selected_months selected_partners selected_governorates as value %}
+                 {% if value != "0" %}{{ value | number_format }}{% else %} N/A {% endif %}
+                <br/>
+
+               {% if value != "0" %}{{ value|percentage_float:item1.cumulative }}%{% else %} N/A {% endif %}
+
+              </td>
+              {% endfor %}
+
+              {% for tag in tags_disability %}
+              <td class="w-10">
+                {% get_indicator_tag_value item1 tag.tag_disability__name None selected_months selected_partners selected_governorates as value %}
+                 {% if value != "0" %}{{ value | number_format }}{% else %} N/A {% endif %}
+                <br/>
+
+               {% if value != "0" %}{{ value|percentage_float:item1.cumulative }}%{% else %} N/A {% endif %}
+              </td>
+              {% endfor %}
+
+              </tr>
+            {% endfor %}
+            {% endfor %}
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+  {% endblock content %}
+
+{% block extra_js %}
+  <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
+<!--  <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>-->
+  <script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>
+  <script  src="{% static 'js/table-fixed.js' %}"></script>
+  <script>
+
+  $('#filter_partners').multiselect({
+    includeSelectAllOption : true,
+		nonSelectedText: 'Partners',
+		nSelectedText:'selected partners',
+		numberDisplayed:1,
+		maxHeight: 350,
+    buttonClass:'btn btn-outline',
+  });
+ $('#filter_governorates').multiselect({
+    includeSelectAllOption : true,
+		nonSelectedText: 'Governorates',
+		nSelectedText:'selected governorates',
+		numberDisplayed:1,
+		maxHeight: 350,
+    buttonClass:'btn btn-outline',
+  });
+
+$('#filter_month').multiselect({
+    includeSelectAllOption : true,
+		nonSelectedText: 'Months',
+		nSelectedText:'selected months',
+		numberDisplayed:1,
+		maxHeight: 350,
+    buttonClass:'btn btn-outline',
+  });
+  var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+};
+  $(document).ready(function () {
+
+    loadTables();
+    var id = getUrlParameter('ai_id');
+    var selected_li=$('li#'+id).find('a');
+    var parent = selected_li.parent();
+    parent.addClass("mm-active");
+    selected_li.addClass("mm-active");
+
+
+   $('.level1').addClass('collapsed');
+   $('.level2').addClass('collapsed');
+   $('.level2').hide();
+
+
+    $('.expanded-all').click(function () {
+      $('.expanded-all').addClass('active');
+      $('.collapse-all').removeClass('active');
+
+      $('.level1').removeClass('collapsed');
+      $('.level2').removeClass('collapsed');
+
+
+      $('.level1').show();
+      $('.level2').show();
+
+    });
+
+    $('.collapse-all').click(function () {
+      $('.expanded-all').removeClass('active');
+      $('.collapse-all').addClass('active');
+
+      $('.level1').addClass('collapsed');
+      $('.level2').addClass('collapsed');
+
+      $('.level2').hide();
+
+    });
+
+    $('.level1').dblclick(function () {
+      var itemid = $(this).attr('itemid');
+      var sub_items = 'tr.level2-' + itemid;
+      var sub_sub_items = 'tr.level3-' + itemid;
+
+      if ($(this).hasClass('collapsed')) {
+        $(sub_items).show();
+        $(this).removeClass('collapsed');
+        $('.sticky-header').removeClass('sticky-header');
+        $('tr[itemid='+itemid+'] td').addClass('sticky-header');
+      } else {
+        $(sub_items).hide();
+        $(sub_items).addClass('collapsed');
+        $(sub_sub_items).hide();
+        $(this).addClass('collapsed');
+        $('tr[itemid='+itemid+'] td').removeClass('sticky-header');
+      }
+    });
+
+ });
+
+
+
+function download_csv(csv, filename) {
+    var csvFile;
+    var downloadLink;
+    csvFile = new Blob([csv], {type: "text/csv"});
+    downloadLink = document.createElement("a");
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+}
+
+function export_table_to_csv(html, filename) {
+	var csv = [];
+	 $("tr:hidden,td:hidden","#export_tags").remove();
+	var rows_header = document.querySelectorAll("table#export_tags thead tr");
+	var rows = document.querySelectorAll("table#export_tags tbody tr");
+
+    for (var i = 0; i < rows_header.length; i++) {
+		var row = [], cols = rows_header[i].querySelectorAll("th");
+
+        for (var j = 0; j < cols.length; j++){
+         var matches = $(cols[j]).attr('content');
+          if (matches != null) {
+              var value= "'" + $(cols[j]).attr('content') + "'";
+            row.push(value);
+            } else{
+            row.push($(cols[j]).attr('content'));
+          }
+         if($(cols[j]).attr('colspan') ){
+          var num = $(cols[j]).attr('colspan');
+          for( var c=1; c<num ; c++ ){
+              row.push('');
+           }
+        }
+
+        }
+
+    csv.push(row.join(","));
+	}
+
+  for (var i = 0; i < rows.length; i++) {
+		var row = [], cols = rows[i].querySelectorAll("td, th");
+
+        for (var j = 0; j < cols.length; j++) {
+            if($(cols[j]).attr('colspan') == '2') {
+              row.push('');
+            }
+            row.push('"'+cols[j].innerText+'"');
+        }
+
+		csv.push(row.join(","));
+	}
+
+    // Download CSV
+    download_csv(csv.join("\n"), filename);
+}
+
+document.querySelector("#export1").addEventListener("click", function () {
+    var html = document.querySelector("table").outerHTML;
+    var file_name = $("#export_tags").attr("content");
+	  export_table_to_csv(html, file_name);
+});
+
+$('input#search-input').quicksearch('table#export_tags tbody tr', {
+	'delay': 300,
+	'selector': 'td',
+	'stripeRows': ['odd', 'even'],
+	'loader': 'span.loading',
+	'bind': 'keyup click input',
+	'prepareQuery': function (val) {
+		return new RegExp(val, "i");
+	},
+	'testQuery': function (query, txt, _row) {
+		return query.test(txt);
+	}
+});
+
+
+  </script>
+ <script>
+
+    $("#filter_partners").change(function () {
+    var partnerId = $(this).val();
+    var ai_id = $('#ai_id').val();
+    var month_Id = $('#filter_month').val();
+    var gov_Id = $('#filter_governorates').val();
+
+    var gov_url = $("#filterForm").attr("data-govs-url");
+    var month_url = $("#filterForm").attr("data-month-url");
+    var partner_url = $("#filterForm").attr("data-partner-url");
+
+    if (partnerId == null){
+
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'month_id':month_Id,
+            'gov_id':gov_Id,
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+         });
+      }
+
+    if(gov_Id == null){
+      $.ajax({
+          url: gov_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'month_id':month_Id
+           },
+          success: function (data) {
+            $("#filter_governorates").html(data);
+            $("#filter_governorates").multiselect('rebuild');
+          }
+      });
+    }
+    if( month_Id ==  null){
+      $.ajax({
+          url: month_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'gov_id':gov_Id
+           },
+          success: function (data) {
+            $("#filter_month").html(data);
+            $("#filter_month").multiselect('rebuild');
+          }
+      });
+    }
+ });
+ $('#filter_month').on('change', function() {
+
+      var partnerId=$("#filter_partners").val();
+      var gov_Id = $('#filter_governorates').val();
+      var ai_id = $('#ai_id').val();
+      var month_Id = $(this).val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+       var month_url = $("#filterForm").attr("data-month-url");
+      if (partnerId == null){
+
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'month_id':month_Id,
+            'gov_id':gov_Id,
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+         });
+      }
+      if (gov_Id == null){
+
+           $.ajax({
+              url: gov_url,
+              data: {
+              'ai_id':ai_id,
+              'month_id':month_Id,
+              'partner_id':partnerId,
+               },
+              success: function (data) {
+
+                $("#filter_governorates").html(data);
+                $("#filter_governorates").multiselect('rebuild');
+              }
+           });
+      }
+    if( month_Id ==  null){
+      $.ajax({
+          url: month_url,
+          data: {
+          'partner_id':partnerId,
+          'ai_id':ai_id,
+          'gov_id':gov_Id
+           },
+          success: function (data) {
+            $("#filter_month").html(data);
+            $("#filter_month").multiselect('rebuild');
+          }
+      });
+    }
+    });
+
+    $('#filter_governorates').change(function () {
+
+      var partnerId=$("#filter_partners").val();
+      var gov_Id = $(this).val();
+      var ai_id = $('#ai_id').val();
+      var month_Id = $('#filter_month').val();
+
+      var partner_url = $("#filterForm").attr("data-partner-url");
+      var month_url = $("#filterForm").attr("data-month-url");
+      var gov_url = $("#filterForm").attr("data-govs-url");
+
+      if (gov_Id == null){
+
+           $.ajax({
+              url: gov_url,
+              data: {
+              'ai_id':ai_id,
+              'month_id':month_Id,
+              'partner_id':partnerId,
+               },
+              success: function (data) {
+
+                $("#filter_governorates").html(data);
+                $("#filter_governorates").multiselect('rebuild');
+              }
+           });
+      }
+      if ( partnerId == null ){
+         $.ajax({
+            url: partner_url,
+            data: {
+            'ai_id':ai_id,
+            'gov_id':gov_Id,
+            'month_id':month_Id
+             },
+            success: function (data) {
+              $("#filter_partners").html(data);
+              $("#filter_partners").multiselect('rebuild');
+            }
+        });
+      }
+      if ( month_Id == null ){
+
+        $.ajax({
+            url: month_url,
+            data: {
+            'partner_id':partnerId,
+            'ai_id':ai_id,
+            'gov_id':gov_Id
+             },
+            success: function (data) {
+              $("#filter_month").html(data);
+              $("#filter_month").multiselect('rebuild');
+            }
+        });
+      }
+    });
+
+  </script>
+{% endblock %}

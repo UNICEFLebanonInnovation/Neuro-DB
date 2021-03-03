@@ -1,0 +1,198 @@
+{% load util_tags %}
+{% load static %}
+
+<style>
+  div.panel-footer {
+    background-color: #fff !important;
+  }
+  p {
+    background-color: #f7f9fa;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .sidebar-box {
+    max-height: 120px;
+    position: relative;
+    overflow: hidden;
+  }
+  .sidebar-box .read-more {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 15px 0;
+    opacity: 0.9;
+  }
+  .btn-filter.on {
+    background-color: #0089d2;
+    color: white;
+  }
+  .btn-filter-no.on {
+    background-color: #0089d2;
+    color: white;
+  }
+  span.trip-planned {
+    background-color: rgba(250,237,119,.6);
+  }
+  span.trip-submitted {
+    background-color: rgba(206,188,6,.6);
+  }
+  span.trip-approved {
+    background-color: rgba(141,198,63,.45);
+  }
+  span.trip-completed {
+    background-color: rgba(141,198,63,1);
+  }
+  .x_title span.label {
+      color: white;
+  }
+  div.trip-filter {
+    cursor: pointer;
+  }
+  .travel-counts .label {
+    cursor: pointer;
+  }
+  #mapView {
+    height: 500px;
+    width: 500px;
+    border: 1px solid;
+  }
+  #myTabContent {
+    padding-top: 10px;
+  }
+  div.count.active a {
+    color: #0089d2;
+  }
+  .bootstrap-select button.dropdown-toggle {
+     background-color: #337ab7;
+     color: white !important;
+  }
+  #feeds {
+    border-radius: 5px;
+    box-shadow: -5px 5px 10px;
+    top: 0px;
+    margin-left: 30px;
+    height: 500px;
+    overflow: auto;
+    padding: 0;
+  }
+  #feeds-content div {
+    border-radius: 5px;
+    box-shadow: -1px 1px 4px;
+    padding: 2px;
+    margin-top: 5px;
+    padding-left: 15px;
+  }
+  .bootstrap-select {
+      width: 150px !important;
+  }
+</style>
+
+
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.11/"></script>
+
+<script>
+    var user_token = '{{ user_token }}';
+    var href_full_path = '{{ request.build_absolute_uri }}';
+    var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
+    var points = '{{ locations|safe }}';
+    points = JSON.parse(points);
+
+    var symbol = {
+      style: "square",
+      color: "blue",
+      size: "8px",  // pixels
+      outline: {  // autocasts as new SimpleLineSymbol()
+        color: [ 255, 255, 0 ],
+        width: 3  // points
+      }
+    };
+
+    var symbol_icon = {
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    var markerSymbol = {
+      type: "picture-marker", // autocasts as new SimpleMarkerSymbol()
+      url: "{% static 'images/location-map-pin.png' %}",
+      height:34,
+      width:24,
+    };
+
+    $(document).ready(function(){
+
+        $('ul.child_menu').hide();
+
+        require([
+          "esri/Map",
+          "esri/views/MapView",
+          "esri/symbols/SimpleMarkerSymbol",
+          "esri/symbols/PictureMarkerSymbol",
+          "esri/geometry/Point",
+          "esri/Graphic",
+        ], function(Map, MapView, SimpleMarkerSymbol, PictureMarkerSymbol, Point, Graphic) {
+
+          var map = new Map({
+              basemap: "topo-vector"
+          });
+
+          var view = new MapView({
+            container: "mapView",
+            map: map,
+            center: [35.8411, 33.6513],
+            zoom: 8
+          });
+
+          setTimeout(function(){
+
+             $(points).each(function(i, item){
+
+                setTimeout(function(){
+
+                    var lineAtt = {
+                      Name: item.location_name,
+                      Caza: item.caza,
+                      Cadastral: item.cadastral,
+                      Governorate: item.governorate,
+                    };
+
+                    var content = '<p>{Governorate} - {Cadastral} - {Caza}</p>';
+                    content = content + '<div class="list-group"><a href="#" class="list-group-item active"><strong>Indicators</a></strong>';
+                    $(item.indicators).each(function(j, item1){
+                        content = content + '<a href="#" class="list-group-item">'+item1.indicator_name+' <span class="label label-primary">'+item1.cumulative_value+'</span> <span class="label label-primary">'+item1.indicator_units+'</span> ('+item1.partner_label+')</a>';
+                    });
+                    content = content + '</div>';
+
+                    var pointGraphic = new Graphic({
+                      geometry: {
+                        type: "point",
+                        longitude: item.location_longitude,
+                        latitude: item.location_latitude
+                      },
+                      symbol: markerSymbol,
+                      attributes: lineAtt,
+                      popupTemplate: {
+                        title: "{Name}",
+                        content: content
+                      }
+                    });
+
+                    view.graphics.add(pointGraphic);
+
+                }, 3000);
+
+            });
+
+          }, 9000);
+
+
+        });
+    });
+
+</script>

@@ -1,0 +1,857 @@
+{% extends "base_body.html" %}
+{% load staticfiles i18n %}
+{% load util_tags %}
+{% load static %}
+
+{% block project_title %}Neuro-DB{% endblock %}
+
+{% block content %}
+<!-- top tiles -->
+<!-- /top tiles -->
+
+<style>
+
+</style>
+
+<div class="app-page-title">
+      <div class="page-title-wrapper">
+        <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter options by partner or governorate or month">
+
+          <div class="page-title-icon">
+            <i class="fa fa-fw icon-gradient bg-malibu-beach" aria-hidden="true" title=""></i>
+          </div>
+
+          <div style="width:100%; margin-top:12px">
+            <div class="row">
+
+      <div class="top_filters" style="position: relative;">
+
+        <div class="btn-group" role="group" aria-label="" style="padding-left: 15px; top: -15px;" data-step="6" data-intro="">
+
+          <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default dropdown-toggle dropdown-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Sections
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                {% for section in sections %}
+                <li>
+                  <button type="button" itemref="sections" itemscope="section-content" content="{{ section }}" class="btn btn-default btn-filter-content">
+                    {{ section }}
+                  </button>
+                </li>
+                {% endfor %}
+              </ul>
+          </div>
+
+          <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default dropdown-toggle dropdown-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Donors
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                {% for donor in donors %}
+                <li>
+                  <button type="button" itemref="donors" itemscope="donor-content" content="{{ donor }}" class="btn btn-default btn-filter-content">
+                    {{ donor }}
+                  </button>
+                </li>
+                {% endfor %}
+              </ul>
+          </div>
+
+          <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default dropdown-toggle dropdown-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="label label-primary">{{ nbr_interventions }}</span> Interventions
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <button type="button" itemref="interventions" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_interventions }}</span>
+                    All Interventions
+                  </button>
+                </li>
+                <li>
+                  <button type="button" itemref="active_interventions" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_active_interventions }}</span>
+                    Active Interventions
+                  </button>
+                </li>
+
+                <li>
+                  <button type="button" itemref="pds" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_pds }}</span>
+                    PDs
+                  </button>
+                </li>
+                <li>
+                  <button type="button" itemref="active_pds" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_active_pds }}</span>
+                    Active PDs
+                  </button>
+                </li>
+
+                <li>
+                  <button type="button" itemref="sffas" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_sffas }}</span>
+                    SFFAs
+                  </button>
+                </li>
+                <li>
+                  <button type="button" itemref="active_sffas" class="btn btn-default btn-filter">
+                    <span class="label label-primary">{{ nbr_active_sffas }}</span>
+                    Active SFFAs
+                  </button>
+                </li>
+              </ul>
+          </div>
+
+          <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default dropdown-toggle dropdown-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="label label-primary">{{ programmatic_visits }}</span> Programmatic Visits
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                    <button type="button" itemref="programmatic-visits" class="btn btn-default btn-filter">
+                      <span class="label label-primary">{{ programmatic_visits }}</span>
+                      All Programmatic Visits
+                    </button>
+                </li>
+                <li>
+                    <button type="button" itemref="programmatic-visits-planned" class="btn btn-default btn-filter">
+                      <span class="label label-primary">{{ programmatic_visits_planned }}</span>
+                      Planned Programmatic Visits
+                    </button>
+                </li>
+                <li>
+                    <button type="button" itemref="programmatic-visits-submitted" class="btn btn-default btn-filter">
+                      <span class="label label-primary">{{ programmatic_visits_submitted }}</span>
+                      Submitted Programmatic Visits
+                    </button>
+                </li>
+                <li>
+                    <button type="button" itemref="programmatic-visits-approved" class="btn btn-default btn-filter">
+                      <span class="label label-primary">{{ programmatic_visits_approved }}</span>
+                      Approved Programmatic Visits
+                    </button>
+                </li>
+                <li>
+                    <button type="button" itemref="programmatic-visits-completed" class="btn btn-default btn-filter">
+                      <span class="label label-primary">{{ programmatic_visits_completed }}</span>
+                      Completed Programmatic Visits
+                    </button>
+                </li>
+              </ul>
+          </div>
+
+        </div>
+
+        <div class="btn-group" role="group" aria-label="" style="padding-left: 15px; top: 4px;" data-step="6" data-intro="Filter partners">
+
+          <button type="button" itemref="micro-assessments" class="btn btn-default dropdown-filter btn-filter">
+            <span class="label label-primary">{{ nbr_micro_assessments }}</span>
+            Micro Assessments
+          </button>
+
+          <button type="button" itemref="spot-checks" class="btn btn-default dropdown-filter btn-filter">
+            <span class="label label-primary">{{ nbr_spot_checks }}</span>
+            Spot Checks
+          </button>
+          <button type="button" itemref="audits" class="btn btn-default dropdown-filter btn-filter">
+            <span class="label label-primary">{{ nbr_audits }}</span>
+            Audits
+          </button>
+          <button type="button" itemref="special-visits" class="btn btn-default dropdown-filter btn-filter">
+            <span class="label label-primary">{{ nbr_special_audits }}</span>
+            Special Audits
+          </button>
+
+        </div>
+
+        <a itemref="all" title="Cancel" class="btn btn-light d-inline-block btn-filter-no" style="margin-bottom: 0px; margin-right: 15px;"><i class="fa fa-fw" aria-hidden="true"></i></a>
+
+<!--<a class="btn shadow btn-outline-warning print-page" href="javascript:void(0);" data-toggle="tooltip" data-placement="bottom" title="Print this page" data-original-title="Print this page">-->
+              <!--<i class="fa fa-print" aria-hidden="true"></i>-->
+            <!--</a>-->
+
+        <!--<ul class="nav nav-pills" role="tablist" style="position: fixed; right: 20px; top: 35px; z-index: 99999;" data-step="7" data-intro="Total partners">-->
+          <!--<li role="presentation" class="active"><a><span class="badge" id="total-partners">{{ nbr_partners }}</span> Partners</a></li>-->
+        <!--</ul>-->
+
+              <div class="col-lg-2 col-sm-12" style="padding:0; float: right;" data-intro="If you need any assistance, here you can find the ActivityInfo database's focal point">
+
+              <!--<button type="button" data-toggle="tooltip" title="" data-placement="bottom" data-html="true" class="btn-shadow  btn btn-outline-primary" data-original-title="Database focal point: Sahar Al Amine-->
+            <!--<br />-->
+            <!--email: salamine@unicef.org ">-->
+              <!--<i class="fa fa-user"></i>-->
+            <!--</button>-->
+
+            <!--<a class="btn shadow  btn-outline-dark" href="mailto:salamine@unicef.org?subject=ActivityInfo: Inquiry about Basic Assistance database" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Send email to the database focal point">-->
+              <!--<i class="fa fa-envelope"></i>-->
+            <!--</a>-->
+
+            <!--<a class="btn shadow btn-outline-warning" href="javascript:void(0);" onclick="javascript:introJs().setOption('showProgress', true).start();" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Show me some tips">-->
+              <!--<i class="fa fa-lightbulb" aria-hidden="true"></i>-->
+            <!--</a>-->
+            </div>
+
+      </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+  </div>
+
+    <div class="card" id="partner_profile">
+
+      <div class="card-header">
+          <span data-step="4" data-intro="Collapse / Expand Partners info">
+            <a class="collapse-all" style="font-size: 20px;"><i class="fa fa-th-large"></i></a>
+            <a class="expanded-all active" style="font-size: 20px; padding-right: 10px;"><i class="fa fa-bars"></i></a>
+          </span>
+        <span class="card-title">Partner Profile</span>
+          <!--<input type="text" class="form-control ds-input" id="search-input" placeholder="Search..."-->
+                 <!--autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"-->
+                 <!--aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto"-->
+                 <!--style="margin-left: 15px; position: relative; vertical-align: top;border-radius: 4px !important; width: 300px;display: inline;"-->
+                 <!--data-step="5" data-intro="Search for a specific Partner by name">-->
+        <ul class="nav navbar-right panel_toolbox">
+          <li><a class="collapse-link"></a></li>
+        </ul>
+      </div>
+
+<div class="card-body">
+    {% for key, partner in partners_info.items %}
+      <div class="partner-profile panel {% if partner.rating == 'low' or partner.rating == 'Low' %}panel-success
+                                        {% elif partner.rating == 'medium' or partner.rating == 'Medium' %}panel-info
+                                        {% elif partner.rating == 'high' or partner.rating == 'High' %}panel-warning
+                                        {% elif partner.rating == 'significant' or partner.rating == 'Significant' %}panel-danger
+                                        {% else %}panel-default
+                                        {% endif %}"
+           interventions="{{ partner.interventions|length }}"
+           active_interventions="{{ partner.interventions_active|length }}"
+           pds="{{ partner.pds|length }}"
+           active_pds="{{ partner.pds_active|length }}"
+           sffas="{{ partner.sffas|length }}"
+           active_sffas="{{ partner.sffas_active|length }}"
+           audits="{{ partner.audits|length }}"
+           micro-assessments="{{ partner.micro_assessments|length }}"
+           spot-checks="{{ partner.spot_checks|length }}" special-visits="{{ partner.special_visits|length }}"
+           programmatic-visits="{{ partner.programmatic_visits|length }}"
+           programmatic-visits-planned="{{ partner.programmatic_visits_planned|length }}"
+           programmatic-visits-submitted="{{ partner.programmatic_visits_submitted|length }}"
+           programmatic-visits-approved="{{ partner.programmatic_visits_approved|length }}"
+           programmatic-visits-completed="{{ partner.programmatic_visits_completed|length }}">
+
+          <span class="label label-default rating {{ partner.rating }}"><i class="fa fa-star-o" style="color: #fff;"></i> {{ partner.rating }}</span>
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              <a data-toggle="collapse" href="#collapse{{ partner.id }}">
+                <div class="col-md-6">{{ partner.name }} - {{ partner.vendor_number }}</div>
+                <div class="col-md-2">{{ partner.partner_type }}</div>
+                  <a href="https://etools.unicef.org/pmp/partners/{{ partner.id }}/details" target="_blank">
+                    <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                  </a>
+                  <!--<a href="{% url 'etools:partner_profile_map' %}?partner_id={{ partner.db_id }}" data-toggle="tooltip"-->
+                     <!--data-placement="top" title="Display Partner Interventions on the map" style="padding-left: 20px;">-->
+                    <!--<i class="fa fa-map-o" style="font-size: 16px; color: #0089d2;"></i>-->
+                  <!--</a>-->
+              </a>
+            </h3>
+            <div class="row">
+              <div class="col-md-2"><span class="label label-default">{{ partner.micro_assessments|length }}</span> Micro Assessments</div>
+              <div class="col-md-2"><span class="label label-default">{{ partner.interventions|length }}</span> Interventions</div>
+              <div class="col-md-2"><span class="label label-default">{{ partner.programmatic_visits_planned|length }}</span> HACT visits</div>
+              <div class="col-md-2"><span class="label label-default">{{ partner.spot_checks|length }}</span> Spot Checks</div>
+              <div class="col-md-2"><span class="label label-default">{{ partner.audits|length }}</span> Audits</div>
+              <div class="col-md-2"><span class="label label-default">{{ partner.special_visits|length }}</span> Special Audits</div>
+            </div>
+          </div>
+
+          <div id="collapse{{ partner.id }}" class="panel-collapse collapse">
+            <div class="panel-footer" style="border-top: 1px solid #ddd;">
+                <div class="input-group">
+                  <span class="input-group-addon" id="basic-addon1">
+                    <i style="font-size: 24px; color: #337ab7;" class="glyphicon glyphicon-comment"></i>
+                  </span>
+                  {% if request.user.is_authenticated %}
+                  <textarea rows="2" cols="20" class="form-control" id="partner_comments_{{ partner.db_id }}">{% if partner.comments %}{{ partner.comments }}{% endif %}</textarea>
+                  <span class="input-group-addon">
+                    <button type="button" class="btn btn-success save-comments" itemscope="/api/update-partner-comments/{{ partner.db_id }}/"
+                            itemid="{{ partner.db_id }}" itemref="#partner_comments_{{ partner.db_id }}"><i class="fa fa-floppy-o"></i> Save</button>
+                  </span>
+                  {% else %}
+                  <textarea rows="2" cols="20" class="form-control" disabled>{% if partner.comments %}{{ partner.comments }}{% endif %}</textarea>
+                  {% endif %}
+                </div>
+            </div>
+            {% if partner.micro_assessments|length %}
+            <div class="panel-footer" style="border-top: 1px solid #ddd;">
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.micro_assessments|length }}</span> Micro Assessment(s)</h5>
+
+                {% for audit in partner.micro_assessments %}
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-6">
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ audit.displayed_name }}
+                    <a href="https://etools.unicef.org/ap/micro-assessments/{{ audit.id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                  </div>
+                </div>
+                {% if audit.findings %}
+                <div class="row">
+                  <span class="label label-primary">{{ audit.findings|length }}</span> Finding(s) and Recommendation(s)
+                  {% for finding in audit.findings_sets %}
+                  <div class="row">
+                    <div class="col-md-6">
+                      <strong><i class="fa fa-flag" style="color: {% if finding.priority == 'high' %}red{% else %}orange{% endif %}"></i> Finding and Recommendation ({{ finding.category_of_observation }})</strong>
+                      <p>{{ finding.recommendation }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <strong><i class="fa fa-sticky-note"></i> Agreed Action by IP</strong>
+                      <strong><i class="fa fa-calendar"></i> Deadline of action: </strong> {{ finding.deadline_of_action }}
+                      <p>{{ finding.agreed_action_by_ip }}</p>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+                {% if audit.internal_controls %}
+                <strong><i class="fa fa-sticky-note"></i> Internal Controls</strong>
+                <div class="row sidebar-box">
+                    <p><i>{{ audit.internal_controls }}</i></p>
+                    <p class="read-more"><button type="button" class="btn btn-info">Read More...</button></p>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+              <div class="panel-footer">
+                <h5 class="modal-title"><span class="label label-primary">0</span> Micro Assessments</h5>
+              </div>
+            {% endif %}
+
+            {% if partner.interventions %}
+            <div class="panel-body" style="border-top: 1px solid #ddd;">
+                <h5 class="modal-title"><span class="label label-primary">{{ partner.interventions|length }}</span> Interventions</h5>
+              {% for inter in partner.interventions %}
+                <div class="filter-content" style="padding-top: 5px; padding-bottom: 5px;" section-content="{{ inter.section_names }}" donor-content="{{ inter.donors }}">
+                  <div class="col-md-6">
+                    <i class="fa fa-file-text-o" style="font-size: 16px; color: #0089d2;"></i>
+                    <a href="https://etools.unicef.org/pmp/interventions/{{ inter.etl_id }}/details" target="_blank">
+                      {{ inter.document_type }} - {{ inter.status }} - {{ inter.number }}
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                  </div>
+                  <div class="col-md-2">
+                    <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.start }}
+                  </div>
+                  <div class="col-md-2">
+                    <i class="fa fa-calendar" style="font-size: 16px; color: #0089d2;"></i> {{ inter.end_date }}
+                  </div>
+                  <div class="col-md-6">
+                    <i class="fa fa-map-o" style="font-size: 16px; color: #0089d2;"></i>
+                    {% for p_code in inter.location_p_codes %}
+                      {{ p_code }}
+                    {% endfor %}
+                  </div>
+                  <div class="col-md-4">
+                    <i class="fa fa-usd" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ inter.total_budget }} {{ inter.budget_currency }}
+                  </div>
+                  <div class="col-md-6">
+                    <i class="fa fa-sitemap" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ inter.section_names }}
+                  </div>
+                  <div class="col-md-4">
+                    <i class="fa fa-users" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ inter.donors }}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            {% else %}
+              <div class="panel-body" style="border-top: 1px solid #ddd;">
+                <h5 class="modal-title"><span class="label label-primary">0</span> Interventions</h5>
+              </div>
+            {% endif %}
+
+            {% if partner.programmatic_visits|length %}
+            <div class="panel-footer">
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.programmatic_visits|length }}</span> Programmatic Visit(s)</h5>
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-1"><span class="label trip-planned">{{ partner.programmatic_visits_planned|length }}</span> Planned</div>
+                  <div class="col-md-1"><span class="label trip-submitted">{{ partner.programmatic_visits_submitted|length }}</span> Submitted</div>
+                  <div class="col-md-1"><span class="label trip-approved">{{ partner.programmatic_visits_approved|length }}</span> Approved</div>
+                  <div class="col-md-1"><span class="label trip-completed">{{ partner.programmatic_visits_completed|length }}</span> Completed</div>
+                  <!--<div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_cancelled|length }}</span> Cancelled</div>-->
+                  <!--<div class="col-md-1"><span class="label label-primary">{{ partner.programmatic_visits_rejected|length }}</span> Rejected</div>-->
+                </div>
+                {% for audit in partner.programmatic_visits_completed %}
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-6">
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ audit.reference_number }}
+                    <a href="https://etools.unicef.org/t2f/edit-travel/{{ audit.travel_id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                  </div>
+                  <div class="col-md-6">
+                    {% if audit.partnership_id %}
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ audit.number }}
+                    <a href="https://etools.unicef.org/pmp/interventions/{{ audit.partnership_id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-12">
+                    <strong><span class="label label-primary">{{ audit.attachments_sets|length }}</span> Attachment(s)</strong>
+                    <p>
+                      {% for att in audit.attachments_sets %}
+                      <i class="fa fa-file-pdf-o"></i>
+                      <a href="{{ att.url }}" target="_blank">
+                        {{ att.name }}
+                        <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                      </a>
+                      <br/>
+                      {% endfor %}
+                    </p>
+                  </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+              <div class="panel-footer">
+                <h5 class="modal-title"><span class="label label-primary">0</span> Programmatic Visits</h5>
+              </div>
+            {% endif %}
+
+            {% if partner.spot_checks|length %}
+            <div class="panel-footer">
+                <h5 class="modal-title"><span class="label label-primary">{{ partner.spot_checks|length }}</span> Spot Check(s)</h5>
+                {% for audit in partner.spot_checks %}
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-6">
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ audit.displayed_name }}
+                    <a href="https://etools.unicef.org/ap/spot-checks/{{ audit.id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                  </div>
+                </div>
+                  {% if audit.findings %}
+                  <div class="row">
+                    <span class="label label-primary">{{ audit.findings|length }}</span> Finding(s) and Recommendation(s)
+                    {% for finding in audit.findings_sets %}
+                    <div class="row">
+                      <div class="col-md-6">
+                        <strong><i class="fa fa-flag" style="color: {% if finding.priority == 'high' %}red{% else %}orange{% endif %}"></i> Finding and Recommendation ({{ finding.category_of_observation }})</strong>
+                        <p>{{ finding.recommendation }}</p>
+                      </div>
+                      <div class="col-md-6">
+                        <strong><i class="fa fa-sticky-note"></i> Agreed Action by IP with a deadline: {{ finding.deadline_of_action }}</strong>
+                        <p>{{ finding.agreed_action_by_ip }}</p>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+
+                  {% if audit.action_points %}
+                        <span class="label label-primary">{{ audit.action_points|length }}</span> Action Point(s)
+                        {% for point in audit.action_points %}
+                        <div class="row">
+                          <div class="col-md-6">
+                            <strong><i class="fa fa-flag" style="color: {% if point.high_priority %}red{% else %}orange{% endif %}"></i>
+                              {{ point.category_name }} - {{ point.reference_number }}
+                                <a href="https://etools.unicef.org/apd/action-points/detail/{{ point.id }}" target="_blank">
+                                  <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                                </a>
+                            </strong>
+                            <p><i>{{ point.description }}</i></p>
+                          </div>
+                          <div class="col-md-6">
+                            <strong><i class="fa fa-sticky-note"></i> {{ point.status|upper }} on {{ point.status_date }}</strong> <br />
+                            <strong><i class="fa fa-calendar"></i> Due on {{ point.due_date }}</strong>
+                          </div>
+                        </div>
+                        {% endfor %}
+                  {% else %}
+                      <div class="panel-footer">
+                        <h5 class="modal-title"><span class="label label-primary">0</span> Action Points</h5>
+                      </div>
+                  {% endif %}
+
+                  {% if audit.internal_controls %}
+                  <strong><i class="fa fa-sticky-note"></i> Internal Controls</strong>
+                  <div class="row sidebar-box">
+                      <p><i>{{ audit.internal_controls }}</i></p>
+                      <p class="read-more"><button type="button" class="btn btn-info">Read More...</button></p>
+                  </div>
+                  {% endif %}
+
+                {% endfor %}
+            </div>
+            {% else %}
+              <div class="panel-footer">
+                <h5 class="modal-title"><span class="label label-primary">0</span> Spot Checks</h5>
+              </div>
+            {% endif %}
+
+            {% if partner.audits|length %}
+            <div class="panel-footer">
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.audits|length }}</span> Audit(s)</h5>
+
+                {% for audit in partner.audits %}
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-6">
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ audit.displayed_name }}
+                    <a href="https://etools.unicef.org/ap/audits/{{ audit.id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                  </div>
+                </div>
+                {% if audit.findings %}
+                <div class="row">
+                  <span class="label label-primary">{{ audit.findings|length }}</span> Finding(s) and Recommendation(s)
+                  {% for finding in audit.findings_sets %}
+                  <div class="row">
+                    <div class="col-md-6">
+                      <strong><i class="fa fa-flag" style="color: {% if finding.priority == 'high' %}red{% else %}orange{% endif %}"></i> Finding and Recommendation ({{ finding.category_of_observation }})</strong>
+                      <p>{{ finding.recommendation }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <strong><i class="fa fa-sticky-note"></i> Agreed Action by IP</strong>
+                      <strong><i class="fa fa-calendar"></i> Deadline of action: </strong> {{ finding.deadline_of_action }}
+                      <p>{{ finding.agreed_action_by_ip }}</p>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+                {% if audit.internal_controls %}
+                <strong><i class="fa fa-sticky-note"></i> Internal Controls</strong>
+                <div class="row sidebar-box">
+                    <p><i>{{ audit.internal_controls }}</i></p>
+                    <p class="read-more"><button type="button" class="btn btn-info">Read More...</button></p>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+              <div class="panel-footer">
+                <h5 class="modal-title"><span class="label label-primary">0</span> Audits</h5>
+              </div>
+            {% endif %}
+
+            {% if partner.special_visits|length %}
+            <div class="panel-footer">
+              <h5 class="modal-title"><span class="label label-primary">{{ partner.special_visits|length }}</span> Special Audit(s)</h5>
+
+                {% for audit in partner.special_visits %}
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                  <div class="col-md-6">
+                    <i class="fa fa-info-circle" style="font-size: 16px; color: #0089d2;"></i>
+                    {{ audit.displayed_name }}
+                    <a href="https://etools.unicef.org/ap/special-visits/{{ audit.id }}" target="_blank">
+                      <i class="fa fa-external-link" style="font-size: 16px; color: #0089d2;"></i>
+                    </a>
+                  </div>
+                </div>
+                {% if audit.findings %}
+                <div class="row">
+                  <span class="label label-primary">{{ audit.findings|length }}</span> Finding(s) and Recommendation(s)
+                  {% for finding in audit.findings_sets %}
+                  <div class="row">
+                    <div class="col-md-6">
+                      <strong><i class="fa fa-flag" style="color: {% if finding.priority == 'high' %}red{% else %}orange{% endif %}"></i> Finding and Recommendation ({{ finding.category_of_observation }})</strong>
+                      <p>{{ finding.recommendation }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <strong><i class="fa fa-sticky-note"></i> Agreed Action by IP</strong>
+                      <strong><i class="fa fa-calendar"></i> Deadline of action: </strong> {{ finding.deadline_of_action }}
+                      <p>{{ finding.agreed_action_by_ip }}</p>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+                {% if audit.internal_controls %}
+                <strong><i class="fa fa-sticky-note"></i> Internal Controls</strong>
+                <div class="row sidebar-box">
+                    <p><i>{{ audit.internal_controls }}</i></p>
+                    <p class="read-more"><button type="button" class="btn btn-info">Read More...</button></p>
+                </div>
+                {% endif %}
+
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="panel-footer">
+              <h5 class="modal-title"><span class="label label-primary">0</span> Special Audit</h5>
+            </div>
+            {% endif %}
+
+          </div>
+        </div>
+    {% endfor %}
+      {% csrf_token %}
+      <div class="clearfix"></div>
+    </div>
+    </div>
+
+{% endblock content %}
+
+{% block extra_js %}
+  <script src="{% static 'vendors/jquery-quicksearch/jquery.quicksearch.js' %}"></script>
+
+<script>
+    var user_token = '{{ user_token }}';
+    var href_full_path = '{{ request.build_absolute_uri }}';
+    var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
+
+    $(document).ready(function(){
+
+        $('ul.child_menu').hide();
+
+        $('.expanded-all').click(function(){
+            $('.panel-collapse').addClass('in');
+            $('.panel-collapse').attr('aria-expanded', 'true');
+        });
+
+        $('.collapse-all').click(function(){
+            $('.panel-collapse').removeClass('in');
+            $('.panel-collapse').attr('aria-expanded', 'false');
+        });
+
+        $('input#search-input').quicksearch('div#partner_profile div.partner-profile', {
+          'delay': 300,
+          'selector': 'span',
+          <!--'stripeRows': ['odd', 'even'],-->
+          'loader': 'span.loading',
+          'bind': 'keyup click input',
+          <!--'show': function () {-->
+            <!--this.style.color = '';-->
+          <!--},-->
+          <!--'hide': function () {-->
+            <!--this.style.color = '#ccc';-->
+          <!--},-->
+          'prepareQuery': function (val) {
+            return new RegExp(val, "i");
+          },
+          'testQuery': function (query, txt, _row) {
+            return query.test(txt);
+          }
+        });
+
+        $('.save-comments').click(function(){
+            var itemid = $(this).attr('itemid');
+            var comments = $($(this).attr('itemref')).val();
+            update_data_server($(this).attr('itemscope'), {'comments': comments});
+        });
+
+        $('.btn-filter-no').click(function(){
+            $('.partner-profile').show();
+            $('.btn-filter').removeClass('on');
+            $('.partner-profile').removeClass('active');
+            $('#total-partners').text($('.partner-profile').length);
+        });
+
+        $('.btn-filter-content').click(function(){
+            $('.btn-filter').removeClass('on');
+            $('.btn-filter-content').removeClass('on');
+            $('.partner-profile').removeClass('active');
+            $('#total-partners').text($('.partner-profile').length);
+
+            if($(this).hasClass('on')){
+              $(this).removeClass('on');
+            }else{
+              $(this).addClass('on');
+            }
+
+            if($('.btn-filter-content.on').length){
+              $('.partner-profile').hide();
+            }else{
+              $('.partner-profile').show();
+            }
+
+            $('.btn-filter-content.on').each(function(i){
+                var content = $(this).attr('content');
+                var itemscope = $(this).attr('itemscope');
+                $('.partner-profile').filter(function() {
+                    var result = 0;
+                    var count = parseInt($(this).find('.filter-content').length)
+                    $($(this).find('.filter-content')).each(function(i){
+                        result = result + parseInt($(this).attr(itemscope).indexOf(content));
+                    });
+                    if(count == 0){ return false; }
+                    if(result == 0){ return true; }
+                    if(result > 0) { return true; }
+                    return false;
+                }).show(function(){
+                    $(this).addClass('active');
+                    $('#total-partners').text($('.partner-profile.active').length);
+                });
+            });
+        });
+
+        $('.btn-filter').click(function(){
+            $('.btn-filter').removeClass('on');
+            $('.partner-profile').removeClass('active');
+            $('#total-partners').text($('.partner-profile').length);
+
+            if($(this).hasClass('on')){
+              $(this).removeClass('on');
+            }else{
+              $(this).addClass('on');
+            }
+
+            if($('.btn-filter.on').length){
+              $('.partner-profile').hide();
+            }else{
+              $('.partner-profile').show();
+            }
+
+            $('.btn-filter.on').each(function(i){
+                var itemref = $(this).attr('itemref');
+                $('.partner-profile').filter(function() {
+                  return parseInt($(this).attr(itemref)) > 0;
+                }).show(function(){
+                    $(this).addClass('active');
+                    $('#total-partners').text($('.partner-profile.active').length);
+                });
+            });
+        });
+
+        $('.btn-filter').dblclick(function(){
+            $('.partner-profile').removeClass('active');
+            $('#total-partners').text($('.partner-profile').length);
+
+            if($(this).hasClass('on')){
+              $(this).removeClass('on');
+            }else{
+              $(this).addClass('on');
+            }
+
+            if($('.btn-filter.on').length){
+              $('.partner-profile').hide();
+            }else{
+              $('.partner-profile').show();
+            }
+
+            $('.btn-filter.on').each(function(i){
+                var itemref = $(this).attr('itemref');
+                $('.partner-profile').filter(function() {
+                  return parseInt($(this).attr(itemref)) > 0;
+                }).show(function(){
+                    $(this).addClass('active');
+                    $('#total-partners').text($('.partner-profile.active').length);
+                });
+            });
+        });
+
+        var $el, $ps, $up, totalHeight;
+
+        $(".sidebar-box button").click(function() {
+
+          totalHeight = 0
+
+          $el = $(this);
+          $p  = $el.parent();
+          $up = $p.parent();
+          $ps = $up.find("p:not('.read-more')");
+
+          // measure how tall inside should be by adding together heights of all inside paragraphs (except read-more paragraph)
+          $ps.each(function() {
+            totalHeight += $(this).outerHeight();
+          });
+
+          $up
+            .css({
+              // Set height to prevent instant jumpdown when max height is removed
+              "height": $up.height(),
+              "max-height": 9999
+            })
+            .animate({
+              "height": totalHeight
+            });
+
+          // fade out read-more
+          $p.fadeOut();
+
+          // prevent jump-down
+          return false;
+
+        });
+
+});
+
+function getHeader()
+{
+    var header = {
+        'Authorization': 'Token '+user_token,
+        'HTTP_REFERER': href_full_path,
+        'Cookie': 'token=Token '+user_token,
+        'X-CSRFToken': csrftoken
+    };
+    return header;
+}
+
+function update_data_server(url, data)
+{
+    $.ajax({
+        type: "PUT",
+        url: url,
+        data: data,
+        cache: false,
+        headers: getHeader(),
+        dataType: 'json',
+        success: function (response, result, jqXHR) {
+            if(jqXHR.status == 200){
+            }
+        },
+        error: function (response) {
+            console.log(response);
+        }
+    });
+}
+
+function search() {
+  $('input#search-input').quicksearch('div#partner_profile div.partner-profile', {
+    'delay': 300,
+    'selector': 'span',
+    <!--'stripeRows': ['odd', 'even'],-->
+    'loader': 'span.loading',
+    'bind': 'keyup click input',
+    'prepareQuery': function (val) {
+      return new RegExp(val, "i");
+    },
+    'testQuery': function (query, txt, _row) {
+      return query.test(txt);
+    }
+});
+}
+
+  $('#close-search').click(function(e) {
+  $("#searchdiv").triggerHandler("focus");
+      $('input#search-input').val('').focus();
+      search();
+       $('.level1').addClass('collapsed');
+      $('.level2').addClass('collapsed');
+      $('.level3').addClass('collapsed');
+
+      $('.level2').hide();
+      $('.level3').hide();
+  });
+
+
+</script>
+
+{% endblock %}

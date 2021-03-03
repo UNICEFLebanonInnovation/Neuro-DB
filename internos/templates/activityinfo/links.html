@@ -1,0 +1,11 @@
+{% block ai_databases %}
+  {% for db in databases %}
+    <li><a href="/?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+  {% endfor %}
+{% endblock %}
+
+{% block ai_reports %}
+  {% for db in databases %}
+    <li><a href="{% url 'activityinfo:report' %}/?ai_id={{ db.ai_id }}">{{ db.label }}</a></li>
+  {% endfor %}
+{% endblock %}

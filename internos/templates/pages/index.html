@@ -1,0 +1,1058 @@
+{% extends template %}
+{% load staticfiles i18n %}
+{% block project_title %}{% endblock %}
+{% load util_tags %}
+
+{% block content %}
+<script type="text/javascript" src="{% static 'css/highcharts.css' %}"></script>
+<style>
+
+
+.app-main .app-main__inner{
+  padding:0px;
+}
+.donor-btn{
+  position:absolute;
+  bottom: -20px;
+  right: -50px;
+}
+.intervention-btn{
+  position:absolute;
+  top: 10%;
+  right: 5%;
+}
+.card img{
+    transition:all .5s;
+}
+#partners .image-div{
+  transform: translateX(-15%);
+}
+#crisis .card:hover{
+    background-color:#f3f2f2;
+}
+#crisis .card:hover img{
+    transform :scale(1.2);
+}
+.maps{
+  background-color:#1CABE2;
+  margin-bottom:350px;
+}
+iframe{
+    width: 100%;
+    border-radius: 10px;
+    position: absolute;
+    bottom: -280px;
+    left: 15px;
+    height: 500px;
+    width: calc(100% - 30px);
+    border: none;
+     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1)  ; 
+	-webkit-box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1)  ; 
+	-moz-box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1)  ; 
+}
+.owl-programs.owl-item{
+  transition:all .5s;
+}
+.owl-programs .owl-item:hover .card{
+  background: #1CABE2;
+}
+.owl-programs .owl-item:hover .icons{
+  border-top: .1px solid white;
+
+}
+.owl-programs .owl-item:hover{
+  transform: scale(1.05);
+}
+.owl-carousel .owl-item img{
+    object-fit: cover;
+    height: 100%;
+}
+.owl-programs .owl-item:hover .card p,.owl-item:hover .card h3,.owl-item:hover .card svg *{
+  color:white;
+  fill:white
+}
+.card i svg{
+  width:40px;
+  height:40px;
+}
+.icons {
+  border-top:.1px solid #AAAAAA
+}
+.icons i svg{
+  width:15px !important;
+  height:15px !important;
+  margin: 5px;
+}
+.owl-programs .owl-nav{
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+
+}
+.owl-programs .owl-theme .owl-nav [class*='owl-']:hover{
+  background:transparent;
+}
+.owl-programs .owl-nav i{
+  font-size:20px;
+  color:#1CABE2
+}
+.owl-programs .owl-nav .owl-prev{
+      left: -30px;
+      position: absolute;
+}
+.owl-programs .owl-nav .owl-next{
+      right: -30px;
+      position: absolute;
+}
+.owl-slider{
+    position: fixed;
+    top: 60px;
+    width: 100%;
+    left: 0px;
+}
+.scrolling{
+    position: absolute;
+    top: calc(70vh - 50px);
+    left: 0px;
+    width: 100%;
+    background: white;
+    z-index: 100;
+
+}
+
+</style>
+
+
+<div class="app-main__inner">
+
+<div class="owl-slider owl-carousel owl-theme blue-banner">
+  
+   <!--<div class="slider pos-relative">-->
+       
+   <!--  <img src="{% static 'images/bg4.png' %}" />-->
+   <!-- <h1>Neuro-DB allows you to gather, organize, -->
+   <!-- manage, map and analyze data from-->
+   <!-- different sources of UNICEF Programs</h1>-->
+   <!-- </div>-->
+   <!-- <div class="slider pos-relative">-->
+   <!--  <img src="{% static 'images/OP__3031.jpg' %}" />-->
+   <!--     <h1>Neuro-DB allows you to gather, organize, -->
+   <!--     manage, map and analyze data from-->
+   <!--     different sources of UNICEF Programs</h1>-->
+   <!-- </div>-->
+   <!-- <div class="slider pos-relative">-->
+   <!--  <img src="{% static 'images/OP__3106.jpg' %}" />-->
+        
+   <!-- </div>-->
+   <!-- <div class="slider pos-relative">-->
+   <!--  <img src="{% static 'images/OP__3295.jpg' %}" />-->
+   <!--     <h1>Neuro-DB allows you to gather, organize, -->
+   <!--     manage, map and analyze data from-->
+   <!--     different sources of UNICEF Programs</h1>-->
+   <!-- </div>-->
+     <div class="row middle-xs align-items-center slider ">
+          <div class="col-12 col-sm-8 col-md-8 col-lg-8">
+             <img src="{% static 'images/bg4.png' %}" class="img-fluid" />
+          </div>
+          <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+             <div class="block--hero__content box">
+                <h1>Neuro-DB allows you to gather, organize, 
+        manage, map and analyze data from
+        different sources of UNICEF Programs</h1>
+             </div>
+          </div>
+    </div>
+     <div class="row middle-xs align-items-center slider ">
+          <div class="col-12 col-sm-8 col-md-8 col-lg-8">
+             <img src="{% static 'images/OP__3031.jpg' %}" class="img-fluid" />
+          </div>
+          <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+             <div class="block--hero__content box">
+                <h1>Neuro-DB allows you to gather, organize, 
+        manage, map and analyze data from
+        different sources of UNICEF Programs</h1>
+             </div>
+          </div>
+    </div>
+     <div class="row middle-xs align-items-center slider ">
+          <div class="col-12 col-sm-8 col-md-8 col-lg-8">
+             <img src="{% static 'images/OP__3106.jpg' %}" class="img-fluid" />
+          </div>
+          <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+             <div class="block--hero__content box">
+                <h1>Neuro-DB allows you to gather, organize, 
+        manage, map and analyze data from
+        different sources of UNICEF Programs</h1>
+             </div>
+          </div>
+    </div>
+</div> 
+<div class="scrolling">
+
+
+ <div class="container pt-5" id="crisis">
+  <h2 class="font-weight-bold pt-2 pb-3 mb-0">Response</h2>
+  <div class="row">
+    <div class="col-md-6 col-xl-4 my-2">
+      <a href="/activityinfo/report-crisis/?ai_id=202020" class="card">
+          <div class="overflow-hidden">
+              <img src="{% static "images/card1.png" %}"/>
+          </div>
+        
+        <div class="card-body mx-3">
+            <h5 class="text-dark">COVID-19 Response</h5>
+<!--            <p class="card-text mb-5">Children are not the face of this pandemic.-->
+<!--But they risk being among its biggest victims, as children’s lives are nonetheless being changed in profound ways.</p>-->
+            <span class="card-link float-right text-primary text-bold">View COVID-19 Data <i class="unicef-icon icon-Next-item" ></i></span>
+        </div>
+      </a>
+    </div>
+  
+    <div class="col-md-6 col-xl-4 my-2">
+      <a href="https://www.unicef.org/lebanon/beirut-explosions#UNICEFresponse" target="_blank" class="card">
+          <div class="overflow-hidden">
+              <img src="{% static "images/beirut-blast.png" %}"/>
+          </div>
+        
+        <div class="card-body mx-3">
+            <h5 class="text-dark">Beirut Blast Dashboard</h5>
+            <!--<p class="card-text mb-5">The disaster appears to have been caused by the very forces of negligence and perhaps corruption that had already brought the country to its knees.</p>-->
+            <span class="card-link float-right text-primary text-bold">Open<i class="unicef-icon icon-Next-item" ></i></span>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6 col-xl-4 my-2">
+      <div class="card ">
+          <div class="overflow-hidden">
+              <img src="{% static "images/socio-economic.png" %}"/>
+          </div>
+        <div class="card-body mx-3">
+            <h5 class="text-dark">Socio-Economic Reports</h5>
+            <!--<p class="card-text mb-5">Over the last few months, since the Lebanese uprising, the Lebanese pound has tumbled,  losing 40 percent of its value in the market. <br> (Coming Soon)</p>-->
+            {% comment %} <a href="#" class="card-link float-right"></a> {% endcomment %}
+            <a href="{% url 'survey:economic_dashboard' %}" class="card-link float-right text-primary text-bold disabled">Coming Soon <i class="unicef-icon icon-Next-item" ></i></a>
+        </div>
+      </div>
+    </div>
+   </div>
+  </div>
+  {% comment %} <div class="row my-7" id="partners">
+    <div class="image-div col-8 col-md-6 col-xl-4 pos-relative px-0">
+      <img src="{% static "images/person.svg" %}" />
+      <a href="#" class="btn-lg btn-outline donor-btn" >Donors</a>
+      <a href="#" class="btn-lg btn-outline intervention-btn" >Intervention</a>
+    
+    </div>
+
+     <div class="col-12 col-md-6 col-xl-7 offset-xl-1 py-xl-5 d-flex justify-content-around flex-column">
+        <div>
+            <h2 class="font-weight-bold py-2 mb-0">Partners Profiles Overview</h2>
+            <p class="pt-3">View our partners profiles from many different sections </p>
+         </div>
+         <a href="#" class="btn btn-outline-primary w-fit-content" >Go To Partners</a>
+     </div>
+  </div> {% endcomment %}
+  
+  <div class="container pt-10 " id="activity">
+      <h2 class="font-weight-bold py-2 mb-0">UNICEF Programs</h2>
+      <p class="mb-0">Browse our many different programs to view results reported on Activity Info</p>
+
+      <div class="owl-programs owl-carousel owl-theme">
+        {% for db in ai_databases %}
+          <div class="item pt-4 pb-5 w-100">
+            <div  class="card w-100">
+              <a href="{% url 'activityinfo:report' %}?ai_id={{ db.ai_id }}" class="py-5 px-4">
+                {% if db.section.logo %}
+                   {% comment %} <i>{% include   'images/care.svg' %}</i> {% endcomment %}
+                   <img alt="100%x200" src="{% static db.section.logo %}" data-holder-rendered="true" style="height: 60px; width: 60px; display: block;" />
+                {% else %}
+                    <img alt="100%x200" src="{% static 'images/unicef.png' %}" data-holder-rendered="true" style="height: 60px; width: 60px; object-fit:contain;display: block;" />
+                {% endif %}
+                
+              
+                <h3 class="pt-2 pb-4 mb-0 font-weight-bold">{{ db.section.code }}</h3>
+                <p>{{ db.label }}</p>
+              </a>
+              <div class="d-flex icons p-2 justify-content-around">
+                <a href="{% url 'activityinfo:live_report' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
+                           data-placement="top" title="Live Data Monitoring" class="text-danger"
+                           data-step="9" data-intro="Open live ActivityInfo Dashboard">
+                  <i>{% include   'images/live-streaming.svg' %}</i>
+                </a>
+                <a href="{% url 'activityinfo:report_tags' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
+                    data-placement="top" title="Indicators Data Disaggregated" class="text-success">
+                  <i>{% include   'images/gps-fixed-indicator.svg' %}</i>
+                </a>
+
+                <a href="{% url 'activityinfo:report_disability' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
+                    data-placement="top" title="Disability Report" class="text-warning"
+                    data-step="16" data-intro="Disability report">
+                  <i>{% include   'images/disability.svg' %}</i>
+                </a>
+                
+                  <a href="{% url 'activityinfo:report_partner' %}?rep_year={{ db.reporting_year }}&ai_id={{ db.ai_id }}"
+                      class="text-info" data-toggle="tooltip" title="View Partners' Results">
+                      <i>{% include   'images/multiple-users-silhouette.svg' %}</i>
+                    </a>
+                
+                <a href="{% url 'activityinfo:export' %}?ai_id={{ db.ai_id }}" data-toggle="tooltip"
+                    data-placement="top" title="Raw data" class="text-primary"
+                    data-step="16" data-intro="Raw data">
+                  <i>{% include   'images/import.svg' %}</i>
+                </a>
+                
+                
+               
+                
+            
+            
+              </div>
+            
+            </div>
+          </div>
+        {% endfor %}
+
+  </div>
+  <div class="my-5">
+
+  <div class="row">
+    <div class="col-md-6">
+     <h2 class="font-weight-bold py-2 mb-0">Population Figures In Lebanon</h2>
+      <p>View the total updated charts of Lebanon's population figures</p>
+    </div>
+    <div class="col-md-6 d-flex align-items-center justify-content-end ">
+      <a href="{% url 'survey:population_figures' %}" class="btn btn-outline-primary w-fit-content" >Go To Population Figures</a>
+    </div>
+  </div>
+   <div class="no-gutters row" >
+   
+            <div class="col-md-6 item-block pl-md-0" style="margin: 0 auto;">
+               <div class="card  rm-border">
+                  <div id="populations_per_nationality"></div>
+               </div>
+            </div>
+            <div class="col-md-6 item-block pr-md-0" style="margin: 0 auto;">
+               <div class="card  rm-border">
+                  <div id="populations_per_age_group"></div>
+               </div>
+            </div>
+         </div>
+
+
+    </div>
+
+  
+</div>
+
+
+ <div class="maps px-0" id="maps">
+    <div class="container pos-relative py-4" >
+      <div class="d-flex py-3">
+        <div class="col-md-4 mr-auto px-md-0">
+          <!--<h2 class="text-light font-weight-bold mb-0">Affected Schools By Beirut Blast Aug 4, 2020</h2>-->
+          
+        </div>
+        <div class="col-md-4 ml-auto mt-4 mt-md-0 d-flex align-items-end justify-content-end px-md-0">
+         <a href="{% url 'survey:maps' %}" class="btn btn-outline-light" >Open In Maps</a>
+        </div>
+      
+      </div>
+      <div style="height:200px" ></div>
+      <iframe src="http://uniceflebanon.maps.arcgis.com/apps/webappviewer/index.html?id=c013648c5ba143a2a1fdafaf8cebf4f7" ></iframe>
+    </div>
+  </div>
+  <!--<div class="container pb-5">-->
+  <!--<div class="row">-->
+  <!--    <div class="col-md-8 col-xl-5 px-0 px-md-3">-->
+    
+       
+  <!--                <div class="card rm-border bg-transparent widget-chart text-left my-2">-->
+  <!--                   <div class="icon-wrapper pos-relative bg-info">-->
+  <!--                      <div class="icon-wrapper-bg opacity-9">-->
+  <!--                       <img src="{% static 'images/money.svg' %}" />-->
+  <!--                      </div>-->
+                        
+                      
+  <!--                   </div>-->
+  <!--                   <div class="widget-chart-content">-->
+  <!--                      <div class="widget-subheading">Official Rate</div>-->
+  <!--                      <div class="widget-numbers text-info"><span>{{ official_rate }}</span></div>-->
+  <!--                      <div class="widget-description text-focus">-->
+  <!--                         Stable-->
+  <!--                         <span class="text-info pl-1">-->
+                              <!--<fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>-->
+  <!--                            <span class="pl-1">{{ official_rate_per }}%</span>-->
+  <!--                         </span>-->
+  <!--                      </div>-->
+  <!--                   </div>-->
+  <!--                </div>-->
+ 
+  <!--                <div class="card  rm-border bg-transparent widget-chart text-left my-2">-->
+  <!--                   <div class="icon-wrapper pos-relative bg-success">-->
+  <!--                      <div class="icon-wrapper-bg opacity-9">-->
+  <!--                         <img src="{% static 'images/museum.svg' %}" />-->
+  <!--                      </div>-->
+                        
+  <!--                   </div>-->
+  <!--                   <div class="widget-chart-content">-->
+  <!--                      <div class="widget-subheading">BDL Rate</div>-->
+  <!--                      <div class="widget-numbers text-success"><span>{{ bdl_rate }}</span></div>-->
+  <!--                      {% if bdl_percentage_status %}-->
+  <!--                      <div class="widget-description text-focus">-->
+  <!--                         Increased by -->
+  <!--                         <span class="text-danger pl-1">-->
+  <!--                            <fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>-->
+  <!--                            <span class="pl-1">{{ bdl_rate_per }}%</span>-->
+  <!--                         </span>-->
+  <!--                      </div>-->
+  <!--                      {% else %}-->
+  <!--                      <div class="widget-description text-focus">-->
+  <!--                         Decrease by -->
+  <!--                         <span class="text-success pl-1">-->
+  <!--                            <fa name="angle-down" _nghost-djc-c2="" ng-reflect-name="angle-down"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-down" ng-reflect-klass="fa fa-angle-down" ng-reflect-ng-class=""></i></fa>-->
+  <!--                            <span class="pl-1">{{ bdl_rate_per }}%</span>-->
+  <!--                         </span>-->
+  <!--                      </div>-->
+  <!--                      {% endif %}-->
+  <!--                   </div>-->
+  <!--                </div>-->
+ 
+  <!--                <div class="card  rm-border bg-transparent widget-chart text-left my-2">-->
+  <!--                   <div class="icon-wrapper pos-relative bg-danger">-->
+  <!--                      <div class="icon-wrapper-bg opacity-9">-->
+  <!--                        <img src="{% static 'images/big-store.svg' %}" />-->
+  <!--                      </div>-->
+                        
+  <!--                   </div>-->
+  <!--                   <div class="widget-chart-content">-->
+  <!--                      <div class="widget-subheading">Market Rate</div>-->
+  <!--                      <div class="widget-numbers text-danger"><span>{{ market_rate }}</span></div>-->
+  <!--                      {% if market_percentage_status %}-->
+  <!--                      <div class="widget-description text-focus">-->
+  <!--                         Increased by -->
+  <!--                         <span class="text-danger pl-1">-->
+  <!--                            <fa name="angle-up" _nghost-djc-c2="" ng-reflect-name="angle-up"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-up" ng-reflect-klass="fa fa-angle-up" ng-reflect-ng-class=""></i></fa>-->
+  <!--                            <span class="pl-1">{{ market_rate_per }}%</span>-->
+  <!--                         </span>-->
+  <!--                      </div>-->
+  <!--                      {% else %}-->
+  <!--                      <div class="widget-description text-focus">-->
+  <!--                         Decrease by -->
+  <!--                         <span class="text-success pl-1">-->
+  <!--                            <fa name="angle-down" _nghost-djc-c2="" ng-reflect-name="angle-down"><i _ngcontent-djc-c2="" aria-hidden="true" class="fa fa-angle-down" ng-reflect-klass="fa fa-angle-down" ng-reflect-ng-class=""></i></fa>-->
+  <!--                            <span class="pl-1">{{ market_rate_per }}%</span>-->
+  <!--                         </span>-->
+  <!--                      </div>-->
+  <!--                      {% endif %}-->
+  <!--                   </div>-->
+  <!--                </div>-->
+               
+  <!--    </div>-->
+  <!--    <div class="col-xl-5 offset-xl-2 py-4 py-xl-0 d-flex justify-content-around flex-column">-->
+  <!--      <div>-->
+  <!--       <h2 class="font-weight-bold py-2 mb-0">Lira Exchange Rate <br/> Updates</h2>-->
+  <!--       <p class="pt-3">View our partners profiles from many different sections </p>-->
+  <!--      </div>-->
+         
+  <!--        <a href="{% url 'survey:economic_dashboard' %}" class="btn btn-outline-primary w-fit-content" >Go To Economic Dashboard</a>-->
+  <!--    </div>-->
+   
+  <!--  </div> -->
+  <!--</div>-->
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script type="text/javascript" src="{% static 'js/Highcharts.chart.js' %}"></script>
+<script type="text/javascript">
+   var data = {
+       2020: [
+           ['Lebanese', 1256916],
+           ['Syrians', 804000],
+           ['PRL', 68580],
+           ['PRS', 10138],
+       ],
+   };
+
+   var countries = [{
+       name: 'Lebanese',
+       flag: '{% static "images/rounded_flag_lebanon.jpg" %}',
+       color: 'rgba(255, 152, 0,0.4)',
+       borderColor:'#FF9800'
+   }, {
+       name: 'Syrians',
+       flag: '{% static "images/rounded_flag_syrian.jpg" %}',
+       color: 'rgba(0, 162, 255,0.4)',
+       borderColor: '#00A2FF'
+   }, {
+       name: 'PRL',
+       flag: '{% static "images/rounded_flag_palestine.jpg" %}',
+       color: 'rgba(163, 102, 188,0.4)',
+       borderColor: '#A366BC'
+   }, {
+       name: 'PRS',
+       flag: '{% static "images/rounded_flag_palestine.jpg" %}',
+       color: 'rgba(158, 229, 161,0.4)',
+       borderColor: '#9EE5A1'
+   }];
+   
+   
+   function getData(data) {
+       return data.map(function (country, i) {
+           return {
+               name: country[0],
+               y: country[1],
+               color: countries[i].color,
+               borderColor: countries[i].borderColor
+           };
+       });
+   }
+   
+   Highcharts.theme = {
+           colors: ['#34C73B', '#00A2FF', '#F192F1', '#9010BC', '#CF2C2C', '#FF9800'],
+           title: {
+               style: {
+                   color: '#4D4D4D',
+                   fontFamily: '"Poppins"',
+                   fontSize:'18px',
+                   fontWeight:'300',
+               }
+           },
+           subtitle: {
+               style: {
+                   color: '#6A707E',
+                   fontFamily: '"Poppins"',
+                   fontSize:'13px',
+                   fontWeight:'100',
+               }
+           },
+           yAxis: {
+               labels: {
+                       style: {
+                           color: '#525252',
+                           fontFamily: '"Poppins"',
+                           fontSize:'12px',
+                           fontWeight:'100',
+                       }
+                   }     
+           },
+           xAxis: {
+               labels: {
+                       style: {
+                           color: '#525252',
+                           fontFamily: '"Poppins"',
+                           fontSize:'12px',
+                           fontWeight:'100',
+                       }
+                   },     
+           },
+           legend: {
+               itemStyle: {
+                   fontFamily: '"Poppins"',
+                   fontSize:'13px',
+                   fontWeight:'100',
+                   color: '#ABAFB3'
+               },
+               itemHoverStyle:{
+                   color: 'gray'
+               },
+               itemMarginTop: 10,
+           },
+           tooltip:{
+               style: {
+                   color: '#ABAFB3',
+                   fontFamily: '"Poppins"',
+                   fontSize:'12px',
+                   fontWeight:'400',
+               }
+           },
+           drilldown: {
+               activeAxisLabelStyle: {
+                   color: '#525252',
+                   textDecoration:'none',
+                   fontWeight:'100',
+               },
+               activeDataLabelStyle: {
+                   color: '#ABAFB3',
+                   display:'none'
+               }
+           },
+           credits: {
+                enabled: false
+            },
+       };
+   
+       Highcharts.setOptions(Highcharts.theme);
+
+   
+   
+   
+   Highcharts.chart('populations_per_nationality', {
+       chart: {
+           plotBackgroundColor: null,
+           plotBorderWidth: 0,
+           plotShadow: false,
+           type: 'pie'
+       },
+    
+       tooltip: {
+           pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+       },
+       accessibility: {
+           point: {
+               valueSuffix: '%'
+           }
+       },
+        title: {
+           text: '',
+           
+       },
+       subtitle: {
+           text: 'Source: Lebanon Crisis Response Plan 2017-2020, The Government of Lebanon and United Nations, January 2020 [Population package]',
+           align: 'left',
+           verticalAlign: 'bottom',
+       },
+       plotOptions: {
+           pie: {
+               allowPointSelect: true,
+               cursor: 'pointer',
+               dataLabels: {
+                   enabled: false,
+                   format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+               },
+               showInLegend: true
+           }
+       },
+       legend: {
+           align: 'right',
+           verticalAlign: 'middle',
+           layout: 'vertical',
+           
+       },
+       series: [{
+           name: 'Nationality',
+           colorByPoint: true,
+           innerSize: '50%',
+           data: [{
+               name: 'Lebanese',
+               y: 4035042,
+               color: '#FF9800'
+           }, {
+               name: 'Syrians',
+               y: 1500000,
+               color: '#00A2FF'
+           }, {
+               name: 'Palestinians',
+               y: 208800,
+               color: '#34C73B'
+           }]
+       }]
+   });
+   
+   
+   
+   
+   
+   // Create the chart
+   Highcharts.chart('populations_per_age_group', {
+       chart: {
+           type: 'column',
+           margin:70,
+           marginBottom:95,
+           
+       },
+       accessibility: {
+           announceNewData: {
+               enabled: true
+           }
+       },
+       xAxis: {
+           type: 'category'
+       },
+        title: {
+           text: '',
+           
+       },
+       yAxis: {
+           title: {
+               //text: 'Total populations'
+               text: ' '
+           }
+   
+       },
+       subtitle: {
+           text: 'Total populations per age group',
+           align: 'left',
+           verticalAlign: 'bottom',
+       },
+       legend: {
+           enabled: false
+       },
+       plotOptions: {
+           series: {
+               borderWidth: 1,
+               borderColor:'{point.borderColor}',
+               pointWidth:40,
+               dataLabels: {
+                   enabled: false,
+                   <!--format: '{point.value}'-->
+                   formatter: function() {
+                     return formatNumber(this.point.y);
+                   }
+               }
+           }
+       },
+   
+       tooltip: {
+           <!--headerFormat: '<span style="font-size:11px">{series.name}</span><br>',-->
+           <!--pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.value}</b><br/>'-->
+           formatter: function() {
+                 return '<b>'+this.point.name+': </b>'+ formatNumber(this.point.y);
+           }
+       },
+   
+       series: [
+           {
+               name: "Nationalities",
+               colorByPoint: true,
+               data: [
+                   {
+                       name: "Lebanese",
+                       y: 4035042,
+                       drilldown: "Lebanese",
+                       color: 'rgba(255, 152, 0,0.4)',
+                       borderColor:'#FF9800'
+                   },
+                   {
+                       name: "Syrian",
+                       y: 1500000,
+                       drilldown: "Syrian",
+                       color: 'rgba(0, 162, 255,0.4)',
+                       borderColor: '#00A2FF'
+                   },
+                   {
+                       name: "PRL",
+                       y: 180000,
+                       drilldown: "PRL",
+                       color: 'rgba(163, 102, 188,0.4)',
+                       borderColor: '#A366BC'
+                   },
+                   {
+                       name: "PRS",
+                       y: 27700,
+                       drilldown: "PRS",
+                       color: 'rgba(158, 229, 161,0.4)',
+                       borderColor: '#9EE5A1'
+                   }
+               ]
+           }
+       ],
+       drilldown: {
+           series: [
+               {
+                   name: "Lebanese",
+                   id: "Lebanese",
+                   data: [
+                       [
+                           "Under 1 year",
+                           72758
+                       ],
+                       [
+                           "Under 2 years",
+                           171937
+                       ],
+                       [
+                           "Under 5 years",
+                           499339
+                       ],
+                       [
+                           "3-5 years",
+                           357407
+                       ],
+                       [
+                           "6-14 years",
+                           1218975
+                       ],
+                       [
+                           "6-11 years",
+                           770825
+                       ],
+                       [
+                           "15-18 years",
+                           477349
+                       ],
+                       [
+                           "3-18 years",
+                           1973031
+                       ],
+                       [
+                           "0-5 years",
+                           639012
+                       ],
+                       [
+                           "0-17 years",
+                           2135887
+                       ],
+                       [
+                           "12-14 years",
+                           367448
+                       ],
+                       [
+                           "12-17 years",
+                           726045
+                       ],
+                       [
+                           "15-17 years",
+                           358193
+                       ],
+                       [
+                           "10-14 years",
+                           622504
+                       ]
+                   ]
+               },
+               {
+                   name: "Syrian",
+                   id: "Syrian",
+                   data: [
+                       [
+                           "Under 1 year",
+                           30255
+                       ],
+                       [
+                           "Under 2 years",
+                           84544
+                       ],
+                       [
+                           "Under 5 years",
+                           257412
+                       ],
+                       [
+                           "3-5 years",
+                           167743
+                       ],
+                       [
+                           "6-14 years",
+                           401348
+                       ],
+                       [
+                           "6-11 years",
+                           293300
+                       ],
+                       [
+                           "15-18 years",
+                           118569
+                       ],
+                       [
+                           "3-18 years",
+                           687661
+                       ],
+                       [
+                           "0-5 years",
+                           312116
+                       ],
+                       [
+                           "0-17 years",
+                           805199
+                       ],
+                       [
+                           "12-14 years",
+                           108047
+                       ],
+                       [
+                           "12-17 years",
+                           199779
+                       ],
+                       [
+                           "15-17 years",
+                           91732
+                       ],
+                       [
+                           "10-14 years",
+                           197362
+                       ]
+                   ]
+               },
+               {
+                   name: "PRL",
+                   id: "PRL",
+                   data: [
+                       [
+                           "Under 1 year",
+                           3240
+                       ],
+                       [
+                           "Under 2 years",
+                           6689
+                       ],
+                       [
+                           "Under 5 years",
+                           17386
+                       ],
+                       [
+                           "3-5 years",
+                           10768
+                       ],
+                       [
+                           "6-14 years",
+                           30824
+                       ],
+                       [
+                           "6-11 years",
+                           20578
+                       ],
+                       [
+                           "15-18 years",
+                           14231
+                       ],
+                       [
+                           "3-18 years",
+                           55824
+                       ],
+                       [
+                           "0-5 years",
+                           21041
+                       ],
+                       [
+                           "0-17 years",
+                           62601
+                       ],
+                       [
+                           "12-14 years",
+                           10247
+                       ],
+                       [
+                           "12-17 years",
+                           20982
+                       ],
+                       [
+                           "15-17 years",
+                           10736
+                       ],
+                       [
+                           "10-14 years",
+                           16772
+                       ]
+                   ]
+               },
+               {
+                   name: "PRS",
+                   id: "PRS",
+                   data: [
+                       [
+                           "Under 1 year",
+                           527
+                       ],
+                       [
+                           "Under 2 years",
+                           1214
+                       ],
+                       [
+                           "Under 5 years",
+                           3017
+                       ],
+                       [
+                           "3-5 years",
+                           1758
+                       ],
+                       [
+                           "6-14 years",
+                           6022
+                       ],
+                       [
+                           "6-11 years",
+                           4216
+                       ],
+                       [
+                           "15-18 years",
+                           1973
+                       ],
+                       [
+                           "3-18 years",
+                           9753
+                       ],
+                       [
+                           "0-5 years",
+                           3631
+                       ],
+                       [
+                           "0-17 years",
+                           11172
+                       ],
+                       [
+                           "12-14 years",
+                           1806
+                       ],
+                       [
+                           "12-17 years",
+                           3325
+                       ],
+                       [
+                           "15-17 years",
+                           1518
+                       ],
+                       [
+                           "10-14 years",
+                           3252
+                       ]
+                   ]
+               }
+           ]
+       }
+   });
+   
+   
+</script>
+<script>
+
+
+
+
+$('.owl-programs').owlCarousel({
+    loop:true,
+    margin:10,
+    nav:true,
+    margin:10,
+    dots:false,
+    navText : ["<i class='unicef-icon icon-Return'></i>","<i class='unicef-icon icon-Go'></i>"],
+    responsive:{
+        0:{
+            items:1.5,
+            nav:false
+        },
+        400:{
+            items:2,
+            nav:false,
+            slideBy: 2
+        },
+        700:{
+            items:3,
+            slideBy: 3
+        },
+        1200:{
+            items:4,
+            slideBy: 4
+        }
+    }
+})
+
+
+$('.owl-slider').owlCarousel({
+    loop:false,
+    nav:false,
+    autoplay: true,
+    dots:false,
+    navText : ["<i class='fa fa-chevron-left'></i>","<i class='fa fa-chevron-right'></i>"],
+    items:1,
+})
+
+</script>
+{% endblock %}
