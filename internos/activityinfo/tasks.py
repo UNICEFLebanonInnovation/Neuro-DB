@@ -1,6 +1,7 @@
 
 import json
 import logging
+import threading
 from datetime import datetime, date
 
 from internos.taskapp.celery import app
@@ -434,3 +435,42 @@ def get_new_indicator(indicator, activity):
         activity_id=activity.id,
         name=indicator.name
     )
+
+
+class ReplicationThreading(object):
+    def __init__(self, interval=1, db_source=None, db_destination=None):
+        self.interval = interval
+        self.db_source = db_source
+        self.db_destination = db_destination
+        thread = threading.Thread(target=self.run, args=())
+
+        thread.daemon = True
+        thread.start()
+
+    def run(self):
+        replicate_ai_indicators(self.db_source, self.db_destination)
+
+
+def run_database_replication(db_source, db_destination):
+    tr = ReplicationThreading(1, db_source, db_destination)
+
+
+class ImportThreading(object):
+    def __init__(self, interval=1, db=None, report_type=None):
+        self.interval = interval
+        self.db = db
+        self.report_type = report_type
+        thread = threading.Thread(target=self.run, args=())
+
+        thread.daemon = True
+        thread.start()
+
+    def run(self):
+        if self.report_type == 'live':
+            import_data_and_generate_live_report(self.db)
+        else:
+            import_data_and_generate_monthly_report(self.db)
+
+
+def run_database_import(db, report_type=None):
+    tr = ImportThreading(1, db, report_type)

@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 import os
 import json
 import datetime
-import calendar 
+import calendar
 from django.db.models import Q, Sum
 from dal import autocomplete
 from django.views.generic import ListView, TemplateView, FormView
@@ -12,13 +12,8 @@ from .models import ActivityReport, LiveActivityReport, Database, Indicator, Par
 from django.shortcuts import render
 from datetime import date
 from django.http import HttpResponseRedirect
-from .templatetags.util_tags import get_sub_indicators_data, get_sub_indicators_data_new, \
-    get_indicator_cumulative_months_sections, get_indicator_cumulative_months, get_sub_indicators_crisis_data, \
-    get_sub_indicators_live_crisis_data, get_sub_indicators_live_data, get_indicator_live_cumulative, \
-    get_indicator_live_cumulative_section, get_indicator_highest_value, calculate_achievement_new, \
-    get_indicator_highest_value_live, get_sub_master_indicators_data, get_sub_master_indicators_crisis_data
-from .utils import get_partners_list, get_governorates_list, get_reporting_sections_list, get_cadastrals_list, \
-    get_months_list
+from .templatetags.util_tags import *
+from .utils import *
 from .utils import calculate_internal_indicators_values, calculate_internal_cumulative_results
 
 
@@ -288,7 +283,7 @@ class ReportView(TemplateView):
 
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
 
         return {
@@ -334,7 +329,7 @@ class ReportCrisisViewOld(TemplateView):
         current_month = date.today().month
 
         selected_filter = False
-        
+
         reporting_year = database.reporting_year.year
 
         if selected_partners or selected_governorates or selected_months or selected_sections:
@@ -500,11 +495,11 @@ class ReportCrisisView(TemplateView):
         all_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality')\
             .order_by('sequence')
 
-        imported_indicators =Indicator.objects.filter(activity__database__support_covid=True).exclude(type='quality')
+        imported_indicators = Indicator.objects.filter(activity__database__support_covid=True).exclude(type='quality')
         mixed_indicators = all_indicators | imported_indicators
 
-        master_indicators = all_indicators.filter(Q(master_indicator=True) |Q(sub_indicators__isnull=True,
-                                                                                 individual_indicator=True))\
+        master_indicators = all_indicators.filter(Q(master_indicator=True) | Q(sub_indicators__isnull=True,
+                                                                              individual_indicator=True))\
             .values(
             'id',
             'ai_id',
@@ -778,9 +773,9 @@ class ReportCrisisView(TemplateView):
             covid_filtered_list = filtered_covid_indicators
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
-        else:        
-               template = "base_empty.html";
+               template = "base2.html"
+        else:
+               template = "base_empty.html"
 
 
         return {
@@ -1117,14 +1112,14 @@ class ReportLiveCrisis(TemplateView):
                                     covid_filtered_list.append(sub_sub_ind)
         else:
             covid_filtered_list = filtered_covid_indicators
-            
-            
-            
+
+
+
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
-               template = "base_empty.html";    
-               
+        else:
+               template = "base_empty.html";
+
         return {
 
             'database': database,
@@ -1187,10 +1182,10 @@ class ReportInternalView(TemplateView):
 
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
 
-               
+
         months = []
         for i in range(1, 13):
             months.append((i, calendar.month_abbr[i]))
@@ -1256,7 +1251,7 @@ class ReportInternalFormView(TemplateView):
 
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
 
         return {
@@ -1564,9 +1559,9 @@ class ReportPartnerView(TemplateView):
 
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
-               
+
         return {
             # 'reports': report.order_by('id'),
             'month': month,
@@ -1740,14 +1735,14 @@ class ReportPartnerCrisisView(TemplateView):
                 if x["reporting_section"] == selected_section:
                     selected_section_name = x["reporting_section"]
         report_type ='weekly'
-        
-        
+
+
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
-               
-               
+
+
         return {
             'month': month,
             'year': today.year,
@@ -2113,10 +2108,10 @@ class ReportDisabilityView(TemplateView):
         database = Database.objects.get(ai_id=ai_id)
         reporting_year = database.reporting_year.year
         months = []
-        
+
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
 
         if selected_partners or selected_governorates or selected_months:
@@ -2168,10 +2163,10 @@ class ReportDisabilityView(TemplateView):
         for item in support_disabilities:
             item['cumulative'] = get_indicator_cumulative_months(item, selected_months,
                                                                           selected_partners, selected_governorates,)
-                
-                
-    
-               
+
+
+
+
         return {
             'selected_partners': selected_partners,
             'selected_governorates': selected_governorates,
@@ -2266,14 +2261,14 @@ class ReportDisabilityCrisisView(TemplateView):
                                                                           selected_partners, selected_governorates,
                                                                           selected_sections)
         report_type ='weekly'
-        
-        
+
+
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
-               
-               
+
+
         return {
             'selected_partners': selected_partners,
             'selected_governorates': selected_governorates,
@@ -2407,10 +2402,10 @@ class ReportSectorView(TemplateView):
 
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
-               
-               
+
+
         return {
             'selected_partners': selected_partners,
             'selected_cadastral': selected_cadastral,
@@ -2657,10 +2652,10 @@ class ReportTagView(TemplateView):
 
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
-               
-               
+
+
         return {
 
             'selected_partners': selected_partners,
@@ -2948,10 +2943,10 @@ class ReportCrisisTags(TemplateView):
 
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
-               
-               
+
+
         return {
 
             'selected_partners': selected_partners,
@@ -2999,10 +2994,10 @@ class ReportCrisisVisualView(TemplateView):
     template_name = 'activityinfo/report_crisis_visual.html'
 
     def get_context_data(self, **kwargs):
-        
+
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
 
         return {
@@ -3163,10 +3158,10 @@ class LiveReportView(TemplateView):
 
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
-               
-               
+
+
         return {
             'selected_partners': selected_partners,
             'selected_governorates': selected_governorates,
@@ -3259,7 +3254,7 @@ class HPMView(TemplateView):
         else:
                     for i in range(1, 13):
                         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
-                
+
 
 
         if current_year - 1 == int(reporting_year) and current_month == 1:
@@ -3309,14 +3304,14 @@ class HPMView(TemplateView):
 class HPMExportViewSet(ListView):
     model = Indicator
     queryset = Indicator.objects.filter(hpm_indicator=True)
-    
+
 
     def get(self, request, *args, **kwargs):
         from .utils import update_hpm_table_docx
         from django.core.files import File
         from .templatetags.convertor import StreamingConvertedPdf
-        
-        
+
+
 
         year = date.today().year
         reporting_year = self.request.GET.get('rep_year', year)
@@ -3332,17 +3327,17 @@ class HPMExportViewSet(ListView):
         # month = int(self.request.GET.get('month', int(today.strftime("%m")) - 1))
         # month = 12
         # if day_number < 15:
-        #     month = month - 1 
-        
+        #     month = month - 1
+
         months = []
         for i in range(1, 13):
             months.append((datetime.date(2008, i, 1).strftime('%B')))
 
         filename = "HPM Table {} {}.docx".format(months[month-1], reporting_year)
         new_file = update_hpm_table_docx(self.queryset, month, months[month-1], filename,reporting_year,type)
-        
-        
-        
+
+
+
         with open(new_file, 'rb') as fh:
             response = HttpResponse(
                 fh.read(),
@@ -3354,12 +3349,12 @@ class HPMExportViewSet(ListView):
             return response
         else:
             r_file = open(new_file, 'rb')
-       
+
             inst = StreamingConvertedPdf(r_file,filename)
             return inst.stream_content()
-        
-        
-        
+
+
+
 
 
 class ExportViewSet1(ListView):
@@ -3464,7 +3459,7 @@ class ReportBBlastView(TemplateView):
 
         if self.request.user.is_authenticated:
                template = "base2.html";
-        else:        
+        else:
                template = "base_empty.html";
 
         return {
@@ -3615,7 +3610,7 @@ def load_sections(request):
     #
     # sections = report.values('reporting_section').order_by('reporting_section').distinct('reporting_section')
 
-    return render(request, 'activityinfo/section_dropdown_list_options.html', {'sections': result.values()}) 
+    return render(request, 'activityinfo/section_dropdown_list_options.html', {'sections': result.values()})
 
 
 def load_partners(request):
