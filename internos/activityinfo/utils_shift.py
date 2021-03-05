@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# coding=utf-8
+# -*- coding: utf-8 -*-
+
 import os
 import csv
 import json
@@ -11,6 +15,9 @@ from django.conf import settings
 from django.template.defaultfilters import length
 
 from internos.activityinfo.models import Indicator
+from internos.activityinfo.client import Client
+from internos.activityinfo.exports import get_database_data, read_file, get_xlsx
+
 
 logger = logging.getLogger(__name__)
 
@@ -27,22 +34,16 @@ def get_extraction_month(ai_db):
         return current_month
 
 
-def r_script_command_line(script_name, ai_db):
-    command = 'Rscript'
-    # path = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.dirname(__file__)
-    path2script = os.path.join(path, 'RScripts')
-    path2script = os.path.join(path2script, script_name)
-    main_db_id = ai_db.reporting_year.database_id
-    cmd = [command, path2script, ai_db.username, ai_db.password, str(ai_db.db_id), str(ai_db.ai_id), str(main_db_id)]
-    try:
-        subprocess.check_output(cmd, universal_newlines=True)
-        # subprocess.check_output(['type', cmd], shell=True)
-    except subprocess.CalledProcessError as e:
-        print("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
-        return 0
+def r_script_command_line(ai_db):
 
-    return 1
+    client = Client()
+    filters = "LEFT(Month,4) == '{}'".format(ai_db.reporting_year.year)
+    if ai_db.parent_id:
+        get_database_data(client, database_id=ai_db.parent_id, resource_id=ai_db.db_id, database=ai_db,
+                          record_filter=filters)
+        get_xlsx(client, database_id=ai_db.parent_id, resource_id=ai_db.db_id, database=ai_db, record_filter=filters)
+    else:
+        get_database_data(client, database_id=ai_db.db_id, database=ai_db, record_filter=filters)
 
 
 def read_data_from_file(ai_db, forced=False, report_type=None):
@@ -63,7 +64,7 @@ def read_data_from_file(ai_db, forced=False, report_type=None):
 
 
 def import_data_via_r_script(ai_db, report_type=None):
-    r_script_command_line('ai_generate_excel.R', ai_db)
+    r_script_command_line(ai_db)
     total = read_data_from_file(ai_db, True, report_type)
     return total
 
@@ -73,149 +74,127 @@ def clean_string(value, string):
 
 
 def add_rows(ai_db=None, model=None):
-    # month = int(datetime.datetime.now().strftime("%m"))
     month = get_extraction_month(ai_db)
-    month_name = datetime.datetime.now().strftime("%B")
     path = os.path.dirname(os.path.abspath(__file__))
-    path2file = path + '/AIReports/' + str(ai_db.ai_id) + '_ai_data.csv'
+    path2file = path+'/AIReports/'+str(ai_db.ai_id)+'_ai_data.txt'
+    values = read_file(path2file)
     ctr = 0
 
-    if not os.path.isfile(path2file):
-        return False
+    for row in values:
 
-    with open(path2file) as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
+        indicator_value = 0
+        if 'Value' in row:
+            indicator_value = row['Value']
 
+        try:
+            indicator_value = float(indicator_value)
+        except Exception:
             indicator_value = 0
-            if 'Value' in row:
-                indicator_value = row['Value']
 
+        funded_by = row['funded_by.funded_by'] if 'funded_by.funded_by' in row else ''
+        partner_label = row['partner.name'] if 'partner.name' in row else ''
+        partner_label = partner_label.replace('-', '_')
+        partner_label = partner_label.encode("utf-8").replace('é', 'e')
+
+        if partner_label == 'UNICEF':
+            funded_by = 'UNICEF'
+
+        start_date = None
+        if 'month' in row and row['month'] and not row['month'] == 'NA':
+            date = row['month']
             try:
-                indicator_value = float(indicator_value)
+                date = datetime.datetime.strptime(date, '%Y-%m-%d')
+                start_date = date
             except Exception:
-                indicator_value = 0
+                start_date = '{}-01'.format(date)
 
-            funded_by = unicode(row['funded_by.funded_by'], errors='replace') if 'funded_by.funded_by' in row else ''
-            partner_label = unicode(row['partner.name'], errors='ignore') if 'partner.name' in row else ''
-            partner_label = partner_label.replace('-', '_')
+        if 'month.' in row and row['month.'] and not row['month.'] == 'NA':
+            start_date = '{}-01'.format(row['month.'])
+        if 'date' in row and row['date'] and not row['date'] == 'NA':
+            start_date = row['date']
+        gov_code = 0
+        gov_name = ""
+        if 'governorate.code' in row:
+            if row['governorate.code'] == 'NA':
+                gov_code = 10
+            else:
+                gov_code = row['governorate.code']
 
-            if partner_label == 'UNICEF':
-                funded_by = 'UNICEF'
+        if 'governorate.name' in row:
+            if row['governorate.name'] == 'NA':
+                gov_name = "National"
+            else:
+                gov_name = row['governorate.name']
 
-            start_date = None
-            if 'month' in row and row['month'] and not row['month'] == 'NA':
-                date = row['month']
-                try:
-                    date = datetime.datetime.strptime(date, '%Y-%m-%d')
-                    start_date = date
-                except Exception:
-                    start_date = '{}-01'.format(date)
+        support_covid1 = False
+        support_covid2 = False
+        support_covid3 = False
 
-            if 'month.' in row and row['month.'] and not row['month.'] == 'NA':
-                start_date = '{}-01'.format(row['month.'])
-            if 'date' in row and row['date'] and not row['date'] == 'NA':
-                start_date = row['date']
-            gov_code = 0
-            gov_name = ""
-            if 'governorate.code' in row:
-                if row['governorate.code'] == 'NA':
-                    gov_code = 10
-                else:
-                    gov_code = row['governorate.code']
+        if 'X4.2.3_covid_adaptation' in row:
+            if row['X4.2.3_covid_adaptation'] == 'Yes':
+                support_covid1 = True
+            else:
+                support_covid1 = False
 
-            if 'governorate.name' in row:
-                if row['governorate.name'] == 'NA':
-                    gov_name = "National"
-                else:
-                    gov_name = unicode(row['governorate.name'], errors='replace')
+        if 'covid_adaptation' in row:
+            if row['covid_adaptation'] == 'Yes':
+                support_covid2 = True
+            else:
+                support_covid2 = False
 
-            support_covid1 = False
-            support_covid2 = False
-            support_covid3 = False
+        if 'covid_adapted_sensitization' in row:
+            if row['covid_adapted_sensitization'] == 'Yes':
+                support_covid3 = True
+            else:
+                support_covid3 = False
 
-            if 'X4.2.3_covid_adaptation' in row:
-                if row['X4.2.3_covid_adaptation'] == 'Yes':
-                    support_covid1 = True
-                else:
-                    support_covid1 = False
+        support_covid = support_covid1 or support_covid2 or support_covid3
 
-            if 'covid_adaptation' in row:
-                if row['covid_adaptation'] == 'Yes':
-                    support_covid2 = True
-                else:
-                    support_covid2 = False
+        try:
 
-            if 'covid_adapted_sensitization' in row:
-                if row['covid_adapted_sensitization'] == 'Yes':
-                    support_covid3 = True
-                else:
-                    support_covid3 = False
+            model.create(
+                month=month,
+                database=row['Folder'],
+                database_id=ai_db.ai_id,
+                report_id=row['FormId'],
+                indicator_id=row['Quantity Field ID'],
+                indicator_name=row['Quantity Field'],
+                month_name=row['month'] if 'month' in row else '',
+                partner_label=partner_label,
+                location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
+                location_adminlevel_caza=row['caza.name'] if 'caza.name' in row else '',
+                form=row['Form'] if 'Form' in row else '',
+                location_adminlevel_cadastral_area_code=row[
+                    'cadastral_area.code'] if 'cadastral_area.code' in row else '',
+                location_adminlevel_cadastral_area=row['cadastral_area.name'] if 'cadastral_area.name' in row else '',
+                governorate=row['governorate'] if 'governorate' in row else '',
+                location_adminlevel_governorate_code=gov_code,
+                location_adminlevel_governorate=gov_name,
+                partner_description=row['partner.partner_full_name'] if 'partner.partner_full_name' in row else '',
+                project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
+                project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
+                project_label=row['projects.project_code'] if 'projects.project_code' in row else '',
+                project_description=row['projects.project_name'] if 'projects.project_name' in row else '',
+                funded_by=funded_by,
+                indicator_value=indicator_value,
+                indicator_units=row['units'] if 'units' in row else '',
+                reporting_section=row['reporting_section'] if 'reporting_section' in row else '',
+                site_type=row['site_type'] if 'site_type' in row else '',
+                location_longitude=row[
+                    'ai_allsites.geographic_location.longitude'] if 'ai_allsites.geographic_location.longitude' in row else '',
+                location_latitude=row[
+                    'ai_allsites.geographic_location.latitude'] if 'ai_allsites.geographic_location.latitude' in row else '',
+                location_alternate_name=row[
+                    'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
 
-            support_covid = support_covid1 or support_covid2 or support_covid3
-
-            try:
-                model.create(
-                    month=month,
-                    database=row['Folder'],
-                    database_id=ai_db.ai_id,
-                    # site_id=row['site.id'],
-                    report_id=row['FormId'],
-                    # indicator_id=clean_string(row['Quantity.Field.ID'], 'i'),
-                    indicator_id=row['Quantity.Field.ID'],
-                    indicator_name=unicode(row['Quantity.Field'], errors='replace'),
-                    # indicator_awp_code=get_awp_code(unicode(row['Quantity.Field'], errors='replace')),
-                    month_name=row['month'] if 'month' in row else '',
-                    partner_label=partner_label,
-                    location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
-                    location_adminlevel_caza=unicode(row['caza.name'], errors='replace') if 'caza.name' in row else '',
-                    form=unicode(row['Form'], errors='replace') if 'Form' in row else '',
-                    location_adminlevel_cadastral_area_code=row[
-                        'cadastral_area.code'] if 'cadastral_area.code' in row else '',
-                    location_adminlevel_cadastral_area=unicode(row['cadastral_area.name'],
-                                                               errors='replace') if 'cadastral_area.name' in row else '',
-
-                    governorate=row['governorate'] if 'governorate' in row else '',
-
-                    location_adminlevel_governorate_code=gov_code,
-
-                    location_adminlevel_governorate=gov_name,
-
-                    partner_description=unicode(row['partner.partner_full_name'],
-                                                errors='replace') if 'partner.partner_full_name' in row else '',
-                    project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row[
-                                                                                                              'projects.start_date'] == 'NA' else None,
-                    project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row[
-                                                                                                        'projects.start_date'] == 'NA' else None,
-                    project_label=unicode(row['projects.project_code'],
-                                          errors='replace') if 'projects.project_code' in row else '',
-                    project_description=unicode(row['projects.project_name'],
-                                                errors='replace') if 'projects.project_name' in row else '',
-                    funded_by=funded_by,
-                    indicator_value=indicator_value,
-                    indicator_units=row['units'] if 'units' in row else '',
-                    reporting_section=row['reporting_section'] if 'reporting_section' in row else '',
-                    site_type=row['site_type'] if 'site_type' in row else '',
-                    location_longitude=row[
-                        'ai_allsites.geographic_location.longitude'] if 'ai_allsites.geographic_location.longitude' in row else '',
-                    location_latitude=row[
-                        'ai_allsites.geographic_location.latitude'] if 'ai_allsites.geographic_location.latitude' in row else '',
-                    location_alternate_name=row[
-                        'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
-
-                    location_name=unicode(row['ai_allsites.name'], errors='replace') if 'ai_allsites.name' in row else '',
-                    partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
-                    support_covid=support_covid,
-                    # start_date=datetime.datetime.strptime(row['month'], 'YYYY-MM-DD') if 'month' in row else '',
-                    start_date=start_date,
-                    # form_category=row['form.category'] if 'form.category' in row else '',
-                    # indicator_units=row['indicator.units'] if 'indicator.units' in row else '',
-                    # lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
-                    # indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
-                )
-                ctr += 1
-            except Exception as ex:
-                print(ex)
+                location_name=row['ai_allsites.name'] if 'ai_allsites.name' in row else '',
+                partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
+                support_covid=support_covid,
+                start_date=start_date,
+            )
+            ctr += 1
+        except Exception as ex:
+            print(ex)
 
     return ctr
 

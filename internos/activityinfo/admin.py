@@ -10,6 +10,7 @@ from django_json_widget.widgets import JSONEditorWidget
 from import_export.widgets import *
 from .models import *
 from .utils import *
+from .tasks import run_database_import, run_database_replication
 from .forms import DatabaseForm, IndicatorForm, IndicatorFormSet
 
 
@@ -865,6 +866,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'import_basic_data',
         'update_basic_data',
         'import_only_new',
+        'import_link_calculate',
+        'import_link_calculate_live',
         # 'import_data',
         # 'import_reports',
         'import_reports_forced',
@@ -959,12 +962,22 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             )
 
     def replicate_database_indicators(self, request, queryset):
-        from .tasks import replicate_ai_indicators
         if queryset.count() == 2:
             db_source = queryset[0]
             db_dest = queryset[1]
             if db_source.db_id == db_dest.db_id:
-                replicate_ai_indicators(db_source.id, db_dest.id)
+                if db_source.id > db_dest.id:
+                    run_database_replication(db_dest.id, db_source.id)
+                    self.message_user(
+                        request,
+                        "You have just kickoff the data replication form {} to {} ".format(db_dest, db_source)
+                    )
+                else:
+                    run_database_replication(db_source.id, db_dest.id)
+                    self.message_user(
+                        request,
+                        "You have just kickoff the data replication form {} to {} ".format(db_source, db_dest)
+                    )
 
     def import_partners(self, request,queryset):
         from .utilities import import_partners
@@ -1030,11 +1043,29 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
     def import_data(self, request, queryset):
         for db in queryset:
-            r_script_command_line('ai_generate_excel.R', db)
+            r_script_command_line(db)
             self.message_user(
                 request,
                 "Script R executed for database {}".format(db.name)
             )
+
+    def import_link_calculate(self, request, queryset):
+        for db in queryset:
+            run_database_import(db.id)
+            self.message_user(
+                request,
+                "You have just kickoff the data import for the database: {} ".format(db.name)
+            )
+    import_link_calculate.short_description = '3 in 1: Import, link and calculate Indicator values'
+
+    def import_link_calculate_live(self, request, queryset):
+        for db in queryset:
+            run_database_import(db.id, 'live')
+            self.message_user(
+                request,
+                "You have just kickoff the live data import for the database: {} ".format(db.name)
+            )
+    import_link_calculate_live.short_description = '3 in 1 (LIVE): Import, link and calculate Indicator values'
 
     def import_reports(self, request, queryset):
         for db in queryset:

@@ -13,6 +13,7 @@ from datetime import date
 from django.db.models import Sum, Q
 from internos.activityinfo.client import Client
 from internos.activityinfo.exports import get_database_data, read_file, get_xlsx
+from .utils_common import *
 
 
 logger = logging.getLogger(__name__)
@@ -70,7 +71,7 @@ def r_script_command_line_old(script_name, ai_db):
     return 1
 
 
-def r_script_command_line(script_name, ai_db):
+def r_script_command_line(ai_db):
 
     client = Client()
     filters = "LEFT(Month,4) == '{}'".format(ai_db.reporting_year.year)
@@ -104,7 +105,7 @@ def read_data_from_file(ai_db, forced=False, report_type=None):
 
 
 def import_data_via_r_script(ai_db, report_type=None):
-    r_script_command_line('ai_generate_excel.R', ai_db)
+    r_script_command_line(ai_db)
     total = read_data_from_file(ai_db, True, report_type)
     return total
 
@@ -148,7 +149,6 @@ def clean_string(value, string):
     return value.replace(string, '')
 
 
-# todo to be merged with the add_rows function
 def add_rows_temp(ai_db=None, model=None):
 
     month = get_current_extraction_month(ai_db)
@@ -231,7 +231,6 @@ def add_rows(ai_db=None, model=None):
     path2file = path+'/AIReports/'+str(ai_db.ai_id)+'_ai_data.txt'
     values = read_file(path2file)
     ctr = 0
-    print('start add rows')
 
     for row in values:
         indicator_value = 0
@@ -337,232 +336,6 @@ def add_rows(ai_db=None, model=None):
             start_date=start_date,
         )
         ctr += 1
-
-    return ctr
-
-
-# todo to be deleted
-def add_rows_temp_old(ai_db=None, model=None):
-
-    # month = int(datetime.datetime.now().strftime("%m"))
-    month = get_current_extraction_month(ai_db)
-    path = os.path.dirname(os.path.abspath(__file__))
-    path2file = path+'/AIReports/'+str(ai_db.ai_id)+'_ai_data.csv'
-    ctr = 0
-
-    if not os.path.isfile(path2file):
-        return False
-
-    with open(path2file) as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            ctr += 1
-            indicator_value = 0
-            if 'Value' in row:
-                indicator_value = row['Value']
-
-            try:
-                indicator_value = float(indicator_value)
-            except Exception:
-                indicator_value = 0
-
-            funded_by = 'UNICEF'
-            partner_label = 'UNICEF'
-
-            start_date = None
-            if 'month' in row and row['month'] and not row['month'] == 'NA':
-                start_date = '{}-01'.format(row['month'])
-
-            if ai_db.reporting_year.year not in start_date:
-                continue
-
-            gov_code = row['reporting_office']
-            gov_name = row['reporting_office']
-
-            model.create(
-                month=month,
-                database=row['Folder'],
-                database_id=ai_db.ai_id,
-                report_id=row['FormId'],
-                indicator_id=row['Quantity.Field.ID'],
-                indicator_name=unicode(row['Quantity.Field'], errors='replace'),
-                indicator_awp_code='',
-                month_name=row['month'] if 'month' in row else '',
-                partner_label=partner_label,
-                location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
-                location_adminlevel_caza=unicode(row['caza.name'], errors='replace') if 'caza.name' in row else '',
-                form=unicode(row['Form'], errors='replace') if 'Form' in row else '',
-                location_adminlevel_cadastral_area_code=row['cadastral_area.code'] if 'cadastral_area.code' in row else'',
-                location_adminlevel_cadastral_area=unicode(row['cadastral_area.name'],  errors='replace') if 'cadastral_area.name' in row else '',
-
-                governorate=row['governorate'] if 'governorate' in row else '',
-
-                location_adminlevel_governorate_code=gov_code,
-
-                location_adminlevel_governorate=gov_name,
-
-                partner_description='UNICEF',
-                project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
-                project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
-                project_label=unicode(row['projects.project_code'], errors='replace') if 'projects.project_code' in row else '',
-                project_description=unicode(row['projects.project_name'], errors='replace') if 'projects.project_name' in row else '',
-                funded_by=funded_by,
-                indicator_value=indicator_value,
-                indicator_units=row['units'] if 'units' in row else '',
-                reporting_section=row['reporting_section'] if 'reporting_section' in row else '',
-                site_type=row['site_type'] if 'site_type' in row else '',
-                location_longitude=row[
-                    'ai_allsites.geographic_location.longitude'] if 'ai_allsites.geographic_location.longitude' in row else '',
-                location_latitude=row[
-                    'ai_allsites.geographic_location.latitude'] if 'ai_allsites.geographic_location.latitude' in row else '',
-                location_alternate_name=row[
-                    'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
-
-                location_name=unicode(row['ai_allsites.name'], errors='replace') if 'ai_allsites.name' in row else '',
-                partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
-
-                start_date=start_date,
-            )
-
-    return ctr
-
-
-# todo to be deleted
-def add_rows_old(ai_db=None, model=None):
-
-    # month = int(datetime.datetime.now().strftime("%m"))
-    month = get_current_extraction_month(ai_db)
-    month_name = datetime.datetime.now().strftime("%B")
-    reporting_year = ai_db.reporting_year.year
-    path = os.path.dirname(os.path.abspath(__file__))
-    path2file = path+'/AIReports/'+str(ai_db.ai_id)+'_ai_data.csv'
-    ctr = 0
-
-    if not os.path.isfile(path2file):
-        return False
-
-    with open(path2file) as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            # ctr += 1
-            indicator_value = 0
-            if 'Value' in row:
-                indicator_value = row['Value']
-
-            try:
-                indicator_value = float(indicator_value)
-            except Exception:
-                indicator_value = 0
-
-            funded_by = unicode(row['funded_by.funded_by'], errors='replace' ) if 'funded_by.funded_by' in row else ''
-            partner_label = unicode(row['partner.name'], errors='ignore') if 'partner.name' in row else ''
-            partner_label = partner_label.replace('-', '_')
-
-            if partner_label == 'UNICEF':
-                funded_by = 'UNICEF'
-
-            start_date = None
-            if 'month' in row and row['month'] and not row['month'] == 'NA':
-                date = row['month']
-                try:
-                    date = datetime.datetime.strptime(date, '%Y-%m-%d')
-                    start_date = date
-                except Exception:
-                     start_date = '{}-01'.format(date)
-
-            if 'month.' in row and row['month.'] and not row['month.'] == 'NA':
-                start_date = '{}-01'.format(row['month.'])
-            if 'date' in row and row['date'] and not row['date'] == 'NA':
-                start_date = row['date']
-
-            if not start_date or reporting_year not in start_date:
-                continue
-
-            gov_code = 0
-            gov_name = ""
-            if 'governorate.code' in row:
-                if row['governorate.code'] == 'NA':
-                    gov_code = 10
-                else:
-                    gov_code = row['governorate.code']
-
-            if 'governorate.name' in row:
-                if row['governorate.name'] == 'NA':
-                    gov_name = "National"
-                else:
-                    gov_name = unicode(row['governorate.name'],  errors='replace')
-
-            support_covid1 = False
-            support_covid2 = False
-            support_covid3 = False
-
-            if 'X4.2.3_covid_adaptation' in row:
-                if row['X4.2.3_covid_adaptation'] == 'Yes':
-                    support_covid1 = True
-
-            if 'covid_adaptation' in row:
-                if row['covid_adaptation'] == 'Yes':
-                    support_covid2 = True
-
-            if 'covid_adapted_sensitization' in row:
-                if row['covid_adapted_sensitization'] == 'Yes':
-                    support_covid3 = True
-
-            support_covid = support_covid1 or support_covid2 or support_covid3
-
-            model.create(
-                month=month,
-                database=row['Folder'],
-                database_id=ai_db.ai_id,
-                # site_id=row['site.id'],
-                report_id=row['FormId'],
-                # indicator_id=clean_string(row['Quantity.Field.ID'], 'i'),
-                indicator_id=row['Quantity.Field.ID'],
-                indicator_name=unicode(row['Quantity.Field'], errors='replace'),
-                indicator_awp_code=get_awp_code(unicode(row['Quantity.Field'], errors='replace')),
-                month_name=row['month'] if 'month' in row else '',
-                partner_label=partner_label,
-                location_adminlevel_caza_code=row['caza.code'] if 'caza.code' in row else '',
-                location_adminlevel_caza=unicode(row['caza.name'], errors='replace') if 'caza.name' in row else '',
-                form=unicode(row['Form'], errors='replace') if 'Form' in row else '',
-                location_adminlevel_cadastral_area_code=row['cadastral_area.code'] if 'cadastral_area.code' in row else'',
-                location_adminlevel_cadastral_area=unicode(row['cadastral_area.name'],  errors='replace') if 'cadastral_area.name' in row else '',
-
-                governorate=row['governorate'] if 'governorate' in row else '',
-
-                location_adminlevel_governorate_code=gov_code,
-
-                location_adminlevel_governorate=gov_name,
-
-                partner_description=unicode(row['partner.partner_full_name'],
-                                            errors='replace') if 'partner.partner_full_name' in row else '',
-                project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
-                project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
-                project_label=unicode(row['projects.project_code'], errors='replace') if 'projects.project_code' in row else '',
-                project_description=unicode(row['projects.project_name'], errors='replace') if 'projects.project_name' in row else '',
-                funded_by=funded_by,
-                indicator_value=indicator_value,
-                indicator_units=row['units'] if 'units' in row else '',
-                reporting_section=row['reporting_section'] if 'reporting_section' in row else '',
-                site_type=row['site_type'] if 'site_type' in row else '',
-                location_longitude=row[
-                    'ai_allsites.geographic_location.longitude'] if 'ai_allsites.geographic_location.longitude' in row else '',
-                location_latitude=row[
-                    'ai_allsites.geographic_location.latitude'] if 'ai_allsites.geographic_location.latitude' in row else '',
-                location_alternate_name=row[
-                    'ai_allsites.alternate_name'] if 'ai_allsites.alternate_name' in row else '',
-
-                location_name=unicode(row['ai_allsites.name'], errors='replace') if 'ai_allsites.name' in row else '',
-                partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
-                support_covid = support_covid,
-                # start_date=datetime.datetime.strptime(row['month'], 'YYYY-MM-DD') if 'month' in row else '',
-                start_date=start_date,
-                # form_category=row['form.category'] if 'form.category' in row else '',
-                # indicator_units=row['indicator.units'] if 'indicator.units' in row else '',
-                # lcrp_appeal=row['LCRP Appeal'] if 'LCRP Appeal' in row else '',
-                # indicator_category=row['indicator.category'] if 'indicator.category' in row else '',
-            )
-            ctr += 1
 
     return ctr
 
@@ -4093,7 +3866,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         row_num = row_num + 1
 
     SVBG_indicators = Indicator.objects.filter(activity__database=databases[8], hpm_indicator=True, master_indicator=True).order_by('sequence')
-    
+
     for indicator in SVBG_indicators:
         Child_3 = get_hpm_indicator_data_new(indicator.id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(Child_3['hpm_label'])
@@ -4187,7 +3960,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     row_num = row_num + 1
 
     for indicator in PPL_indicators:
-        
+
         PPL_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(PPL_1['hpm_label'])
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(PPL_1['target_sector'])
@@ -4203,14 +3976,14 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     # table.add_row()
 
    ### Education
-    index = 0 
+    index = 0
     for id in education_ids:
         row_num = row_num + 1
         index = index + 1
         indicator_1 = get_hpm_indicator_data_new(id, month,type)
-       
+
         document.tables[0].rows[row_num].cells[0].paragraphs[0].runs[0].text = databases[0].hpm_label+" ("+str(index)+")"
-        
+
         if indicator_1['cumulative'] != "0":
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}%, {}: {}%. '.format(
                 'Boys', indicator_1['male'],'Girls', indicator_1['female']), indicator_1['comment']
@@ -4218,7 +3991,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     ### cp
-    index = 0 
+    index = 0
     for indicator in Child_indicators:
         row_num = row_num + 1
         index = index + 1
@@ -4231,7 +4004,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     # SVBG merged with CP
-    index = 0 
+    index = 0
     SVBG_indicators = Indicator.objects.filter(activity__database=databases[8], hpm_indicator=True,
                                                master_indicator=True).order_by('sequence')
     for indicator in SVBG_indicators:
@@ -4246,7 +4019,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     #  # #  WASH
-    index = 0 
+    index = 0
     for indicator in Wash_indicators:
         row_num = row_num + 1
         index = index + 1
@@ -4262,7 +4035,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     #  # Health
-    index = 0 
+    index = 0
     for indicator in health_indicators:
         row_num = row_num + 1
         index = index + 1
@@ -4275,7 +4048,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     #  # #  Y&A
-    index = 0 
+    index = 0
     for indicator in youth_indicators:
         row_num = row_num + 1
         index = index + 1
@@ -4288,7 +4061,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     ## Social Policy
-    index = 0 
+    index = 0
     for indicator in sp_indicators:
         row_num = row_num + 1
         index = index + 1
@@ -4301,7 +4074,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
             document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     ## C4D
-    index = 0 
+    index = 0
     for indicator in C4D_indicators:
         row_num = row_num + 1
         index = index + 1
@@ -4315,7 +4088,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
 
     # #  PPL
     row_num = row_num - 2
-    index = 0 
+    index = 0
     for indicator in PPL_indicators:
         row_num = row_num + 1
         index = index + 1

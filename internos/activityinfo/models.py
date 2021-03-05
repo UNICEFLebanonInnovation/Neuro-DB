@@ -130,7 +130,7 @@ class Database(models.Model):
         return '{} - {}'.format(self.name, self.reporting_year_name)
 
     def __unicode__(self):
-        return self.name
+        return self.full_name
 
     def create_master_indicator(self, indicator, ai_indicator):
         if not 'description' in indicator or not indicator['description'] or '------' in indicator['name']:
