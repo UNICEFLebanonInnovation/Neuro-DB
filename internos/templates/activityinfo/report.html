@@ -29,11 +29,11 @@
          <div class="page-title-actions">
                 <form id="filterForm" action="{% url 'activityinfo:report' %}" method="get"  data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"
                         data-govs-url="{% url 'activityinfo:ajax_load_govs' %}" data-month-url="{% url 'activityinfo:ajax_load_months' %}">
-            
+
                   <div class="page-title-wrapper">
                     <input type="hidden" id="ai_id" name="ai_id" value="{{ database.ai_id }}"/>
                     <div class="page-title-heading" style="width:100%" data-step="4" data-intro="Filter by multiple Partners, Locations, and/or Months">
-                     
+
                       <div style="width:100%;">
                         <div class="row">
                           <div class="col-lg-12 col-sm-12">
@@ -55,7 +55,7 @@
                             {% endfor %}
                           </select>
                             {% endif %}
-            
+
                             {% if database.have_offices %}
                           <select class="btn btn-outline-primary" multiple="multiple" id="filter_governorates" name="governorates" data-name="Field Offices" data-title="Selected Offices">
                             {% for gov in governorates %}
@@ -65,7 +65,7 @@
                             {% endfor %}
                           </select>
                             {% endif %}
-            
+
                           <select class="btn btn-outline-primary" multiple="multiple" id="filter_month" name="months">
                              {% for month, month_name in months %}
                             <option class="dropdown-item" value="{{ month }}" {% if month in selected_months %} selected {% endif %}>
@@ -73,13 +73,15 @@
                             </option>
                             {% endfor %}
                           </select>
-                            {% if database.have_covid %}
-                            <select class="btn btn-outline-danger" id="filter_covid" name="support_covid" >
-                                 <option class="dropdown-item"  value="-1">Support COVID</option>
-                                 <option class="dropdown-item" {% if support_covid == 1 %} selected {% endif %} value="1">Yes</option>
-                                 <option class="dropdown-item"  {% if support_covid == 0 %} selected {% endif %} value="0">NO</option>
+                            <select class="btn btn-outline-danger" id="tag_filter" name="tag_filter">
+                                 <option class="dropdown-item"  value="">Tags</option>
+                                 <option class="dropdown-item" {% if selected_tag == "support_covid" %} selected {% endif %} value="support_covid">Support COVID</option>
+                                 <option class="dropdown-item"  {% if selected_tag == "hpm_indicator" %} selected {% endif %} value="hpm_indicator">HPM</option>
+                                 <option class="dropdown-item"  {% if selected_tag == "is_lcrp" %} selected {% endif %} value="is_lcrp">LCRP</option>
+                                 <option class="dropdown-item"  {% if selected_tag == "is_standalone_HAC_2" %} selected {% endif %} value="is_standalone_HAC_2">Standalone HAC 2</option>
+                                 <option class="dropdown-item"  {% if selected_tag == "is_additional_indicators" %} selected {% endif %} value="is_additional_indicators">Additional Indicators</option>
                             </select>
-                            {% endif %}
+
                             <button type="submit" class="btn btn-md shadow btn-light mr-left-5" title="Search" onclick="$('#loading').show();">
                               <i style="font-weight:bolder" class="pe-7s-search"></i>
                             </button>
@@ -101,12 +103,12 @@
       </div>
 
    </div>
-    
-    
 
-      
-      
-      
+
+
+
+
+
 
   <div class="row">
     <div class="col-lg-12">
@@ -116,13 +118,13 @@
                   <span>Dashboard | {{ database.label }} | {{reporting_year}} </span>
                 </a>
               </li>
-            
 
-            
-        
+
+
+
           <div class="btn-actions-pane-right">
               <div class="d-inline-block dashboard_icons mr-3">
-                   
+
                    <i class="header-icon">
                          <span data-step="6" data-intro="Collapse / Expand master indicators">
                                     <a href="#" data-toggle="tooltip" data-placement="top" title="Collapse All" class="collapse-all active"><i class="unicef-icon icon-expand-up"></i></a>
@@ -130,7 +132,7 @@
                                       class="unicef-icon icon-expand-down"></i></a>
                                   </span>
                   </i>
-                   
+
                 {% if display_live  %}
                   <a href="{% url 'activityinfo:live_report' %}?ai_id={{ database.ai_id }}" data-toggle="tooltip"
                      data-placement="top" title="Live Data Monitoring" class="text-danger"
@@ -142,7 +144,7 @@
                  data-placement="top" title="Disaggregation" class="text-success">
                 <img src="{% static 'images/gps-fixed-indicator.svg' %}" />
               </a>
-              
+
                  {% if database.have_partners   %}
                    <a
                         href="{% url 'activityinfo:report_partner' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}"
@@ -156,15 +158,15 @@
                  data-step="16" data-intro="Disability report">
                 <img src="{% static 'images/disability.svg' %}" />
               </a>
-           
-               
-            
+
+
+
                 {% include "activityinfo/focalpoints.html" %}
                  <div class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Download" data-intro="Download Dashboard report and Raw Data">
                     <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download"
                             data-toggle="dropdown" class=" p-1 mb-1 btn btn-link">
                       <img src="{% static 'images/import.svg' %}" />
-                      
+
                     </button>
                     <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
                       <a type="button" tabindex="0" id="export1" class="dropdown-item" style="text-transform: none;">Current
@@ -177,11 +179,11 @@
                     </div>
                   </div>
                   <div class="d-inline-block" >
-                     {% include "activityinfo/filter_calendar.html" %} 
+                     {% include "activityinfo/filter_calendar.html" %}
                   </div>
-                
+
             </div>
-           
+
 
                 {% comment %} {% if database.have_internal_reporting %}
                     <a href=" {% url 'activityinfo:report_internal' %}?rep_year={{ database.reporting_year }}&ai_id={{ database.ai_id }}" class="link">
@@ -191,19 +193,19 @@
                 {% endif %} {% endcomment %}
 
             </div>
-         
+
 
 
           </ul>
-          
+
       <div class="main-card mb-3 card">
-           
+
           {% comment %} <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
               <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
               <a href="#" class="expanded-all"><i
                 class="fa fa-bars"></i></a>
             </span> </i>{% endcomment %}
-    
+
         <div class="card-body">
           <div class="table-responsive">
             <table fixed="6" class="mb-0 table table-striped table-hover table-tags" id="exportheader"
@@ -211,7 +213,7 @@
                    data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.name }}">
               <thead>
               <tr>
-                 <th content="Status"></th> 
+                 <th content="Status"></th>
                 <th content="Indicator Name"> Indicator Name</th>
                 <th content="RWP Code">RWP Code</th>
                 <th content="Target">Target</th>
@@ -222,7 +224,7 @@
                     title="Total Percentage achieved of all months">
                   Percentage Achieved <i class="fa fa-question-circle-o"></i>
                 </th>
-                
+
 
                 {% for month, month_name in t_months %}
                 <th content="{{ month_name }}">{{ month_name }}</th>
@@ -231,30 +233,30 @@
               </thead>
               <tbody>
               {% for item in master_indicators %}
-                
+
               <tr itemid="{{ item.id }}"
                   {% if item.master_indicator or not database.mapped_db %}class="level1 master_indicator collapsed"
                   {% elif item.individual_indicator %}class="level1 individual_indicator collapsed" {% endif %}>
                  <td class="badge-item">
                    <div class='badge {{ item.status_color }}'>
                     {{ item.status }}
-                   </div>  
-                </td> 
-                
+                   </div>
+                </td>
+
                 <td class="w-200">
-                
-                   
-                  
-                 
+
+
+
+
                     <span> {{ item.name }}</span>
                     {% if item.support_COVID %}
                     <a  data-toggle="tooltip" data-placement="right" title="Support COVID_19" style="cursor:pointer">
                     <i class="metismenu-icon pe-7s-settings" style="color:#ef6283;font-size:16px"></i>
                     </a>
                     {% endif %}
-                 
-                  
-                  
+
+
+
                 </td>
 
                 <td class="w-10">{{ item.awp_code }}</td>
@@ -271,7 +273,7 @@
                 <td class="w-10">
                   {{ item.achieved }}
                 </td>
-              
+
 
                 {% for month, month_name in t_months %}
                 <td class="w-10">
@@ -288,16 +290,16 @@
                   {% if item1.master_indicator_sub %}
                    <div class='badge {{ item.status_color }}'>
                     {{ item.status }}
-                   </div>  
+                   </div>
                   {% endif %}
-                </td> 
+                </td>
                <td class="w-200">
-                  
-                  
+
+
                     <span> {{ item1.name }}</span>
-                 
-                  
-                  
+
+
+
                 </td>
                   {% if item1.master_indicator_sub %}
                  <td class="w-10">{{ item1.awp_code }}</td>
@@ -309,7 +311,7 @@
                   {% endif %}
                 </td>
                 {% else %}
-                
+
                 <td class="w-10"></td>
                 <td class="w-10"></td>
                 {% endif %}
@@ -321,9 +323,9 @@
                 <td class="w-10">
                   {{ item1.achieved }}
                 </td>
-                  
-            
-                
+
+
+
 
                 {% for month, month_name in t_months %}
                 <td class="w-10">
@@ -572,7 +574,7 @@
   $(document).ready(function () {
 
     loadTables();
-     
+
   var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = window.location.search.substring(1),
         sURLVariables = sPageURL.split('&'),
@@ -595,9 +597,18 @@
     selected_li.addClass("mm-active");
 
   $('#filter_covid').multiselect({
-  
+
       includeSelectAllOption : true,
       nonSelectedText: 'Support COVID',
+      numberDisplayed:1,
+      buttonClass:'btn btn-outline',
+
+  });
+
+  $('#tag_filter').multiselect({
+
+      includeSelectAllOption : true,
+      nonSelectedText: 'Tags',
       numberDisplayed:1,
       buttonClass:'btn btn-outline',
 
@@ -667,7 +678,7 @@ $('#filter_month').multiselect({
       var itemid = $(this).attr('itemid');
       var sub_items = 'tr.level2-' + itemid;
       var sub_sub_items = 'tr.level3-' + itemid;
-      
+
 
       if ($(this).hasClass('collapsed')) {
         $(sub_items).show();
