@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 import os
 import json
 import datetime
-import calendar
 from django.db.models import Q, Sum
 from dal import autocomplete
 from django.views.generic import ListView, TemplateView, FormView
@@ -282,9 +281,9 @@ class ReportView(TemplateView):
 
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
+               template = "base_empty.html"
 
         return {
             'selected_partners': selected_partners,
@@ -1116,9 +1115,9 @@ class ReportLiveCrisis(TemplateView):
 
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
+               template = "base_empty.html"
 
         return {
 
@@ -1181,9 +1180,9 @@ class ReportInternalView(TemplateView):
 
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
+               template = "base_empty.html"
 
 
         months = []
@@ -1250,9 +1249,9 @@ class ReportInternalFormView(TemplateView):
 
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
+               template = "base_empty.html"
 
         return {
             'reports': report.order_by('id'),
@@ -1558,9 +1557,9 @@ class ReportPartnerView(TemplateView):
 
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
+               template = "base_empty.html"
 
         return {
             # 'reports': report.order_by('id'),
@@ -1734,13 +1733,12 @@ class ReportPartnerCrisisView(TemplateView):
             for x in sections:
                 if x["reporting_section"] == selected_section:
                     selected_section_name = x["reporting_section"]
-        report_type ='weekly'
-
+        report_type = 'weekly'
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
+               template = "base_empty.html"
 
 
         return {
@@ -2110,9 +2108,9 @@ class ReportDisabilityView(TemplateView):
         months = []
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
+               template = "base_empty.html"
 
         if selected_partners or selected_governorates or selected_months:
             selected_filter = True
@@ -2258,22 +2256,20 @@ class ReportDisabilityCrisisView(TemplateView):
         ).distinct()
         for item in support_disabilities:
             item['cumulative'] =  get_indicator_cumulative_months_sections(item, selected_months,
-                                                                          selected_partners, selected_governorates,
-                                                                          selected_sections)
-        report_type ='weekly'
-
+                                                                           selected_partners, selected_governorates,
+                                                                           selected_sections)
+        report_type = 'weekly'
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
-
+               template = "base_empty.html"
 
         return {
             'selected_partners': selected_partners,
             'selected_governorates': selected_governorates,
             'selected_sections': selected_sections,
-            'selected_months':selected_months,
+            'selected_months': selected_months,
             'month': month,
             'reporting_year': database.reporting_year.year,
             'month_name': month_name,
@@ -2399,12 +2395,10 @@ class ReportSectorView(TemplateView):
                 for i in range(1, 13):
                     months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
-
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
-
+               template = "base_empty.html"
 
         return {
             'selected_partners': selected_partners,
@@ -2649,15 +2643,12 @@ class ReportTagView(TemplateView):
         # for i in range(1, 13):
         #     months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
-
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
-
+               template = "base_empty.html"
 
         return {
-
             'selected_partners': selected_partners,
             'selected_governorates': selected_governorates,
             'selected_months': selected_months,
@@ -2942,9 +2933,9 @@ class ReportCrisisTags(TemplateView):
 
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
+               template = "base_empty.html"
 
 
         return {
@@ -2996,9 +2987,9 @@ class ReportCrisisVisualView(TemplateView):
     def get_context_data(self, **kwargs):
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
+               template = "base_empty.html"
 
         return {
             'template':template
@@ -3157,9 +3148,9 @@ class LiveReportView(TemplateView):
 
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
+               template = "base_empty.html"
 
 
         return {
@@ -3458,9 +3449,9 @@ class ReportBBlastView(TemplateView):
     def get_context_data(self, **kwargs):
 
         if self.request.user.is_authenticated:
-               template = "base2.html";
+               template = "base2.html"
         else:
-               template = "base_empty.html";
+               template = "base_empty.html"
 
         return {
             'template':template
