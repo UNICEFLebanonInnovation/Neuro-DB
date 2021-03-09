@@ -19,6 +19,50 @@ from .utils_common import *
 logger = logging.getLogger(__name__)
 
 
+from collections import defaultdict
+from django.apps import apps
+
+
+class BulkCreateManager(object):
+    """
+    This helper class keeps track of ORM objects to be created for multiple
+    model classes, and automatically creates those objects with `bulk_create`
+    when the number of objects accumulated for a given model class exceeds
+    `chunk_size`.
+    Upon completion of the loop that's `add()`ing objects, the developer must
+    call `done()` to ensure the final set of objects is created for all models.
+    """
+
+    def __init__(self, chunk_size=100):
+        self._create_queues = defaultdict(list)
+        self.chunk_size = chunk_size
+
+    def _commit(self, model_class):
+        model_key = model_class._meta.label
+        model_class.objects.bulk_create(self._create_queues[model_key])
+        self._create_queues[model_key] = []
+
+    def add(self, obj):
+        """
+        Add an object to the queue to be created, and call bulk_create if we
+        have enough objs.
+        """
+        model_class = type(obj)
+        model_key = model_class._meta.label
+        self._create_queues[model_key].append(obj)
+        if len(self._create_queues[model_key]) >= self.chunk_size:
+            self._commit(model_class)
+
+    def done(self):
+        """
+        Always call this upon completion to make sure the final partial chunk
+        is saved.
+        """
+        for model_name, objs in self._create_queues.items():
+            if len(objs) > 0:
+                self._commit(apps.get_model(model_name))
+
+
 def get_extraction_month(ai_db):
 
     current_year = date.today().year
@@ -100,7 +144,7 @@ def read_data_from_file(ai_db, forced=False, report_type=None):
         else:
             result = add_rows(ai_db=ai_db, model=model)
 
-    link_ai_partners(report_type)
+    # link_ai_partners(report_type)
     return result
 
 
@@ -226,11 +270,16 @@ def add_rows_temp(ai_db=None, model=None):
 
 
 def add_rows(ai_db=None, model=None):
+    from internos.activityinfo.models import ActivityReport, LiveActivityReport
     month = get_current_extraction_month(ai_db)
     path = os.path.dirname(os.path.abspath(__file__))
     path2file = path+'/AIReports/'+str(ai_db.ai_id)+'_ai_data.txt'
     values = read_file(path2file)
     ctr = 0
+
+    print('start add rows')
+
+    bulk_mgr = BulkCreateManager(chunk_size=20)
 
     for row in values:
         indicator_value = 0
@@ -296,7 +345,7 @@ def add_rows(ai_db=None, model=None):
 
         support_covid = support_covid1 or support_covid2 or support_covid3
 
-        model.create(
+        bulk_mgr.add(ActivityReport(
             month=month,
             database=row['Folder'],
             database_id=ai_db.ai_id,
@@ -334,9 +383,11 @@ def add_rows(ai_db=None, model=None):
             partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
             support_covid=support_covid,
             start_date=start_date,
-        )
+        ))
         ctr += 1
 
+    print('end add rows')
+    bulk_mgr.done()
     return ctr
 
 
@@ -485,6 +536,8 @@ def link_indicators_activity_report(ai_db, report_type=None):
         if not item.ai_indicator:
             continue
         ai_values = reports.filter(indicator_id=item.ai_indicator)
+        print(ai_values.count())
+
         if not ai_values.count():
             continue
         ctr += ai_values.count()
