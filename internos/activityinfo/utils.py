@@ -536,7 +536,6 @@ def link_indicators_activity_report(ai_db, report_type=None):
         if not item.ai_indicator:
             continue
         ai_values = reports.filter(indicator_id=item.ai_indicator)
-        print(ai_values.count())
 
         if not ai_values.count():
             continue
