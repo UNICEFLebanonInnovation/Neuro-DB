@@ -118,6 +118,7 @@ class Database(models.Model):
             ('2030', '2030'),
         )
     )
+    last_update_date = models.DateField(blank=True, null=True)
 
     @property
     def reporting_year_name(self):
@@ -470,8 +471,14 @@ class Indicator(models.Model):
     hpm_global_indicator = models.BooleanField(default=False)
 
     is_lcrp = models.BooleanField(default=False)
-    is_standalone_HAC_2 = models.BooleanField(default=False)
     is_additional_indicators = models.BooleanField(default=False)
+    is_academic_year = models.BooleanField(default=False)
+
+    is_standalone_HAC_2 = models.BooleanField(default=False)
+    hpm_hac_2 = models.BooleanField(default=False)
+    hpm_hac_2_target = models.PositiveIntegerField(default=0)
+    hpm_hac_2_note = models.CharField(max_length=254, blank=True, null=True)
+    hpm_hac_2_additional_cumulative = models.PositiveIntegerField(default=0)
 
     comment = JSONField(blank=True, null=True)
     has_hpm_note = models.BooleanField(default=False)

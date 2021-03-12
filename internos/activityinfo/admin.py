@@ -465,15 +465,23 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'tag_disability',
                 'tag_programme',
                 'tag_focus',
-                'hpm_indicator',
+
                 'is_lcrp',
-                'is_standalone_HAC_2',
                 'is_additional_indicators',
+                'is_academic_year',
                 'comment',
+
+                'hpm_indicator',
                 'target_hpm',
                 'has_hpm_note',
                 'hpm_additional_cumulative',
-                'hpm_global_indicator'
+
+                'hpm_global_indicator',
+
+                'is_standalone_HAC_2',
+                'hpm_hac_2_target',
+                'hpm_hac_2_note',
+                'hpm_hac_2_additional_cumulative',
             ]
         }),
         ('Sub indicators', {
@@ -848,7 +856,8 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'is_funded_by_unicef',
         'is_sector',
         'display',
-        'hpm_sequence'
+        'hpm_sequence',
+        'last_update_date'
     )
     list_editable = (
         'is_sector',
@@ -918,6 +927,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'description',
                 'country_name',
                 'ai_country_id',
+                'last_update_date',
                 'have_partners',
                 'have_governorates',
                 'have_covid',
