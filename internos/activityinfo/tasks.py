@@ -144,6 +144,9 @@ def import_data_and_generate_live_report(database):
         print('3. Calculate indicator values')
         calculate_indicators_values(db, report_type='live')
 
+        db.last_update_date = datetime.now()
+        db.save()
+
 
 @app.task
 def import_data_and_generate_live_crisis_report(database):
