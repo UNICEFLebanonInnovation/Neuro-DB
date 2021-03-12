@@ -27,9 +27,11 @@
   <div class="app-page-title">
     <div class="page-title-wrapper">
       <div class="page-title-heading">
-        <a href="javascript:history.back()">
-            <i class="unicef-icon icon-Return ml-0 mr-2 back-btn"></i>
-        </a>
+          {% if month != 1 %}
+            <a href="{% url 'activityinfo:hpm' %}?rep_year={{ reporting_year }}">
+                <i class="unicef-icon icon-Return ml-0 mr-2 back-btn"></i>
+            </a>
+          {% endif %}
        <div style="font-weight:bold">
               {{ title }}
        
@@ -114,22 +116,30 @@
               </a>
               {% endif %}
               {% endfor %}
+              
+              {% if current_month > 3 or not is_current_year %}
               <div tabindex="-1" class="dropdown-divider"></div>
                <h6 class="dropdown-header">Periodic Report</h6>
                 <div tabindex="-1" class="dropdown-divider"></div>
-
-                  <a value="" onclick="select_periodic_quarter('1')" class="dropdown-item {% if type == '1'%} active {% endif %}">
-                    Quarter 1
-                  </a>
-                  <a value="" onclick="select_periodic_quarter('2')" class="dropdown-item {% if type == '2'%} active {% endif %}">
-                    Quarter 2
-                  </a>
+                      <a value="" onclick="select_periodic_quarter('1')" class="test dropdown-item {% if type == '1'%} active {% endif %}">
+                        Quarter 1 
+                      </a>
+                  {% if current_month > 6 or not is_current_year %}
+                      <a value="" onclick="select_periodic_quarter('2')" class="dropdown-item {% if type == '2'%} active {% endif %}">
+                        Quarter 2
+                      </a>
+                  {% endif %}
+                  {% if current_month > 9 or not is_current_year %}
                   <a value="" onclick="select_periodic_quarter('3')" class="dropdown-item {% if type == '3'%} active {% endif %}">
                     Quarter 3
                   </a>
+                  {% endif %}
+                  {% if current_month > 12 or not is_current_year %}
                   <a value="" onclick="select_periodic_quarter('4')" class="dropdown-item {% if type == '4'%} active {% endif %}">
                     Quarter 4
                   </a>
+                  {% endif %}
+             {% endif %}      
 
                 <div tabindex="-1" class="dropdown-divider"></div>
             </div>
@@ -563,7 +573,7 @@
               </td>
             </tr>
             {% endif %}
-            {% if main_2_data.has_hpm_note %}
+            
             {% increment num as num %}
             <tr>
               <td colspan="1">
@@ -585,7 +595,7 @@
                 {% endif %}
               </td>
             </tr>
-            {% endif %}
+           
             {% endwith %}
             {% elif db.label == 'Child Protection' %}
 

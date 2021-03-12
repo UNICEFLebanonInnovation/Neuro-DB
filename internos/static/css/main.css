@@ -11,7 +11,7 @@
 
 
 
-@font-face {
+ @font-face {
     font-family: 'Univers LT Pro';
     font-style: normal;
     font-weight: 800;
@@ -478,11 +478,11 @@ a:not([href]):not([tabindex]) {
     text-decoration: none
 }
 
-a:not([href]):not([tabindex]):hover,a:not([href]):not([tabindex]):focus {
+/* a:not([href]):not([tabindex]):hover,a:not([href]):not([tabindex]):focus {
 
     text-decoration: none
     text-decoration: none
-}
+} */
 
 a:not([href]):not([tabindex]):focus {
     outline: 0
@@ -9996,7 +9996,7 @@ a,button,.btn {
     background: inherit;
 }
 
-.header-flex,.fixed-sidebar .app-header{
+.header-flex{
    
     display: flex;
     align-items: center;
@@ -10010,9 +10010,7 @@ a,button,.btn {
 .blue-banner{
     background: #1CABE2;
 }
-.blue-banner a{
-    color: white;
-}
+
 .blue-banner svg > *{
     fill:white;
 }
