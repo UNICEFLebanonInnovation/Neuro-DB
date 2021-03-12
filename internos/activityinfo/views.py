@@ -3212,9 +3212,21 @@ class HPMView(TemplateView):
 
         if type == '1' or type == '2' or type == '3' or type == '4':
             selected_month_name='Quarter ' + type
+            table_title = "" 
         else:
             selected_month_name = calendar.month_name[month]
 
+
+        if type == '1':
+            month = 3
+        elif  type == '2':
+            month = 6
+        elif  type == '3':
+            month = 9
+        elif  type == '4':
+            month = 12
+            
+            
         month_name = calendar.month_name[month]
 
         if int(reporting_year) != current_year:
@@ -3228,13 +3240,8 @@ class HPMView(TemplateView):
         else:
             SGBV_db_id = SGBV_db[0].ai_id
 
-        if type == '1':
-            title = '{} {}'.format('HPM Table | Data of January-March |', str(reporting_year))
-            table_title = ""
-        elif  type == '2':
-            title = '{} {}'.format('HPM Table | Data of January-June |', str(reporting_year))
-            table_title = ""
-        elif month == 1 and type == "":
+         
+        if month == 1 and type == "":
             title = '{} {}'.format('HPM Table | Data of January |', str(reporting_year))
             table_title='{} {} {}'.format('SUMMARY OF PROGRAMME RESULTS | January | ',str(reporting_year),'SITREP-LEBANON')
         else:
@@ -3255,7 +3262,7 @@ class HPMView(TemplateView):
         else:
                     for i in range(1, 13):
                         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
-
+                
 
 
         if current_year - 1 == int(reporting_year) and current_month == 1:
@@ -3263,12 +3270,6 @@ class HPMView(TemplateView):
             is_current_year = True
             for i in range(1, 13):
                 months.append((i, datetime.date(2008, i, 1).strftime('%B')))
-
-        # periodic_months=[3,6,9,12]
-        # periodic_list=[]
-        # for m in periodic_months:
-        #     if m < current_month:
-        #         periodic_list.append((m,'Quarter: '+ datetime.date(2008, m, 1).strftime('%B')))
 
         return {
             'ai_databases': databases,
