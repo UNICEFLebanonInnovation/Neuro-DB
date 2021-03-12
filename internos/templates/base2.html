@@ -90,22 +90,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         Feedback <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
     </button>
 
-    <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
-        <div class="app-header header-shadow">
-            <div class="app-header__logo">
+    <div class="app-container app-theme-white body-tabs-shadow {% if request.path != '/' %} fixed-sidebar  {% endif %}fixed-header">
+                <div class="app-header header-shadow">
+            <div class="blue-banner">
+                <div class="px-4 d-flex justify-content-between">
+                    <i class="py-2">{% include   'images/unicef-logo-horizontal.svg' %}</i>
+                 
+                  <div class=" d-flex align-items-center mr-4">
+                         {% if request.user.is_authenticated %}
+                                        <button data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            class="p-0 btn d-flex align-items-center">
+                                            <img width="30" class="rounded-circle mr-2" 
+                                                src="{% static 'images/new_user.png' %}" alt="" />
+                                          
+                                            {{ request.user.email }}
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left ml-2"></i>
+                                        </button>
+                                        <div tabindex="-1" role="menu" aria-hidden="true"
+                                            class="dropdown-menu dropdown-menu-right" style="width:50px;right:0px">
+                                            {% if request.user.is_staff %}
+                                            <a type="button" tabindex="0" class="dropdown-item" href="/admin/">Admin</a>
+                                            {% endif %}
+                                            <div tabindex="-1" class="dropdown-divider"></div>
+                                            <a href="{% url 'account_logout' %}" type="button" tabindex="0"
+                                                class="dropdown-item"><i class="fa fa-sign-out pull-right"></i>Log
+                                                Out</a>
+                                        </div>
+
+                                        {% else %}
+
+                                        <button data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            class="user-profile p-0 btn d-flex align-items-center">
+                                            <img width="30" class="rounded-circle mr-2" 
+                                                src="{% static 'images/new_user.png' %}" alt="" />
+                                            {{ request.user }}
+                                            <i class="fa fa-angle-down ml-2 opacity-8"></i>
+                                        </button>
+                                        <div tabindex="-1" role="menu" aria-hidden="true"
+                                            class="dropdown-menu dropdown-menu-right dropdown-usermenu">
+
+                                            <div tabindex="-1" class="dropdown-divider"></div>
+                                            <a href="{% url 'account_login' %}" type="button" tabindex="0"
+                                                class="dropdown-item"><i class="fa fa-sign-in pull-right"></i>Login</a>
+                                        </div>
+                                        {% endif %}
+                    <!--<div class="bar" ></div>-->
+                    <!--<img src="{% static "images/Icon-Mail.svg" %}" class="pl-3 py-2"/>-->
+                  </div>
+                </div>
+                
+            </div>
+          <div class="header-flex" id="fixed-top-header">
+            <div class="app-header__logo pl-3">
                 <a href="/" class="logo-src" data-step="1" data-intro="Go to home page" >
                     <img src="{% static 'images/logo2.png' %}" width="170" height="40" alt="Neuro-DB-logo" />
                 </a>
-                <div class="header__pane ml-auto">
-                    <div>
-                        <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
-                            data-class="closed-sidebar">
-                            <span class="hamburger-box">
-                                <span class="hamburger-inner"></span>
-                            </span>
-                        </button>
-                    </div>
-                </div>
             </div>
             <div class="app-header__mobile-menu">
                 <div>
@@ -121,10 +160,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <button type="button"
                         class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
                         <span class="btn-icon-wrapper">
-                            <i class="fa fa-ellipsis-v fa-w-6"></i>
+                            <i class="fa fa-search fa-w-6"></i>
                         </span>
                     </button>
                 </span>
+               
             </div>
             <div class="app-header__content">
                 <input id="reporting_year" hidden value="{{ reporting_year }}">
@@ -137,100 +177,122 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </div>
                         <button class="close" id="close-search"></button>
                     </div>
-                    <ul class="header-menu nav">
-                        <li class="nav-item">
-                            <!--<div data-step="3"-->
-                                <!--data-intro="For technical issue please call Ali Chamseddine or Mohamad Karnib">-->
-                                <!--<a class="user-profile nav-link"-->
-                                    <!--href="mailto:achamseddine@unicef.org;mkarnib@unicef.org?subject=ActivityInfo: Technical issue"-->
-                                    <!--data-toggle="tooltip" data-placement="right" data-html="true" title="For technical issue please call: <br />-->
-                              <!--Ali Chamseddine or Mohamad Karnib">-->
-                                    <!--<img src="{% static 'images/support-1.png' %}" alt=""-->
-                                        <!--style="width: 40px; height: 40px;" />-->
-                                <!--</a>-->
-                            <!--</div>-->
-
-                        </li>
-
-
-                    </ul>
+                    
                 </div>
 
                 <div class="app-header-right">
 
-                    <div class="d-inline-block mr-3">
-
-                      {% comment %} <a aria-haspopup="true" type="button" aria-expanded="true" class="btn-shadow btn btn-outline-alternate"
-                                    href="mailto:achamseddine@unicef.org;mkarnib@unicef.org?subject=ActivityInfo: Technical issue"
-                                    data-toggle="tooltip" data-placement="right" data-html="true" title="For technical issue please call: <br />
-                              Ali Chamseddine or Mohamad Karnib">
-                          <i class="pe-7s-call"></i>
-                      </a> {% endcomment %}
-
-                    </div>
-
-                  {% comment %} {% block filter %}
-                      <a class="btn shadow  btn-outline-warning" href="javascript:void(0);"
-                         onclick="startIntro();" data-toggle="tooltip"
-                         data-placement="bottom" title="Show me some tips">
-                        <i class="pe-7s-magic-wand" aria-hidden="true"></i>
-                      </a>
-                  {% endblock filter %} {% endcomment %}
-
-                    <div class="header-btn-lg pr-0" style="padding-left: 20px;margin-left: 10px;border-left: 1.5px solid #dee2e6;">
-                        <div class="widget-content p-0">
-                            <div class="widget-content-wrapper">
-                                <div class="widget-content-left">
-                                    <div class="btn-group">
-                                        {% if request.user.is_authenticated %}
-                                        <button data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                            class="p-0 btn d-flex align-items-center">
-                                            <div class="rounded-circle mr-2" ></div>
-                                          
-                                            {{ request.user.email }}
-                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left ml-2"></i>
-                                        </button>
-                                        <div tabindex="-1" role="menu" aria-hidden="true"
-                                            class="dropdown-menu dropdown-menu-right">
-                                            {% if request.user.is_staff %}
-                                            <a type="button" tabindex="0" class="dropdown-item" href="/admin/">Admin</a>
-                                            {% endif %}
-                                            <div tabindex="-1" class="dropdown-divider"></div>
-                                            <a href="{% url 'account_logout' %}" type="button" tabindex="0"
-                                                class="dropdown-item"><i class="fa fa-sign-out pull-right"></i>Log
-                                                Out</a>
-                                        </div>
-
-                                        {% else %}
-
-                                        <button data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                            class="user-profile p-0 btn d-flex align-items-center">
-                                            <img width="42" class="rounded-circle"
-                                                src="{% static 'images/new_user.png' %}" alt="">
-                                            {{ request.user }}
-                                            <i class="fa fa-angle-down ml-2 opacity-8"></i>
-                                        </button>
-                                        <div tabindex="-1" role="menu" aria-hidden="true"
-                                            class="dropdown-menu dropdown-menu-right dropdown-usermenu">
-
-                                            <div tabindex="-1" class="dropdown-divider"></div>
-                                            <a href="{% url 'account_login' %}" type="button" tabindex="0"
-                                                class="dropdown-item"><i class="fa fa-sign-in pull-right"></i>Login</a>
-                                        </div>
-                                        {% endif %}
-                                        <i class="pl-3 py-2">{% include   'images/Icon-Mail.svg' %}</i>
-                                        
-                                    </div>
+                    <div class="d-inline-block ">
+                        <ul class="header-menu nav d-lg-flex d-none">
+                            <li class="px-4">
+                               <a href="/#crisis" class="nav-item" >
+                                <i>{% include   'images/siren-light.svg' %}</i>
+                                <span class="pt-1">RESPONSE</span>
+                               </a>
+                            </li>
+                            <li class="px-4">
+                               <a href="/#activity" class="nav-item" >
+                                <i>{% include   'images/dashboard.svg' %}</i>
+                                <span class="pt-1">ACTIVITY INFO</span>
+                               </a>
+                            </li>
+                            <li class="px-4">
+                               <a href="{% url 'survey:population_figures' %}" class="nav-item" >
+                                <i>{% include   'images/multiple-users-silhouette.svg' %}</i>
+                                <span class="pt-1">POPULATION</span>
+                               </a>
+                            </li>
+                            <li class="px-4">
+                               <a href="{% url 'activityinfo:hpm' %}?rep_year={{ reporting_year }}" class="nav-item" >
+                                <i>{% include   'images/presentation.svg' %}</i>
+                                <span class="pt-1">HPM</span>
+                               </a>
+                            </li>
+                            <li class="px-4">
+                                
+                                 <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
+                                        data-toggle="dropdown" class="p-0 nav-item btn btn-link">
+                                  <i>{% include   'images/map.svg' %}</i>
+                                  <span class="pt-1">MAPS</span>
+                                  
+                                </button>
+                                <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
+                                  <a href="{% url 'survey:maps' %}"   type="button" tabindex="0"  class="dropdown-item" style="text-transform: none;">UNICEF Maps</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                  <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://storymaps.arcgis.com/stories/e16dcc28993e4a8288068595bf37fd9a" target="_blank">
+                                    Beirut Blast</a> 
                                 </div>
+                
+                          
+                            </li>
 
-                            </div>
-                        </div>
+                          
+                            <li class="px-4">
+                                
+                                 <button type="button" aria-haspopup="true" aria-expanded="false" id="drop5" title="Download report"
+                                        data-toggle="dropdown" class="p-0 nav-item btn btn-link">
+                                  <i>{% include   'images/human-resources.svg' %}</i>
+                                  <span class="pt-1">OTHERS</span>
+                                  
+                                </button>
+                                <div tabindex="-1" id="menu2" role="menu" aria-hidden="true" class="dropdown-menu" data-step="7">
+                                  <a href="https://data.unicef.org/country/lbn/" target="_blank" type="button" tabindex="0"  class="dropdown-item" style="text-transform: none;">Lebanon Country Profile</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                  <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://data.unicef.org/resources/resource-type/datasets/" target="_blank">
+                                    Global UNICEF Data Sets</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                  <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="http://mics.unicef.org/" target="_blank">
+                                    UNICEF MICS</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                  <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://data.unicef.org/open-data/" target="_blank">
+                                    UNICEF Open Data</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                  <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://data.unicef.org/" target="_blank">
+                                    Data.UNICEF</a> 
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                   <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="http://ialebanon.unhcr.org/vasyr/#/" target="_blank">
+                                    VASYR</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                   <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://www.unicef.org/appeals/lebanon/situation-reports" target="_blank">
+                                    UNICEF Situation Reports</a>
+                                  <div tabindex="-1" class="dropdown-divider"></div>
+                                   <a type="button" tabindex="0" class="dropdown-item" style="text-transform: none;"
+                                     href="https://etools.unicef.org/landing/" target="_blank">
+                                    Etools</a>    
+                                     
+                                 
+                                </div>
+                
+                          
+                            </li>
+
+                        </ul>
                     </div>
+
+                  {% block filter %}
+                      <!--<a class="btn shadow  btn-outline-warning" href="javascript:void(0);"-->
+                         <!--onclick="startIntro();" data-toggle="tooltip"-->
+                         <!--data-placement="bottom" title="Show me some tips">-->
+                        <!--<i class="pe-7s-magic-wand" aria-hidden="true"></i>-->
+                      <!--</a>-->
+                  {% endblock filter %}
+
                 </div>
 
-            </div>
+             </div>
+          </div>
         </div>
+
         <div class="app-main">
+           
+           {% if request.path != '/' %}
             <div class="app-sidebar sidebar-shadow">
                 <div class="app-header__logo">
                     <div class="logo-src"></div>
@@ -460,6 +522,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
 
             </div>
+            {% endif %}
             <div class="app-main__outer">
                 {% block content %}
                 {% endblock content %}
