@@ -11259,7 +11259,7 @@ a,button,.btn {
 
 .search-wrapper.active .close {
     left: 220px;
-    opacity: .6 !important;
+    opacity: 1 !important;
     transform: rotate(45deg);
     transition: all 0.6s cubic-bezier(0, 0.105, 0.035, 1.57);
     transition-delay: 0.5s

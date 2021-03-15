@@ -30,6 +30,9 @@ font-weight:normal;
 font-size:0.75rem !important;
 }
 
+.blue-banner button{
+  color:white;
+}
 /*
   ##Device = Desktops
 */

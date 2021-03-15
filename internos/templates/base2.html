@@ -336,28 +336,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                               {% get_Crisis_db as databases %}
                               {% for db in databases %}
-                           <li id="{{ db.ai_id }}">
-                            <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ db.ai_id }}" class="crisis_link ">
-                                <i class="metismenu-icon pe-7s-settings"></i>
-                              {{ db.name }}
-                                {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
-                            </a>
-                            </li>
-                          {% endfor %}
+                                    <li id="{{ db.ai_id }}">
+                                        <a href="{% url 'activityinfo:report_crisis' %}?ai_id={{ db.ai_id }}" class="crisis_link ">
+                                            <i class="metismenu-icon pe-7s-settings"></i>
+                                        {{ db.name }}
+                                            {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                                        </a>
+                                        </li>
+                                    {% endfor %}
                            <li id="eco_01">
-                            <a href="{% url 'survey:economic_dashboard' %}" class="">
-                                <i class="metismenu-icon pe-7s-cash"></i>
-                                Economic Dashboard
-                              {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                            <a href="/activityinfo/report-crisis/?ai_id=202020" class="">
+                                <i class="metismenu-icon pe-7s-science"></i>
+                                COVID-19 Response
+                              
                             </a>
                             </li>
-                           <li>
+                           {% comment %} <li>
                               <a href="{% url 'activityinfo:blast_dashboard' %}" class="">
                                   <i class="metismenu-icon pe-7s-target"></i>
                                   Beirut Blast
-                                {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                
                               </a>
-                            </li>
+                            </li> {% endcomment %}
                             <li class="app-sidebar__heading">ActivityInfo</li>
                             <li>
                                 <a href="/">
@@ -458,20 +458,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                   {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
                               </a>
                             </li>
-                           <li>
+                           {% comment %} <li>
                               <a href="{% url 'survey:child_protection' %}">
                                   <i class="metismenu-icon pe-7s-leaf" aria-hidden="true"></i>
                                   CPWG RT. Monitoring
-                                  {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                                
                               </a>
                             </li>
                              <li>
                                 <a href="https://interagency.herokuapp.com/Dashboard/Researches/" target="_blank">
                                     <i class="metismenu-icon pe-7s-repeat" aria-hidden="true"></i>
                                     Research Tracker
-                                    {% comment %} <div class="ml-auto badge badge-success" style="padding: 2px;font-size: 10px;">New</div> {% endcomment %}
+                                  
                                 </a>
-                              </li>
+                              </li> {% endcomment %}
                              <li>
                                 <a href="https://data.unicef.org/" target="_blank">
                                     <i class="metismenu-icon pe-7s-server" aria-hidden="true"></i>
@@ -536,12 +536,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                     </li>
                                     <li class="nav-item">
                                         <div class="nav-link">
-                                            2021 Copyrights © <a href="https://www.unicef.org/lebanon/"  target="_blank" class="text-primary pl-1"> Neuro-DB</a>
+                                            2021 Copyrights © Neuro-DB
                                         </div>
                                     </li>
                                 </ul>
                             </div>
                             <div class="app-footer-right">
+                                <a href="https://www.instagram.com/uniceflebanon/" target="_blank"><i class="p-2 icon">{% include   'images/instagram.svg' %}</i></a>
+                                <a href="https://www.facebook.com/UNICEFLebanon/" target="_blank"><i class="p-2 ">{% include   'images/facebook.svg' %}</i></a>
+                                <a href="https://twitter.com/uniceflebanon" target="_blank"><i class="p-2 icon">{% include   'images/twitter.svg' %}</i></a>
+                                <a href="https://www.youtube.com/user/UnicefLebanonChannel" target="_blank"><i class="p-2 icon">{% include   'images/youtube-brands.svg' %}</i></a>
+                                
                             </div>
                         </div>
                     </div>

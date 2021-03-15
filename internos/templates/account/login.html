@@ -7,19 +7,14 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block inner %}
-<div class="app-main__inner">
-  <div class="app-page-title">
-    <div class="page-title-heading">
-      <div class="page-title-icon">
-        <i class="pe-7s-graph text-success">
-        </i>
-      </div>
-     <div>{% trans "Sign In" %}
+<div class="app-main__inner d-flex justify-content-center">
+
+  <div class="tab-content">
+    <div class="app-page-title">
+     <div><h1>{% trans "Sign In" %}</h1>
         <div class="page-title-subheading">{% get_providers as socialaccount_providers %}</div>
       </div>
     </div>
-  </div>
-  <div class="tab-content">
     <div class="card-body">
       <h5 class="card-title">
          {% if socialaccount_providers %}
@@ -50,7 +45,8 @@
       </div>
       {% endif %}
       <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-      <button class="primaryAction btn btn-primary" type="submit">{% trans "Sign In" %}</button>
+      <br/>
+      <button class="primaryAction btn btn-primary mt-3" type="submit">{% trans "Sign In" %}</button>
     </form>
 
 
