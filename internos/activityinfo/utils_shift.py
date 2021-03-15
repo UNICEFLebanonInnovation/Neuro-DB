@@ -230,6 +230,7 @@ def link_indicators_activity_report(ai_db, report_type=None):
         if not ai_values.count():
             continue
         ctr += ai_values.count()
+        print(ai_values)
         ai_values.update(ai_indicator_id=item.id)
 
     return ctr

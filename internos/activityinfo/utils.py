@@ -344,6 +344,7 @@ def add_rows(ai_db=None, model=None):
                 support_covid3 = True
 
         support_covid = support_covid1 or support_covid2 or support_covid3
+        print(start_date)
 
         bulk_mgr.add(ActivityReport(
             month=month,
@@ -364,8 +365,8 @@ def add_rows(ai_db=None, model=None):
             location_adminlevel_governorate_code=gov_code,
             location_adminlevel_governorate=gov_name,
             partner_description=row['partner.partner_full_name'] if 'partner.partner_full_name' in row else '',
-            project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
-            project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
+            # project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
+            # project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
             project_label=row['projects.project_code'] if 'projects.project_code' in row else '',
             project_description=row['projects.project_name'] if 'projects.project_name' in row else '',
             funded_by=funded_by,

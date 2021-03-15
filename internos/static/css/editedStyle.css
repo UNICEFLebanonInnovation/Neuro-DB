@@ -30,8 +30,25 @@ font-weight:normal;
 font-size:0.75rem !important;
 }
 
-.blue-banner button{
+.blue-banner button,.blue-banner .login{
   color:white;
+}
+
+.auth .tab-content{
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  max-width: 440px;
+  width: calc(100% - 40px);
+  padding: 44px;
+  margin-bottom: 28px;
+  background-color: #fff;
+  -webkit-box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+  -moz-box-shadow: 0 2px 6px rgba(0,0,0,.2);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+  min-width: 320px;
+  max-height: 450px;
+  overflow: hidden;
 }
 /*
   ##Device = Desktops
@@ -400,6 +417,14 @@ margin-left:20px;
 }
 .search-wrapper.active .input-holder{
 width:200px !important;
+}
+
+.controls input[type="text"],.controls input[type="password"]{
+    border: none;
+    width: 100%;
+    border-bottom: 1px solid grey;
+    height: 30px;
+    margin-bottom: 10px;
 }
 /*.search-wrapper.active .close{
 left:230px !important;}*/

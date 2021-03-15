@@ -1434,6 +1434,8 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
         female_per= 0
         male=0
         female=0
+
+       
         if 'months_Male' in indicator.values_tags:
             if month:
                 for m in range(1, month + 1):
@@ -1464,6 +1466,8 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
         else:
             female_per = 0
 
+
+        print(male_per)
         data = {
         'id': indicator.id,
         'name': indicator.name,

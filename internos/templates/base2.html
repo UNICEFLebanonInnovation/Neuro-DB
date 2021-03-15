@@ -108,6 +108,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                         </button>
                                         <div tabindex="-1" role="menu" aria-hidden="true"
                                             class="dropdown-menu dropdown-menu-right" style="width:50px;right:0px">
+                                            <a type="button" tabindex="0" class="dropdown-item" href="/activityinfo/report-crisis/?ai_id=202020">Private</a>
+                                            <div tabindex="-1" class="dropdown-divider"></div>
                                             {% if request.user.is_staff %}
                                             <a type="button" tabindex="0" class="dropdown-item" href="/admin/">Admin</a>
                                             {% endif %}
@@ -565,6 +567,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     {% block extra_js %}{% endblock %}
 
     <script>
+
+      window.onscroll = function() {myFunction()};
+
+        var header = document.getElementById("fixed-top-header");
+        var sticky = header.offsetTop;
+        
+        function myFunction() {
+          if (window.pageYOffset > sticky && document.documentElement.scrollHeight  > window.innerHeight*1.6) {
+            header.classList.add("sticky");
+            $('.app-main').css('margin-top','60px');
+          } else {
+            header.classList.remove("sticky");
+            $('.app-main').css('margin-top','0px');
+          }
+        }
+
+
+       
+
+
+
         $(document).on("click", function (event) {
             var $trigger = $(".dropdown");
             if ($trigger !== event.target && !$trigger.has(event.target).length) {
