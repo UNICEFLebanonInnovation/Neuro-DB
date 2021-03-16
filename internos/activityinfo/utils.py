@@ -344,7 +344,7 @@ def add_rows(ai_db=None, model=None):
                 support_covid3 = True
 
         support_covid = support_covid1 or support_covid2 or support_covid3
-        print(start_date)
+       
 
         bulk_mgr.add(ActivityReport(
             month=month,
