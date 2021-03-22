@@ -428,6 +428,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'name',
                 'label',
                 'hpm_label',
+                'hpm_hac_2_label',
                 'description',
                 'explication',
                 'activity',
@@ -480,7 +481,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
                 'is_standalone_HAC_2',
                 'hpm_hac_2_target',
-                'hpm_hac_2_note',
+                'has_hpm_hac_2_note',
                 'hpm_hac_2_additional_cumulative',
             ]
         }),
