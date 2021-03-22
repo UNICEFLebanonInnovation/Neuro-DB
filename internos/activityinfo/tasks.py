@@ -97,10 +97,12 @@ def import_data_and_generate_monthly_report(database):
     databases = Database.objects.filter(reporting_year__current=True)
     if database:
         databases = Database.objects.filter(ai_id=database)
-
+        
+    index = 0
     for db in databases:
         print(db.name)
-        if(db.name != "12- Water Sector - 2021") :
+        index = index + 1
+        if(db.name == "06- Health - 2021") :
             logger.info('1. Import report: '+db.name)
             import_data_via_r_script(db)
             logger.info('2. Link data: ' + db.name)

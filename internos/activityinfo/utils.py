@@ -344,7 +344,6 @@ def add_rows(ai_db=None, model=None):
                 support_covid3 = True
 
         support_covid = support_covid1 or support_covid2 or support_covid3
-       
 
         bulk_mgr.add(ActivityReport(
             month=month,
@@ -537,12 +536,13 @@ def link_indicators_activity_report(ai_db, report_type=None):
         if not item.ai_indicator:
             continue
         ai_values = reports.filter(indicator_id=item.ai_indicator)
-
+        
         if not ai_values.count():
             continue
         ctr += ai_values.count()
+        print(item.ai_indicator)
         ai_values.update(ai_indicator_id=item.id)
-
+       
         try:
             item.project_code = ai_values.first().project_label
             item.project_name = ai_values.first().project_description

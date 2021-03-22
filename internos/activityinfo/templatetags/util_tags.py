@@ -1281,6 +1281,7 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
         max_value = 0
         max_value_pre = 0
         current_month = date.today().month
+        current_year = date.today().year
 
         if month is None:
             month = current_month
@@ -1309,18 +1310,18 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
         additional_cumulative = indicator.hpm_additional_cumulative
         # get additional cumulative for indicators of PPL that starts last year at month 8 to be added to current year
 
-        if int(month) == current_month:
-            if indicator.cumulative_values:
-                 if 'months' in indicator.cumulative_values:
-                   if indicator.cumulative_values['months']:
-                    value = indicator.cumulative_values['months']
-            if indicator.cumulative_values_sector:
-                if 'months' in indicator.cumulative_values_sector:
-                    if indicator.cumulative_values_sector['months']:
-                     sector_value = indicator.cumulative_values_sector['months']
+        # if int(month) != current_month:
+        #     if indicator.cumulative_values:
+        #          if 'months' in indicator.cumulative_values:
+        #           if indicator.cumulative_values['months']:
+        #             value = indicator.cumulative_values['months']
+        #     if indicator.cumulative_values_sector:
+        #         if 'months' in indicator.cumulative_values_sector:
+        #             if indicator.cumulative_values_sector['months']:
+        #              sector_value = indicator.cumulative_values_sector['months']
 
-        else:
-            for m in range(1, month + 1):
+        # else:
+        for m in range(1, month + 1):
                 if indicator.values:
                     if str(m) in indicator.values:
                         value += float(indicator.values[str(m)])
@@ -1350,13 +1351,10 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
 
         else:
             for m in range(1, month):
-                if indicator.values_hpm:
-                    if str(m) in indicator.values_hpm:
-                        previous_values += indicator.values_hpm[str(m)]
-                else:
-                    if indicator.values:
-                        if str(m) in indicator.values:
-                            previous_values += indicator.values[str(m)]
+                if indicator.values:
+                    if str(m) in indicator.values:
+                        previous_values += indicator.values[str(m)]
+                        
         original_value = value
         value = value + additional_cumulative
         previous_values = previous_values + additional_cumulative
@@ -1442,6 +1440,8 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
                     key = '{}--{}'.format(m,'Male')
                     if key in indicator.values_tags['months_Male']:
                         male += round(indicator.values_tags['months_Male'][key])
+                
+                
                 try:
                      male_per = str(round( male * 100 / original_value)).replace('.0', '')
                 except:
@@ -1466,8 +1466,9 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
         else:
             female_per = 0
 
-
-        print(male_per)
+        print(female+male)
+        print(original_value)
+        
         data = {
         'id': indicator.id,
         'name': indicator.name,
@@ -1842,6 +1843,8 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
             gov = [gov]
 
         value = 0
+        
+       
         if partner and gov:
             for par in partner:
                 for g in gov:
@@ -1865,7 +1868,9 @@ def get_indicator_value(indicator, month=None, partner=None, gov=None):
             return get_indicator_unit(indicator, value)
 
         if not gov and not partner:
-             if str(month) in indicator['values']:
+            print(str(month))
+            print(indicator['values'])
+            if str(month) in indicator['values']:
                 return get_indicator_unit(indicator, indicator['values'][str(month)])
 
         return get_indicator_unit(indicator, 0)

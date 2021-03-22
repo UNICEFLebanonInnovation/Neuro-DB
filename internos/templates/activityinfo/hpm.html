@@ -150,7 +150,26 @@
     </div>
   </div>
  
+ {% if not is_current_year %}
 
+
+
+
+
+    {% if reporting_year == '2020'%}
+    <object data="{% static '/files/HPM Table_2020.pdf' %}"
+          type="application/pdf"  width="100%" style="height:100vh">
+    </object>
+    {% elif reporting_year == '2019'%}
+    <object data="{% static '/files/HPM_Table_Jan_to_Dec_2019.pdf' %}"
+          type="application/pdf"  width="100%" style="height:100vh">
+    </object>
+    {% endif %}
+
+
+
+
+  {% else %}
 
 
     <div class="main-card mb-3 card">
@@ -704,9 +723,11 @@
           </table>
         </div>
       </div>
+   
 
      
-  </div>
+    </div>
+   {% endif %}
 
 
 </div>
