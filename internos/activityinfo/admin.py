@@ -374,6 +374,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'awp_code',
         'name',
         'target',
+        'ram_result',
         'target_sector',
         'units',
         'activity',
@@ -398,6 +399,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
     list_editable = (
         'awp_code',
         'target',
+        'ram_result',
         'target_sector',
         #'sequence',
         'master_indicator',
@@ -438,6 +440,7 @@ class IndicatorAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
                 'type',
                 'reporting_level',
                 'target',
+                'ram_result',
                 'target_sector',
                 'target_sub_total',
                 'units',
