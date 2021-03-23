@@ -419,6 +419,7 @@ class Indicator(models.Model):
     awp_code = models.CharField(max_length=1500, blank=True, null=True, verbose_name='RWP')
     awp_sector_code = models.CharField(max_length=1500, blank=True, null=True, verbose_name='RWP_Sector')
     target = models.PositiveIntegerField(default=0)
+    ram_result = models.PositiveIntegerField(default=0, verbose_name='RAM Result')
     targets = JSONField(blank=True, null=True)
     target_sector = models.PositiveIntegerField(default=0)
     target_hpm = models.PositiveIntegerField(default=0)
