@@ -470,6 +470,8 @@ class ReportCrisisView(TemplateView):
         selected_type = self.request.GET.get('filter_type', '')
         current_year = date.today().year
 
+        report = ActivityReport.objects.filter(database_id=database.ai_id)
+
         current_month = date.today().month
         selected_filter = False
         reporting_year = database.reporting_year.year
@@ -788,7 +790,7 @@ class ReportCrisisView(TemplateView):
 
 
         return {
-            # 'reports': report.order_by('id'),
+            'reports': report.order_by('id'),
             'database': database,
             'reporting_year': str(reporting_year),
             'current_month_name':  datetime.datetime.now().strftime("%B"),
@@ -830,7 +832,7 @@ class ReportLiveCrisis(TemplateView):
         month_name = calendar.month_name[month]
 
         reporting_year = database.reporting_year.year
-        # report = LiveActivityReport.objects.filter(database_id=database.ai_id)
+        report = LiveActivityReport.objects.filter(database_id=database.ai_id)
 
         if selected_partners or selected_governorates  or selected_sections:
             selected_filter = True
@@ -1130,7 +1132,7 @@ class ReportLiveCrisis(TemplateView):
                template = "base_empty.html"
 
         return {
-
+            'reports': report.order_by('id'),
             'database': database,
             'reporting_year': str(reporting_year),
             'current_month_name': datetime.datetime.now().strftime("%B"),

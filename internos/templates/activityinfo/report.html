@@ -26,6 +26,7 @@
                {{ database.label }} | {{reporting_year}}
             </div>
          </div>
+        
          <div class="page-title-actions">
                 <form id="filterForm" action="{% url 'activityinfo:report' %}" method="get"  data-partner-url="{% url 'activityinfo:ajax_load_partners' %}"
                         data-govs-url="{% url 'activityinfo:ajax_load_govs' %}" data-month-url="{% url 'activityinfo:ajax_load_months' %}">
@@ -112,7 +113,13 @@
 
   <div class="row">
     <div class="col-lg-12">
-                    <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+            {% if reporting_year == '2020'%}
+                <div class="text-danger pl-3">
+                    <i class="fa fa-fw" aria-hidden="true" title=""></i>
+                    Results reported on 2020 Dashboards may differ from those used on RAM. Please contact the PME unit for details.
+              </div>
+            {% endif %}  
+            <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
               <li class="nav-item">
                 <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
                   <span>Dashboard | {{ database.label }} | {{reporting_year}} </span>
@@ -199,6 +206,9 @@
           </ul>
 
       <div class="main-card mb-3 card">
+          
+  
+                
 
           {% comment %} <i class="header-icon">  <span data-step="6" data-intro="Collapse / Expand master indicators">
               <a href="#" class="collapse-all active"><i class="fa fa-th-large"></i></a>
@@ -329,6 +339,7 @@
 
                 {% for month, month_name in t_months %}
                 <td class="w-10">
+                   
                   {% get_indicator_value item1 month selected_partners selected_governorates as value %}
                   {{ value }}
                 </td>
