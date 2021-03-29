@@ -1065,7 +1065,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
     def import_link_calculate(self, request, queryset):
         for db in queryset:
-            run_database_import(db.id)
+            run_database_import(db.ai_id)
             self.message_user(
                 request,
                 "You have just kickoff the data import for the database: {} ".format(db.name)
@@ -1074,7 +1074,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
 
     def import_link_calculate_live(self, request, queryset):
         for db in queryset:
-            run_database_import(db.id, 'live')
+            run_database_import(db.ai_id, 'live')
             self.message_user(
                 request,
                 "You have just kickoff the live data import for the database: {} ".format(db.name)
