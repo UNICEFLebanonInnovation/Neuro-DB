@@ -91,25 +91,27 @@ def import_activity_data():
 
 @app.task
 def import_data_and_generate_monthly_report(database):
+    # To do calculation for all databases: python manage.py import_data_and_generate_monthly_report
+    # python manage.py import_data_and_generate_monthly_report --database=ID (ai_id field, ex: 202114 for PPL)
     from internos.activityinfo.models import Database
     from .utils import import_data_via_r_script, link_indicators_data, calculate_indicators_values, calculate_indicators_tags
 
     databases = Database.objects.filter(reporting_year__current=True)
     if database:
         databases = Database.objects.filter(ai_id=database)
-        
-    index = 0
+
+    # index = 0
     for db in databases:
-        print(db.name)
-        index = index + 1
-        if(db.name == "06- Health - 2021") :
-            logger.info('1. Import report: '+db.name)
-            import_data_via_r_script(db)
-            logger.info('2. Link data: ' + db.name)
-            link_indicators_data(db)
-            logger.info('3. Calculate indicator values')
-            calculate_indicators_values(db)
-            calculate_indicators_tags(db)
+        # print(db.name)
+        # index = index + 1
+        # if(db.name == "06- Health - 2021") :
+        logger.info('1. Import report: '+db.name)
+        import_data_via_r_script(db)
+        logger.info('2. Link data: ' + db.name)
+        link_indicators_data(db)
+        logger.info('3. Calculate indicator values')
+        calculate_indicators_values(db)
+        calculate_indicators_tags(db)
 
 
 @app.task
