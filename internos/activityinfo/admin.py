@@ -900,6 +900,7 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
         'calculate_indicators_tags_weekly',
         'update_partner_data',
         'generate_indicator_tags',
+        'generate_and_calculate_indicators_tags',
         'calculate_sum_target',
         'update_indicator_list_header',
         'update_indicator_name',
@@ -1206,6 +1207,15 @@ class DatabaseAdmin(ImportExportModelAdmin, nested_admin.NestedModelAdmin):
             )
 
     calculate_indicators_tags_hpm.short_description = 'Step 3: Calculate HPM indicators percentages'
+
+    def generate_and_calculate_indicators_tags(self, request, queryset):
+        from .tasks import run_tab_calculations
+        for db in queryset:
+            run_tab_calculations(db)
+            self.message_user(
+                request,
+                "You have just kickoff the tags calculations for the database: {} ".format(db.name)
+            )
 
     def calculate_indicators_tags(self, request, queryset):
 

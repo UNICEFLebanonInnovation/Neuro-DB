@@ -6,7 +6,7 @@ from datetime import datetime, date
 
 from internos.taskapp.celery import app
 from .client import ActivityInfoClient
-from .utils import r_script_command_line
+from .utils import r_script_command_line, generate_indicator_tag, calculate_indicators_all_tags
 
 logger = logging.getLogger(__name__)
 
@@ -482,3 +482,21 @@ class ImportThreading(object):
 
 def run_database_import(db, report_type=None):
     tr = ImportThreading(1, db, report_type)
+
+
+class TagCalculationThreading(object):
+    def __init__(self, interval=1, db=None):
+        self.interval = interval
+        self.db = db
+        thread = threading.Thread(target=self.run, args=())
+
+        thread.daemon = True
+        thread.start()
+
+    def run(self):
+        generate_indicator_tag(self.db.ai_id)
+        calculate_indicators_all_tags(self.db)
+
+
+def run_tab_calculations(db):
+    tr = TagCalculationThreading(1, db)
