@@ -3446,11 +3446,17 @@ class ExportViewSet(ListView):
         last_month = first - datetime.timedelta(days=1)
         month_name = last_month.strftime("%B")
         path = os.path.dirname(os.path.abspath(__file__))
-        if instance.reporting_year.name == '2020':
-            path2file = path + '/AIReports/' + str(instance.db_id) + '_ai_data.csv'
+        if instance.reporting_year.name == '2021':
+            path2file = path + '/AIReports/' + str(instance.ai_id) + '_ai_data.xlsx'
+            filename = '{}_{}_{}_Raw Data.xlsx'.format(instance.label, month_name, instance.reporting_year.name)
+        elif instance.reporting_year.name == '2020':
+            path2file = path + '/AIReports/' + str(instance.db_id) + '_ai_data.csv'    
+            filename = '{}_{}_{}_Raw Data.csv'.format(instance.label, month_name, instance.reporting_year.name)
         else:
             path2file = path + '/AIReports/' + str(instance.ai_id) + '_ai_data.csv'
-        filename = '{}_{}_{}_Raw Data.csv'.format(instance.label, month_name, instance.reporting_year.name)
+            filename = '{}_{}_{}_Raw Data.csv'.format(instance.label, month_name, instance.reporting_year.name)
+            
+        
         with open(path2file, 'r') as f:
             response = HttpResponse(f.read(), content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename=%s;' % filename
