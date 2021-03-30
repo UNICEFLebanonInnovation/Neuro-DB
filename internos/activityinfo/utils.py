@@ -345,7 +345,7 @@ def add_rows(ai_db=None, model=None):
 
         support_covid = support_covid1 or support_covid2 or support_covid3
 
-        bulk_mgr.add(ActivityReport(
+        model.create(
             month=month,
             database=row['Folder'],
             database_id=ai_db.ai_id,
@@ -364,8 +364,8 @@ def add_rows(ai_db=None, model=None):
             location_adminlevel_governorate_code=gov_code,
             location_adminlevel_governorate=gov_name,
             partner_description=row['partner.partner_full_name'] if 'partner.partner_full_name' in row else '',
-            project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
-            project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
+            # project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
+            # project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
             project_label=row['projects.project_code'] if 'projects.project_code' in row else '',
             project_description=row['projects.project_name'] if 'projects.project_name' in row else '',
             funded_by=funded_by,
@@ -382,12 +382,12 @@ def add_rows(ai_db=None, model=None):
             location_name=row['ai_allsites.name'] if 'ai_allsites.name' in row else '',
             partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
             support_covid=support_covid,
-            start_date=start_date if start_date else None,
-        ))
+            # start_date=start_date,
+        )
         ctr += 1
 
     print('end add rows')
-    bulk_mgr.done()
+   
     return ctr
 
 
@@ -536,12 +536,13 @@ def link_indicators_activity_report(ai_db, report_type=None):
         if not item.ai_indicator:
             continue
         ai_values = reports.filter(indicator_id=item.ai_indicator)
-
+        
         if not ai_values.count():
             continue
         ctr += ai_values.count()
+        print(item.ai_indicator)
         ai_values.update(ai_indicator_id=item.id)
-
+       
         try:
             item.project_code = ai_values.first().project_label
             item.project_name = ai_values.first().project_description
@@ -1072,6 +1073,8 @@ def calculate_indicators_tags_hpm(ai_db):
         tag_girls = sub_indicators.filter(tag_gender__name='Girls')
         tag_male = sub_indicators.filter(tag_gender__name='Male')
         tag_female = sub_indicators.filter(tag_gender__name='Female')
+        
+        
 
         tag_male_value = 0
         for ind_tag in tag_male:
@@ -1180,12 +1183,12 @@ def calculate_indicators_tags(ai_db,sub_master=False):
 
     for indicator in indicators.iterator():
         m_value = 0
-        sub_indicators = indicator.sub_indicators.all()
+        sub_indicators = indicator.summation_sub_indicators.all()
         for sub_indicator in sub_indicators:
             if sub_indicator.master_indicator:
                 continue
             else:
-                sub_indicators = sub_indicators | sub_indicator.sub_indicators.all()
+                sub_indicators = sub_indicators | sub_indicator.summation_sub_indicators.all()
         try:
             m_value = indicator.cumulative_values['months']
 
@@ -1209,6 +1212,9 @@ def calculate_indicators_tags(ai_db,sub_master=False):
             'is_cumulative',
             'highest_values'
         )
+        
+        for indicator in sub_indicators.iterator():
+            print(str(indicator.tag_gender_id)+"-"+str(indicator.tag_disability_id))
         # ----------------------------- Gender tags --------------------------------
         for tag in tags_gender.iterator():
             tag_sub_indicators = sub_indicators.filter(tag_gender_id=tag.id)
@@ -2995,9 +3001,9 @@ def calculate_individual_indicators_values_11(ai_db):
             result = 0
             qs_raw = ActivityReport.objects.raw(
                 "SELECT id, SUM(indicator_value) as indicator_value FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND indicator_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND indicator_id = %s AND funded_by = %s "
                 "GROUP BY id",
-                [month, indicator.ai_indicator, 'UNICEF'])
+                [str(month).zfill(2), indicator.ai_indicator, 'UNICEF'])
             try:
                 result = qs_raw[0].indicator_value
             except Exception:
@@ -3013,10 +3019,10 @@ def calculate_individual_indicators_values_11(ai_db):
 
                 qs_raw = ActivityReport.objects.raw(
                     "SELECT id, SUM(indicator_value) as indicator_value FROM activityinfo_activityreport "
-                    "WHERE date_part('month', start_date) = %s AND indicator_id = %s AND funded_by = %s "
+                    "WHERE RIGHT(month_name, 2) = %s AND indicator_id = %s AND funded_by = %s "
                     "AND location_adminlevel_governorate_code = %s "
                     "GROUP BY id",
-                    [month, indicator.ai_indicator, 'UNICEF', gov1['location_adminlevel_governorate_code']])
+                    [str(month).zfill(2), indicator.ai_indicator, 'UNICEF', gov1['location_adminlevel_governorate_code']])
                 try:
                     value = qs_raw[0].indicator_value
                 except Exception:
@@ -3030,10 +3036,10 @@ def calculate_individual_indicators_values_11(ai_db):
 
                 qs_raw = ActivityReport.objects.raw(
                     "SELECT id, SUM(indicator_value) as indicator_value FROM activityinfo_activityreport "
-                    "WHERE date_part('month', start_date) = %s AND indicator_id = %s AND funded_by = %s "
+                    "WHERE RIGHT(month_name, 2) = %s AND indicator_id = %s AND funded_by = %s "
                     "AND partner_id = %s "
                     "GROUP BY id",
-                    [month, indicator.ai_indicator, 'UNICEF', partner['partner_id']])
+                    [str(month).zfill(2), indicator.ai_indicator, 'UNICEF', partner['partner_id']])
                 try:
                     value1 = qs_raw[0].indicator_value
                 except Exception:
@@ -3047,10 +3053,10 @@ def calculate_individual_indicators_values_11(ai_db):
 
                     qs_raw = ActivityReport.objects.raw(
                         "SELECT id, SUM(indicator_value) as indicator_value FROM activityinfo_activityreport "
-                        "WHERE date_part('month', start_date) = %s AND indicator_id = %s AND funded_by = %s "
+                        "WHERE RIGHT(month_name, 2) = %s AND indicator_id = %s AND funded_by = %s "
                         "AND partner_id = %s AND location_adminlevel_governorate_code = %s "
                         "GROUP BY id",
-                        [month, indicator.ai_indicator, 'UNICEF', partner['partner_id'], gov['location_adminlevel_governorate_code']])
+                        [str(month).zfill(2), indicator.ai_indicator, 'UNICEF', partner['partner_id'], gov['location_adminlevel_governorate_code']])
                     try:
                         value2 = qs_raw[0].indicator_value
                     except Exception:
@@ -3100,21 +3106,25 @@ def calculate_individual_indicators_values_1(ai_db):
     cursor = connection.cursor()
     for month in range(1, last_month):
         month = str(month)
-
+        print("SELECT indicator_id, SUM(indicator_value) as indicator_value "
+                "FROM activityinfo_activityreport "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
+                "GROUP BY indicator_id",
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         if ai_db.is_funded_by_unicef:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -3131,16 +3141,16 @@ def calculate_individual_indicators_values_1(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -3153,16 +3163,16 @@ def calculate_individual_indicators_values_1(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, partner_id",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, partner_id",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -3175,16 +3185,16 @@ def calculate_individual_indicators_values_1(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -3197,16 +3207,16 @@ def calculate_individual_indicators_values_1(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
         for row in rows:
             if row[0] not in rows_sections:
@@ -3218,16 +3228,16 @@ def calculate_individual_indicators_values_1(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
         for row in rows:
             if row[0] not in rows_sections_partners:
@@ -3240,17 +3250,17 @@ def calculate_individual_indicators_values_1(ai_db):
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
                 "location_adminlevel_governorate_code "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
                 "location_adminlevel_governorate_code "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
         for row in rows:
             if row[0] not in rows_sections_gov:
@@ -3263,16 +3273,16 @@ def calculate_individual_indicators_values_1(ai_db):
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
                 "location_adminlevel_governorate_code, partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section , partner_id ,location_adminlevel_governorate_code",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section , partner_id, location_adminlevel_governorate_code "
                 "FROM activityinfo_activityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id , location_adminlevel_governorate_code",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
         for row in rows:
             if row[0] not in rows_sections_partners_gov:
@@ -3357,16 +3367,16 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -3378,16 +3388,16 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -3400,16 +3410,16 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, partner_id",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, partner_id",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -3422,16 +3432,16 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -3444,16 +3454,16 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
         for row in rows:
             if row[0] not in rows_sections:
@@ -3465,16 +3475,16 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
         for row in rows:
             if row[0] not in rows_sections_partners:
@@ -3486,16 +3496,16 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,location_adminlevel_governorate_code "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,location_adminlevel_governorate_code "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
         for row in rows:
             if row[0] not in rows_sections_gov:
@@ -3508,16 +3518,16 @@ def calculate_individual_indicators_values_2(ai_db):
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section , "
                 "location_adminlevel_governorate_code ,partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section , partner_id ,location_adminlevel_governorate_code",
-                [month, ai_id, 'UNICEF'])
+                [str(month).zfill(2), ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section , partner_id ,location_adminlevel_governorate_code "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE date_part('month', start_date) = %s AND database_id = %s "
+                "WHERE RIGHT(month_name, 2) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id , location_adminlevel_governorate_code",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
         for row in rows:
             if row[0] not in rows_sections_partners_gov:
@@ -3840,7 +3850,7 @@ def update_indicators_hpm_data():
 
 
 def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year,type=None):
-
+    
     from docx import Document
     from internos.activityinfo.templatetags.util_tags import get_hpm_indicator_data_new , get_hpm_sub_indicators
     from internos.activityinfo.models import Database , Indicator
@@ -3894,9 +3904,9 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     education_ids = edu_list
     # education_ids = [7019,7020,7021,6959,6958,6955,6960]
     # Education 1
-    key = 0
+    key = 0 
     for id in education_ids:
-
+        
         indicator1 = get_hpm_indicator_data_new(id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(indicator1['hpm_label'])
         document.tables[0].rows[row_num].cells[3].paragraphs[0].runs[0].text = str(indicator1['target_sector'])
@@ -3908,8 +3918,8 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
             super_text.font.superscript = True
             super_text.font.name = 'Calibri'
             super_text.font.size = Pt(9)
-
-
+    
+        
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(indicator1['report_change'])
         row_num = row_num + 1
 
@@ -3918,7 +3928,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
 
     row_num = row_num + 1
     # #child_protection_ids = [6972, 6990, 6946]
-    key = 0
+    key = 0 
     for indicator in Child_indicators:
         Child_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         key = key + 1
@@ -3927,17 +3937,17 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(Child_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(Child_1['cumulative'])
         if Child_1['has_hpm_note']:
-
+            
             super_text = document.tables[0].rows[row_num].cells[7].paragraphs[0].add_run(str(key))
             super_text.font.superscript = True
             super_text.font.name = 'Calibri'
             super_text.font.size = Pt(9)
-
+            
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(Child_1['report_change'])
         row_num = row_num + 1
 
     SVBG_indicators = Indicator.objects.filter(activity__database=databases[8], hpm_indicator=True, master_indicator=True).order_by('sequence')
-
+    
     for indicator in SVBG_indicators:
         Child_3 = get_hpm_indicator_data_new(indicator.id, month,type)
         key = key + 1
@@ -3946,12 +3956,12 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(Child_3['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(Child_3['cumulative'])
         if Child_3['has_hpm_note']:
-
+            
             super_text = document.tables[0].rows[row_num].cells[7].paragraphs[0].add_run(str(key))
             super_text.font.superscript = True
             super_text.font.name = 'Calibri'
             super_text.font.size = Pt(9)
-
+            
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(Child_3['report_change'])
         row_num = row_num + 1
 
@@ -3961,7 +3971,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     Wash_indicators = Indicator.objects.filter(activity__database=databases[2], hpm_indicator=True,
                                                 master_indicator=True).order_by('sequence')
     row_num = row_num + 1
-    key = 0
+    key = 0 
     # wash_ids = [6995, 6996, 6999,6997]
     for indicator in Wash_indicators:
         wash_1 = get_hpm_indicator_data_new(indicator.id, month,type)
@@ -3971,7 +3981,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(wash_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(wash_1['cumulative'])
         if wash_1['has_hpm_note']:
-
+            
             super_text = document.tables[0].rows[row_num].cells[7].paragraphs[0].add_run(str(key))
             super_text.font.superscript = True
             super_text.font.name = 'Calibri'
@@ -3983,7 +3993,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     health_indicators = Indicator.objects.filter(activity__database=databases[3], hpm_indicator=True,
                                                master_indicator=True).order_by('sequence')
     row_num = row_num + 1
-    key = 0
+    key = 0 
     # health_ids = [6941,6942,6940]
     for indicator in health_indicators:
         health_1 = get_hpm_indicator_data_new(indicator.id, month,type)
@@ -3993,7 +4003,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(health_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(health_1['cumulative'])
         if health_1['has_hpm_note']:
-
+            
             super_text = document.tables[0].rows[row_num].cells[7].paragraphs[0].add_run(str(key))
             super_text.font.superscript = True
             super_text.font.name = 'Calibri'
@@ -4006,7 +4016,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     youth_indicators = Indicator.objects.filter(activity__database=databases[4], hpm_indicator=True,
                                                 master_indicator=True).order_by('sequence')
     row_num = row_num + 1
-    key = 0
+    key = 0 
     for indicator in youth_indicators:
         youth_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         key = key + 1
@@ -4015,7 +4025,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(youth_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(youth_1['cumulative'])
         if youth_1['has_hpm_note']:
-
+            
             super_text = document.tables[0].rows[row_num].cells[7].paragraphs[0].add_run(str(key))
             super_text.font.superscript = True
             super_text.font.name = 'Calibri'
@@ -4028,7 +4038,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     sp_indicators = Indicator.objects.filter(activity__database=databases[5], hpm_indicator=True,
                                                 master_indicator=True).order_by('sequence')
     row_num = row_num + 1
-    key = 0
+    key = 0 
     for indicator in sp_indicators:
         sp_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         document.tables[0].rows[row_num].cells[1].paragraphs[0].runs[0].text = str(sp_1['hpm_label'])
@@ -4047,7 +4057,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     C4D_indicators = Indicator.objects.filter(activity__database=databases[6], hpm_indicator=True,
                                              master_indicator=True).order_by('sequence')
     row_num = row_num + 1
-    key = 0
+    key = 0 
     for indicator in C4D_indicators:
         C4D_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         key = key + 1
@@ -4056,12 +4066,12 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(C4D_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(C4D_1['cumulative'])
         if C4D_1['has_hpm_note']:
-
+            
             super_text = document.tables[0].rows[row_num].cells[7].paragraphs[0].add_run(str(key))
             super_text.font.superscript = True
             super_text.font.name = 'Calibri'
             super_text.font.size = Pt(9)
-
+            
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(C4D_1['report_change'])
         row_num = row_num + 1
 
@@ -4071,7 +4081,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     PPL_indicators = Indicator.objects.filter(activity__database=databases[7], hpm_indicator=True,
                                               master_indicator=True).order_by('sequence')
     row_num = row_num + 1
-    key = 0
+    key = 0 
 
     for indicator in PPL_indicators:
         key = key + 1
@@ -4081,14 +4091,14 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         document.tables[0].rows[row_num].cells[6].paragraphs[0].runs[0].text = str(PPL_1['target'])
         document.tables[0].rows[row_num].cells[7].paragraphs[0].runs[0].text = str(PPL_1['cumulative'])
         if PPL_1['has_hpm_note']:
-
+            
             super_text = document.tables[0].rows[row_num].cells[7].paragraphs[0].add_run(str(key))
             super_text.font.superscript = True
             super_text.font.name = 'Calibri'
             super_text.font.size = Pt(9)
-
+            
         document.tables[0].rows[row_num].cells[8].paragraphs[0].runs[0].text = str(PPL_1['report_change'])
-
+        
         row_num = row_num + 1
    #  # # Footnotes
 
@@ -4098,16 +4108,16 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
     # table.add_row()
 
    ### Education
-    index = 0
+    index = 0 
     for id in education_ids:
-
+        
         indicator_1 = get_hpm_indicator_data_new(id, month,type)
         if indicator_1['has_hpm_note']:
             row_num = row_num + 1
             index = index + 1
-
+            
             document.tables[0].rows[row_num].cells[0].paragraphs[0].runs[0].text = databases[0].hpm_label+" ("+str(index)+")"
-
+            
             if indicator_1['cumulative'] != "0":
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}%, {}: {}%. '.format(
                     'Boys', indicator_1['male'],'Girls', indicator_1['female']), indicator_1['comment']
@@ -4115,13 +4125,13 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     ### cp
-    index = 0
+    index = 0 
     for indicator in Child_indicators:
         index = index + 1
         Child_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if Child_1['has_hpm_note']:
              row_num = row_num + 1
-
+             
              document.tables[0].rows[row_num].cells[0].paragraphs[0].runs[0].text = databases[1].hpm_label+" ("+str(index)+")"
              if Child_1['cumulative'] != "0":
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
@@ -4130,7 +4140,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     # SVBG merged with CP
-
+    
     SVBG_indicators = Indicator.objects.filter(activity__database=databases[8], hpm_indicator=True,
                                                master_indicator=True).order_by('sequence')
     for indicator in SVBG_indicators:
@@ -4138,7 +4148,7 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
         Child_3 = get_hpm_indicator_data_new(indicator.id, month,type)
         if Child_3['has_hpm_note']:
             row_num = row_num + 1
-
+            
             document.tables[0].rows[row_num].cells[0].paragraphs[0].runs[0].text = '{} ({})'.format(databases[1].hpm_label,str(index))
             if Child_3['cumulative'] != "0":
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = ' {}: {}%, {}: {}%. '.format(
@@ -4147,13 +4157,13 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     #  # #  WASH
-    index = 0
+    index = 0 
     for indicator in Wash_indicators:
         index = index + 1
         wash_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if wash_1['has_hpm_note']:
             row_num = row_num + 1
-
+            
             document.tables[0].rows[row_num].cells[0].paragraphs[0].runs[0].text = databases[2].hpm_label+" ("+str(index)+")"
             if wash_1['cumulative'] != "0":
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[
@@ -4165,13 +4175,13 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     #  # Health
-    index = 0
+    index = 0 
     for indicator in health_indicators:
         index = index + 1
         health_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if health_1['has_hpm_note']:
             row_num = row_num + 1
-
+            
             document.tables[0].rows[row_num].cells[0].paragraphs[0].runs[0].text = databases[3].hpm_label+" ("+str(index)+")"
             if health_1['cumulative'] != "0":
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
@@ -4180,13 +4190,13 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     #  # #  Y&A
-    index = 0
+    index = 0 
     for indicator in youth_indicators:
         index = index + 1
         youth_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if youth_1['has_hpm_note']:
             row_num = row_num + 1
-
+            
             document.tables[0].rows[row_num].cells[0].paragraphs[0].runs[0].text = databases[4].hpm_label+" ("+str(index)+")"
             if youth_1['cumulative'] != "0":
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
@@ -4195,13 +4205,13 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     ## Social Policy
-    index = 0
+    index = 0 
     for indicator in sp_indicators:
         index = index + 1
         sp_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if sp_1['has_hpm_note']:
             row_num = row_num + 1
-
+            
             document.tables[0].rows[row_num].cells[0].paragraphs[0].runs[0].text = databases[5].hpm_label+" ("+str(index)+")"
             if sp_1['cumulative'] != "0":
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
@@ -4210,13 +4220,13 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     ## C4D
-    index = 0
+    index = 0 
     for indicator in C4D_indicators:
-        index = index + 1
+        index = index + 1    
         C4D_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if C4D_1['has_hpm_note']:
             row_num = row_num + 1
-
+            
             document.tables[0].rows[row_num].cells[0].paragraphs[0].runs[0].text = databases[6].hpm_label+" ("+str(index)+")"
             if C4D_1['cumulative'] != "0":
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
@@ -4225,13 +4235,13 @@ def update_hpm_table_docx(indicators, month, month_name, filename,reporting_year
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = "No figures are reported yet"
 
     # #  PPL
-    index = 0
+    index = 0 
     for indicator in PPL_indicators:
         index = index + 1
         PPL_1 = get_hpm_indicator_data_new(indicator.id, month,type)
         if PPL_1['has_hpm_note']:
             row_num = row_num + 1
-
+            
             document.tables[0].rows[row_num].cells[0].paragraphs[0].runs[0].text = databases[7].hpm_label+" ("+str(index)+")"
             if PPL_1['cumulative'] != "0":
                 document.tables[0].rows[row_num].cells[2].paragraphs[0].runs[0].text = '{}: {}%, {}: {}%. '.format(
@@ -4326,9 +4336,9 @@ def calculate_internal_indicators_values(ai_db,indicator_id):
         cursor.execute(
             "SELECT indicator_id, SUM(indicator_value) as indicator_value "
             "FROM activityinfo_activityreport "
-            "WHERE  date_part('month', start_date) = %s AND database_id = %s "
+            "WHERE  RIGHT(month_name, 2) = %s AND database_id = %s "
             "GROUP BY indicator_id",
-            [month, ai_db])
+            [str(month).zfill(2), ai_db])
 
         rows = cursor.fetchall()
         if rows:
@@ -4340,9 +4350,9 @@ def calculate_internal_indicators_values(ai_db,indicator_id):
         cursor.execute(
             "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
             "FROM activityinfo_activityreport "
-            "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+            "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
             "GROUP BY indicator_id, location_adminlevel_governorate_code",
-            [month, ai_db, 'UNICEF'])
+            [str(month).zfill(2), ai_db, 'UNICEF'])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -4354,9 +4364,9 @@ def calculate_internal_indicators_values(ai_db,indicator_id):
         cursor.execute(
             "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
             "FROM activityinfo_activityreport "
-            "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+            "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
             "GROUP BY indicator_id, partner_id",
-            [month, ai_db, 'UNICEF'])
+            [str(month).zfill(2), ai_db, 'UNICEF'])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -4369,9 +4379,9 @@ def calculate_internal_indicators_values(ai_db,indicator_id):
         cursor.execute(
             "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
             "FROM activityinfo_activityreport "
-            "WHERE date_part('month', start_date) = %s AND database_id = %s AND funded_by = %s "
+            "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
             "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
-            [month, ai_db, 'UNICEF'])
+            [str(month).zfill(2), ai_db, 'UNICEF'])
 
         rows = cursor.fetchall()
 
@@ -4493,7 +4503,7 @@ def get_partners_list(ai_db, sections=None, govs=None, months=None, report_type=
 
     if months:
         month_list = ", ".join("'" + str(n) + "'" for n in months)
-        where_condition += " AND date_part('month', start_date) in (" + month_list + ")"
+        where_condition += " AND RIGHT(month_name, 2) in (" + str(month_list).zfill(2) + ")"
 
     query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
 
@@ -4538,7 +4548,7 @@ def get_governorates_list(ai_db, sections=None, partners=None, months=None, repo
         where_condition += " AND partner_id in (" + partners_list + ")"
     if months:
         month_list = ", ".join("'" + str(n) + "'" for n in months)
-        where_condition += " AND date_part('month', start_date) in (" + month_list + ")"
+        where_condition += " AND RIGHT(month_name, 2) in (" + str(month_list).zfill(2) + ")"
 
     query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
 
@@ -4628,7 +4638,7 @@ def get_reporting_sections_list(ai_db,partners=None, govs=None,months=None, repo
         where_condition = " and location_adminlevel_governorate_code in (" + govs_list + ")"
     if months:
         month_list = ", ".join("'" + str(n) + "'" for n in months)
-        where_condition += " AND date_part('month', start_date) in (" + month_list + ")"
+        where_condition += " AND RIGHT(month_name, 2) in (" + str(month_list).zfill(2) + ")"
 
     query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
     if report_type == 'live':

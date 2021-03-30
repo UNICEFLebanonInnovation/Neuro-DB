@@ -177,6 +177,7 @@ class ReportView(TemplateView):
             'is_cumulative',
             'support_COVID',
             'highest_values',
+            'ram_result',
 
         ).distinct()
 

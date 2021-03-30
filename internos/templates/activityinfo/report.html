@@ -122,7 +122,7 @@
             <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
               <li class="nav-item">
                 <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
-                  <span>Dashboard | {{ database.label }} | {{reporting_year}} </span>
+                  <span>ActivityInfo Dashboard | {{ database.label }} | {{reporting_year}} </span>
                 </a>
               </li>
 
@@ -218,20 +218,21 @@
 
         <div class="card-body">
           <div class="table-responsive">
-            <table fixed="6" class="mb-0 table table-striped table-hover table-tags" id="exportheader"
+            <table fixed="7" class="mb-0 table table-striped table-hover table-tags" id="exportheader"
                    content="{{ database.label }}_Dashboard_ {{ current_month_name}}_{{ database.reporting_year.name }}.csv"
                    data-tableName="Dashboard - {{ database.label }}-{{ current_month_name}}_{{ database.reporting_year.name }}">
               <thead>
               <tr>
-                 <th content="Status"></th>
+                <th content="Status"></th>
                 <th content="Indicator Name"> Indicator Name</th>
-                <th content="RWP Code">RWP Code</th>
+                <th content="AWP Code">AWP Code</th>
                 <th content="Target">Target</th>
-                <th content="Cumulative Results of All Months" data-toggle="tooltip" data-placement="top"
-                    title="Cumulative Results of All Months">Cumulative Results <i class="fa fa-question-circle-o"></i>
+                <th content="RAM Results" class="text-danger">RAM Results</th>
+                <th content="Cumulative Results of All Months as in ActivityInfo" data-toggle="tooltip" data-placement="top"
+                    title="Cumulative Results of All Months as in ActivityInfo">Cumulative Results <i class="fa fa-question-circle-o"></i>
                 </th>
-                <th content="Total Percentage achieved of all months" data-toggle="tooltip" data-placement="top"
-                    title="Total Percentage achieved of all months">
+                <th content="Total Percentage achieved of all months in ActivityInfo" data-toggle="tooltip" data-placement="top"
+                    title="Total Percentage achieved of all months in ActivityInfo">
                   Percentage Achieved <i class="fa fa-question-circle-o"></i>
                 </th>
 
@@ -276,6 +277,9 @@
                   {% else %}
                   {{ item.target|number_format }}
                   {% endif %}
+                </td>
+                <td class="w-10 text-danger">
+                  <b>{{ item.ram_result }}</b>
                 </td>
                 <td class="w-10">
                   {{ item.cumulative }}
@@ -325,6 +329,10 @@
                 <td class="w-10"></td>
                 <td class="w-10"></td>
                 {% endif %}
+                
+                <td class="w-10 text-danger">
+                  <b>{{ item.ram_result }}</b>
+                </td>
 
                 <td class="w-10">
 
@@ -359,6 +367,9 @@
                   {% endif %}
                 </td>
                 <td class="w-10"></td>
+                <td class="w-10 text-danger">
+                  <b>{{ item.ram_result }}</b>
+                </td>
                 <td class="w-10">
                   {{ item2.cumulative }}
                 </td>
