@@ -3231,7 +3231,7 @@ def calculate_individual_indicators_values_2(ai_db):
 
     last_month = int(datetime.datetime.now().strftime("%m")) + 1
     # last_month = 13
-    year = date.today().year
+    year = str(date.today().year)
 
     ai_id = str(ai_db.ai_id)
     indicators = Indicator.objects.filter(activity__database__ai_id=ai_db.ai_id).exclude(master_indicator=True)\

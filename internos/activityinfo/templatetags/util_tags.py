@@ -1466,8 +1466,6 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
         else:
             female_per = 0
 
-        print(female+male)
-        print(original_value)
         
         data = {
         'id': indicator.id,
