@@ -499,8 +499,13 @@ class ReportCrisisView(TemplateView):
                 months.append((i, calendar.month_name[i]))
             # sliced_months = months[3:]
 
-        if current_year - 1 == int(reporting_year) and current_month == 1 and not selected_filter:
-            months = []
+        # if current_year - 1 == int(reporting_year) and current_month == 1 and not selected_filter:
+        #     months = []
+        #     for i in range(1, 13):
+        #         months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
+            if current_year - 1 == int(reporting_year) and not selected_filter:
+                months = []
             for i in range(1, 13):
                 months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
@@ -509,6 +514,9 @@ class ReportCrisisView(TemplateView):
 
         imported_indicators = Indicator.objects.filter(activity__database__support_covid=True).exclude(type='quality')
         mixed_indicators = all_indicators | imported_indicators
+
+
+        print(months)
 
         master_indicators = all_indicators.filter(Q(master_indicator=True) | Q(sub_indicators__isnull=True,
                                                                               individual_indicator=True))\

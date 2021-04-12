@@ -31,3 +31,5 @@ function loadTables() {
     
  
 }
+
+window.onresize = loadTables;
