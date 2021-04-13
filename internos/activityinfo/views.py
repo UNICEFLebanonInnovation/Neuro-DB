@@ -5,7 +5,7 @@ import json
 import datetime
 from django.db.models import Q, Sum
 from dal import autocomplete
-from django.views.generic import ListView, TemplateView, FormView
+from django.views.generic import ListView,TemplateView, FormView
 from django.http import HttpResponse, JsonResponse
 from .models import ActivityReport, LiveActivityReport, Database, Indicator, Partner, IndicatorTag, ReportingYear, Activity
 from django.shortcuts import render
@@ -14,9 +14,9 @@ from django.http import HttpResponseRedirect
 from .templatetags.util_tags import *
 from .utils import *
 from .utils import calculate_internal_indicators_values, calculate_internal_cumulative_results
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-
-class IndexView(TemplateView):
+class IndexView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/index.html'
 
     def get_context_data(self, **kwargs):
@@ -31,7 +31,7 @@ class IndexView(TemplateView):
         }
 
 
-class DashboardView(TemplateView):
+class DashboardView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/dashboard.html'
 
     def get_context_data(self, **kwargs):
@@ -78,7 +78,7 @@ class DashboardView(TemplateView):
         }
 
 
-class ReportView(TemplateView):
+class ReportView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report.html'
 
     def get_context_data(self, **kwargs):
@@ -321,7 +321,7 @@ class ReportView(TemplateView):
         }
 
 
-class ReportCrisisViewOld(TemplateView):
+class ReportCrisisViewOld(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_crisis_old.html'
 
     def get_context_data(self, **kwargs):
@@ -457,7 +457,7 @@ class ReportCrisisViewOld(TemplateView):
         }
 
 
-class ReportCrisisView(TemplateView):
+class ReportCrisisView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_crisis.html'
 
     def get_context_data(self, **kwargs):
@@ -506,8 +506,8 @@ class ReportCrisisView(TemplateView):
 
             if current_year - 1 == int(reporting_year) and not selected_filter:
                 months = []
-            for i in range(1, 13):
-                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                for i in range(1, 13):
+                    months.append((i, datetime.date(2008, i, 1).strftime('%B')))
 
         all_indicators = Indicator.objects.filter(activity__database=database).exclude(type='quality')\
             .order_by('sequence')
@@ -821,7 +821,7 @@ class ReportCrisisView(TemplateView):
         }
 
 
-class ReportLiveCrisis(TemplateView):
+class ReportLiveCrisis(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_crisis_live.html'
 
     def get_context_data(self,**kwargs):
@@ -1164,7 +1164,7 @@ class ReportLiveCrisis(TemplateView):
         }
 
 
-class ReportInternalView(TemplateView):
+class ReportInternalView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_internal.html'
 
     def get_context_data(self, **kwargs):
@@ -1221,7 +1221,7 @@ class ReportInternalView(TemplateView):
         }
 
 
-class ReportInternalFormView(TemplateView):
+class ReportInternalFormView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_internal_form.html'
 
     def get_context_data(self, **kwargs):
@@ -1439,7 +1439,7 @@ class ReportInternalFormView(TemplateView):
             return HttpResponseRedirect('/activityinfo/report-internal-form/?rep_year=2020&ai_id='+str(ai_id)+'&id='+str(indicator.id)+'&step='+str(step))
 
 
-class ReportPartnerView(TemplateView):
+class ReportPartnerView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_partner.html'
 
     def get_context_data(self, **kwargs):
@@ -1612,7 +1612,7 @@ class ReportPartnerView(TemplateView):
         }
 
 
-class ReportPartnerCrisisView(TemplateView):
+class ReportPartnerCrisisView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_partner_crisis.html'
 
     def get_context_data(self, **kwargs):
@@ -1794,7 +1794,7 @@ class ReportPartnerCrisisView(TemplateView):
         }
 
 
-class ReportMapView(TemplateView):
+class ReportMapView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_map.html'
 
     def get_context_data(self, **kwargs):
@@ -1902,7 +1902,7 @@ class ReportMapView(TemplateView):
         }
 
 
-class ReportPartnerSectorView(TemplateView):
+class ReportPartnerSectorView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_partner_sector.html'
 
     def get_context_data(self, **kwargs):
@@ -2002,7 +2002,7 @@ class ReportPartnerSectorView(TemplateView):
         }
 
 
-class ReportMapSectorView(TemplateView):
+class ReportMapSectorView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_map_sector.html'
 
     def get_context_data(self, **kwargs):
@@ -2106,7 +2106,7 @@ class ReportMapSectorView(TemplateView):
         }
 
 
-class ReportDisabilityView(TemplateView):
+class ReportDisabilityView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_disability.html'
 
     def get_context_data(self, **kwargs):
@@ -2207,7 +2207,7 @@ class ReportDisabilityView(TemplateView):
         }
 
 
-class ReportDisabilityCrisisView(TemplateView):
+class ReportDisabilityCrisisView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_crisis_disability.html'
 
     def get_context_data(self, **kwargs):
@@ -2308,7 +2308,7 @@ class ReportDisabilityCrisisView(TemplateView):
         }
 
 
-class ReportSectorView(TemplateView):
+class ReportSectorView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_sector.html'
 
     def get_context_data(self, **kwargs):
@@ -2445,7 +2445,7 @@ class ReportSectorView(TemplateView):
         }
 
 
-class ReportTagView(TemplateView):
+class ReportTagView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_tags.html'
 
     def get_context_data(self, **kwargs):
@@ -2708,7 +2708,7 @@ class ReportTagView(TemplateView):
         }
 
 
-class ReportCrisisTags(TemplateView):
+class ReportCrisisTags(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_crisis_tags.html'
 
     def get_context_data(self, **kwargs):
@@ -3002,7 +3002,7 @@ class ReportCrisisTags(TemplateView):
         }
 
 
-class ReportCrisisVisualView(TemplateView):
+class ReportCrisisVisualView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_crisis_visual.html'
 
     def get_context_data(self, **kwargs):
@@ -3017,7 +3017,7 @@ class ReportCrisisVisualView(TemplateView):
         }
 
 
-class LiveReportView(TemplateView):
+class LiveReportView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/live.html'
 
     def get_context_data(self, **kwargs):
@@ -3193,7 +3193,7 @@ class LiveReportView(TemplateView):
         }
 
 
-class HPMView(TemplateView):
+class HPMView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/hpm.html'
 
     def get_context_data(self, **kwargs):
@@ -3471,7 +3471,7 @@ class ExportViewSet(ListView):
         return response
 
 
-class ReportBBlastView(TemplateView):
+class ReportBBlastView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/blast.html'
 
     def get_context_data(self, **kwargs):
@@ -3486,7 +3486,7 @@ class ReportBBlastView(TemplateView):
         }
 
 
-class ReportBlastView(TemplateView):
+class ReportBlastView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/report_blast.html'
 
     def get_context_data(self, **kwargs):
@@ -3629,7 +3629,7 @@ def load_sections(request):
     #
     # sections = report.values('reporting_section').order_by('reporting_section').distinct('reporting_section')
 
-    return render(request, 'activityinfo/section_dropdown_list_options.html', {'sections': result.values()})
+    return render(request, 'activityinfo/section_"DRopdown_list_options.html', {'sections': result.values()})
 
 
 def load_partners(request):
@@ -3682,7 +3682,7 @@ def load_partners(request):
             'partner_label': row[1]
         }
     # return result.values()
-    return render(request, 'activityinfo/partner_dropdown_list_options.html', {'partners':  result.values()})
+    return render(request, 'activityinfo/partner_"DRopdown_list_options.html', {'partners':  result.values()})
 
 
 def load_governorates(request):
@@ -3801,7 +3801,7 @@ def load_governorates(request):
     # governorates = report.values('location_adminlevel_governorate_code',
     #                                                            'location_adminlevel_governorate').distinct()
 
-    return render(request, 'activityinfo/gov_dropdown_list_options.html', {'governorates':  result.values()})
+    return render(request, 'activityinfo/gov_"DRopdown_list_options.html', {'governorates':  result.values()})
 
 
 def load_months(request):
@@ -3858,7 +3858,7 @@ def load_months(request):
             m = record.month
             if (m, calendar.month_name[m]) not in months:
                 months.append((m, calendar.month_name[m]))
-    return render(request, 'activityinfo/month_dropdown_list_options.html', {'months': months})
+    return render(request, 'activityinfo/month_"DRopdown_list_options.html', {'months': months})
 
 
     # return months
@@ -3952,7 +3952,7 @@ class ActivityAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
-class IndicatorsListVisualView(TemplateView):
+class IndicatorsListVisualView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/indicators_list_visual.html'
 
     def get_context_data(self, **kwargs):
@@ -4011,7 +4011,7 @@ class IndicatorsListVisualView(TemplateView):
         }
 
 
-class IndicatorsSubListVisualView(TemplateView):
+class IndicatorsSubListVisualView(LoginRequiredMixin,TemplateView):
     template_name = 'activityinfo/indicators_list_visual.html'
 
     def get_context_data(self, **kwargs):
@@ -4062,4 +4062,8 @@ class IndicatorsSubListVisualView(TemplateView):
             'filter': 'level4-filter',
             'display_tags': False
         }
+
+
+
+
 

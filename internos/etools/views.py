@@ -6,7 +6,7 @@ import random
 import datetime
 import calendar
 from django.db.models import Q
-from django.views.generic import ListView, TemplateView, View
+from django.views.generic import ListView,TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, JsonResponse
 from rest_framework import status
@@ -22,7 +22,7 @@ from internos.activityinfo.utils import load_reporting_map
 from internos.activityinfo.models import ActivityReport
 
 
-class PartnershipView(TemplateView):
+class PartnershipView(LoginRequiredMixin,TemplateView):
 
     template_name = 'etools/partnerships.html'
 
@@ -31,7 +31,7 @@ class PartnershipView(TemplateView):
         return {}
 
 
-class DonorMappingView(TemplateView):
+class DonorMappingView(LoginRequiredMixin,TemplateView):
 
     template_name = 'etools/donor_mapping.html'
 
@@ -56,7 +56,7 @@ class DonorMappingView(TemplateView):
         }
 
 
-class DonorInterventionsView(TemplateView):
+class DonorInterventionsView(LoginRequiredMixin,TemplateView):
 
     template_name = 'etools/interventions_block.html'
 
@@ -90,7 +90,7 @@ def load_donor_locations(request):
     return JsonResponse({'result': locations})
 
 
-class DonorProgrammeResultsView(TemplateView):
+class DonorProgrammeResultsView(LoginRequiredMixin,TemplateView):
 
     template_name = 'etools/donor_results.html'
 
@@ -124,7 +124,7 @@ class DonorProgrammeResultsView(TemplateView):
         }
 
 
-class DonorFundingView(TemplateView):
+class DonorFundingView(LoginRequiredMixin,TemplateView):
     template_name = 'etools/donor_funding.html'
 
     def get_context_data(self, **kwargs):
@@ -147,7 +147,7 @@ class DonorFundingView(TemplateView):
         }
 
 
-class DonorMapping2View(TemplateView):
+class DonorMapping2View(LoginRequiredMixin,TemplateView):
 
     template_name = 'etools/donor_mapping.html'
 
@@ -220,7 +220,7 @@ class DonorMapping2View(TemplateView):
         }
 
 
-class PartnerProfileView(TemplateView):
+class PartnerProfileView(LoginRequiredMixin,TemplateView):
 
     template_name = 'etools/partner_profile.html'
 
@@ -295,7 +295,7 @@ class PartnerProfileView(TemplateView):
         }
 
 
-class PartnerProfileMapView(TemplateView):
+class PartnerProfileMapView(LoginRequiredMixin,TemplateView):
 
     template_name = 'etools/partner_profile_map.html'
 
@@ -368,7 +368,7 @@ class PartnerProfileMapView(TemplateView):
         }
 
 
-class InterventionsView(TemplateView):
+class InterventionsView(LoginRequiredMixin,TemplateView):
 
     template_name = 'etools/interventions.html'
 
@@ -436,7 +436,7 @@ class InterventionExportViewSet(ListView):
         return get_model_as_csv_file_response(meta, content_type='text/csv', filename=filename)
 
 
-class TripsMonitoringView(TemplateView):
+class TripsMonitoringView(LoginRequiredMixin,TemplateView):
 
     template_name = 'etools/trip_monitoring2.html'
 
@@ -545,7 +545,7 @@ class TripsMonitoringView(TemplateView):
         }
 
 
-class HACTView(TemplateView):
+class HACTView(LoginRequiredMixin,TemplateView):
 
     template_name = 'etools/hact.html'
 

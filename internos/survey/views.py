@@ -6,7 +6,7 @@ import datetime
 import calendar
 from django.db.models import Q, Sum, Max
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, TemplateView, FormView
+from django.views.generic import ListView,TemplateView, FormView
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from datetime import date
@@ -14,7 +14,7 @@ from django.http import HttpResponseRedirect
 from .models import EconomicReporting, MonitoringReporting, Map, Research
 
 
-class MapsView(TemplateView): 
+class MapsView(LoginRequiredMixin,TemplateView): 
     template_name = 'survey/maps.html'
 
     def get_context_data(self, **kwargs):
@@ -31,7 +31,7 @@ class MapsView(TemplateView):
         }
 
 
-class ResearchesView(TemplateView):
+class ResearchesView(LoginRequiredMixin,TemplateView):
     template_name = 'survey/researches.html'
 
     def get_context_data(self, **kwargs):
@@ -42,7 +42,7 @@ class ResearchesView(TemplateView):
         }
 
 
-class EconomicDashboardView(TemplateView):
+class EconomicDashboardView(LoginRequiredMixin,TemplateView):
     template_name = 'survey/economic_dashboard.html'
 
     def get_context_data(self, **kwargs):
@@ -127,7 +127,7 @@ class EconomicDashboardView(TemplateView):
         }
 
 
-class PopulationFiguresView(TemplateView):
+class PopulationFiguresView(LoginRequiredMixin,TemplateView):
     template_name = 'survey/population_figures.html'
 
     def get_context_data(self, **kwargs):
@@ -142,7 +142,7 @@ class PopulationFiguresView(TemplateView):
         }
 
 
-class ChildProtectionView(TemplateView):
+class ChildProtectionView(LoginRequiredMixin,TemplateView):
     template_name = 'survey/child_protection.html'
 
     def get_context_data(self, **kwargs):
@@ -219,7 +219,7 @@ class ChildProtectionView(TemplateView):
         }
 
 
-class DataSetsView(TemplateView):
+class DataSetsView(LoginRequiredMixin,TemplateView):
     template_name = 'survey/data_sets.html'
 
     def get_context_data(self, **kwargs):
