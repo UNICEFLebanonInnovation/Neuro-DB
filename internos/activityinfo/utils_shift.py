@@ -44,6 +44,7 @@ def r_script_command_line(ai_db):
         get_xlsx(client, database_id=ai_db.parent_id, resource_id=ai_db.db_id, database=ai_db, record_filter=filters)
     else:
         get_database_data(client, database_id=ai_db.db_id, database=ai_db, record_filter=filters)
+        get_xlsx(client, database_id=ai_db.db_id, database=ai_db, record_filter=filters)
 
 
 def read_data_from_file(ai_db, forced=False, report_type=None):
@@ -171,8 +172,8 @@ def add_rows(ai_db=None, model=None):
                 location_adminlevel_governorate_code=gov_code,
                 location_adminlevel_governorate=gov_name,
                 partner_description=row['partner.partner_full_name'] if 'partner.partner_full_name' in row else '',
-                project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
-                project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
+                #project_start_date=row['projects.start_date'] if 'projects.start_date' in row and not row['projects.start_date'] == 'NA' else None,
+                #project_end_date=row['projects.end_date'] if 'projects.end_date' in row and not row['projects.start_date'] == 'NA' else None,
                 project_label=row['projects.project_code'] if 'projects.project_code' in row else '',
                 project_description=row['projects.project_name'] if 'projects.project_name' in row else '',
                 funded_by=funded_by,
@@ -190,7 +191,7 @@ def add_rows(ai_db=None, model=None):
                 location_name=row['ai_allsites.name'] if 'ai_allsites.name' in row else '',
                 partner_id=row['partner_id'] if 'partner_id' in row else partner_label,
                 support_covid=support_covid,
-                start_date=start_date,
+                #start_date=start_date,
             )
             ctr += 1
         except Exception as ex:
@@ -342,16 +343,19 @@ def calculate_individual_indicators_weekly_values(ai_db):
     if ai_db.is_funded_by_unicef:
         funded_condition = "AND funded_by = 'UNICEF' "
 
-    query_condition = " WHERE date_part('month', start_date) = %s AND database_id = %s " + funded_condition + covid_condition
+    query_condition = " WHERE SUBSTRING(month_name,6,2)= %s AND database_id = %s " + funded_condition + covid_condition
 
     for month in range(1, current_month):
         month = str(month)
         cursor.execute("SELECT indicator_id, SUM(indicator_value) as indicator_value "
                        "FROM activityinfo_activityreport "
                        + query_condition +
-                       " GROUP BY indicator_id", [month, ai_id])
+                       " GROUP BY indicator_id", [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
-
+        print("SELECT indicator_id, SUM(indicator_value) as indicator_value "
+                       "FROM activityinfo_activityreport "
+                       + query_condition +
+                       " GROUP BY indicator_id", [str(month).zfill(2), ai_id])
         for row in rows:
             if row[0] not in rows_months:
                 rows_months[row[0]] = {}
@@ -361,7 +365,7 @@ def calculate_individual_indicators_weekly_values(ai_db):
             "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code"
             " FROM activityinfo_activityreport "
             + query_condition +
-            "GROUP BY indicator_id, location_adminlevel_governorate_code", [month, ai_id])
+            "GROUP BY indicator_id, location_adminlevel_governorate_code", [str(month).zfill(2), ai_id])
 
         rows = cursor.fetchall()
 
@@ -376,7 +380,7 @@ def calculate_individual_indicators_weekly_values(ai_db):
             "FROM activityinfo_activityreport "
             + query_condition +
             "GROUP BY indicator_id, partner_id",
-            [month, ai_id])
+            [str(month).zfill(2), ai_id])
 
         rows = cursor.fetchall()
 
@@ -391,7 +395,7 @@ def calculate_individual_indicators_weekly_values(ai_db):
             "FROM activityinfo_activityreport "
             + query_condition +
             "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
-            [month, ai_id])
+            [str(month).zfill(2), ai_id])
 
         rows = cursor.fetchall()
 
@@ -407,7 +411,7 @@ def calculate_individual_indicators_weekly_values(ai_db):
             "FROM activityinfo_activityreport "
             + query_condition +
             "GROUP BY indicator_id, reporting_section",
-            [month, ai_id])
+            [str(month).zfill(2), ai_id])
 
 
         rows = cursor.fetchall()
@@ -422,7 +426,7 @@ def calculate_individual_indicators_weekly_values(ai_db):
             "FROM activityinfo_activityreport "
             + query_condition +
             "GROUP BY indicator_id, reporting_section ,partner_id",
-            [month, ai_id])
+            [str(month).zfill(2), ai_id])
 
         rows = cursor.fetchall()
         for row in rows:
@@ -437,7 +441,7 @@ def calculate_individual_indicators_weekly_values(ai_db):
             "FROM activityinfo_activityreport "
             + query_condition +
             "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
-            [month, ai_id])
+            [str(month).zfill(2), ai_id])
 
         rows = cursor.fetchall()
         for row in rows:
@@ -452,7 +456,7 @@ def calculate_individual_indicators_weekly_values(ai_db):
             "FROM activityinfo_activityreport "
             + query_condition +
             "GROUP BY indicator_id, reporting_section , partner_id ,location_adminlevel_governorate_code",
-            [month, ai_id])
+            [str(month).zfill(2), ai_id])
 
         rows = cursor.fetchall()
         for row in rows:
@@ -534,14 +538,14 @@ def calculate_individual_indicators_weekly_imported_values(ai_db):
             if ai_db.is_funded_by_unicef:
                 funded_condition = "AND funded_by = 'UNICEF' "
 
-            query_condition = " WHERE date_part('month', start_date) = %s AND database_id = %s " + funded_condition + " and indicator_id in (" + ids_condition +")"
+            query_condition = " WHERE SUBSTRING(month_name,6,2)= %s AND database_id = %s " + funded_condition + " and indicator_id in (" + ids_condition +")"
 
             for month in range(4, current_month):
                 month = str(month)
                 cursor.execute("SELECT indicator_id, SUM(indicator_value) as indicator_value "
                            "FROM activityinfo_activityreport "
                            + query_condition +
-                           " GROUP BY indicator_id", [month, ai_id])
+                           " GROUP BY indicator_id", [str(month).zfill(2), ai_id])
                 rows = cursor.fetchall()
 
                 for row in rows:
@@ -553,7 +557,7 @@ def calculate_individual_indicators_weekly_imported_values(ai_db):
                     "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code"
                     " FROM activityinfo_activityreport "
                     + query_condition +
-                    "GROUP BY indicator_id, location_adminlevel_governorate_code", [month, ai_id])
+                    "GROUP BY indicator_id, location_adminlevel_governorate_code", [str(month).zfill(2), ai_id])
 
                 rows = cursor.fetchall()
 
@@ -568,7 +572,7 @@ def calculate_individual_indicators_weekly_imported_values(ai_db):
                     "FROM activityinfo_activityreport "
                     + query_condition +
                     "GROUP BY indicator_id, partner_id",
-                    [month, ai_id])
+                    [str(month).zfill(2), ai_id])
 
                 rows = cursor.fetchall()
 
@@ -583,7 +587,7 @@ def calculate_individual_indicators_weekly_imported_values(ai_db):
                     "FROM activityinfo_activityreport "
                     + query_condition +
                     "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
-                    [month, ai_id])
+                    [str(month).zfill(2), ai_id])
 
                 rows = cursor.fetchall()
 
@@ -655,14 +659,14 @@ def calculate_individual_indicators_live_imported_values(ai_db):
             if ai_db.is_funded_by_unicef:
                 funded_condition = "AND funded_by = 'UNICEF' "
 
-            query_condition = " WHERE date_part('month', start_date) = %s AND database_id = %s " + funded_condition + " and indicator_id in (" + ids_condition + ")"
+            query_condition = " WHERE SUBSTRING(month_name,6,2)= %s AND database_id = %s " + funded_condition + " and indicator_id in (" + ids_condition + ")"
 
             for month in range(4, current_month):
                 month = str(month)
                 cursor.execute("SELECT indicator_id, SUM(indicator_value) as indicator_value "
                                "FROM activityinfo_liveactivityreport "
                                + query_condition +
-                               " GROUP BY indicator_id", [month, ai_id])
+                               " GROUP BY indicator_id", [str(month).zfill(2), ai_id])
                 rows = cursor.fetchall()
 
                 for row in rows:
@@ -674,7 +678,7 @@ def calculate_individual_indicators_live_imported_values(ai_db):
                     "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code"
                     " FROM activityinfo_liveactivityreport "
                     + query_condition +
-                    "GROUP BY indicator_id, location_adminlevel_governorate_code", [month, ai_id])
+                    "GROUP BY indicator_id, location_adminlevel_governorate_code", [str(month).zfill(2), ai_id])
 
                 rows = cursor.fetchall()
 
@@ -689,7 +693,7 @@ def calculate_individual_indicators_live_imported_values(ai_db):
                     "FROM activityinfo_liveactivityreport "
                     + query_condition +
                     "GROUP BY indicator_id, partner_id",
-                    [month, ai_id])
+                    [str(month).zfill(2), ai_id])
 
                 rows = cursor.fetchall()
 
@@ -704,7 +708,7 @@ def calculate_individual_indicators_live_imported_values(ai_db):
                     "FROM activityinfo_liveactivityreport "
                     + query_condition +
                     "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
-                    [month, ai_id])
+                    [str(month).zfill(2), ai_id])
 
                 rows = cursor.fetchall()
 
@@ -3340,14 +3344,14 @@ def calculate_individual_indicators_values_2(ai_db):
     if ai_db.is_funded_by_unicef:
         funded_condition = "AND funded_by = 'UNICEF' "
 
-    query_condition = " WHERE date_part('month', start_date) = %s AND database_id = %s " + funded_condition + covid_condition
+    query_condition = " WHERE SUBSTRING(month_name,6,2)= %s AND database_id = %s " + funded_condition + covid_condition
 
     for month in range(1, last_month):
         month = str(month)
         cursor.execute("SELECT indicator_id, SUM(indicator_value) as indicator_value "
                        "FROM activityinfo_liveactivityreport "
                        + query_condition +
-                       " GROUP BY indicator_id", [month, ai_id])
+                       " GROUP BY indicator_id", [str(month).zfill(2), ai_id])
         rows = cursor.fetchall()
 
         for row in rows:
@@ -3359,7 +3363,7 @@ def calculate_individual_indicators_values_2(ai_db):
             "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code"
             " FROM activityinfo_liveactivityreport "
             + query_condition +
-            "GROUP BY indicator_id, location_adminlevel_governorate_code", [month, ai_id])
+            "GROUP BY indicator_id, location_adminlevel_governorate_code", [str(month).zfill(2), ai_id])
 
         rows = cursor.fetchall()
 
@@ -3374,7 +3378,7 @@ def calculate_individual_indicators_values_2(ai_db):
             "FROM activityinfo_liveactivityreport "
             + query_condition +
             "GROUP BY indicator_id, partner_id",
-            [month, ai_id])
+            [str(month).zfill(2), ai_id])
 
         rows = cursor.fetchall()
 
@@ -3389,7 +3393,7 @@ def calculate_individual_indicators_values_2(ai_db):
             "FROM activityinfo_liveactivityreport "
             + query_condition +
             "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
-            [month, ai_id])
+            [str(month).zfill(2), ai_id])
 
         rows = cursor.fetchall()
         for row in rows:
@@ -3404,7 +3408,7 @@ def calculate_individual_indicators_values_2(ai_db):
                 "FROM activityinfo_liveactivityreport "
                 + query_condition +
                 "GROUP BY indicator_id, reporting_section",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
 
             rows = cursor.fetchall()
             for row in rows:
@@ -3418,7 +3422,7 @@ def calculate_individual_indicators_values_2(ai_db):
                 "FROM activityinfo_liveactivityreport "
                 + query_condition +
                 "GROUP BY indicator_id, reporting_section ,partner_id",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
 
             rows = cursor.fetchall()
             for row in rows:
@@ -3433,7 +3437,7 @@ def calculate_individual_indicators_values_2(ai_db):
                 "FROM activityinfo_activityreport "
                 + query_condition +
                 "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
 
             rows = cursor.fetchall()
             for row in rows:
@@ -3448,7 +3452,7 @@ def calculate_individual_indicators_values_2(ai_db):
                 "FROM activityinfo_activityreport "
                 + query_condition +
                 "GROUP BY indicator_id, reporting_section , partner_id ,location_adminlevel_governorate_code",
-                [month, ai_id])
+                [str(month).zfill(2), ai_id])
 
             rows = cursor.fetchall()
             for row in rows:
@@ -3663,7 +3667,7 @@ def get_partners_list(ai_db, sections=None, govs=None, months=None, report_type=
         where_condition += " AND reporting_section in (" + section_list + ")"
 
     if months:
-        where_condition += " AND date_part('month', start_date) in (" + months + ")"
+        where_condition += " AND SUBSTRING(month_name,6,2)in (" + months + ")"
 
     query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
 
@@ -3707,7 +3711,7 @@ def get_governorates_list(ai_db, sections=None, partners=None, months=None, repo
         partners_list = ", ".join("'" + str(n)+ "'" for n in partners)
         where_condition += " AND partner_id in (" + partners_list + ")"
     if months:
-        where_condition += " AND date_part('month', start_date) in (" + months +")"
+        where_condition += " AND SUBSTRING(month_name,6,2)in (" + months +")"
 
     query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
 
@@ -3795,7 +3799,7 @@ def get_reporting_sections_list(ai_db,partners=None, govs=None,months=None, repo
     if govs:
         where_condition = " and location_adminlevel_governorate_code in (" + govs + ")"
     if months:
-        where_condition += " AND date_part('month', start_date) in (" + months + ")"
+        where_condition += " AND SUBSTRING(month_name,6,2)in (" + months + ")"
 
     query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
     if report_type == 'live':

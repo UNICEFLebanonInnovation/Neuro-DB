@@ -22,6 +22,11 @@ urlpatterns = [
         name='hpm'
     ),
     url(
+        regex=r'^HPM2/$',
+        view=views.HPMView2.as_view(),
+        name='hpmtwo'
+    ),
+    url(
         regex=r'^export/$',
         view=views.ExportViewSet.as_view(),
         name='export'
@@ -140,6 +145,11 @@ urlpatterns = [
         regex=r'^HPM-report/$',
         view=views.HPMExportViewSet.as_view(),
         name='hpm_report'
+    ),
+    url(
+        regex=r'^HPM-report-1/$',
+        view=views.HPMExportViewSet2.as_view(),
+        name='hpm_report_2'
     ),
     url(
         regex='ajax/load-sections/',

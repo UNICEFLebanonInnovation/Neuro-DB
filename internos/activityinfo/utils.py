@@ -130,12 +130,14 @@ def r_script_command_line(ai_db):
 
     client = Client()
     filters = "LEFT(Month,4) == '{}'".format(ai_db.reporting_year.year)
+    print(ai_db)
     if ai_db.parent_id:
         get_database_data(client, database_id=ai_db.parent_id, resource_id=ai_db.db_id, database=ai_db,
                           record_filter=filters)
         get_xlsx(client, database_id=ai_db.parent_id, resource_id=ai_db.db_id, database=ai_db, record_filter=filters)
     else:
         get_database_data(client, database_id=ai_db.db_id, database=ai_db, record_filter=filters)
+        get_xlsx(client, database_id=ai_db.db_id, database=ai_db, record_filter=filters)
 
 
 def read_data_from_file(ai_db, forced=False, report_type=None):
@@ -3014,18 +3016,25 @@ def calculate_individual_indicators_values_1(ai_db):
     cursor = connection.cursor()
     for month in range(1, last_month):
         month = str(month)
+
         if ai_db.is_funded_by_unicef:
+            print(
+                "SELECT indicator_id, SUM(indicator_value) as indicator_value "
+                "FROM activityinfo_activityreport "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "GROUP BY indicator_id",
+                [str(month).zfill(2),year, ai_id, 'UNICEF'])
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3044,14 +3053,14 @@ def calculate_individual_indicators_values_1(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3066,14 +3075,14 @@ def calculate_individual_indicators_values_1(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, partner_id",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, partner_id",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3088,14 +3097,14 @@ def calculate_individual_indicators_values_1(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3110,14 +3119,14 @@ def calculate_individual_indicators_values_1(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3131,14 +3140,14 @@ def calculate_individual_indicators_values_1(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3153,7 +3162,7 @@ def calculate_individual_indicators_values_1(ai_db):
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
                 "location_adminlevel_governorate_code "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
@@ -3161,7 +3170,7 @@ def calculate_individual_indicators_values_1(ai_db):
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
                 "location_adminlevel_governorate_code "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3176,14 +3185,14 @@ def calculate_individual_indicators_values_1(ai_db):
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section, "
                 "location_adminlevel_governorate_code, partner_id "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section , partner_id ,location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section , partner_id, location_adminlevel_governorate_code "
                 "FROM activityinfo_activityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id , location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3267,18 +3276,19 @@ def calculate_individual_indicators_values_2(ai_db):
     cursor = connection.cursor()
     for month in range(1, last_month):
         month = str(month)
+        
         if ai_db.is_funded_by_unicef:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3292,14 +3302,14 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3314,14 +3324,14 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, partner_id",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, partner_id",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3336,14 +3346,14 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3358,14 +3368,14 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3379,14 +3389,14 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3400,14 +3410,14 @@ def calculate_individual_indicators_values_2(ai_db):
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,location_adminlevel_governorate_code "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section ,location_adminlevel_governorate_code "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -3422,14 +3432,14 @@ def calculate_individual_indicators_values_2(ai_db):
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section , "
                 "location_adminlevel_governorate_code ,partner_id "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s AND funded_by = %s "
                 "GROUP BY indicator_id, reporting_section , partner_id ,location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id, 'UNICEF'])
         else:
             cursor.execute(
                 "SELECT indicator_id, SUM(indicator_value) as indicator_value, reporting_section , partner_id ,location_adminlevel_governorate_code "
                 "FROM activityinfo_liveactivityreport "
-                "WHERE RIGHT(month_name, 2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
+                "WHERE SUBSTRING(month_name,6,2) = %s AND LEFT(month_name, 4) = %s AND database_id = %s "
                 "GROUP BY indicator_id, reporting_section ,partner_id , location_adminlevel_governorate_code",
                 [str(month).zfill(2),year, ai_id])
         rows = cursor.fetchall()
@@ -4240,7 +4250,7 @@ def calculate_internal_indicators_values(ai_db,indicator_id):
         cursor.execute(
             "SELECT indicator_id, SUM(indicator_value) as indicator_value "
             "FROM activityinfo_activityreport "
-            "WHERE  RIGHT(month_name, 2) = %s AND database_id = %s "
+            "WHERE  SUBSTRING(month_name,6,2) = %s AND database_id = %s "
             "GROUP BY indicator_id",
             [str(month).zfill(2), ai_db])
 
@@ -4254,7 +4264,7 @@ def calculate_internal_indicators_values(ai_db,indicator_id):
         cursor.execute(
             "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code "
             "FROM activityinfo_activityreport "
-            "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
+            "WHERE SUBSTRING(month_name,6,2) = %s AND database_id = %s AND funded_by = %s "
             "GROUP BY indicator_id, location_adminlevel_governorate_code",
             [str(month).zfill(2), ai_db, 'UNICEF'])
         rows = cursor.fetchall()
@@ -4268,7 +4278,7 @@ def calculate_internal_indicators_values(ai_db,indicator_id):
         cursor.execute(
             "SELECT indicator_id, SUM(indicator_value) as indicator_value, partner_id "
             "FROM activityinfo_activityreport "
-            "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
+            "WHERE SUBSTRING(month_name,6,2) = %s AND database_id = %s AND funded_by = %s "
             "GROUP BY indicator_id, partner_id",
             [str(month).zfill(2), ai_db, 'UNICEF'])
         rows = cursor.fetchall()
@@ -4283,7 +4293,7 @@ def calculate_internal_indicators_values(ai_db,indicator_id):
         cursor.execute(
             "SELECT indicator_id, SUM(indicator_value) as indicator_value, location_adminlevel_governorate_code, partner_id "
             "FROM activityinfo_activityreport "
-            "WHERE RIGHT(month_name, 2) = %s AND database_id = %s AND funded_by = %s "
+            "WHERE SUBSTRING(month_name,6,2) = %s AND database_id = %s AND funded_by = %s "
             "GROUP BY indicator_id, location_adminlevel_governorate_code, partner_id",
             [str(month).zfill(2), ai_db, 'UNICEF'])
 
@@ -4407,7 +4417,7 @@ def get_partners_list(ai_db, sections=None, govs=None, months=None, report_type=
 
     if months:
         month_list = ", ".join("'" + str(n) + "'" for n in months)
-        where_condition += " AND RIGHT(month_name, 2) in (" + str(month_list).zfill(2) + ")"
+        where_condition += " AND SUBSTRING(month_name,6,2) in (" + str(month_list).zfill(2) + ")"
 
     query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
 
@@ -4452,7 +4462,7 @@ def get_governorates_list(ai_db, sections=None, partners=None, months=None, repo
         where_condition += " AND partner_id in (" + partners_list + ")"
     if months:
         month_list = ", ".join("'" + str(n) + "'" for n in months)
-        where_condition += " AND RIGHT(month_name, 2) in (" + str(month_list).zfill(2) + ")"
+        where_condition += " AND SUBSTRING(month_name,6,2) in (" + str(month_list).zfill(2) + ")"
 
     query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
 
@@ -4542,7 +4552,7 @@ def get_reporting_sections_list(ai_db,partners=None, govs=None,months=None, repo
         where_condition = " and location_adminlevel_governorate_code in (" + govs_list + ")"
     if months:
         month_list = ", ".join("'" + str(n) + "'" for n in months)
-        where_condition += " AND RIGHT(month_name, 2) in (" + str(month_list).zfill(2) + ")"
+        where_condition += " AND SUBSTRING(month_name,6,2) in (" + str(month_list).zfill(2) + ")"
 
     query_condition = "{}'{}'".format(" WHERE database_id =", str(ai_db.ai_id)) + funded_condition + where_condition
     if report_type == 'live':

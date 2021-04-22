@@ -193,8 +193,12 @@ def get_xlsx(client, database_id, resource_id=None, record_filter=None, database
     if record_filter is not None:
         payload['descriptor']['filter'] = record_filter
 
+
+    
     job_status = client.post_resource('resources/jobs', body=payload)
     job_id = job_status['id']
+
+    print(job_id)
 
     while True:
         job_status = client.get_resource('resources/jobs/{job_id}'.format(job_id=job_id))

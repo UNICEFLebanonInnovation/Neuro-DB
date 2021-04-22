@@ -107,12 +107,12 @@
               {% for m,month_name in months %}
                {% if type == '1' or type == '2' or type == '3' or type == '4' %}
                  <a value="{{ m }}" onclick="selectmonth('{{m}}')" class="dropdown-item">
-                {{ month_name }}
+                {{ month_name }} {{current_month}}
               </a>
               {% else %}
               <a value="{{ m }}" onclick="selectmonth('{{m}}')" {% if m == month %}
                  class="dropdown-item active" {% else %} class="dropdown-item" {% endif %}>
-                {{ month_name }}
+                {{ month_name }} {{current_month}}
               </a>
               {% endif %}
               {% endfor %}

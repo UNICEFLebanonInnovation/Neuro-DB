@@ -3313,6 +3313,127 @@ class HPMView(LoginRequiredMixin,TemplateView):
                 indicator.save()
         return HttpResponseRedirect('/activityinfo/HPM/?rep_year=2021&month='+month)
 
+class HPMView2(LoginRequiredMixin,TemplateView):
+    template_name = 'activityinfo/hpmtwo.html'
+
+    def get_context_data(self, **kwargs):
+
+        current_month = date.today().month
+        current_year = date.today().year
+        is_current_year = True
+        title = ""
+        table_title=""
+        month = int(self.request.GET.get('month', 0))
+        type = self.request.GET.get('quarter', "")
+        today = datetime.date.today()
+        day_number = int(today.strftime("%d"))
+
+        if month == 0:
+            if day_number >= 15:
+                month = current_month - 1
+            else:
+                month = current_month - 2
+
+        # year = date.today().year
+        # reporting_year = self.request.GET.get('rep_year', year)
+        instance = ReportingYear.objects.get(current=True)
+        reporting_year = self.request.GET.get('rep_year', instance.year)
+        # if not reporting_year:
+        #     reporting_year = year
+
+        if type == '1' or type == '2' or type == '3' or type == '4':
+            selected_month_name='Quarter ' + type
+            table_title = "" 
+        else:
+            selected_month_name = calendar.month_name[month]
+
+
+        if type == '1':
+            month = 3
+        elif  type == '2':
+            month = 6
+        elif  type == '3':
+            month = 9
+        elif  type == '4':
+            month = 12
+            
+            
+        month_name = calendar.month_name[month]
+
+        if int(reporting_year) != current_year:
+            is_current_year = False
+
+        databases = Database.objects.filter(reporting_year__name=reporting_year).exclude(ai_id=10240).order_by('hpm_sequence')
+
+        SGBV_db = [x for x in databases if x.label == 'SGBV']
+        if len(SGBV_db) == 0:
+            SGBV_db_id=0
+        else:
+            SGBV_db_id = SGBV_db[0].ai_id
+
+         
+        if month == 1 and type == "":
+            title = '{} {}'.format('HPM Table | Data of January |', str(reporting_year))
+            table_title='{} {} {}'.format('SUMMARY OF PROGRAMME RESULTS | January | ',str(reporting_year),'SITREP-LEBANON')
+        else:
+            title = '{} {} {} {}'.format('HPM Table | Data of January to ', str(month_name),'|', str(reporting_year))
+            table_title='{} {} {} {} {}'.format('SUMMARY OF PROGRAMME RESULTS | January to',  month_name , '|',  reporting_year,'SITREP-LEBANON')
+
+        months = []
+        if int(reporting_year) == current_year:
+            if current_month == 1:
+                months.append((1, datetime.date(2008, 1, 1).strftime('%B')))
+            if current_month > 2:
+                if day_number >= 15:
+                    for i in range(1, current_month):
+                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                else:
+                    for i in range(1, current_month-1):
+                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+        else:
+                    for i in range(1, 13):
+                        months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+                
+
+
+        if current_year - 1 == int(reporting_year) and current_month == 1:
+            months = []
+            is_current_year = True
+            for i in range(1, 13):
+                months.append((i, datetime.date(2008, i, 1).strftime('%B')))
+
+        return {
+            'ai_databases': databases,
+            'month_name': month_name,
+            'month': month,
+            'months': months,
+            'reporting_year': reporting_year,
+            'is_current_year': is_current_year,
+            'title': title,
+            'SGBV_db': SGBV_db_id,
+            'table_title':table_title,
+            'selected_month':selected_month_name,
+            'current_month':current_month,
+            # 'periodic_months':periodic_list,
+            'type':type
+        }
+
+    def post(self, request, *args, **kwargs):
+
+        indicator_id = self.request.POST.get('indicator', 0)
+        comment = self.request.POST.get('comment',"")
+        indicator = Indicator.objects.get(id=indicator_id)
+        month = self.request.POST.get('month',0)
+        if indicator:
+            comments_list = indicator.comment
+            if comments_list is None:
+                comments_list = {}
+            if month > 0:
+                comments_list[month] = comment
+                indicator.comment = comments_list
+                indicator.save()
+        return HttpResponseRedirect('/activityinfo/HPM/?rep_year=2021&month='+month)
+
 
 class HPMExportViewSet(ListView):
     model = Indicator
@@ -3367,7 +3488,57 @@ class HPMExportViewSet(ListView):
             return inst.stream_content()
 
 
+class HPMExportViewSet2(ListView):
+    model = Indicator
+    queryset = Indicator.objects.filter(hpm_indicator=True)
 
+
+    def get(self, request, *args, **kwargs):
+        from .utils import update_hpm_table_docx
+        from django.core.files import File
+        from .templatetags.convertor import StreamingConvertedPdf
+
+
+
+        year = date.today().year
+        reporting_year = self.request.GET.get('rep_year', year)
+        type = self.request.GET.get('type', "")
+        if reporting_year is None:
+            reporting_year = year
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        currnet_month = first - datetime.timedelta(days=1)
+        day_number = int(today.strftime("%d"))
+        month = int(self.request.GET.get('month', currnet_month.strftime("%m")))
+
+        # month = int(self.request.GET.get('month', int(today.strftime("%m")) - 1))
+        # month = 12
+        # if day_number < 15:
+        #     month = month - 1
+
+        months = []
+        for i in range(1, 13):
+            months.append((datetime.date(2008, i, 1).strftime('%B')))
+
+        filename = "HPM Table {} {}.docx".format(months[month-1], reporting_year)
+        new_file = update_hpm_table_docx(self.queryset, month, months[month-1], filename,reporting_year,type)
+
+
+
+        with open(new_file, 'rb') as fh:
+            response = HttpResponse(
+                fh.read(),
+                content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            )
+            response['Content-Disposition'] = 'attachment; filename=' + filename
+        # print(new_file)
+        if type == "docx":
+            return response
+        else:
+            r_file = open(new_file, 'rb')
+
+            inst = StreamingConvertedPdf(r_file,filename)
+            return inst.stream_content()
 
 
 class ExportViewSet1(ListView):

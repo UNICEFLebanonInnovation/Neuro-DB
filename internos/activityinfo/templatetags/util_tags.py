@@ -1337,18 +1337,17 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
                     previous_sector_values += indicator.values_sector[str(m)]
 
         previous_values = 0
-        if type == 'periodic':
-            if indicator.cumulative_values_hpm:
-                if str(month) in indicator.cumulative_values_hpm:
-                    if month == 3:
-                        previous_values = 0
-                    else:
-                        period_mon = month - 3
-                        if str(period_mon) in indicator.cumulative_values_hpm:
-                            previous_values = indicator.cumulative_values_hpm[str(period_mon)]
-                        else:
-                            previous_values = 0
-
+        
+        
+        if type == '1' or type == '2' or type == '3' or type == '4':
+            if month == 3:
+                previous_values = value
+            else:
+                period_mon = month - 3
+                if str(period_mon) in indicator.values:
+                    previous_values = indicator.values[str(period_mon)]
+                else:
+                    previous_values = 0
         else:
             for m in range(1, month):
                 if indicator.values:
@@ -1359,6 +1358,7 @@ def get_hpm_indicator_data_new(indicator_id, month=None, type=None):
         value = value + additional_cumulative
         previous_values = previous_values + additional_cumulative
 
+        
         if int(month) == 1:
             report_change = 0
             sector_change = 0
@@ -2568,7 +2568,6 @@ def get_indicator_highest_value_live(indicator,partners=None,govs=None,months=No
                 return get_indicator_unit(indicator, max_value)
         return value
     except Exception as ex:
-        logger.error('get_indicator_highest_value error' + ex.message)
         return value
 
 
