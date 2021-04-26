@@ -13,6 +13,8 @@ from rest_framework_swagger.views import get_swagger_view
 from internos.activityinfo.views import IndexView, ActivityAutocomplete
 from internos.backends.views import HomeView, DashboardView
 from internos.etools.views import CommentUpdateViewSet
+from django.views.static import serve 
+
 
 api = routers.SimpleRouter()
 api.register(r'update-partner-comments', CommentUpdateViewSet, base_name='update_partner_comments')
@@ -48,6 +50,8 @@ urlpatterns = [
     url(r'^api/docs/', schema_view),
 
     url(r'^api/', include(api.urls)),
+    url(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}), 
+    url(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}), 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
